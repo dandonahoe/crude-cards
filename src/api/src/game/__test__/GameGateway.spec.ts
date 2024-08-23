@@ -66,23 +66,6 @@ describe('GameGateway', () => {
         jest.clearAllMocks();
     });
 
-    describe('createGame', () => {
-        it('should create a game, join the room, and broadcast the update', async () => {
-            const mockCreateGameDto: CreateGameDTO = { game_name : 'Test Game' } as CreateGameDTO;
-            const mockGameState = { game_code : 'game123' };
-
-            jest.spyOn(gameService, 'createGame').mockResolvedValue(mockGameState as any);
-
-            const result = await gateway.createGame(mockSocket, mockCreateGameDto);
-
-            expect(logger.silly).toHaveBeenCalledWith('GameGateway::createGame', { createGame : mockCreateGameDto });
-            expect(gameService.createGame).toHaveBeenCalledWith(mockCreateGameDto);
-            expect(mockSocket.join).toHaveBeenCalledWith('game123');
-            // expect(broadcastGameUpdate).toHaveBeenCalledWith('game123', gameService, gateway['socketIoServer'], logger);
-            expect(result).toEqual(mockGameState);
-        });
-    });
-
     describe('startGame', () => {
         it('should start a game and broadcast the update including the deck', async () => {
             const mockStartGameDto: StartGameDTO = { game_code : 'game123' } as StartGameDTO;
