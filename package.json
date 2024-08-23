@@ -5,7 +5,7 @@
     "description": "Game Codebase",
     "repository": {
         "type": "git",
-        "url": "https://github.com/ConstructWorks/game.git"
+        "url": "https://github.com/ConstructWorks/cards.git"
     },
     "browser": {
         "path-to-regexp": false,

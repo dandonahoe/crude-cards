@@ -1,5 +1,5 @@
 module.exports = {
-    repositoryUrl: "https://github.com/ConstructWorks/game.git",
+    repositoryUrl: "https://github.com/ConstructWorks/cards.git",
     branches: [
         { name: "dev" },
         { name: "main" }
