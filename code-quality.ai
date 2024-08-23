@@ -1,0 +1,27 @@
+# Code Quality Guidelines
+
+TypeScript, Node.js, NestJS, Jest
+
+- Always include `public`, `private` or `protected` visibility modifier for class properties and methods.
+- Break functions down into smalles possible units, suitable for testing
+- In the header of the file, include a comment block with the following information:
+  - Description
+  - Usage
+- Use type hinting for all function arguments and return values
+- Include tsdoc comments for all functions and classes, omit parameter type information, just `@param name - description`
+- Comment all code
+- Include copious logging of appropriate levels and information
+  - error - for errors
+  - warn - for warnings
+  - info - for information
+  - debug - Include debug information and shallow ids
+  - silly - Include debug information and full data
+- Use Arrow Functions when possible, note decorated functions cannot be arrow functions
+- Align semicolons on objects
+- Sort imports by line length
+- 4 spaces for indentation
+- Omit useless parenthesis
+- Omit useless braces
+- Use thorough defensive error checking
+- Validate all inputs
+- Rethrow any caught errors so the central Exception handler can treat them unifiormly

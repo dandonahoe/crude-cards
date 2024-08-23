@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": ".."
+		}
+	],
+	"settings": {
+		"githubPullRequests.ignoredPullRequestBranches": [
+			"main"
+		],
+		"WillLuke.nextjs.addTypesOnSave": true,
+		"WillLuke.nextjs.hasPrompted": true
+	}
+}

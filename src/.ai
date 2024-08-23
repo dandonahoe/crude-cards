@@ -1,0 +1,18 @@
+# AI Lint Prompt Experiment
+
+`import '<root>/.ai`
+
+## Outupt
+* Generate a new file with the same name, but with `.txt` extension rather than `.tsx`
+
+##  Rule Format
+* **[Rule Type]** *Text of Prompt*
+
+###  Rules
+* **`[Imports]`** Each file in `src/server` never imports anything from `src/client`
+* **`[ImportAlias]`** All imports use `@app/` import aliases
+* **`[SortImports]`** Imports are sorted according to length
+* **`[FileRules]`** Each file should export the enum without using default
+* **`[VariableNaming]`** Each enum value should have a `Type` suffix for instance `enum MyEnumType`
+* **`[RepoStructure]`** each directory in the repo is lowercase under `src`
+* **`[RepoStructure]`** File under `src` starts with an uppercase for `.tsx` files

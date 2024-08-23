@@ -1,0 +1,15 @@
+{
+    "sonarlint": {
+        "exclusions": [
+            "storybook-static/**",
+            "node_modules/**",
+            "internal/**",
+            "prisma/**",
+            "cypress/**",
+            ".next/**",
+            ".vscode/**",
+            ".trunk/**",
+            ".github/**"
+        ]
+    }
+}

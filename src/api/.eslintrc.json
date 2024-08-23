@@ -1,0 +1,257 @@
+{
+    "plugins": [],
+    "ignorePatterns": [
+        "node_modules",
+        ".next",
+        "dist",
+        "log",
+        ".out",
+        "src/migrations"
+    ],
+    "parserOptions": {},
+    "extends": [
+        "eslint:recommended"
+    ],
+    // excludes
+    "settings": {},
+    "overrides": [
+        {
+            "files": [
+                "*.html"
+            ],
+            "parser": "@html-eslint/parser",
+            "extends": [
+                "plugin:@html-eslint/recommended"
+            ]
+        },
+        {
+            // enable the rule specifically for TypeScript files
+            "files": [
+                "*.yml",
+                "*.json",
+                "*.js",
+                "*.ts",
+                "*.mts",
+                "*.cts",
+                "*.tsx"
+            ],
+            "rules": {
+                "tsdoc/syntax": "warn"
+            }
+        }
+    ],
+    "rules": {
+        "padding-line-between-statements": [
+            "error",
+            {
+                "blankLine": "always",
+                "prev": "*",
+                "next": "return"
+            }
+        ],
+        "no-restricted-imports": [
+            "error",
+            {
+                "paths": [
+                    {
+                        "name": "styled-components",
+                        "message": "Please import from styled-components/macro."
+                    },
+                    {
+                        "name": "@mantine/core",
+                        "importNames": [
+                            "Image"
+                        ],
+                        "message": "Please use 'Image' from 'next/image' instead of '@mantine/core'."
+                    }
+                ]
+            }
+        ],
+        "arrow-parens": [
+            "error",
+            "as-needed"
+        ],
+        "quote-props": [
+            "error",
+            "as-needed"
+        ],
+        "jsx-quotes": [
+            "error",
+            "prefer-single"
+        ],
+        "max-len": [
+            "error",
+            {
+                "code": 140
+            }
+        ],
+        "key-spacing": [
+            2,
+            {
+                "singleLine": {
+                    "beforeColon": true,
+                    "afterColon": true
+                },
+                "multiLine": {
+                    "beforeColon": true,
+                    "afterColon": true,
+                    "align": "colon"
+                }
+            }
+        ],
+        "prefer-const": "error",
+        "no-extra-label": "error",
+        "no-label-var": "error",
+        "no-labels": "warn",
+        "default-case-last": "warn",
+        "object-shorthand": [
+            "error",
+            "always"
+        ],
+        "no-debugger": "warn",
+        "nonblock-statement-body-position": [
+            "error",
+            "any"
+        ],
+        "curly": [
+            "error",
+            "multi",
+            "consistent"
+        ],
+        "no-multi-spaces": "off",
+        "comma-dangle": [
+            "error",
+            {
+                "arrays": "always-multiline",
+                "objects": "always-multiline",
+                "imports": "always-multiline",
+                "exports": "always-multiline",
+                "functions": "always-multiline"
+            }
+        ],
+        "no-extra-semi": "error",
+        "no-multiple-empty-lines": [
+            "error",
+            {
+                "max": 2
+            }
+        ],
+        "@typescript-eslint/explicit-member-accessibility": [
+            "error",
+            {
+                "accessibility": "explicit",
+                "overrides": {
+                    "properties": "explicit"
+                },
+                "ignoredMethodNames": [
+                    "render"
+                ]
+            }
+        ],
+        "@typescript-eslint/no-empty-function": "off",
+        "@typescript-eslint/no-unused-vars": [
+            "error", // or "error"
+            {
+                // ignore
+                "argsIgnorePattern": "^_",
+                "varsIgnorePattern": "^_",
+                "caughtErrorsIgnorePattern": "^_"
+            }
+        ],
+        "@typescript-eslint/explicit-module-boundary-types": "off",
+        "@typescript-eslint/no-explicit-any": "off",
+        "@typescript-eslint/switch-exhaustiveness-check": "off",
+        "@typescript-eslint/no-extra-non-null-assertion": "off",
+        // eslint-comments
+        "eslint-comments/no-unlimited-disable": 2,
+        //
+        // deprecation
+        "deprecation/deprecation": "warn",
+        //
+        // plugin: testing-library
+        "testing-library/await-async-queries": "error",
+        "testing-library/no-await-sync-queries": "error",
+        "testing-library/no-debugging-utils": "off",
+        "testing-library/no-dom-import": "off",
+        //
+        // plugin: promise
+        "promise/no-multiple-resolved": "error",
+        "promise/always-return": "error",
+        "promise/no-return-wrap": "error",
+        "promise/param-names": "error",
+        "promise/catch-or-return": "error",
+        "promise/no-native": "off",
+        "promise/no-nesting": "warn",
+        "promise/no-promise-in-callback": "warn",
+        "promise/no-callback-in-promise": "warn",
+        "promise/avoid-new": "warn",
+        "promise/no-new-statics": "error",
+        "promise/no-return-in-finally": "warn",
+        "promise/valid-params": "warn",
+        //
+        // jest
+        "jest/no-disabled-tests": "warn",
+        "jest/no-focused-tests": "error",
+        "jest/no-identical-title": "error",
+        "jest/prefer-to-have-length": "warn",
+        "jest/valid-expect": "error",
+        //
+        // Next
+        "@next/next/no-assign-module-variable": "off",
+        "@next/next/no-img-element": "off",
+        "@typescript-eslint/explicit-function-return-type": "off",
+        "@typescript-eslint/no-empty-interface": "off",
+        //
+        // unused-imports
+        "unused-imports/no-unused-vars": [
+            "warn",
+            {
+                "vars": "all",
+                "varsIgnorePattern": "^_",
+                "args": "after-used",
+                "argsIgnorePattern": "^_"
+            }
+        ],
+        //
+        // React
+        "react/jsx-closing-bracket-location": [
+            "error",
+            {
+                "selfClosing": "after-props",
+                "nonEmpty": "after-props"
+            }
+        ],
+        "react/jsx-indent-props": [
+            2,
+            4
+        ],
+        "react/jsx-first-prop-new-line": [
+            "error",
+            "multiline"
+        ],
+        "react/jsx-boolean-value": [
+            "error",
+            "always"
+        ],
+        "react/jsx-indent": [
+            "error",
+            4,
+            {
+                "indentLogicalExpressions": true
+            }
+        ],
+        "react/jsx-max-props-per-line": [
+            1,
+            {
+                "maximum": 1
+            }
+        ],
+        "react/jsx-curly-brace-presence": [
+            "error",
+            {
+                "props": "never",
+                "children": "always"
+            }
+        ]
+    }
+}

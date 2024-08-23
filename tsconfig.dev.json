@@ -1,0 +1,84 @@
+{
+    "ts-node": {
+        "compilerOptions": {
+            "module": "CommonJS",
+            "strictNullChecks": true,
+            "types": [
+                "node",
+                "jest"
+            ],
+        }
+    },
+    "compilerOptions": {
+        "jsx": "preserve",
+        "strict": true,
+        "esModuleInterop": true,
+        "allowJs": true,
+        "removeComments": true,
+        "noImplicitAny": true,
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "noFallthroughCasesInSwitch": false,
+        "skipLibCheck": true,
+        "declaration": false,
+        "strictNullChecks": true,
+        "strictPropertyInitialization": false,
+        "forceConsistentCasingInFileNames": true,
+        "noEmit": true,
+        "incremental": true,
+        "module": "Preserve",
+        "target": "ES2021",
+        "sourceMap": true,
+        "moduleDetection": "force",
+        "noImplicitOverride": true,
+        "moduleResolution": "node",
+        "isolatedModules": true,
+        "types": [
+            "node",
+            "jest"
+        ],
+        "typeRoots": [
+            "./next-env.d.ts",
+            "./environment.d.ts",
+            "./svg.d.ts",
+            "node_modules/@types"
+        ],
+        "resolveJsonModule": true,
+        "lib": [
+            "ES2021",
+            "dom"
+        ],
+        "baseUrl": ".",
+        "rootDirs": [
+            "./src",
+            "./internal/scripts"
+        ],
+        "paths": {
+            "@app/client": [
+                "src/client/index.tsx"
+            ],
+            "@app/server/*": [
+                "src/server/*"
+            ],
+            "@app/shared/*": [
+                "src/shared/*"
+            ],
+            "@app/api/*": [
+                "src/pages/api/*"
+            ],
+            "@app/*": [
+                "src/*",
+            ]
+        }
+    },
+    // "include": [
+    //     "./**/*.tsx",
+    //     "./**/*.ts",
+    //     "./**/*.mjs"
+    // ],
+    "exclude": [
+        "node_modules",
+        "dangerfile.ts",
+        "tsconfig.*"
+    ],
+}

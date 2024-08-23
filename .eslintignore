@@ -1,0 +1,11 @@
+node_modules
+dist
+coverage
+log
+.next
+
+*.js
+*.cjs
+*.mjs
+*.d.ts
+

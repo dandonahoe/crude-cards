@@ -1,0 +1,38 @@
+# Use the official Node.js 20 image as the base for the build stage
+FROM node:20-alpine AS builder
+
+# Set the working directory inside the container to /app
+WORKDIR /app
+
+COPY . .
+
+RUN npm install -g pnpm
+
+RUN pnpm install --frozen-lockfile
+
+WORKDIR /app/src/api
+
+RUN pnpm install --frozen-lockfile
+
+WORKDIR /app
+
+# Use the official Node.js 20 image as the base for the runtime stage
+FROM node:20-alpine
+
+# Set the working directory inside the container to /app
+WORKDIR /app
+
+# Copy built files from the builder stage to the current stage
+COPY --from=builder /app .
+
+RUN npm install -g pnpm
+
+# Expose port 3000 to the outside world
+EXPOSE 8080
+
+# Set environment variable for the port
+ENV PORT=8080
+
+# todo - run multiple apps here?
+# Command to run the application
+CMD ["pnpm", "run", "start:backend"]

@@ -1,0 +1,65 @@
+{
+    "folders": [
+        {
+            "path": "."
+        },
+        {
+            "path": "../cards"
+        }
+    ],
+    "settings": {
+        "multiCommand.commands": {
+            "multiCommand.closeAndCollapse": [
+                "workbench.action.closeAllEditors",
+                "workbench.files.action.collapseExplorerFolders"
+            ]
+        },
+        "search.exclude": {
+            "./internal/coverage/lcov-report/*/**": true,
+            ".next": true,
+            "dist": true,
+            "node_modules": true,
+            "package-lock.json": true,
+            "src/api/coverage": true,
+            "src/api/dist": true,
+            "src/api/dist/*": true
+        },
+        "importCost.smallPackageDarkColor": "##000",
+        "importCost.smallPackageLightColor": "#326129",
+        "importCost.mediumPackageDarkColor": "#326129",
+        "importCost.mediumPackageLightColor": "##326129",
+        "workbench.tree.renderIndentGuides": "onHover",
+        "files.exclude": {
+            ".next": false,
+            "**/.DS_Store": true,
+            "**/.git": true,
+            "**/.hg": true,
+            "**/.svn": true,
+            "**/.trunk/*out": true,
+            "**/CVS": true,
+            "**/Thumbs.db": true,
+            "dist": true,
+            "get-pip.py": true,
+            "internal/coverage": true,
+            "node_modules": true,
+            "package-lock.json": true
+        },
+        "explorerExclude.backup": {},
+        "github-actions.workflows.pinned.workflows": [
+            ".github/workflows/pipeline-development.yaml",
+            ".github/workflows/pipeline-feature.yaml",
+            ".github/workflows/pipeline-production.yaml",
+            ".github/workflows/pipeline-staging.yaml",
+            ".github/workflows/pipeline-dev-web.yaml",
+            ".github/workflows/pipeline-dev-api.yaml",
+            ".github/workflows/pipeline-dev-ui.yaml"
+        ],
+        "liveServer.settings.multiRootWorkspaceName": "Game",
+        "lintel.ignoredDirectories": [
+            "node_modules",
+            "build",
+            "dist",
+            "out"
+        ],
+    }
+}

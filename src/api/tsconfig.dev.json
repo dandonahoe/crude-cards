@@ -1,0 +1,44 @@
+{
+    "compilerOptions": {
+        "forceConsistentCasingInFileNames": true,
+        "strictPropertyInitialization": false,
+        "allowSyntheticDefaultImports": true,
+        "noFallthroughCasesInSwitch": true,
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "strictBindCallApply": true,
+        "strictNullChecks": true,
+        "removeComments": true,
+        "noImplicitAny": true,
+        "skipLibCheck": true,
+        "declaration": true,
+        "incremental": true,
+        "outDir": "./dist",
+        "sourceMap": true,
+        "baseUrl": "./",
+        "module": "commonjs",
+        "moduleResolution": "node",
+        "allowJs": true,
+        "esModuleInterop": true,
+        "strict": true,
+        "target": "ES2020",
+        "lib": [
+            "es2020"
+        ]
+    },
+    "types": [
+        "node",
+        "jest"
+    ],
+    "include": [
+        "src/**/*.tsx",
+        "src/**/*.ts",
+        "src/**/*.mjs"
+    ],
+    "exclude": [
+        "node_modules",
+        "dist",
+        "src/migrations",
+        "build"
+    ]
+}

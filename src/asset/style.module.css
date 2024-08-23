@@ -1,0 +1,8 @@
+.shareThisStyle {
+    border: 1px solid #eee;
+    color: #999;
+}
+
+.shareThisStyle:hover {
+    background-color: #0f3;
+}

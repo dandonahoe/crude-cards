@@ -1,0 +1,10 @@
+{
+    "exclude": [
+        "**/__test__/**",
+    ],
+    "out": "artifact/docs",
+    "entryPoints": [
+        "src/api/src/main.ts",
+        "src/pages/index.tsx"
+    ]
+}

@@ -1,0 +1,2 @@
+ignores: ["eslint", "babel-*"]
+skip-missing: true

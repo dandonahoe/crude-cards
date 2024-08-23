@@ -1,0 +1,12 @@
+"🔄 Pull Request":
+- '*'
+"📣 Marketing": src/ui/marketing/*
+"🛠️ Internal Tool": internal/*
+"👨‍💻 Backend": src/server/*
+"👀 Frontend": src/client/*
+"🔌 API": src/pages/api/*
+"🧪 Testing": src/test/*
+"💽 Database": prisma/*
+"🚀 Pipeline": .github/*
+
+"🌈 UI/UX": src/ui/*

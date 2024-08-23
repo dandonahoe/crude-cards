@@ -1,0 +1,259 @@
+
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Code coverage report for src/server/Query/UpdateById.tsx</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../../../prettify.css" />
+    <link rel="stylesheet" href="../../../base.css" />
+    <link rel="shortcut icon" type="image/x-icon" href="../../../favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../../../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+    
+<body>
+<div class='wrapper'>
+    <div class='pad1'>
+        <h1><a href="../../../index.html">All files</a> / <a href="index.html">src/server/Query</a> UpdateById.tsx</h1>
+        <div class='clearfix'>
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">34.17% </span>
+                <span class="quiet">Statements</span>
+                <span class='fraction'>27/79</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">100% </span>
+                <span class="quiet">Branches</span>
+                <span class='fraction'>0/0</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">0% </span>
+                <span class="quiet">Functions</span>
+                <span class='fraction'>0/26</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">100% </span>
+                <span class="quiet">Lines</span>
+                <span class='fraction'>27/27</span>
+            </div>
+        
+            
+        </div>
+        <p class="quiet">
+            Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
+        </p>
+        <template id="filterTemplate">
+            <div class="quiet">
+                Filter:
+                <input type="search" id="fileSearch">
+            </div>
+        </template>
+    </div>
+    <div class='status-line low'></div>
+    <pre><table class="coverage">
+<tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
+<a name='L2'></a><a href='#L2'>2</a>
+<a name='L3'></a><a href='#L3'>3</a>
+<a name='L4'></a><a href='#L4'>4</a>
+<a name='L5'></a><a href='#L5'>5</a>
+<a name='L6'></a><a href='#L6'>6</a>
+<a name='L7'></a><a href='#L7'>7</a>
+<a name='L8'></a><a href='#L8'>8</a>
+<a name='L9'></a><a href='#L9'>9</a>
+<a name='L10'></a><a href='#L10'>10</a>
+<a name='L11'></a><a href='#L11'>11</a>
+<a name='L12'></a><a href='#L12'>12</a>
+<a name='L13'></a><a href='#L13'>13</a>
+<a name='L14'></a><a href='#L14'>14</a>
+<a name='L15'></a><a href='#L15'>15</a>
+<a name='L16'></a><a href='#L16'>16</a>
+<a name='L17'></a><a href='#L17'>17</a>
+<a name='L18'></a><a href='#L18'>18</a>
+<a name='L19'></a><a href='#L19'>19</a>
+<a name='L20'></a><a href='#L20'>20</a>
+<a name='L21'></a><a href='#L21'>21</a>
+<a name='L22'></a><a href='#L22'>22</a>
+<a name='L23'></a><a href='#L23'>23</a>
+<a name='L24'></a><a href='#L24'>24</a>
+<a name='L25'></a><a href='#L25'>25</a>
+<a name='L26'></a><a href='#L26'>26</a>
+<a name='L27'></a><a href='#L27'>27</a>
+<a name='L28'></a><a href='#L28'>28</a>
+<a name='L29'></a><a href='#L29'>29</a>
+<a name='L30'></a><a href='#L30'>30</a>
+<a name='L31'></a><a href='#L31'>31</a>
+<a name='L32'></a><a href='#L32'>32</a>
+<a name='L33'></a><a href='#L33'>33</a>
+<a name='L34'></a><a href='#L34'>34</a>
+<a name='L35'></a><a href='#L35'>35</a>
+<a name='L36'></a><a href='#L36'>36</a>
+<a name='L37'></a><a href='#L37'>37</a>
+<a name='L38'></a><a href='#L38'>38</a>
+<a name='L39'></a><a href='#L39'>39</a>
+<a name='L40'></a><a href='#L40'>40</a>
+<a name='L41'></a><a href='#L41'>41</a>
+<a name='L42'></a><a href='#L42'>42</a>
+<a name='L43'></a><a href='#L43'>43</a>
+<a name='L44'></a><a href='#L44'>44</a>
+<a name='L45'></a><a href='#L45'>45</a>
+<a name='L46'></a><a href='#L46'>46</a>
+<a name='L47'></a><a href='#L47'>47</a>
+<a name='L48'></a><a href='#L48'>48</a>
+<a name='L49'></a><a href='#L49'>49</a>
+<a name='L50'></a><a href='#L50'>50</a>
+<a name='L51'></a><a href='#L51'>51</a>
+<a name='L52'></a><a href='#L52'>52</a>
+<a name='L53'></a><a href='#L53'>53</a>
+<a name='L54'></a><a href='#L54'>54</a>
+<a name='L55'></a><a href='#L55'>55</a>
+<a name='L56'></a><a href='#L56'>56</a>
+<a name='L57'></a><a href='#L57'>57</a>
+<a name='L58'></a><a href='#L58'>58</a>
+<a name='L59'></a><a href='#L59'>59</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { CoreId } from '@app/type/framework/core/CoreId';
+import { P } from '@app/type/framework/data/P';
+import  {
+    text_completion as TextCompletionPrisma, entity_extract  as EntityExtractPrisma,
+    relationship    as RelationshipPrisma,   transcript      as TranscriptPrisma,
+    objective       as ObjectivePrisma,      milestone       as MilestonePrisma,
+    cache_node      as CacheNodePrisma,      document        as DocumentPrisma,
+    activity        as ActivityPrisma,       analysis        as AnalysisPrisma,
+    location        as LocationPrisma,       account         as AccountPrisma,
+    contact         as ContactPrisma,        payment         as PaymentPrisma,
+    message         as MessagePrisma,        invoice         as InvoicePrisma,
+    generic         as GenericPrisma,        pathway         as PathwayPrisma,
+    content         as ContentPrisma,        report          as ReportPrisma,
+    asset           as AssetPrisma,          event           as EventPrisma,
+    chat            as ChatPrisma,           task            as TaskPrisma,
+    user            as UserPrisma,           job             as JobPrisma,
+} from '@prisma/client';
+import {
+    TextCompletionModelDB, EntityExtractModelDB, TranscriptModelDB, CacheNodeModelDB,
+    DocumentModelDB,       AnalysisModelDB,       LocationModelDB,  PathwayModelDB,
+    ActivityModelDB,       MessageModelDB,       ContactModelDB,    AccountModelDB,
+    InvoiceModelDB,        PaymentModelDB,       GenericModelDB,    ReportModelDB,
+    EventModelDB,          AssetModelDB,         ChatModelDB,       TaskModelDB,
+    UserModelDB,           JobModelDB,           ObjectiveModelDB,  RelationshipModelDB,
+    ContentModelDB,        DB,                   MilestoneModelDB,
+} from '@app/server/Service/DatabaseService';
+&nbsp;
+/* eslint-disable max-len */
+&nbsp;
+export const <span class="cstat-no" title="statement not covered" >updateTextCompletionById </span>= <span class="fstat-no" title="function not covered" >async (i</span>d : CoreId, modelDb : TextCompletionModelDB) : P&lt;TextCompletionPrisma&gt; =&gt; <span class="cstat-no" title="statement not covered" >DB.text_completion.update({ where : { id : Number(id) }, data : modelDb as TextCompletionPrisma});</span>
+export const <span class="cstat-no" title="statement not covered" >updateEntityExtractById </span> = <span class="fstat-no" title="function not covered" >async (i</span>d : CoreId, modelDb : EntityExtractModelDB ) : P&lt;EntityExtractPrisma &gt; =&gt; <span class="cstat-no" title="statement not covered" >DB.entity_extract.update( { where : { id : Number(id) }, data : modelDb as EntityExtractPrisma });</span>
+export const <span class="cstat-no" title="statement not covered" >updateRelationshipById </span>  = <span class="fstat-no" title="function not covered" >async (i</span>d : CoreId, modelDb : RelationshipModelDB  ) : P&lt;RelationshipPrisma  &gt; =&gt; <span class="cstat-no" title="statement not covered" >DB.relationship.update(   { where : { id : Number(id) }, data : modelDb as RelationshipPrisma  });</span>
+export const <span class="cstat-no" title="statement not covered" >updateTranscriptById </span>    = <span class="fstat-no" title="function not covered" >async (i</span>d : CoreId, modelDb : TranscriptModelDB    ) : P&lt;TranscriptPrisma    &gt; =&gt; <span class="cstat-no" title="statement not covered" >DB.transcript.update(     { where : { id : Number(id) }, data : modelDb as TranscriptPrisma    });</span>
+export const <span class="cstat-no" title="statement not covered" >updateMilestoneById </span>     = <span class="fstat-no" title="function not covered" >async (i</span>d : CoreId, modelDb : MilestoneModelDB     ) : P&lt;MilestonePrisma     &gt; =&gt; <span class="cstat-no" title="statement not covered" >DB.milestone.update(      { where : { id : Number(id) }, data : modelDb as MilestonePrisma     });</span>
+export const <span class="cstat-no" title="statement not covered" >updateCacheNodeById </span>     = <span class="fstat-no" title="function not covered" >async (i</span>d : CoreId, modelDb : CacheNodeModelDB     ) : P&lt;CacheNodePrisma     &gt; =&gt; <span class="cstat-no" title="statement not covered" >DB.cache_node.update(     { where : { id : Number(id) }, data : modelDb as CacheNodePrisma     });</span>
+export const <span class="cstat-no" title="statement not covered" >updateObjectiveById </span>     = <span class="fstat-no" title="function not covered" >async (i</span>d : CoreId, modelDb : ObjectiveModelDB     ) : P&lt;ObjectivePrisma     &gt; =&gt; <span class="cstat-no" title="statement not covered" >DB.objective.update(      { where : { id : Number(id) }, data : modelDb as ObjectivePrisma     });</span>
+export const <span class="cstat-no" title="statement not covered" >updateDocumentById </span>      = <span class="fstat-no" title="function not covered" >async (i</span>d : CoreId, modelDb : DocumentModelDB      ) : P&lt;DocumentPrisma      &gt; =&gt; <span class="cstat-no" title="statement not covered" >DB.document.update(       { where : { id : Number(id) }, data : modelDb as DocumentPrisma      });</span>
+export const <span class="cstat-no" title="statement not covered" >updateAnalysisById </span>      = <span class="fstat-no" title="function not covered" >async (i</span>d : CoreId, modelDb : AnalysisModelDB      ) : P&lt;AnalysisPrisma      &gt; =&gt; <span class="cstat-no" title="statement not covered" >DB.analysis.update(       { where : { id : Number(id) }, data : modelDb as AnalysisPrisma      });</span>
+export const <span class="cstat-no" title="statement not covered" >updateLocationById </span>      = <span class="fstat-no" title="function not covered" >async (i</span>d : CoreId, modelDb : LocationModelDB      ) : P&lt;LocationPrisma      &gt; =&gt; <span class="cstat-no" title="statement not covered" >DB.location.update(       { where : { id : Number(id) }, data : modelDb as LocationPrisma      });</span>
+export const <span class="cstat-no" title="statement not covered" >updateActivityById </span>      = <span class="fstat-no" title="function not covered" >async (i</span>d : CoreId, modelDb : ActivityModelDB      ) : P&lt;ActivityPrisma      &gt; =&gt; <span class="cstat-no" title="statement not covered" >DB.activity.update(       { where : { id : Number(id) }, data : modelDb as ActivityPrisma      });</span>
+export const <span class="cstat-no" title="statement not covered" >updatePathwayById </span>       = <span class="fstat-no" title="function not covered" >async (i</span>d : CoreId, modelDb : PathwayModelDB       ) : P&lt;PathwayPrisma       &gt; =&gt; <span class="cstat-no" title="statement not covered" >DB.pathway.update(        { where : { id : Number(id) }, data : modelDb as PathwayPrisma       });</span>
+export const <span class="cstat-no" title="statement not covered" >updateContentById </span>       = <span class="fstat-no" title="function not covered" >async (i</span>d : CoreId, modelDb : ContentModelDB       ) : P&lt;ContentPrisma       &gt; =&gt; <span class="cstat-no" title="statement not covered" >DB.content.update(        { where : { id : Number(id) }, data : modelDb as ContentPrisma       });</span>
+export const <span class="cstat-no" title="statement not covered" >updateMessageById </span>       = <span class="fstat-no" title="function not covered" >async (i</span>d : CoreId, modelDb : MessageModelDB       ) : P&lt;MessagePrisma       &gt; =&gt; <span class="cstat-no" title="statement not covered" >DB.message.update(        { where : { id : Number(id) }, data : modelDb as MessagePrisma       });</span>
+export const <span class="cstat-no" title="statement not covered" >updateContactById </span>       = <span class="fstat-no" title="function not covered" >async (i</span>d : CoreId, modelDb : ContactModelDB       ) : P&lt;ContactPrisma       &gt; =&gt; <span class="cstat-no" title="statement not covered" >DB.contact.update(        { where : { id : Number(id) }, data : modelDb as ContactPrisma       });</span>
+export const <span class="cstat-no" title="statement not covered" >updateAccountById </span>       = <span class="fstat-no" title="function not covered" >async (i</span>d : CoreId, modelDb : AccountModelDB       ) : P&lt;AccountPrisma       &gt; =&gt; <span class="cstat-no" title="statement not covered" >DB.account.update(        { where : { id : Number(id) }, data : modelDb as AccountPrisma       });</span>
+export const <span class="cstat-no" title="statement not covered" >updateInvoiceById </span>       = <span class="fstat-no" title="function not covered" >async (i</span>d : CoreId, modelDb : InvoiceModelDB       ) : P&lt;InvoicePrisma       &gt; =&gt; <span class="cstat-no" title="statement not covered" >DB.invoice.update(        { where : { id : Number(id) }, data : modelDb as InvoicePrisma       });</span>
+export const <span class="cstat-no" title="statement not covered" >updatePaymentById </span>       = <span class="fstat-no" title="function not covered" >async (i</span>d : CoreId, modelDb : PaymentModelDB       ) : P&lt;PaymentPrisma       &gt; =&gt; <span class="cstat-no" title="statement not covered" >DB.payment.update(        { where : { id : Number(id) }, data : modelDb as PaymentPrisma       });</span>
+export const <span class="cstat-no" title="statement not covered" >updateGenericById </span>       = <span class="fstat-no" title="function not covered" >async (i</span>d : CoreId, modelDb : GenericModelDB       ) : P&lt;GenericPrisma       &gt; =&gt; <span class="cstat-no" title="statement not covered" >DB.generic.update(        { where : { id : Number(id) }, data : modelDb as GenericPrisma       });</span>
+export const <span class="cstat-no" title="statement not covered" >updateReportById </span>        = <span class="fstat-no" title="function not covered" >async (i</span>d : CoreId, modelDb : ReportModelDB        ) : P&lt;ReportPrisma        &gt; =&gt; <span class="cstat-no" title="statement not covered" >DB.report.update(         { where : { id : Number(id) }, data : modelDb as ReportPrisma        });</span>
+export const <span class="cstat-no" title="statement not covered" >updateEventById </span>         = <span class="fstat-no" title="function not covered" >async (i</span>d : CoreId, modelDb : EventModelDB         ) : P&lt;EventPrisma         &gt; =&gt; <span class="cstat-no" title="statement not covered" >DB.event.update(          { where : { id : Number(id) }, data : modelDb as EventPrisma         });</span>
+export const <span class="cstat-no" title="statement not covered" >updateAssetById </span>         = <span class="fstat-no" title="function not covered" >async (i</span>d : CoreId, modelDb : AssetModelDB         ) : P&lt;AssetPrisma         &gt; =&gt; <span class="cstat-no" title="statement not covered" >DB.asset.update(          { where : { id : Number(id) }, data : modelDb as AssetPrisma         });</span>
+export const <span class="cstat-no" title="statement not covered" >updateChatById </span>          = <span class="fstat-no" title="function not covered" >async (i</span>d : CoreId, modelDb : ChatModelDB          ) : P&lt;ChatPrisma          &gt; =&gt; <span class="cstat-no" title="statement not covered" >DB.chat.update(           { where : { id : Number(id) }, data : modelDb as ChatPrisma          });</span>
+export const <span class="cstat-no" title="statement not covered" >updateUserById </span>          = <span class="fstat-no" title="function not covered" >async (i</span>d : CoreId, modelDb : UserModelDB          ) : P&lt;UserPrisma          &gt; =&gt; <span class="cstat-no" title="statement not covered" >DB.user.update(           { where : { id : Number(id) }, data : modelDb as UserPrisma          });</span>
+export const <span class="cstat-no" title="statement not covered" >updateTaskById </span>          = <span class="fstat-no" title="function not covered" >async (i</span>d : CoreId, modelDb : TaskModelDB          ) : P&lt;TaskPrisma          &gt; =&gt; <span class="cstat-no" title="statement not covered" >DB.task.update(           { where : { id : Number(id) }, data : modelDb as TaskPrisma          });</span>
+export const <span class="cstat-no" title="statement not covered" >updateJobById </span>           = <span class="fstat-no" title="function not covered" >async (i</span>d : CoreId, modelDb : JobModelDB           ) : P&lt;JobPrisma           &gt; =&gt; <span class="cstat-no" title="statement not covered" >DB.job.update(            { where : { id : Number(id) }, data : modelDb as JobPrisma           });</span>
+&nbsp;
+&nbsp;
+/* eslint-enable max-len */
+&nbsp;</pre></td></tr></table></pre>
+
+                <div class='push'></div><!-- for sticky footer -->
+            </div><!-- /wrapper -->
+            <div class='footer quiet pad2 space-top1 center small'>
+                Code coverage generated by
+                <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
+                at 2024-07-06T06:19:13.517Z
+            </div>
+        <script src="../../../prettify.js"></script>
+        <script>
+            window.onload = function () {
+                prettyPrint();
+            };
+        </script>
+        <script src="../../../sorter.js"></script>
+        <script src="../../../block-navigation.js"></script>
+    </body>
+</html>
+    

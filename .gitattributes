@@ -1,0 +1,229 @@
+# From https://github.com/Danimoth/gitattributes/blob/master/Web.gitattributes
+
+## GITATTRIBUTES FOR WEB PROJECTS
+#
+# These settings are for any web project.
+#
+# Details per file setting:
+#   text    These files should be normalized (i.e. convert CRLF to LF).
+#   binary  These files are binary and should be left untouched.
+#
+# Note that binary is a macro for -text -diff.
+
+# Other Considerations
+# Unused Features
+# There are several other features in .gitattributes that you might not be using. For example:
+# - The 'export-ignore' attribute can be used to exclude files from archive exports (e.g., git archive).
+# - The 'diff' attribute can be customized for specific file types to improve diff readability.
+
+# Best Practices
+# - Consistently define text and binary files to avoid cross-platform issues with line endings.
+# - Use the 'linguist-vendored' attribute to exclude files from language statistics in GitHub, improving the accuracy of your project's language breakdown.
+
+# Common Patterns
+# - It is common to see .gitattributes configured to handle specific IDE or text editor configurations.
+# - Many projects include settings for common documentation files (e.g., *.md, README).
+
+# Example for Additional Configuration:
+# If you have more directories or file types that need specific handling, add them similarly:
+# /docs/* text
+# /assets/* binary
+
+# For more advanced usage and configurations, refer to the official Git documentation:
+# https://git-scm.com/docs/gitattributes
+
+
+# Auto detect line endings
+# Handle line endings automatically for files detected as text and leave all files detected as binary untouched.
+# This will handle all files NOT defined below.
+* text=auto
+
+# Exclude everything except the src directory
+/* linguist-vendored
+
+/src/* linguist-vendored
+# Include all files in the src directory
+src/** linguist-vendored=false
+
+# Source code files - ensuring correct line endings and diff settings
+/src/**/*.bash            text eol=lf
+/src/**/*.bat             text eol=crlf
+/src/**/*.cmd             text eol=crlf
+/src/**/*.coffee          text
+/src/**/*.css             text
+/src/**/*.htm             text diff=html
+/src/**/*.html            text diff=html
+/src/**/*.inc             text
+/src/**/*.ini             text
+/src/**/*.js              text
+/src/**/*.json            text
+/src/**/*.jsx             text
+/src/**/*.less            text
+/src/**/*.ls              text
+/src/**/*.map             text -diff
+/src/**/*.od              text
+/src/**/*.onlydata        text
+/src/**/*.php             text diff=php
+/src/**/*.pl              text
+/src/**/*.ps1             text eol=crlf
+/src/**/*.py              text diff=python
+/src/**/*.rb              text diff=ruby
+/src/**/*.sass            text
+/src/**/*.scm             text
+/src/**/*.scss            text diff=css
+/src/**/*.sh              text eol=lf
+/src/**/*.sql             text
+/src/**/*.styl            text
+/src/**/*.tag             text
+/src/**/*.ts              text
+/src/**/*.tsx             text
+/src/**/*.xml             text
+/src/**/*.xhtml           text diff=html
+
+# Docker files
+/src/Dockerfile           text
+
+# Documentation files
+/src/**/*.ipynb           text
+/src/**/*.markdown        text
+/src/**/*.md              text
+/src/**/*.mdwn            text
+/src/**/*.mdown           text
+/src/**/*.mkd             text
+/src/**/*.mkdn            text
+/src/**/*.mdtxt           text
+/src/**/*.txt             text
+/src/AUTHORS              text
+/src/CHANGELOG            text
+/src/CHANGES              text
+/src/CONTRIBUTING         text
+/src/COPYING              text
+/src/copyright            text
+/src/*COPYRIGHT*          text
+/src/INSTALL              text
+/src/license              text
+/src/LICENSE              text
+/src/NEWS                 text
+/src/readme               text
+/src/*README*             text
+/src/TODO                 text
+
+# Template files
+/src/**/*.dot             text
+/src/**/*.ejs             text
+/src/**/*.haml            text
+/src/**/*.handlebars      text
+/src/**/*.hbs             text
+/src/**/*.hbt             text
+/src/**/*.jade            text
+/src/**/*.latte           text
+/src/**/*.mustache        text
+/src/**/*.njk             text
+/src/**/*.phtml           text
+/src/**/*.tmpl            text
+/src/**/*.tpl             text
+/src/**/*.twig            text
+/src/**/*.vue             text
+
+# Configuration files
+/src/**/*.cnf             text
+/src/**/*.conf            text
+/src/**/*.config          text
+/src/.editorconfig        text
+/src/.env                 text
+/src/.gitattributes       text
+/src/.gitconfig           text
+/src/.htaccess            text
+/src/**/*.lock            text -diff
+/src/package-lock.json    text -diff
+/src/**/*.toml            text
+/src/**/*.yaml            text
+/src/**/*.yml             text
+/src/browserslist         text
+/src/Makefile             text
+/src/makefile             text
+
+# Heroku files
+/src/Procfile             text
+
+# Graphic files
+/src/**/*.ai              binary
+/src/**/*.bmp             binary
+/src/**/*.eps             binary
+/src/**/*.gif             binary
+/src/**/*.gifv            binary
+/src/**/*.ico             binary
+/src/**/*.jng             binary
+/src/**/*.jp2             binary
+/src/**/*.jpg             binary
+/src/**/*.jpeg            binary
+/src/**/*.jpx             binary
+/src/**/*.jxr             binary
+/src/**/*.pdf             binary
+/src/**/*.png             binary
+/src/**/*.psb             binary
+/src/**/*.psd             binary
+# SVG treated as an asset (binary) by default.
+/src/**/*.svg             text
+# If you want to treat it as binary,
+# use the following line instead.
+# /src/**/*.svg           binary
+/src/**/*.svgz            binary
+/src/**/*.tif             binary
+/src/**/*.tiff            binary
+/src/**/*.wbmp            binary
+/src/**/*.webp            binary
+
+# Audio files
+/src/**/*.kar             binary
+/src/**/*.m4a             binary
+/src/**/*.mid             binary
+/src/**/*.midi            binary
+/src/**/*.mp3             binary
+/src/**/*.ogg             binary
+/src/**/*.ra              binary
+
+# Video files
+/src/**/*.3gpp            binary
+/src/**/*.3gp             binary
+/src/**/*.as              binary
+/src/**/*.asf             binary
+/src/**/*.asx             binary
+/src/**/*.fla             binary
+/src/**/*.flv             binary
+/src/**/*.m4v             binary
+/src/**/*.mng             binary
+/src/**/*.mov             binary
+/src/**/*.mp4             binary
+/src/**/*.mpeg            binary
+/src/**/*.mpg             binary
+/src/**/*.ogv             binary
+/src/**/*.swc             binary
+/src/**/*.swf             binary
+/src/**/*.webm            binary
+
+# Archive files
+/src/**/*.7z              binary
+/src/**/*.gz              binary
+/src/**/*.jar             binary
+/src/**/*.rar             binary
+/src/**/*.tar             binary
+/src/**/*.zip             binary
+
+# Font files
+/src/**/*.ttf             binary
+/src/**/*.eot             binary
+/src/**/*.otf             binary
+/src/**/*.woff            binary
+/src/**/*.woff2           binary
+
+# Executable files
+/src/**/*.exe             binary
+/src/**/*.pyc             binary
+
+# RC files (like .babelrc or .eslintrc)
+/src/**/*.*rc             text
+
+# Ignore files (like .npmignore or .gitignore)
+/src/**/*.*ignore         text
+
