@@ -26,7 +26,7 @@ jobs:
             - name: Install pnpm
               run: npm install -g pnpm
 
-            # Set up   Node.js 20
+            # Set up Node.js 20
             - name: Setup Node.js v20
               uses: actions/setup-node@v3
               with:
@@ -55,7 +55,6 @@ jobs:
                   echo OCO_OPENAI_API_KEY                                = "${{ secrets.OCO_OPENAI_API_KEY                             }}" >> .env
                   echo OPENAI_API_KEY                                    = "${{ secrets.OPENAI_API_KEY                                 }}" >> .env
                   echo GH_TOKEN                                          = "${{ secrets.GH_TOKEN                                       }}" >> .env
-
 
             - run: node -v
             - run: pwd
