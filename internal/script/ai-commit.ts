@@ -112,7 +112,7 @@ async function main() {
     // Generate the final commit message based on the combined summary
     const finalCommitMessage = await createCompletion(
         `Summarize the following file summaries into a commit
-message, using plain text and bullet points, no other markdown.
+message, using plain text and bullet points, no other markdown and do not include 'Title:' or other field names.
 The final line should note if there is anything unusual or noteworthy, such as breaking code.
 Include a title, bullet points, and statistics in the commit message.
 
