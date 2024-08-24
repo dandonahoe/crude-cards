@@ -112,7 +112,9 @@ async function main() {
     // Generate the final commit message based on the combined summary
     const finalCommitMessage = await createCompletion(
         `Summarize the following file summaries into a commit
-message. The final line should include an interesting face about the commit. Include a title, bullet points, and statistics
+message, using plain text and bullet points, no other markdown.
+The final line should include an interesting face about
+the commit. Include a title, bullet points, and statistics
 
 ${combinedPrompt}`,
     );
