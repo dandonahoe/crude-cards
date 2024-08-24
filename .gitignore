@@ -7,6 +7,8 @@
 
 artifact
 
+internal/log/**/*
+
 src/api/internal/*.sql
 src/api/internal/*.sql
 src/api/logging/**/*
