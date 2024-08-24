@@ -113,8 +113,8 @@ async function main() {
     const finalCommitMessage = await createCompletion(
         `Summarize the following file summaries into a commit
 message, using plain text and bullet points, no other markdown.
-The final line should include an interesting face about
-the commit. Include a title, bullet points, and statistics
+The final line should note if there is anything unusual or noteworthy, such as breaking code.
+Include a title, bullet points, and statistics in the commit message.
 
 ${combinedPrompt}`,
     );
