@@ -45,6 +45,9 @@
 # Include all files in the src directory
 src/** linguist-vendored=false
 
+*.html linguist-detectable=false
+
+
 # Source code files - ensuring correct line endings and diff settings
 /src/**/*.bash            text eol=lf
 /src/**/*.bat             text eol=crlf
