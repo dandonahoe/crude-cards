@@ -1,2 +1,2 @@
 
-export const Namespace = 'CW';
+export const Namespace = 'Game';
