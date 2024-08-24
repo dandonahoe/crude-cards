@@ -9,12 +9,20 @@ const openai = new OpenAI({
 
 // Function to execute a shell command and return the output as a string
 function execCommand(command: string): string {
-    return execSync(command, { encoding : 'utf-8' });
+    console.log(`Executing command: ${command}`);
+    const output = execSync(command, { encoding : 'utf-8' });
+    console.log(`Command output:\n${output}`);
+
+    return output;
 }
 
 // Function to get the diff of staged changes
 function getStagedDiff(): string {
-    return execCommand('git diff --cached');
+    console.log('Getting staged diff...');
+    const diff = execCommand('git diff --cached');
+    console.log(`Staged diff:\n${diff}`);
+
+    return diff;
 }
 
 /**
@@ -23,7 +31,10 @@ function getStagedDiff(): string {
  * @param prompt - The prompt to send to the AI for completion.
  * @returns A promise resolving to the generated commit message.
  */
-const createCompletion = async (prompt: string): Promise<string> => {
+const
+createCompletion = async (prompt: string): Promise<string> =>
+     {
+    console.log(`Creating completion for prompt:\n${prompt}`);
 
     const params: OpenAI.Chat.ChatCompletionCreateParams = {
         model    : 'gpt-4o',
@@ -36,22 +47,36 @@ const createCompletion = async (prompt: string): Promise<string> => {
     };
 
     const chatCompletion = await openai.chat.completions.create(params);
+    const result = chatCompletion.choices[0].message.content!.trim();
 
-    return chatCompletion.choices[0].message.content!.trim();
+    console.log(`Received completion:\n${result}`);
+
+    return result;
 };
 
 // Function to parse the diff into chunks and handle large files
 function parseDiffIntoChunks(diff: string): string[] {
+    console.log('Parsing diff into chunks...');
     const parsedDiff = parseDiff(diff);
 
-    return parsedDiff.map(file => {
+    const chunks = parsedDiff.map(file => {
         // Check if the file is large based on some heuristic, e.g., length of the diff
-        if (file.to && file.to.includes('package-lock.json'))
+        if (file.to && file.to.includes('package-lock.json')) {
+            console.log('Detected package-lock.json, summarizing without diff details.');
+
             return `The package-lock.json file was updated with lots of changes.`;
+        }
 
         // Include the file name in the summary
-        return `File: ${file.to}\nChanges:\n\n${JSON.stringify(file.chunks)}`;
+        const chunkSummary = `File: ${file.to}\nChanges:\n\n${JSON.stringify(file.chunks)}`;
+        console.log(`Generated chunk summary for ${file.to}:\n${chunkSummary}`);
+
+        return chunkSummary;
     });
+
+    console.log(`Total chunks generated: ${chunks.length}`);
+
+    return chunks;
 }
 
 // Main function to run the script
@@ -67,28 +92,44 @@ async function main() {
     // Parse the diff into manageable chunks
     const fileSummaries = parseDiffIntoChunks(diff);
 
-    // Combine all file summaries into one prompt
-    const combinedPrompt = `Generate a cohesive commit message for the following file changes.
-    Begin with the commit message (no leading ticks or markdown)
-    and do not include any trailing comments. Purely the message.
-    Do not include special characters, just alpha numeric. :\n\n${fileSummaries.join('\n\n')}`;
+    console.log('Generating individual file summaries via OpenAI...');
 
-    // Generate the final commit message
-    let finalCommitMessage = await createCompletion(combinedPrompt);
+    // Generate summaries for each file in parallel using Promise.all
+    const summaryPromises = fileSummaries.map(summary =>
+        createCompletion(`Summarize the file diff in a commit. Provide a few statistics at the end ${summary}`),
+    );
+    const fileSummariesResponses = await Promise.all(summaryPromises);
 
-    finalCommitMessage = finalCommitMessage
-        .replaceAll('`', '')
-        .trim();
+    console.log('Received all file summaries from OpenAI:');
+    fileSummariesResponses.forEach((response, index) => {
+        console.log(`Summary ${index + 1}:\n${response}`);
+    });
+
+    // Combine the individual file summaries into a single prompt for the final completion
+    const combinedPrompt = fileSummariesResponses.join('\n\n');
+    console.log(`Combined prompt for final commit message:\n${combinedPrompt}`);
+
+    // Generate the final commit message based on the combined summary
+    const finalCommitMessage = await createCompletion(
+        `Summarize the following file summaries into a commit
+message. The final line should include an interesting face about the commit. Include a title, bullet points, and statistics
+
+${combinedPrompt}`,
+    );
+
+    const sanitizedCommitMessage = finalCommitMessage.replaceAll('`', '').trim();
+    console.log(`\n\n\n-------------------------------\nFinal commit message:\n${sanitizedCommitMessage}`);
 
     // Commit the staged changes with the generated commit message
     execCommand(`git commit -F - <<EOF
-${finalCommitMessage}
+${sanitizedCommitMessage}
 EOF`);
 
-    console.log('Changes committed successfully with the generated commit message:\n\n---------------------------');
-    console.log(finalCommitMessage);
-    console.log('---------------------------\n\n');
+    console.log('\n\n-------------------------------\nChanges committed successfully with the generated commit message.');
 }
 
 // Run the main function
-main().catch(error => console.error('Error:', error));
+main().catch(error => {
+    console.error('Error:', error);
+    console.error(error.stack);
+});

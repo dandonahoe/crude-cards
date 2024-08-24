@@ -1,38 +1,68 @@
-/**
- * Storybook stories for GameJudgeConfirm component
- *
- * Description:
- * This file contains Storybook stories for the GameJudgeConfirm component,
- * showcasing different scenarios for the judge confirmation process.
- *
- * Usage:
- * Run Storybook and navigate to "Game/GameJudgeConfirm" to view these stories in the Storybook UI.
- */
-
+import { CardColor } from '../../../api/src/constant/card-color.enum';
+import { Box, CloseButton, Flex } from '@mantine/core';
 import { Meta, StoryObj } from '@storybook/react';
+import { GameBanner } from '../GameBanner/index';
+import { GameButton } from '../GameButton/index';
+import { GameCard } from '../GameCard/index';
 import { GameJudgeConfirm } from '.';
 
-// Default export containing Storybook metadata
+// Set up default exports for Storybook
 const meta: Meta<typeof GameJudgeConfirm> = {
-    title     : 'Game/GameJudgeConfirm',
-    component : GameJudgeConfirm,
+  title     : 'Components/Game/GameJudgeConfirm',
+  component : GameJudgeConfirm,
 };
 
 export default meta;
 
 type Story = StoryObj<typeof GameJudgeConfirm>;
 
-// Story: Default Game Judge Confirm screen
-export const Default: Story = {
-    render : () => <GameJudgeConfirm />,
-};
+// Default story showing the judge confirmation component
+export const Default: Story = {};
 
-// Story: Game Judge Confirm with different card texts
+// Story with customized card content
 export const CustomCards: Story = {
-    render : () => <GameJudgeConfirm />,
+  render : () => (
+      <div style={{ padding : '20px' }}>
+          <GameJudgeConfirm />
+      </div>
+  ),
 };
 
-// Story: Game Judge Confirm with a long subtitle
-export const LongSubtitle: Story = {
-    render : () => <GameJudgeConfirm />,
+// Story simulating a scenario with additional styles
+export const StyledJudgeConfirm: Story = {
+  render : () => (
+      <div style={{ backgroundColor : '#f0f0f0', padding : '20px', borderRadius : '8px' }}>
+          <GameJudgeConfirm />
+      </div>
+  ),
+};
+
+// Story with a scenario where only one card is visible
+export const SingleCardScenario: Story = {
+  render : () => (
+      <div style={{ padding : '20px' }}>
+          <Box>
+              <CloseButton />
+              <GameBanner
+                  color='#000'
+                  subtitle='Confirm Your Winner'
+                  text='Choosing' />
+              <GameCard
+                  card={{
+                    id    : 'asdf',
+                    color : CardColor.White,
+                    text  : 'A lone card in this round',
+          }}/>
+              <Flex
+                  mt='xl'
+                  mb='xl'
+                  align='center'
+                  justify='center'>
+                  <GameButton
+                      onClick={() => {}}
+                      text='Pick' />
+              </Flex>
+          </Box>
+      </div>
+  ),
 };
