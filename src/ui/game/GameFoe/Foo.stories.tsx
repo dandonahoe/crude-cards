@@ -1,4 +1,3 @@
-
 /**
  * Storybook stories for GameFoe component
  *
