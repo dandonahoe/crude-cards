@@ -63,7 +63,6 @@ describe('Environment Variables', () => {
         'AI_AWS_BUCKET_REGION',
         'STRIPE_PRICE_ID_YEAR',
         'CLOUDMAILIN_API_KEY',
-        'AI_COMMIT_ADD_EMOJI',
         'NEXT_PUSHER_SECRET',
         'NEXT_PUSHER_APP_ID',
         'CLIO_CLIENT_SECRET',
