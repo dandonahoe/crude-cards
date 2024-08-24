@@ -1,3 +1,4 @@
+
 /**
  * Storybook stories for GameFoe component
  *
@@ -8,9 +9,9 @@
  * Run Storybook and navigate to "Game/GameFoe" to view these stories in the Storybook UI.
  */
 
+import { PlayerDTO } from '../../../api/src/game/dtos/player.dto';
 import { Meta, StoryObj } from '@storybook/react';
 import { GameFoe } from '.';
-import { PlayerDTO } from '../../../api/src/game/dtos/player.dto';
 
 // Default export containing Storybook metadata
 const meta: Meta<typeof GameFoe> = {
