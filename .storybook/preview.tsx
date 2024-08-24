@@ -8,12 +8,16 @@ import React from "react";
 const preview: Preview = {
     decorators: [
         (Story, context) => (
-            <div style={{ margin: '3em',  padding : '3em', backgroundColor: '#f00' }} >
+            <div style={{
+
+                padding : '10em',
+                backgroundColor: '#000',
+
+            }} >
 
                 <AppProvider>
                     <MantineProvider theme={AppTheme} >
                         <Notifications />
-                        {'Uhhhhh'}
                         <Story {...context} />
                     </MantineProvider>
                 </AppProvider>

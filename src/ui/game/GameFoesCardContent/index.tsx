@@ -3,13 +3,13 @@ import { GameCardContainer } from '../GameCardContainer';
 import { GameDeckLayout } from '../GameDeckLayout';
 import { GameContext } from '../GameContext';
 import { Stack, Text } from '@mantine/core';
+import { GameFoe } from '../GameFoe';
 import { RFC } from '@app/ui/type';
 import { useContext } from 'react';
 import { Props } from './type';
-import { Foe } from '../Foe';
 
 
-export const FoesCardContent : RFC<Props> = ({
+export const GameFoesCardContent : RFC<Props> = ({
     foes,
 }) => {
 
@@ -70,7 +70,7 @@ export const FoesCardContent : RFC<Props> = ({
 
 
             {foes.map(player =>
-                <Foe
+                <GameFoe
                     player={player ?? 'Invalid Player'}
                     key={player.id} />)}
         </Stack>

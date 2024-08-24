@@ -3,7 +3,7 @@ import { RFC } from '@app/ui/type';
 import { Props } from './type';
 
 
-export const Foe : RFC<Props> = ({
+export const GameFoe : RFC<Props> = ({
     player,
 }) =>
     <Text
