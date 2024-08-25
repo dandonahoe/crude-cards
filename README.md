@@ -69,16 +69,45 @@ Follow along with the full development process through the tutorials below:
 
 ## 🎮 **Gameplay Flow - Mermaid Diagram**
 
+## As Easy As 1,2,3,4,5,6,7,8,9,10
+
 ```mermaid
+
 flowchart TD
-    A[Players Join Game] --> B[Dealer Plays Black Card]
-    B --> C[Players Submit White Cards]
-    C --> D[Dealer Reviews Submissions]
-    D --> E{Dealer Picks Winner}
-    E --> |Yes| F[Point Awarded]
-    E --> |No| G[Next Round]
-    F --> G[Next Round]
-    G --> B
+    A[Home] -->|Choose new game| B[Enter new game lobby]
+    A -->|Enter game code| C[Enter game code]
+    B --> D[Display game code]
+    C --> D[Enter game lobby]
+    
+    subgraph Dealer
+        D --> E[Host starts the game]
+        E --> F[Host picks a black card]
+        F --> U{End round early?}
+        U -->|Yes| L[All players see everyone's answers anonymously]
+        U -->|No| V[Wait for 30 seconds or for all players to finish]
+        V --> L
+        L --> M[Dealer picks a winner]
+        M --> N[Winner screen with leaderboard]
+        N --> O{First to have their card picked 7 times wins}
+        O -->|No| E
+        O -->|Yes| P[End of Game]
+    end
+    
+    subgraph Players
+        D --> Q[Players wait in the lobby]
+        Q --> G[Players pick or write their own cards]
+        G --> H{Did all players finish in 30 seconds?}
+        H -->|Yes| I[Players wait in lightweight lobby]
+        H -->|No| J[Players who didn't finish are out for this round]
+        I --> K{Are all selections in or time up?}
+        K -->|Yes| L[All players see everyone's answers anonymously]
+        K -->|No| Q
+        L --> R[Players see winner screen]
+        R --> S{Loop back to the start or end game?}
+        S -->|Loop| Q
+        S -->|End| T[End of Game]
+    end
+
 ```
 
 ## 🎉 **For Fun and Learning**
@@ -104,3 +133,9 @@ This game is perfect for those who want to learn modern web development while en
 ## 📜 **License**
 
 This project is licensed under a **Creative Commons Attribution-NonCommercial-NoDerivatives (CC BY-NC-ND) License with Custom Terms**. You can learn from it, share it, and use it for educational purposes, but you must obtain permission for commercial use or any significant modifications.
+
+
+| ![Image](https://www.notion.so/image/https%3A%2F%2Fprod-files-secure.s3.us-west-2.amazonaws.com%2F53b0343a-f900-4d17-943b-8ccea4b0a0bc%2Fb0629789-0370-451a-8332-95bbb34b742a%2FDALLE_2024-06-23_14.14.50_-_A_creative_and_wide_variation_of_a_LEGO-style_vintage_computer_with_a_keyboard_and_mouse._The_design_should_have_a_mostly_red_color_theme._The_backgro.webp?table=block&id=d9bfe82a-fc11-4b8d-a2f8-7a1d0641727f&spaceId=53b0343a-f900-4d17-943b-8ccea4b0a0bc&width=200&userId=16d30e36-b5c9-47ef-9e03-184b5abd7fae&cache=v2) | ![Image](https://www.notion.so/image/https%3A%2F%2Fprod-files-secure.s3.us-west-2.amazonaws.com%2F53b0343a-f900-4d17-943b-8ccea4b0a0bc%2Fb0629789-0370-451a-8332-95bbb34b742a%2FDALLE_2024-06-23_14.14.50_-_A_creative_and_wide_variation_of_a_LEGO-style_vintage_computer_with_a_keyboard_and_mouse._The_design_should_have_a_mostly_red_color_theme._The_backgro.webp?table=block&id=d9bfe82a-fc11-4b8d-a2f8-7a1d0641727f&spaceId=53b0343a-f900-4d17-943b-8ccea4b0a0bc&width=200&userId=16d30e36-b5c9-47ef-9e03-184b5abd7fae&cache=v2) | ![Image](https://www.notion.so/image/https%3A%2F%2Fprod-files-secure.s3.us-west-2.amazonaws.com%2F53b0343a-f900-4d17-943b-8ccea4b0a0bc%2Fb0629789-0370-451a-8332-95bbb34b742a%2FDALLE_2024-06-23_14.14.50_-_A_creative_and_wide_variation_of_a_LEGO-style_vintage_computer_with_a_keyboard_and_mouse._The_design_should_have_a_mostly_red_color_theme._The_backgro.webp?table=block&id=d9bfe82a-fc11-4b8d-a2f8-7a1d0641727f&spaceId=53b0343a-f900-4d17-943b-8ccea4b0a0bc&width=200&userId=16d30e36-b5c9-47ef-9e03-184b5abd7fae&cache=v2) |
+|:-----------------------------------------------------------------------------------------------------------:|:-----------------------------------------------------------------------------------------------------------:|:-----------------------------------------------------------------------------------------------------------:|
+| ![Image](https://www.notion.so/image/https%3A%2F%2Fprod-files-secure.s3.us-west-2.amazonaws.com%2F53b0343a-f900-4d17-943b-8ccea4b0a0bc%2Fb0629789-0370-451a-8332-95bbb34b742a%2FDALLE_2024-06-23_14.14.50_-_A_creative_and_wide_variation_of_a_LEGO-style_vintage_computer_with_a_keyboard_and_mouse._The_design_should_have_a_mostly_red_color_theme._The_backgro.webp?table=block&id=d9bfe82a-fc11-4b8d-a2f8-7a1d0641727f&spaceId=53b0343a-f900-4d17-943b-8ccea4b0a0bc&width=200&userId=16d30e36-b5c9-47ef-9e03-184b5abd7fae&cache=v2) | ![Image](https://www.notion.so/image/https%3A%2F%2Fprod-files-secure.s3.us-west-2.amazonaws.com%2F53b0343a-f900-4d17-943b-8ccea4b0a0bc%2Fb0629789-0370-451a-8332-95bbb34b742a%2FDALLE_2024-06-23_14.14.50_-_A_creative_and_wide_variation_of_a_LEGO-style_vintage_computer_with_a_keyboard_and_mouse._The_design_should_have_a_mostly_red_color_theme._The_backgro.webp?table=block&id=d9bfe82a-fc11-4b8d-a2f8-7a1d0641727f&spaceId=53b0343a-f900-4d17-943b-8ccea4b0a0bc&width=200&userId=16d30e36-b5c9-47ef-9e03-184b5abd7fae&cache=v2) | ![Image](https://www.notion.so/image/https%3A%2F%2Fprod-files-secure.s3.us-west-2.amazonaws.com%2F53b0343a-f900-4d17-943b-8ccea4b0a0bc%2Fb0629789-0370-451a-8332-95bbb34b742a%2FDALLE_2024-06-23_14.14.50_-_A_creative_and_wide_variation_of_a_LEGO-style_vintage_computer_with_a_keyboard_and_mouse._The_design_should_have_a_mostly_red_color_theme._The_backgro.webp?table=block&id=d9bfe82a-fc11-4b8d-a2f8-7a1d0641727f&spaceId=53b0343a-f900-4d17-943b-8ccea4b0a0bc&width=200&userId=16d30e36-b5c9-47ef-9e03-184b5abd7fae&cache=v2) |
+| ![Image](https://www.notion.so/image/https%3A%2F%2Fprod-files-secure.s3.us-west-2.amazonaws.com%2F53b0343a-f900-4d17-943b-8ccea4b0a0bc%2Fb0629789-0370-451a-8332-95bbb34b742a%2FDALLE_2024-06-23_14.14.50_-_A_creative_and_wide_variation_of_a_LEGO-style_vintage_computer_with_a_keyboard_and_mouse._The_design_should_have_a_mostly_red_color_theme._The_backgro.webp?table=block&id=d9bfe82a-fc11-4b8d-a2f8-7a1d0641727f&spaceId=53b0343a-f900-4d17-943b-8ccea4b0a0bc&width=200&userId=16d30e36-b5c9-47ef-9e03-184b5abd7fae&cache=v2) | ![Image](https://www.notion.so/image/https%3A%2F%2Fprod-files-secure.s3.us-west-2.amazonaws.com%2F53b0343a-f900-4d17-943b-8ccea4b0a0bc%2Fb0629789-0370-451a-8332-95bbb34b742a%2FDALLE_2024-06-23_14.14.50_-_A_creative_and_wide_variation_of_a_LEGO-style_vintage_computer_with_a_keyboard_and_mouse._The_design_should_have_a_mostly_red_color_theme._The_backgro.webp?table=block&id=d9bfe82a-fc11-4b8d-a2f8-7a1d0641727f&spaceId=53b0343a-f900-4d17-943b-8ccea4b0a0bc&width=200&userId=16d30e36-b5c9-47ef-9e03-184b5abd7fae&cache=v2) | ![Image](https://www.notion.so/image/https%3A%2F%2Fprod-files-secure.s3.us-west-2.amazonaws.com%2F53b0343a-f900-4d17-943b-8ccea4b0a0bc%2Fb0629789-0370-451a-8332-95bbb34b742a%2FDALLE_2024-06-23_14.14.50_-_A_creative_and_wide_variation_of_a_LEGO-style_vintage_computer_with_a_keyboard_and_mouse._The_design_should_have_a_mostly_red_color_theme._The_backgro.webp?table=block&id=d9bfe82a-fc11-4b8d-a2f8-7a1d0641727f&spaceId=53b0343a-f900-4d17-943b-8ccea4b0a0bc&width=200&userId=16d30e36-b5c9-47ef-9e03-184b5abd7fae&cache=v2) |
