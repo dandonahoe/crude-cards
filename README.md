@@ -106,14 +106,64 @@ This game is perfect for those who want to learn modern web development while en
 This project is licensed under a **Creative Commons Attribution-NonCommercial-NoDerivatives (CC BY-NC-ND) License with Custom Terms**. You can learn from it, share it, and use it for educational purposes, but you must obtain permission for commercial use or any significant modifications.
 
 
-|   |   |   |
-|---|---|---|
-| ![001](./internal/wiki/001.webp) | ![002](./internal/wiki/002.webp) | ![003](./internal/wiki/003.webp) |
-| ![004](./internal/wiki/004.webp) | ![005](./internal/wiki/005.webp) | ![006](./internal/wiki/006.webp) |
-| ![007](./internal/wiki/007.webp) | ![008](./internal/wiki/008.webp) | ![009](./internal/wiki/009.webp) |
-| ![010](./internal/wiki/010.webp) | ![011](./internal/wiki/011.webp) | ![012](./internal/wiki/012.webp) |
-| ![013](./internal/wiki/013.webp) | ![014](./internal/wiki/014.webp) | ![015](./internal/wiki/015.webp) |
-| ![016](./internal/wiki/016.webp) | | |
+
+
+## 🎨 CrudeCards - Game Dev Series
+
+<table cellspacing="0" cellpadding="0" border="0">
+  <tr>
+    <td valign="top" align="center">
+      <img src="./internal/wiki/002.webp" alt="001" style="font-family: 'Helvetica Neue Bold', Arial, sans-serif; max-height: 120px;border-radius:12px;"><br>
+      <div align="left" style="font-family: 'Helvetica Neue Bold', Arial, sans-serif;">
+        <strong>TODO - Introduction to the Series</strong><br>
+        <em>Beginner</em><br>
+        Overview of the series, covering the goals of creating a CAH clone.
+      </div>
+    </td>
+    <td valign="top" align="center">
+      <img src="./internal/wiki/003.webp" alt="002" style="font-family: 'Helvetica Neue Bold', Arial, sans-serif; max-height: 120px;border-radius:12px;"><br>
+      <div align="left" style="font-family: 'Helvetica Neue Bold', Arial, sans-serif;">
+        <strong>WIP - Defining the Project: What and Why</strong><br>
+        <em>Beginner</em><br>
+        Detailed description of the CAH clone, including its purpose and goals.
+      </div>
+    </td>
+    <td valign="top" align="center">
+      <img src="./internal/wiki/005.webp" alt="003" style="font-family: 'Helvetica Neue Bold', Arial, sans-serif; max-height: 120px;border-radius:12px;"><br>
+      <div align="left" style="font-family: 'Helvetica Neue Bold', Arial, sans-serif;">
+        <strong>WIP - Defining the Audience and Stakeholders</strong><br>
+        <em>Beginner</em><br>
+        Identify the target audience and list stakeholders with their roles.
+      </div>
+    </td>
+  </tr>
+  <tr>
+    <td valign="top" align="center">
+      <img src="./internal/wiki/006.webp" alt="004" style="font-family: 'Helvetica Neue Bold', Arial, sans-serif; max-height: 120px;border-radius:12px;"><br>
+      <div align="left" style="font-family: 'Helvetica Neue Bold', Arial, sans-serif;">
+        <strong>WIP - Defining Stakeholder Personas</strong><br>
+        Process of creating example users and applying them to the project.
+      </div>
+    </td>
+    <td valign="top" align="center">
+      <img src="./internal/wiki/007.webp" alt="007" style="font-family: 'Helvetica Neue Bold', Arial, sans-serif; max-height: 120px;border-radius:12px;"><br>
+      <div align="left" style="font-family: 'Helvetica Neue Bold', Arial, sans-serif;">
+        <strong>WIP - Conducting In-Person Testing and Gathering Feedback</strong><br>
+        <em>Beginner</em><br>
+        Methods for in-person testing and gathering feedback.
+      </div>
+    </td>
+    <td valign="top" align="center">
+      <img src="./internal/wiki/008.webp" alt="006" style="font-family: 'Helvetica Neue Bold', Arial, sans-serif; max-height: 120px;border-radius:12px;"><br>
+      <div align="left" style="font-family: 'Helvetica Neue Bold', Arial, sans-serif;">
+        <strong>WIP - Creating Mockups and Prototypes</strong><br>
+        <em>Beginner</em><br>
+        Tools and techniques for creating mockups and prototypes, emphasizing their importance.
+      </div>
+    </td>
+  </tr>
+</table>
+
 
 
 
