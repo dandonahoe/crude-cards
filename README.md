@@ -202,11 +202,16 @@ This project is licensed under a **Creative Commons Attribution-NonCommercial-No
 
 Below is a 3x6 grid of images linked from the `./internal/wiki` directory:
 
+
+# 🎨 Image Grid
+
+Below is a 3x6 grid of images linked relatively within the repository:
+
 |   |   |   |
 |---|---|---|
-| ![001](https://github.com/ConstructWorks/cards/raw/main/internal/wiki/001.webp) | ![002](https://github.com/ConstructWorks/cards/raw/main/internal/wiki/002.webp) | ![003](https://github.com/ConstructWorks/cards/raw/main/internal/wiki/003.webp) |
-| ![004](https://github.com/ConstructWorks/cards/raw/main/internal/wiki/004.webp) | ![005](https://github.com/ConstructWorks/cards/raw/main/internal/wiki/005.webp) | ![006](https://github.com/ConstructWorks/cards/raw/main/internal/wiki/006.webp) |
-| ![007](https://github.com/ConstructWorks/cards/raw/main/internal/wiki/007.webp) | ![008](https://github.com/ConstructWorks/cards/raw/main/internal/wiki/008.webp) | ![009](https://github.com/ConstructWorks/cards/raw/main/internal/wiki/009.webp) |
-| ![010](https://github.com/ConstructWorks/cards/raw/main/internal/wiki/010.webp) | ![011](https://github.com/ConstructWorks/cards/raw/main/internal/wiki/011.webp) | ![012](https://github.com/ConstructWorks/cards/raw/main/internal/wiki/012.webp) |
-| ![013](https://github.com/ConstructWorks/cards/raw/main/internal/wiki/013.webp) | ![014](https://github.com/ConstructWorks/cards/raw/main/internal/wiki/014.webp) | ![015](https://github.com/ConstructWorks/cards/raw/main/internal/wiki/015.webp) |
-| ![016](https://github.com/ConstructWorks/cards/raw/main/internal/wiki/016.webp) | | |
+| ![001](./internal/wiki/001.webp) | ![002](./internal/wiki/002.webp) | ![003](./internal/wiki/003.webp) |
+| ![004](./internal/wiki/004.webp) | ![005](./internal/wiki/005.webp) | ![006](./internal/wiki/006.webp) |
+| ![007](./internal/wiki/007.webp) | ![008](./internal/wiki/008.webp) | ![009](./internal/wiki/009.webp) |
+| ![010](./internal/wiki/010.webp) | ![011](./internal/wiki/011.webp) | ![012](./internal/wiki/012.webp) |
+| ![013](./internal/wiki/013.webp) | ![014](./internal/wiki/014.webp) | ![015](./internal/wiki/015.webp) |
+| ![016](./internal/wiki/016.webp) | | |
