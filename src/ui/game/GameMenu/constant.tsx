@@ -24,6 +24,10 @@ export const MenuItems = [{
     text : 'Feedback',
     id   : MenuItem.Feedback,
 }, {
+    icon : <IconMail style={IconStyle} />,
+    text : 'Developers',
+    id   : MenuItem.Settings,
+}, {
     icon : <IconDoorExit style={IconStyle} />,
     text : 'Quit',
     id   : MenuItem.Quit,

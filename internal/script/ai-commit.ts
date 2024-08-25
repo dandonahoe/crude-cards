@@ -112,7 +112,24 @@ async function main() {
     // Generate the final commit message based on the combined summary
     const finalCommitMessage = await createCompletion(
         `Summarize the following file summaries into a commit
-message, using plain text and bullet points, no other markdown and do not include 'Title:' or other field names.
+message, using plain text and bullet points, no other markdown. title formatted as "feat(subject): summary" where feat is of
+type:
+feat
+fix
+perf
+docs
+style
+refactor
+test
+build
+ci
+chore
+revert
+
+and subject is a single alphanumeric word describing the
+change. Bullet points should also be formatted like titles, ie "feat(subject): description" and
+an indented bulletpoints listing the files involved, with
+"subject" describing the update in one word and not just a file name.
 The final line should note if there is anything unusual or noteworthy, such as breaking code.
 Include a title, bullet points, and statistics in the commit message.
 
