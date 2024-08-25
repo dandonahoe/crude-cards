@@ -34,7 +34,7 @@ export const GameHome : RFC = () => {
     const handleCameCodeChange = (e : React.ChangeEvent<HTMLInputElement>) : CA => {
         setGameCode(e.target.value);
 
-        if(e.target.value.trim().length === 4)
+        if(e.target.value.trim().length === 6)
             return dispatch(GameAction.joinGame({
                 game_code : e.target.value.trim(),
             }))

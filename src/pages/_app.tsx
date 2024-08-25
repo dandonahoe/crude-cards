@@ -14,6 +14,7 @@ import '@mantine/dates/styles.css';
 import { RFC } from '@app/ui/type';
 import '@mantine/core/styles.css';
 import Cookies from 'js-cookie';
+import { GameTemplate } from '../ui/game/GameTemplate/index';
 
 
 const App : RFC<CustomPageProps> = ({
@@ -43,7 +44,9 @@ const App : RFC<CustomPageProps> = ({
             <AppScript />
             <MantineProvider theme={AppTheme} >
                 <Notifications />
-                <Component {...pageProps} />
+                <GameTemplate appId='app-alpha'>
+                    <Component {...pageProps} />
+                </GameTemplate>
             </MantineProvider>
         </AppProvider>
     );
