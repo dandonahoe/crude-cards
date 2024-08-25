@@ -68,57 +68,87 @@ This game is more than just a source of entertainment. It's also a learning reso
   </tr>
 </table>
 
-## 🎮 **Gameplay Flow - Mermaid Diagram**
-
-```mermaid
-flowchart TD
-    A[Players Join Game] --> B[Dealer Plays Black Card]
-    B --> C[Players Submit White Cards]
-    C --> D[Dealer Reviews Submissions]
-    D --> E{Dealer Picks Winner}
-    E --> |Yes| F[Point Awarded]
-    E --> |No| G[Next Round]
-    F --> G[Next Round]
-    G --> B
-```
-
-## 🚀 **Tech Stack**
+## 🚀 Tech Stack
 
 The tech stack is carefully chosen to showcase modern full-stack development practices. Here's a breakdown:
 
-| **Layer**      | **Technology**                              | **Purpose**                                       |
-|----------------|---------------------------------------------|---------------------------------------------------|
-| **Frontend**   | [React](https://reactjs.org/)               | UI development and rendering                      |
-|                | [Next.js](https://nextjs.org/)              | Server-side rendering, routing, and API endpoints |
-|                | [Mantine](https://mantine.dev/)             | UI components and styling                         |
-|                | [Redux Toolkit](https://redux-toolkit.js.org/) | State management                                  |
-|                | [Socket.io Client](https://socket.io/docs/v4/client-api/) | Real-time communication                           |
-| **Backend**    | [NestJS](https://nestjs.com/)               | Backend framework                                 |
-|                | [TypeORM](https://typeorm.io/)              | Database ORM for managing entities and migrations |
-|                | [Socket.io](https://socket.io/)             | WebSocket server for real-time events             |
-| **Infrastructure** | [GCP](https://cloud.google.com/)          | Cloud hosting and deployment                      |
-|                | [Docker](https://www.docker.com/)           | Containerization                                  |
-|                | [Terraform](https://www.terraform.io/)      | Infrastructure as Code (IaC)                      |
-| **Testing**    | [Jest](https://jestjs.io/)                  | Unit and integration testing                      |
-|                | [Testing Library](https://testing-library.com/) | UI testing                                      |
-|                | [Storybook](https://storybook.js.org/)      | Component testing and documentation               |
-
-## 📚 **Learning Resources and Tutorials**
-
-Follow along with the full development process through the tutorials below:
-
-- [**Defining the Project: What and Why**](https://www.notion.so/WIP-Defining-the-Project-What-and-Why-04f8e77dae2c4b7894da56738b1825cc?pvs=21)
-- [**Conducting In-Person Testing and Gathering Feedback**](https://www.notion.so/WIP-Conducting-In-Person-Testing-and-Gathering-Feedback-7af8aeab5bd84788acf6d332d51a113b?pvs=21)
-- [**Creating Mockups and Prototypes**](https://www.notion.so/WIP-Creating-Mockups-and-Prototypes-73897025582a44ef8887e6938ad7ea83?pvs=21)
-- [**Building the User Interface with React**](https://www.notion.so/WIP-Building-the-User-Interface-with-React-0e8db9a08f38463fa4ac62ee3ff85e71?pvs=21)
-- [**Implementing CI/CD Pipelines**](https://www.notion.so/WIP-Implementing-CI-CD-Pipelines-aa78af3790d3411ea8a1a5856fa686d9?pvs=21)
-- [**Deploying on GCP**](https://www.notion.so/Steps-to-deploy-the-app-on-GCP-including-tools-and-best-practices-for-deployment-1c8fc473f9cc4904af523de1517ed666?pvs=21)
-
-## 📊 **Interactive Panels and Resources**
-
-- [**Storybook for UI Components**](https://your-storybook-link.com) - Explore the reusable UI components used in the game.
-- [**CI/CD Pipeline Overview**](https://your-ci-cd-pipeline-link.com) - Monitor the status and structure of the CI/CD pipeline.
-- [**API Documentation**](https://your-api-docs-link.com) - Detailed documentation for the backend APIs.
+<table style="width:100%">
+  <tr>
+    <th>Layer</th>
+    <th>Technology</th>
+    <th>Purpose</th>
+  </tr>
+  <tr>
+    <td>Frontend</td>
+    <td><img src="https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg" alt="React" width="20"/> React</td>
+    <td>UI development and rendering</td>
+  </tr>
+  <tr>
+    <td></td>
+    <td><img src="https://nextjs.org/static/favicon/favicon-16x16.png" alt="Next.js" width="20"/> Next.js</td>
+    <td>Server-side rendering, routing, and API endpoints</td>
+  </tr>
+  <tr>
+    <td></td>
+    <td><img src="https://mantine.dev/logo.svg" alt="Mantine" width="20"/> Mantine</td>
+    <td>UI components and styling</td>
+  </tr>
+  <tr>
+    <td></td>
+    <td><img src="https://redux.js.org/img/redux.svg" alt="Redux Toolkit" width="20"/> Redux Toolkit</td>
+    <td>State management</td>
+  </tr>
+  <tr>
+    <td></td>
+    <td><img src="https://socket.io/images/logo.svg" alt="Socket.io Client" width="20"/> Socket.io Client</td>
+    <td>Real-time communication</td>
+  </tr>
+  <tr>
+    <td>Backend</td>
+    <td><img src="https://d33wubrfki0l68.cloudfront.net/7f119d8c2e5d7e0516c9da5b7bbf08915311cb7a/83f17/img/logo.png" alt="NestJS" width="20"/> NestJS</td>
+    <td>Backend framework</td>
+  </tr>
+  <tr>
+    <td></td>
+    <td><img src="https://typeorm.io/img/logo.svg" alt="TypeORM" width="20"/> TypeORM</td>
+    <td>Database ORM for managing entities and migrations</td>
+  </tr>
+  <tr>
+    <td></td>
+    <td><img src="https://socket.io/images/logo.svg" alt="Socket.io" width="20"/> Socket.io</td>
+    <td>WebSocket server for real-time events</td>
+  </tr>
+  <tr>
+    <td>Infrastructure</td>
+    <td><img src="https://www.gstatic.com/devrel-devsite/prod/vfc07da888bba76c1c4c003a198d6e61b87696b912bbbe11354581a64d0862c38/cloud/images/favicons/onecloud/favicon.ico" alt="GCP" width="20"/> GCP</td>
+    <td>Cloud hosting and deployment</td>
+  </tr>
+  <tr>
+    <td></td>
+    <td><img src="https://www.docker.com/wp-content/uploads/2022/03/Moby-logo.png" alt="Docker" width="20"/> Docker</td>
+    <td>Containerization</td>
+  </tr>
+  <tr>
+    <td></td>
+    <td><img src="https://www.terraform.io/assets/images/og-image-8b3e4f7d.png" alt="Terraform" width="20"/> Terraform</td>
+    <td>Infrastructure as Code (IaC)</td>
+  </tr>
+  <tr>
+    <td>Testing</td>
+    <td><img src="https://jestjs.io/img/jest.svg" alt="Jest" width="20"/> Jest</td>
+    <td>Unit and integration testing</td>
+  </tr>
+  <tr>
+    <td></td>
+    <td><img src="https://testing-library.com/img/octopus-128x128.png" alt="Testing Library" width="20"/> Testing Library</td>
+    <td>UI testing</td>
+  </tr>
+  <tr>
+    <td></td>
+    <td><img src="https://storybook.js.org/images/logos/icon-storybook.svg" alt="Storybook" width="20"/> Storybook</td>
+    <td>Component testing and documentation</td>
+  </tr>
+</table>
 
 
 ## 📖 **Game Rules (Just Like Cards Against Humanity or Apples to Apples)**
@@ -136,12 +166,9 @@ Follow along with the full development process through the tutorials below:
     - The player whose card is chosen wins that round and earns a point.
     - The first player to reach a predefined number of points wins the game.
 
-4. **Additional Fun**:
+4. **Additional "Fun"**:
     - The game is customizable with different rule variations to keep things interesting.
 
-## 🎉 **For Less Boring and Learning**
-
-This game is perfect for those who want to learn modern web development while enjoying a fun, interactive project. Whether it's for parties, casual hangouts, or just testing your development skills, **Crude Cards** has you covered.
 
 ## 💻 **How to Run the Game Locally**
 
