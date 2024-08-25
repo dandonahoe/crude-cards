@@ -67,18 +67,110 @@ Follow along with the full development process through the tutorials below:
 - [**CI/CD Pipeline Overview**](https://your-ci-cd-pipeline-link.com) - Monitor the status and structure of the CI/CD pipeline.
 - [**API Documentation**](https://your-api-docs-link.com) - Detailed documentation for the backend APIs.
 
-## 🎮 **Gameplay Flow - Mermaid Diagram**
+
+## 📝 **Architecture Diagrams*
+* [**Architecture Diagrams**](https://www.notion.so/Architecture-Diagrams-1b1b3b1b1b1b4)
 
 ```mermaid
 flowchart TD
-    A[Players Join Game] --> B[Dealer Plays Black Card]
-    B --> C[Players Submit White Cards]
-    C --> D[Dealer Reviews Submissions]
-    D --> E{Dealer Picks Winner}
-    E --> |Yes| F[Point Awarded]
-    E --> |No| G[Next Round]
-    F --> G[Next Round]
-    G --> B
+  %% Frontend Layer
+  A[Frontend] -->|Uses WebSocket| B(GameGateway)
+  A -->|Interacts via REST API| L[API Layer]
+  A -->|UI Components| M[React Components]
+  M --> N[Mantine for Styling]
+  M --> O[Redux Toolkit for State Management]
+  O --> P[Socket.io Client for Realtime Updates]
+
+  %% Backend Layer
+  B[GameGateway] -->|Validates Player| C(GameService)
+  B -->|Broadcasts Events| Q[Socket.io Server]
+
+  %% Game Logic Services
+  C -->|Manages Player State| D(PlayerService)
+  C -->|Handles Game Logic| E(GameSessionService)
+  E -->|Manages Card Deck| F(CardService)
+  E -->|Handles Rounds & Turns| G(RoundService)
+
+  %% Card Operations
+  F -->|Draws Cards| H[(Database)]
+  F -->|Stores Cards| H
+
+  %% Player Management
+  D -->|Stores Player Data| H
+  D -->|Manages Reconnections| I[ConnectionService]
+  D -->|Saves Player State| H
+
+  %% Session Management
+  E -->|Handles Sessions| H
+  E -->|Stores Game Metadata| H
+  E -->|Syncs Game State| Q[Socket.io Server]
+  
+  %% Additional Services
+  G -->|Stores Round Data| H
+  G -->|Determines Winning Cards| J[GameLogicService]
+
+  %% Feedback and Monitoring
+  B -->|Handles Feedback| K(FeedbackService)
+  K -->|Saves Feedback| H
+  K -->|Sends Alerts| R[NotificationService]
+  
+  %% API Layer
+  L -->|CRUD Operations| H
+  L -->|Exposes Game State| M[Frontend]
+
+  %% Logging and Monitoring
+  C -->|Logs Events| S(Logger)
+  S -->|Stores Logs| H
+  S -->|Monitors Realtime Data| T[MonitoringDashboard]
+
+  %% Infrastructure and Deployment
+  T -->|Deployed to| U[GCP via Docker]
+  U -->|Orchestrated by| V[Terraform for IaC]
+  T -->|CI/CD Pipelines| W[GitHub Actions]
+
+  %% Relationships
+  Q --> P
+  L -->|Exposes Endpoints| M
+  L -->|Triggers| Q
+  W --> T
+
+```
+
+
+## 🎮 **Gameplay Flow - Mermaid Diagram**
+* [**Gameplay Flow**](https://www.notion.so/Gameplay-Flow-1b1b3b1b1b1b4)
+
+```mermaid
+sequenceDiagram
+    participant Home
+    participant Player
+    participant Dealer
+
+    Home->>Player: Choose new game or enter game code
+    Player->>Home: Enter game code
+    Home->>Dealer: Display game code
+    Dealer->>Player: Enter game lobby
+
+    loop Start Game
+        Dealer->>Dealer: Host starts the game
+        Dealer->>Dealer: Host picks a black card
+
+        alt End round early
+            Dealer->>Player: Show answers anonymously
+        else Wait 30 seconds or all players finish
+            Player->>Dealer: Submit card or timeout
+        end
+
+        Dealer->>Dealer: Dealer picks a winner
+        Dealer->>Player: Show winner screen and leaderboard
+
+        alt First card picked 7 times
+            Dealer->>All: End of Game
+        else Loop back
+            Dealer->>Dealer: Start next round
+        end
+    end
+
 ```
 
 ## 🎉 **For Fun and Learning**
@@ -104,3 +196,17 @@ This game is perfect for those who want to learn modern web development while en
 ## 📜 **License**
 
 This project is licensed under a **Creative Commons Attribution-NonCommercial-NoDerivatives (CC BY-NC-ND) License with Custom Terms**. You can learn from it, share it, and use it for educational purposes, but you must obtain permission for commercial use or any significant modifications.
+
+
+# 🎨 Image Grid
+
+Below is a 3x6 grid of images linked from the `./internal/wiki` directory:
+
+|   |   |   |
+|---|---|---|
+| ![001](https://github.com/ConstructWorks/cards/raw/main/internal/wiki/001.webp) | ![002](https://github.com/ConstructWorks/cards/raw/main/internal/wiki/002.webp) | ![003](https://github.com/ConstructWorks/cards/raw/main/internal/wiki/003.webp) |
+| ![004](https://github.com/ConstructWorks/cards/raw/main/internal/wiki/004.webp) | ![005](https://github.com/ConstructWorks/cards/raw/main/internal/wiki/005.webp) | ![006](https://github.com/ConstructWorks/cards/raw/main/internal/wiki/006.webp) |
+| ![007](https://github.com/ConstructWorks/cards/raw/main/internal/wiki/007.webp) | ![008](https://github.com/ConstructWorks/cards/raw/main/internal/wiki/008.webp) | ![009](https://github.com/ConstructWorks/cards/raw/main/internal/wiki/009.webp) |
+| ![010](https://github.com/ConstructWorks/cards/raw/main/internal/wiki/010.webp) | ![011](https://github.com/ConstructWorks/cards/raw/main/internal/wiki/011.webp) | ![012](https://github.com/ConstructWorks/cards/raw/main/internal/wiki/012.webp) |
+| ![013](https://github.com/ConstructWorks/cards/raw/main/internal/wiki/013.webp) | ![014](https://github.com/ConstructWorks/cards/raw/main/internal/wiki/014.webp) | ![015](https://github.com/ConstructWorks/cards/raw/main/internal/wiki/015.webp) |
+| ![016](https://github.com/ConstructWorks/cards/raw/main/internal/wiki/016.webp) | | |
