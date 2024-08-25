@@ -104,3 +104,14 @@ This game is perfect for those who want to learn modern web development while en
 ## 📜 **License**
 
 This project is licensed under a **Creative Commons Attribution-NonCommercial-NoDerivatives (CC BY-NC-ND) License with Custom Terms**. You can learn from it, share it, and use it for educational purposes, but you must obtain permission for commercial use or any significant modifications.
+
+
+|   |   |   |
+|---|---|---|
+| ![001](./internal/wiki/001.webp) | ![002](./internal/wiki/002.webp) | ![003](./internal/wiki/003.webp) |
+| ![004](./internal/wiki/004.webp) | ![005](./internal/wiki/005.webp) | ![006](./internal/wiki/006.webp) |
+| ![007](./internal/wiki/007.webp) | ![008](./internal/wiki/008.webp) | ![009](./internal/wiki/009.webp) |
+| ![010](./internal/wiki/010.webp) | ![011](./internal/wiki/011.webp) | ![012](./internal/wiki/012.webp) |
+| ![013](./internal/wiki/013.webp) | ![014](./internal/wiki/014.webp) | ![015](./internal/wiki/015.webp) |
+| ![016](./internal/wiki/016.webp) | | |
+
