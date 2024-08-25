@@ -115,3 +115,82 @@ This project is licensed under a **Creative Commons Attribution-NonCommercial-No
 | ![013](./internal/wiki/013.webp) | ![014](./internal/wiki/014.webp) | ![015](./internal/wiki/015.webp) |
 | ![016](./internal/wiki/016.webp) | | |
 
+
+
+# 🎨 Image Grid with Information
+
+Below is a 3x6 grid of images with additional details for each image:
+
+|   |   |   |
+|---|---|---|
+| ![001](./internal/wiki/012.webp) <br> **TODO - Introduction to the Series** <br> *Beginner* <br> Overview of the series, covering the goals of creating a CAH clone. | ![002](./internal/wiki/013.webp) <br> **WIP - Defining the Project: What and Why** <br> *Beginner* <br> Detailed description of the CAH clone, including its purpose and goals. | ![003](./internal/wiki/015.webp) <br> **WIP - Defining the Audience and Stakeholders** <br> *Beginner* <br> Identify the target audience and list stakeholders with their roles. |
+| ![004](./internal/wiki/013.webp) <br> **WIP - Defining Stakeholder Personas** <br> Process of creating example users and applying them to the project. | ![005](./internal/wiki/005.webp) <br> **WIP - Conducting In-Person Testing and Gathering Feedback** <br> *Beginner* <br> Methods for in-person testing and gathering feedback. | ![006](./internal/wiki/006.webp) <br> **WIP - Creating Mockups and Prototypes** <br> *Beginner* <br> Tools and techniques for creating mockups and prototypes, emphasizing their importance. |
+| ![007](./internal/wiki/007.webp) | ![008](./internal/wiki/008.webp) | ![009](./internal/wiki/009.webp) |
+| ![010](./internal/wiki/010.webp) | ![011](./internal/wiki/011.webp) | ![012](./internal/wiki/012.webp) |
+| ![013](./internal/wiki/013.webp) | ![014](./internal/wiki/014.webp) | ![015](./internal/wiki/015.webp) |
+| ![016](./internal/wiki/016.webp) | | |
+
+
+
+
+<table>
+  <tr>
+    <td valign="top" align="left">
+      <img src="./internal/wiki/012.webp" alt="001"><br>
+      <strong>TODO - Introduction to the Series</strong><br>
+      <em>Beginner</em><br>
+      Overview of the series, covering the goals of creating a CAH clone.
+    </td>
+    <td valign="top" align="left">
+      <img src="./internal/wiki/013.webp" alt="002"><br>
+      <strong>WIP - Defining the Project: What and Why</strong><br>
+      <em>Beginner</em><br>
+      Detailed description of the CAH clone, including its purpose and goals.
+    </td>
+    <td valign="top" align="left">
+      <img src="./internal/wiki/015.webp" alt="003"><br>
+      <strong>WIP - Defining the Audience and Stakeholders</strong><br>
+      <em>Beginner</em><br>
+      Identify the target audience and list stakeholders with their roles.
+    </td>
+  </tr>
+  <tr>
+    <td valign="top" align="left">
+      <img src="./internal/wiki/013.webp" alt="004"><br>
+      <strong>WIP - Defining Stakeholder Personas</strong><br>
+      Process of creating example users and applying them to the project.
+    </td>
+    <td valign="top" align="left">
+      <img src="./internal/wiki/005.webp" alt="005"><br>
+      <strong>WIP - Conducting In-Person Testing and Gathering Feedback</strong><br>
+      <em>Beginner</em><br>
+      Methods for in-person testing and gathering feedback.
+    </td>
+    <td valign="top" align="left">
+      <img src="./internal/wiki/006.webp" alt="006"><br>
+      <strong>WIP - Creating Mockups and Prototypes</strong><br>
+      <em>Beginner</em><br>
+      Tools and techniques for creating mockups and prototypes, emphasizing their importance.
+    </td>
+  </tr>
+  <tr>
+    <td valign="top" align="left"><img src="./internal/wiki/007.webp" alt="007"></td>
+    <td valign="top" align="left"><img src="./internal/wiki/008.webp" alt="008"></td>
+    <td valign="top" align="left"><img src="./internal/wiki/009.webp" alt="009"></td>
+  </tr>
+  <tr>
+    <td valign="top" align="left"><img src="./internal/wiki/010.webp" alt="010"></td>
+    <td valign="top" align="left"><img src="./internal/wiki/011.webp" alt="011"></td>
+    <td valign="top" align="left"><img src="./internal/wiki/012.webp" alt="012"></td>
+  </tr>
+  <tr>
+    <td valign="top" align="left"><img src="./internal/wiki/013.webp" alt="013"></td>
+    <td valign="top" align="left"><img src="./internal/wiki/014.webp" alt="014"></td>
+    <td valign="top" align="left"><img src="./internal/wiki/015.webp" alt="015"></td>
+  </tr>
+  <tr>
+    <td valign="top" align="left"><img src="./internal/wiki/016.webp" alt="016"></td>
+    <td valign="top" align="left"></td>
+    <td valign="top" align="left"></td>
+  </tr>
+</table>
