@@ -413,7 +413,7 @@ sequenceDiagram
 ```mermaid
 %%{init: {'theme': 'base', 'themeVariables': { 
   'primaryColor': '#fff', 
-    'fontSize': '10em',
+    'fontSize': '30em',
 
   'primaryTextColor': '#000', 
   'edgeLabelBackground':'#fff',
