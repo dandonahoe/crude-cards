@@ -409,6 +409,60 @@ sequenceDiagram
 
 ```
 
+
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 
+  'primaryColor': '#fff', 
+    'fontSize': '10em',
+
+  'primaryTextColor': '#000', 
+  'edgeLabelBackground':'#fff',
+  'tertiaryColor': '#000',
+  'tertiaryTextColor': '#000',
+  'secondaryColor': '#0f0',
+  'secondaryTextColor': '#fff',
+  'noteBkgColor': '#f00',
+  'noteTextColor': '#000'
+}}}%%
+flowchart TD
+    Browser -->|Connect with AuthToken| WebSocket
+    WebSocket -->|Handle connection request| GameService
+    GameService -->|Validate AuthToken| PlayerService
+    PlayerService -->|Return existing Player| GameService
+
+    subgraph "Auth Check"
+        direction TB
+        AuthCheck{Is AuthToken valid and game active?}
+        AuthCheck -- Yes --> RejoinPlayer[Rejoin Player to game Limbo status]
+        RejoinPlayer --> DealerCheck{Was the Player the dealer?}
+        DealerCheck -- Yes --> RestoreDealer[Restore dealer status if conditions met]
+        DealerCheck -- No --> ContinueGame[Continue game]
+        AuthCheck -- No --> CreateNewPlayer[Create New Player]
+        CreateNewPlayer --> NewPlayerHomepage[New Player stays on homepage]
+    end
+
+    subgraph "Dealer Leaves Mid-Game"
+        direction TB
+        DealerLeaves{Did the dealer leave mid-game?}
+        DealerLeaves -- Yes --> WaitForRejoin[Wait 30 seconds for rejoin]
+        WaitForRejoin --> DealerRejoinCheck{Did the dealer rejoin?}
+        DealerRejoinCheck -- Yes --> ContinueGame
+        DealerRejoinCheck -- No --> NotifyEndGame[Notify players of game end all lose]
+    end
+
+    subgraph "Game Code URL"
+        direction TB
+        GameCodeURL{Player uses game code URL?}
+        GameCodeURL -- Yes --> ValidateCode[Validate AuthToken and game code]
+        ValidateCode --> CodeMatch{Does the game code match the current game?}
+        CodeMatch -- Yes --> JoinLimbo[Player joins Limbo status]
+        JoinLimbo --> DealerPrompt{Prompt dealer to accept or skip Player}
+        DealerPrompt -- Accept --> JoinGame[Player joins game]
+        DealerPrompt -- Skip --> NotifyRemoval[Notify Player of removal]
+        CodeMatch -- No --> PromptLeave[Prompt Player to leave current game]
+    end
+
+```
 1. **Setup**:
 
     - Players connect to a game session via a room code.
@@ -416,7 +470,7 @@ sequenceDiagram
 
 2. **Gameplay**:
 
-    - The Dealer plays a black card with a prompt or question (e.g., "Why can't I sleep at night?").
+    - The Dealer plays a black card with a prompt or question e.g., "Wy can't I sleep at night?").
     - The other players choose the funniest white card from their hand to complete the sentence or answer the question.
     - The Dealer reviews the responses and selects the one they find funniest.
 
