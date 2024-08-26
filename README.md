@@ -349,17 +349,46 @@ The tech stack is carefully chosen to showcase modern full-stack development pra
 
 ### Kind of Like Cards Against Humanity or Apples to Apples
 
+
+1. **Setup**:
+
+    - Players connect to a game session via a room code.
+    - One player is selected as the "Dealer" for each round.
+
+2. **Gameplay**:
+
+    - The Dealer plays a black card with a prompt or question e.g., "Wy can't I sleep at night?").
+    - The other players choose the funniest white card from their hand to complete the sentence or answer the question.
+    - The Dealer reviews the responses and selects the one they find funniest.
+
+3. **Winning**:
+
+    - The player whose card is chosen wins that round and earns a point.
+    - The first player to reach a predefined number of points wins the game.
+
+4. **Additional "Fun"**:
+    - The game is customizable with different rule variations to keep things interesting.
+
+## 💻 **How to Run the Game Locally**
+
+1. Clone the repository:
+    ```bash
+    git clone https://github.com/dandonahoe/crude-cards.git
+    ```
+2. Install dependencies:
+    ```bash
+    pnpm install
+    ```
+3. Run the development server:
+    ```bash
+    pnpm run reset
+    ```
+4. Open [http://localhost:3000](http://localhost:3000) in your browser to view the game.
+
+
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': { 
-  'primaryColor': '#000', 
-  'primaryTextColor': '#fff', 
-  'edgeLabelBackground':'#f0f',
-  'tertiaryColor': '#ff6347',
-  'tertiaryTextColor': '#000',
-  'secondaryColor': '#4caf50',
-  'secondaryTextColor': '#fff',
-  'noteBkgColor': '#ffffe0',
-  'noteTextColor': '#000'
+%%{init: {'theme': 'dark', 'themeVariables': { 
+
 }}}%%
 sequenceDiagram
     participant Browser
@@ -408,95 +437,6 @@ sequenceDiagram
     end
 
 ```
-
-
-```mermaid
-%%{init: {'theme': 'base', 'themeVariables': { 
-  'primaryColor': '#fff', 
-    'fontSize': '30em',
-
-  'primaryTextColor': '#000', 
-  'edgeLabelBackground':'#fff',
-  'tertiaryColor': '#000',
-  'tertiaryTextColor': '#000',
-  'secondaryColor': '#0f0',
-  'secondaryTextColor': '#fff',
-  'noteBkgColor': '#f00',
-  'noteTextColor': '#000'
-}}}%%
-flowchart TD
-    Browser -->|Connect with AuthToken| WebSocket
-    WebSocket -->|Handle connection request| GameService
-    GameService -->|Validate AuthToken| PlayerService
-    PlayerService -->|Return existing Player| GameService
-
-    subgraph "Auth Check"
-        direction TB
-        AuthCheck{Is AuthToken valid and game active?}
-        AuthCheck -- Yes --> RejoinPlayer[Rejoin Player to game Limbo status]
-        RejoinPlayer --> DealerCheck{Was the Player the dealer?}
-        DealerCheck -- Yes --> RestoreDealer[Restore dealer status if conditions met]
-        DealerCheck -- No --> ContinueGame[Continue game]
-        AuthCheck -- No --> CreateNewPlayer[Create New Player]
-        CreateNewPlayer --> NewPlayerHomepage[New Player stays on homepage]
-    end
-
-    subgraph "Dealer Leaves Mid-Game"
-        direction TB
-        DealerLeaves{Did the dealer leave mid-game?}
-        DealerLeaves -- Yes --> WaitForRejoin[Wait 30 seconds for rejoin]
-        WaitForRejoin --> DealerRejoinCheck{Did the dealer rejoin?}
-        DealerRejoinCheck -- Yes --> ContinueGame
-        DealerRejoinCheck -- No --> NotifyEndGame[Notify players of game end all lose]
-    end
-
-    subgraph "Game Code URL"
-        direction TB
-        GameCodeURL{Player uses game code URL?}
-        GameCodeURL -- Yes --> ValidateCode[Validate AuthToken and game code]
-        ValidateCode --> CodeMatch{Does the game code match the current game?}
-        CodeMatch -- Yes --> JoinLimbo[Player joins Limbo status]
-        JoinLimbo --> DealerPrompt{Prompt dealer to accept or skip Player}
-        DealerPrompt -- Accept --> JoinGame[Player joins game]
-        DealerPrompt -- Skip --> NotifyRemoval[Notify Player of removal]
-        CodeMatch -- No --> PromptLeave[Prompt Player to leave current game]
-    end
-
-```
-1. **Setup**:
-
-    - Players connect to a game session via a room code.
-    - One player is selected as the "Dealer" for each round.
-
-2. **Gameplay**:
-
-    - The Dealer plays a black card with a prompt or question e.g., "Wy can't I sleep at night?").
-    - The other players choose the funniest white card from their hand to complete the sentence or answer the question.
-    - The Dealer reviews the responses and selects the one they find funniest.
-
-3. **Winning**:
-
-    - The player whose card is chosen wins that round and earns a point.
-    - The first player to reach a predefined number of points wins the game.
-
-4. **Additional "Fun"**:
-    - The game is customizable with different rule variations to keep things interesting.
-
-## 💻 **How to Run the Game Locally**
-
-1. Clone the repository:
-    ```bash
-    git clone https://github.com/dandonahoe/crude-cards.git
-    ```
-2. Install dependencies:
-    ```bash
-    pnpm install
-    ```
-3. Run the development server:
-    ```bash
-    pnpm run reset
-    ```
-4. Open [http://localhost:3000](http://localhost:3000) in your browser to view the game.
 
 ## 📜 **License**
 
