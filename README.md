@@ -9,11 +9,11 @@ Welcome to **Crude Cards**, a real-time, WebSocket-enabled card game designed fo
 <table>
   <tr>
     <td valign="top">
-      <h4>🎯 Game Overview</h4>
+      <h5>🎯 Game Overview</h5>
       <p>Crude Cards is a <em>good</em> party game for <strong>bad</strong> people. Perfect for casual hangouts or virtual game nights. Real-time play for multiple players via a WebSocket-powered backend. Adaptable for learning games or quizzes.</p>
     </td>
     <td valign="top">
-      <h4>🤓 Educational Purpose</h4>
+      <h5>🤓 Educational Purpose</h5>
       <p>More than entertainment—this project is a learning resource for full-stack, real-time app development. Find tutorials on building, deploying, and scaling the app in the cloud.</p>
     </td>
   </tr>
@@ -192,73 +192,155 @@ The tech stack is carefully chosen to showcase modern full-stack development pra
     <th>Purpose</th>
   </tr>
   <tr>
-    <td>Frontend</td>
-    <td><img src="https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg" alt="React" width="20"/> React</td>
+    <td>
+    <h5>
+    Frontend
+    </h5></td>
+    <td><img src="https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg" alt="React" width="20" style='vertical-align: middle;' />
+    <span>
+     React
+     </span>
+     </td>
     <td>UI development and rendering</td>
   </tr>
   <tr>
-    <td></td>
-    <td><img src="https://nextjs.org/static/favicon/favicon-16x16.png" alt="Next.js" width="20"/> Next.js</td>
+    <td>
+    </td>
+    <td><img src="https://nextjs.org/static/favicon/favicon-16x16.png" alt="Next.js" width="20" style='vertical-align: middle;' />
+    <span>
+     Next.js
+     </span>
+     </td>
     <td>Server-side rendering, routing, and API endpoints</td>
   </tr>
   <tr>
-    <td></td>
-    <td><img src="https://mantine.dev/logo.svg" alt="Mantine" width="20"/> Mantine</td>
+    <td>
+    </td>
+    <td>
+    <img src="https://seeklogo.com/images/M/mantine-logo-235E19C978-seeklogo.com.png" alt="Mantine" width="20" style='vertical-align: middle;' />
+    <span>
+     Mantine
+     </span>
+     </td>
     <td>UI components and styling</td>
   </tr>
   <tr>
-    <td></td>
-    <td><img src="https://redux.js.org/img/redux.svg" alt="Redux Toolkit" width="20"/> Redux Toolkit</td>
+    <td>
+    </td>
+    <td><img src="https://redux.js.org/img/redux.svg" alt="Redux Toolkit" width="20" style='vertical-align: middle;' />
+    <span>
+     Redux Toolkit
+     </span>
+     </td>
     <td>State management</td>
   </tr>
   <tr>
-    <td></td>
-    <td><img src="https://socket.io/images/logo.svg" alt="Socket.io Client" width="20"/> Socket.io Client</td>
+    <td>
+    </td>
+    <td><img src="https://socket.io/images/logo.svg" alt="Socket.io Client" width="20" style='vertical-align: middle;' />
+    <span>
+     Socket.io Client
+     </span>
+     </td>
     <td>Real-time communication</td>
   </tr>
   <tr>
-    <td>Backend</td>
-    <td><img src="https://d33wubrfki0l68.cloudfront.net/7f119d8c2e5d7e0516c9da5b7bbf08915311cb7a/83f17/img/logo.png" alt="NestJS" width="20"/> NestJS</td>
+    <td>
+    <h5>
+    Backend
+    </h5>
+    </td>
+    <td><img src="https://spng.pinpng.com/pngs/s/208-2082662_logo-nestjs-nest-js-hd-png-download.png" alt="NestJS" width="20" style='vertical-align: middle;' />
+    <span>
+     NestJS
+     </span>
+     </td>
     <td>Backend framework</td>
   </tr>
   <tr>
-    <td></td>
-    <td><img src="https://typeorm.io/img/logo.svg" alt="TypeORM" width="20"/> TypeORM</td>
+    <td>
+    </td>
+    <td><img src="https://th.bing.com/th/id/OIP.1BPUcbae61SbpxzZHrMtjgAAAA?rs=1&pid=ImgDetMain" alt="TypeORM" width="20" style='vertical-align: middle;' />
+    <span>
+     TypeORM
+     </span>
+     </td>
     <td>Database ORM for managing entities and migrations</td>
   </tr>
   <tr>
-    <td></td>
-    <td><img src="https://socket.io/images/logo.svg" alt="Socket.io" width="20"/> Socket.io</td>
+    <td>
+    </td>
+    <td><img src="https://socket.io/images/logo.svg" alt="Socket.io" width="20" style='vertical-align: middle;' />
+    <span>
+     Socket.io
+     </span>
+     </td>
     <td>WebSocket server for real-time events</td>
   </tr>
   <tr>
-    <td>Infrastructure</td>
-    <td><img src="https://www.gstatic.com/devrel-devsite/prod/vfc07da888bba76c1c4c003a198d6e61b87696b912bbbe11354581a64d0862c38/cloud/images/favicons/onecloud/favicon.ico" alt="GCP" width="20"/> GCP</td>
+    <td>
+    <h5>
+    Infrastructure
+    </h5>
+    </td>
+    <td><img src="https://www.pngrepo.com/png/353805/512/google-cloud.png" alt="GCP" width="20" style='vertical-align: middle;' />
+    <span>
+     GCP
+     </span>
+     </td>
     <td>Cloud hosting and deployment</td>
   </tr>
   <tr>
-    <td></td>
-    <td><img src="https://www.docker.com/wp-content/uploads/2022/03/Moby-logo.png" alt="Docker" width="20"/> Docker</td>
+    <td>
+    </td>
+    <td><img src="https://www.docker.com/wp-content/uploads/2022/03/Moby-logo.png" alt="Docker" width="20" style='vertical-align: middle;' />
+    <span>
+     Docker
+     </span>
+     </td>
     <td>Containerization</td>
   </tr>
   <tr>
-    <td></td>
-    <td><img src="https://www.terraform.io/assets/images/og-image-8b3e4f7d.png" alt="Terraform" width="20"/> Terraform</td>
+    <td>
+    </td>
+    <td><img src="https://i.pinimg.com/736x/28/ec/74/28ec7440a57536eebad2931517aa1cce.jpg" alt="Terraform" width="20" style='vertical-align: middle;' />
+    <span>
+     Terraform
+     </span>
+     </td>
     <td>Infrastructure as Code (IaC)</td>
   </tr>
   <tr>
-    <td>Testing</td>
-    <td><img src="https://jestjs.io/img/jest.svg" alt="Jest" width="20"/> Jest</td>
+    <td>
+    <h5>
+    Testing
+    </h5>
+    </td>
+    <td><img src="https://jestjs.io/img/jest.svg" alt="Jest" width="20" style='vertical-align: middle;' />
+    <span>
+     Jest
+     </span>
+     </td>
     <td>Unit and integration testing</td>
   </tr>
   <tr>
-    <td></td>
-    <td><img src="https://testing-library.com/img/octopus-128x128.png" alt="Testing Library" width="20"/> Testing Library</td>
+    <td>
+    </td>
+    <td><img src="https://testing-library.com/img/octopus-128x128.png" alt="Testing Library" width="20" style='vertical-align: middle;' />
+    <span>
+     Testing Library
+     </span>
+     </td>
     <td>UI testing</td>
   </tr>
   <tr>
-    <td></td>
-    <td><img src="https://storybook.js.org/images/logos/icon-storybook.svg" alt="Storybook" width="20"/> Storybook</td>
+    <td>
+    </td>
+    <td><img src="https://th.bing.com/th/id/OIP.31LKu2RcgssPSqAr_CKnqAHaJJ?rs=1&pid=ImgDetMain" alt="Storybook" width="20" style='vertical-align: middle;' />
+    <span>
+     Storybook
+     </span>
+     </td>
     <td>Component testing and documentation</td>
   </tr>
 </table>
