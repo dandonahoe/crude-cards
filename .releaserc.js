@@ -12,8 +12,8 @@ module.exports = {
                 { scope: "main", release: "minor" },
 
                 // Disable default rules for commit types
-                { type: "feat", release: false },
-                { type: "fix", release: false },
+                { type: "feat", release: true },
+                { type: "fix", release: true },
                 { type: "perf", release: false },
                 { type: "docs", release: false },
                 { type: "style", release: false },

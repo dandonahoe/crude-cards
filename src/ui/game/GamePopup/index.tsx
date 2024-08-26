@@ -1,16 +1,15 @@
-import { GameAction } from '../../../client/action/game';
+import { GamePopupType } from '../../../api/src/constant/game-popup-type.enum';
 import { CA } from '../../../constant/framework/CoreAction';
+import { GameAction } from '../../../client/action/game';
 import { Flex, Modal, Text, rem } from '@mantine/core';
 import { GameScoreboard } from '../GameScoreboard';
 import { useDispatch } from '@app/client/hook';
-import { GameSettings } from '../GameSettings';
 import { GameFeedback } from '../GameFeedback';
 import { ReactNode, useContext } from 'react';
 import { GameContext } from '../GameContext';
 import { GameError } from '../GameError';
 import { GameQuit } from '../GameQuit';
 import { RFC } from '@app/ui/type';
-import { GamePopupType } from '../../../api/src/constant/game-popup-type.enum';
 
 
 export const GamePopup : RFC= () => {
@@ -28,7 +27,6 @@ export const GamePopup : RFC= () => {
     switch(popupTypeId) {
         case GamePopupType.Scoreboard: popup = <GameScoreboard />; break;
         case GamePopupType.Feedback:   popup = <GameFeedback   />; break;
-        case GamePopupType.Settings:   popup = <GameSettings   />; break;
         case GamePopupType.Quit:       popup = <GameQuit       />; break;
 
         default: popup = <GameError />; break;
