@@ -193,9 +193,9 @@ The tech stack is carefully chosen to showcase modern full-stack development pra
   </tr>
   <tr>
     <td>
-    <h3>
+    <h5>
     Frontend
-    </h3></td>
+    </h5></td>
     <td><img src="https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg" alt="React" width="20" style='vertical-align: middle;' />
     <span>
      React
@@ -246,9 +246,9 @@ The tech stack is carefully chosen to showcase modern full-stack development pra
   </tr>
   <tr>
     <td>
-    <h3>
+    <h5>
     Backend
-    </h3>
+    </h5>
     </td>
     <td><img src="https://spng.pinpng.com/pngs/s/208-2082662_logo-nestjs-nest-js-hd-png-download.png" alt="NestJS" width="20" style='vertical-align: middle;' />
     <span>
@@ -279,9 +279,9 @@ The tech stack is carefully chosen to showcase modern full-stack development pra
   </tr>
   <tr>
     <td>
-    <h3>
+    <h5>
     Infrastructure
-    </h3>
+    </h5>
     </td>
     <td><img src="https://www.pngrepo.com/png/353805/512/google-cloud.png" alt="GCP" width="20" style='vertical-align: middle;' />
     <span>
@@ -312,9 +312,9 @@ The tech stack is carefully chosen to showcase modern full-stack development pra
   </tr>
   <tr>
     <td>
-    <h3>
+    <h5>
     Testing
-    </h3>
+    </h5>
     </td>
     <td><img src="https://jestjs.io/img/jest.svg" alt="Jest" width="20" style='vertical-align: middle;' />
     <span>
