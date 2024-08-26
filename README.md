@@ -345,7 +345,9 @@ The tech stack is carefully chosen to showcase modern full-stack development pra
   </tr>
 </table>
 
-## 📖 **Game Rules (Just Like Cards Against Humanity or Apples to Apples)**
+## 📖 **Game Rules**
+
+### Kind of Like Cards Against Humanity or Apples to Apples
 
 1. **Setup**:
 

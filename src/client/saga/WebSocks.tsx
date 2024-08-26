@@ -200,6 +200,15 @@ function* sagaSendWebSocketMessage(): Saga {
     // yield* sagaDispatch(GameAction.updateGameState(gameStateString));
 }
 
+function* sagaReconnect(): Saga {
+
+    debugger;
+
+    // placeholder
+    yield* takePayload(GameAction.dealerPickWinner)
+}
+
+
 function* sagaCreateGame(): Saga {
     yield* sagaDispatch(GameAction.sendWebSocketMessage({
         type : WebSocketEventType.CreateGame,
@@ -255,6 +264,7 @@ function* sagaUpdateUsername(): Saga {
         data : yield* takePayload(GameAction.updateUsername),
     }));
 }
+
 function* sagaExitGame(): Saga {
     const exitGame = yield* takePayload(GameAction.exitGame)
 
@@ -338,7 +348,7 @@ function* sagaTimerComplete(): Saga {
 }
 
 
-export const WS = {
+export const WebSocks = {
     sagaSendWebSocketMessage,
     sagaStartUpdateListener,
     sagaDealerPickBlackCard,
@@ -349,6 +359,7 @@ export const WS = {
     sagaStartTimer,
     sagaCreateGame,
     sagaStartGame,
+    sagaReconnect,
     sagaFeedback,
     sagaNextHand,
     sagaJoinGame,
@@ -365,6 +376,7 @@ export const WS = {
         yield this.sagaStartTimer;
         yield this.sagaCreateGame;
         yield this.sagaStartGame;
+        yield this.sagaReconnect;
         yield this.sagaFeedback;
         yield this.sagaNextHand;
         yield this.sagaJoinGame;
