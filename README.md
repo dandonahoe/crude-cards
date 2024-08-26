@@ -1,4 +1,5 @@
 # 🎉 Crude Cards
+
 ## A Party Game For Horrible People! 🎉
 
 ### Web Development Series
@@ -18,7 +19,6 @@ Welcome to **Crude Cards**, a real-time, WebSocket-enabled card game designed fo
   </tr>
 </table>
 
-
 ## 🎨 CrudeCards - Game Dev Series
 
 <table cellspacing="0" cellpadding="0" border="0">
@@ -27,7 +27,8 @@ Welcome to **Crude Cards**, a real-time, WebSocket-enabled card game designed fo
     Introduction to the Series
 
 </strong><br><br>
-    This article provides an overview of the series, explaining what will be covered and the goals of creating a CAH clone.
+This article provides an overview of the series, explaining what will be covered and the goals of creating a CAH clone.
+
 </div></td>
 <td valign="top" align="center"><img src="./internal/wiki/002.webp" alt="001" style="font-family: 'Helvetica Neue Bold', Arial, sans-serif; max-height: 120px;border-radius:12px;"><br><div align="left" style="font-family: 'Helvetica Neue Bold', Arial, sans-serif;"><strong>
     Defining the Project: What and Why
@@ -38,7 +39,7 @@ Welcome to **Crude Cards**, a real-time, WebSocket-enabled card game designed fo
     Defining the Audience and Stakeholders
 
 </strong><br><br>
-    
+
 </div></td>
 </tr>
 
@@ -47,19 +48,22 @@ Welcome to **Crude Cards**, a real-time, WebSocket-enabled card game designed fo
     Defining Stakeholder Personas
 
 </strong><br><br>
-The process of creating example users and applying    
+The process of creating example users and applying
+
 </div></td>
 <td valign="top" align="center"><img src="./internal/wiki/005.webp" alt="001" style="font-family: 'Helvetica Neue Bold', Arial, sans-serif; max-height: 120px;border-radius:12px;"><br><div align="left" style="font-family: 'Helvetica Neue Bold', Arial, sans-serif;"><strong>
     Conducting In-Person Testing and Gathering Feedback
 
 </strong><br><br>
-Methods for in-person testing and how to gather and analyze feedback.    
+Methods for in-person testing and how to gather and analyze feedback.
+
 </div></td>
 <td valign="top" align="center"><img src="./internal/wiki/006.webp" alt="001" style="font-family: 'Helvetica Neue Bold', Arial, sans-serif; max-height: 120px;border-radius:12px;"><br><div align="left" style="font-family: 'Helvetica Neue Bold', Arial, sans-serif;"><strong>
     Creating Mockups and Prototypes
 
 </strong><br><br>
-Tools and techniques for creating mockups and prototypes, emphasizing their importance.    
+Tools and techniques for creating mockups and prototypes, emphasizing their importance.
+
 </div></td>
 </tr>
 
@@ -68,13 +72,15 @@ Tools and techniques for creating mockups and prototypes, emphasizing their impo
     Choosing the Tech Stack
 
 </strong><br><br>
-Detailed explanation of the tech stack and reasons for choosing each technology.    
+Detailed explanation of the tech stack and reasons for choosing each technology.
+
 </div></td>
 <td valign="top" align="center"><img src="./internal/wiki/008.webp" alt="001" style="font-family: 'Helvetica Neue Bold', Arial, sans-serif; max-height: 120px;border-radius:12px;"><br><div align="left" style="font-family: 'Helvetica Neue Bold', Arial, sans-serif;"><strong>
     High-Level Application Architecture
 
 </strong><br><br>
-Overview of the application architecture, key components, and their interactions.    
+Overview of the application architecture, key components, and their interactions.
+
 </div></td>
 <td valign="top" align="center"><img src="./internal/wiki/009.webp" alt="001" style="font-family: 'Helvetica Neue Bold', Arial, sans-serif; max-height: 120px;border-radius:12px;"><br><div align="left" style="font-family: 'Helvetica Neue Bold', Arial, sans-serif;"><strong>
     
@@ -88,20 +94,23 @@ Overview of the application architecture, key components, and their interactions
     Version Control and Collaboration
 
 </strong><br><br>
-Importance of version control and best practices for collaboration.    
+Importance of version control and best practices for collaboration.
+
 </div></td>
 <td valign="top" align="center"><img src="./internal/wiki/011.webp" alt="001" style="font-family: 'Helvetica Neue Bold', Arial, sans-serif; max-height: 120px;border-radius:12px;"><br><div align="left" style="font-family: 'Helvetica Neue Bold', Arial, sans-serif;"><strong>
     Implementing CI/CD Pipelines
 
 </strong><br><br>
-Setting up continuous integration and deployment pipelines, including tools and best practices.    
+Setting up continuous integration and deployment pipelines, including tools and best practices.
+
 </div></td>
 <td valign="top" align="center"><img src="./internal/wiki/012.webp" alt="001" style="font-family: 'Helvetica Neue Bold', Arial, sans-serif; max-height: 120px;border-radius:12px;"><br><div align="left" style="font-family: 'Helvetica Neue Bold', Arial, sans-serif;"><strong>
-    Managing Cloud Infrastructure with Terraform	
+    Managing Cloud Infrastructure with Terraform
 
 </strong><br><br>
 Building the User Interface with React
-Basics of React for building the user interface, including component structure and state management.    
+Basics of React for building the user interface, including component structure and state management.
+
 </div></td>
 </tr>
 
@@ -110,24 +119,28 @@ Basics of React for building the user interface, including component structure a
 Frontend State Management
 
 </strong><br><br>
-Introduction to Redux for managing application state, with examples.    
+Introduction to Redux for managing application state, with examples.
+
 </div></td>
 <td valign="top" align="center"><img src="./internal/wiki/016.webp" alt="001" style="font-family: 'Helvetica Neue Bold', Arial, sans-serif; max-height: 120px;border-radius:12px;"><br><div align="left" style="font-family: 'Helvetica Neue Bold', Arial, sans-serif;"><strong>
     Architecting Cloud Infrastructure
 
 </strong><br><br>
-Designing the cloud infrastructure using services like Kubernetes and Docker.    
+Designing the cloud infrastructure using services like Kubernetes and Docker.
+
 </div></td>
 <td valign="top" align="center"><img src="./internal/wiki/015.webp" alt="001" style="font-family: 'Helvetica Neue Bold', Arial, sans-serif; max-height: 120px;border-radius:12px;"><br><div align="left" style="font-family: 'Helvetica Neue Bold', Arial, sans-serif;"><strong>
     Setting Up the Node.js Backend
 
 </strong><br><br>
-Basics of Node.js and Express, including how to structure the backend.    
+Basics of Node.js and Express, including how to structure the backend.
+
 </div></td>
 </tr>
 
 <tr>
-<td valign="top" align="center"><img src="./internal/wiki/016.webp" alt="001" style="font-family: 'Helvetica Neue Bold', Arial, sans-serif; max-height: 120px;border-radius:12px;"><br><div align="left" style="font-family: 'Helvetica Neue Bold', Arial, sans-serif;"><strong>
+<td valign="top" align="center">
+<img src="./internal/wiki/016.webp" alt="001" style="font-family: 'Helvetica Neue Bold', Arial, sans-serif; max-height: 120px;border-radius:12px;"><br><div align="left" style="font-family: 'Helvetica Neue Bold', Arial, sans-serif;"><strong>
     Connecting the Frontend and Backend
 </strong><br><br>
 How to connect a React frontend with a Node.js backend, including setting up API routes and handling requests.    
@@ -141,7 +154,8 @@ Overview of testing methodologies including unit, integration, and end-to-end te
     Steps to deploy the app on GCP, including tools and best practices for deployment.
 
 </strong><br><br>
-    Description here. Beep Beep Boop.
+Description here. Beep Beep Boop.
+
 </div></td>
 </tr>
 
@@ -150,7 +164,8 @@ Overview of testing methodologies including unit, integration, and end-to-end te
     Maintaining the Application
 
 </strong><br><br>
-Regular maintenance tasks and best practices for keeping the app up-to-date.    
+Regular maintenance tasks and best practices for keeping the app up-to-date.
+
 </div></td>
 <td valign="top" align="center"><img src="./internal/wiki/013.webp" alt="001" style="font-family: 'Helvetica Neue Bold', Arial, sans-serif; max-height: 120px;border-radius:12px;"><br><div align="left" style="font-family: 'Helvetica Neue Bold', Arial, sans-serif;"><strong>
     Performance Tuning
@@ -163,8 +178,6 @@ Regular maintenance tasks and best practices for keeping the app up-to-date.
     Strategies for reducing costs, monitoring and optimizing cloud expenses.
 </div></td>
 </tr>
-
-
 
 </table>
 
@@ -250,40 +263,41 @@ The tech stack is carefully chosen to showcase modern full-stack development pra
   </tr>
 </table>
 
-
 ## 📖 **Game Rules (Just Like Cards Against Humanity or Apples to Apples)**
 
-1. **Setup**: 
+1. **Setup**:
+
     - Players connect to a game session via a room code.
     - One player is selected as the "Dealer" for each round.
 
 2. **Gameplay**:
+
     - The Dealer plays a black card with a prompt or question (e.g., "Why can't I sleep at night?").
     - The other players choose the funniest white card from their hand to complete the sentence or answer the question.
     - The Dealer reviews the responses and selects the one they find funniest.
 
 3. **Winning**:
+
     - The player whose card is chosen wins that round and earns a point.
     - The first player to reach a predefined number of points wins the game.
 
 4. **Additional "Fun"**:
     - The game is customizable with different rule variations to keep things interesting.
 
-
 ## 💻 **How to Run the Game Locally**
 
 1. Clone the repository:
-   ```bash
-   git clone https://github.com/dandonahoe/crude-cards.git
-   ```
+    ```bash
+    git clone https://github.com/dandonahoe/crude-cards.git
+    ```
 2. Install dependencies:
-   ```bash
-   pnpm install
-   ```
+    ```bash
+    pnpm install
+    ```
 3. Run the development server:
-   ```bash
-   pnpm run reset
-   ```
+    ```bash
+    pnpm run reset
+    ```
 4. Open [http://localhost:3000](http://localhost:3000) in your browser to view the game.
 
 ## 📜 **License**
