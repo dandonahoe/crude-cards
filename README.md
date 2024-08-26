@@ -349,6 +349,66 @@ The tech stack is carefully chosen to showcase modern full-stack development pra
 
 ### Kind of Like Cards Against Humanity or Apples to Apples
 
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 
+  'primaryColor': '#000', 
+  'primaryTextColor': '#fff', 
+  'edgeLabelBackground':'#f0f',
+  'tertiaryColor': '#ff6347',
+  'tertiaryTextColor': '#000',
+  'secondaryColor': '#4caf50',
+  'secondaryTextColor': '#fff',
+  'noteBkgColor': '#ffffe0',
+  'noteTextColor': '#000'
+}}}%%
+sequenceDiagram
+    participant Browser
+    participant GameService
+    participant PlayerService
+    participant WebSocket
+
+    Browser->>WebSocket: Connect with AuthToken
+    WebSocket->>GameService: Handle connection request
+    GameService->>PlayerService: Validate AuthToken
+    PlayerService->>GameService: Return existing Player (if found)
+    
+    alt AuthToken is valid and game is active
+        GameService->>Browser: Rejoin Player to game (Limbo status)
+        GameService->>Browser: Check if Player was the dealer
+        alt Player was the dealer
+            GameService->>Browser: Restore dealer status (if conditions are met)
+        end
+    else AuthToken is invalid or outdated
+        WebSocket->>GameService: Create new Player
+        GameService->>Browser: New Player stays on home page
+    end
+
+    alt Dealer leaves mid-game
+        GameService->>WebSocket: Wait 30 seconds for rejoin
+        alt Dealer rejoined
+            GameService->>Browser: Continue game
+        else Dealer does not rejoin
+            GameService->>Browser: Notify players of game end (all lose)
+        end
+    end
+
+    alt Player uses game code URL
+        GameService->>Browser: Validate AuthToken and game code
+        alt Game code matches player's current game
+            GameService->>Browser: Player joins Limbo status
+            GameService->>Browser: Prompt dealer to accept or skip Player
+            alt Dealer accepts Player
+                GameService->>Browser: Player joins game
+            else Dealer skips Player
+                GameService->>Browser: Notify Player of removal
+            end
+        else Game code does not match current game
+            Browser->>GameService: Prompt Player to leave current game
+        end
+    end
+
+```
+
 1. **Setup**:
 
     - Players connect to a game session via a room code.
