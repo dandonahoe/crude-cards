@@ -29,6 +29,12 @@ if (!Env.isBuilding() && !Env.isTest()) {
 
     // likely problem, its sending th token right off the bat
 
+    // set it invalid for testing bad auth on startup.
+    // Possibly geab it, wipe and submit, then wait for the new auth token
+    // in the usual flow.
+
+    Cookies.set(CookieType.AuthToken, 'INVALID');
+
     socket = io(origin, {
         withCredentials : true,
         auth            : {
@@ -196,13 +202,11 @@ function* sagaSendWebSocketMessage(): Saga {
     // todo: add checks here to move them into the proper game.
     if (gameState.game_code)
         Router.push(`/game/${gameState.game_code}`);
-
-    // yield* sagaDispatch(GameAction.updateGameState(gameStateString));
 }
 
 function* sagaReconnect(): Saga {
 
-    debugger;
+    Cookies
 
     // placeholder
     yield* takePayload(GameAction.dealerPickWinner)

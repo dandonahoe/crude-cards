@@ -28,7 +28,7 @@ import { JoinGameDTO } from './dtos/join-game.dto';
 import { ExitGameDTO } from './dtos/exit-game.dto';
 import { Player } from '../player/player.entity';
 import { PlayerDTO } from './dtos/player.dto';
-import { DisconnectPlayer } from '../type';
+import { CookieType, DisconnectPlayer } from '../type';
 import { Repository } from 'typeorm';
 import { Game } from './game.entity';
 import { difference } from 'lodash';
@@ -66,6 +66,8 @@ export class GameService {
     public findPlayerBySocket = async (socket: Socket) =>
         this.playerService.findPlayerBySocket(socket);
 
+    private getConnectionAuthToken = (socket: Socket) =>
+        socket.handshake.auth[CookieType.AuthToken] as string;
     /**
      * Connects a player via socket, handles reconnection if the auth token is valid,
      * or creates a new player if no valid auth token is found.
@@ -77,28 +79,73 @@ export class GameService {
     public connectPlayer = async (socket: Socket) => {
         this.log.silly('GameService::connectPlayer', { socketId : socket.id });
 
-        const authToken = socket.handshake.auth.authToken as string;
+        // Logic Flow
 
-        if (authToken) {
-            this.log.info('Auth token found in socket', { authToken, socketId : socket.id });
+        // If the users token is valid, and their game is active, pick the existing player
+        // and put them back into the game. We need to add a flag to have a player wait in the lobby until the next hand begins.
+        // If they player was the dealer, they do not regain dealer status unless there are only 3 players.
 
-            const existingPlayer = await this.tryRejoinExistingPlayer(socket, authToken);
+        // If the dealer leaves mid game, the dealer has 30 seconds to rejoin. If they rejoin in time, the game continues
+        // as normal. If they do not rejoin, tell the players they are all losers and end the game.
 
-            if (existingPlayer) {
-                this.log.info('Player reconnected to private socket room', { playerId : existingPlayer.id });
+        // When any player first loads the game, this method is called and passed whatever AuthToken
+        // value they have in their browser. It may or may not be valid, in that it may just be garbage, outdated
+        // the game is over or other reasons. Valid game tokens are are tied to an existing player in an currently
+        // active game.
 
-                return existingPlayer;
-            }
+        // When the game starts, a game code is generated and a url is updated to reflect the game code,
+        // in the format https://crude.cards/game/{gameCode}. The game code is used to join the game room
+        // more easily when shared. When a player loads the app from a game code url, the regular auth routine
+        // followed to ensure their auth token is valid, then a a check is made with their game code. If the
+        // player is in the game specified by the game code, they are joined to the
+        // game and pur into "Limbo" status, where they wait until the
+        // next hand starts. The current dealer will be prompted to let them into the game, along with other waiting players.
 
-        } else {
-            this.log.info('No auth token found in socket', { socketId : socket.id });
-        }
+        // If if the player uses a game code url for a different game than the one they are currently in, they should
+        // receive a prompt about leaving the current game to join the new one.
 
-        const newPlayer = await this.createNewPlayer(socket);
+        // If the player uses a game code url that matches the AuthToken tied to a an existing player in that game, they
+        // automatically join the "Limbo" status and wait for the next hand to start. The dealer of the game has the chance to let them in,
+        // or skip them. If skipped, the lobby player receives a message they have been removed.
+        // If accepted, the player joins the game as usual at the start of the next player round.
 
-        this.log.info('Player joined private socket room', { playerId : newPlayer.id });
+        // If the player hits the bare homepage, this connection function should lookup the AuthToken player, then
+        // attempt to autojoin the existing game if it is active. If the game is not active, a new player is created for the user
+        // and they remain on the home page.
 
-        return newPlayer;
+        // Just before this websocket connection is made, the AuthToken cookie data is copied and sent here, but deleted
+        // from the browser. The standard flow (this function) is meant to broadcast the AuthToken the regular way
+        // to keep the logic simplified. Plus if something breaks down, their token is cleared and the next page refresh is more
+        // likely to work. not a fix, just a bandaid that happens to be there (log error if this happens though).
+
+
+        // 1. Check if the socket has an auth token
+        //    YES - Try to rejoin the player to their existing room
+
+        //    NO  - Create a new player and join them to a new room
+        // we
+        // const authToken = this.getConnectionAuthToken(socket);
+
+        // if (authToken) {
+        //     this.log.info('Auth token found in socket', { authToken, socketId : socket.id });
+
+        //     const existingPlayer = await this.tryRejoinExistingPlayer(socket, authToken);
+
+        //     if (existingPlayer) {
+        //         this.log.info('Player reconnected to private socket room', { playerId : existingPlayer.id });
+
+        //         return existingPlayer;
+        //     }
+
+        // } else {
+        //     this.log.info('No auth token found in socket', { socketId : socket.id });
+        // }
+
+        // const newPlayer = await this.createNewPlayer(socket);
+
+        // this.log.info('Player joined private socket room', { playerId : newPlayer.id });
+
+        // return newPlayer;
     };
 
     /**
