@@ -5,121 +5,287 @@
 
 Welcome to **Crude Cards**, a real-time, WebSocket-enabled card game designed for both learning and fun! If you've ever played **Cards Against Humanity** or **Apples to Apples**, you already know how to play. This project is built with modern web technologies like **React**, **Next.js**, and **NestJS** to demonstrate technical concepts in a fun and engaging way.
 
-### 🎯 Game Overview
-Crude Cards is a *good* party game for **bad** people. Perfect for casual hangouts or virtual game nights. Real-time play for multiple players via a WebSocket-powered backend. Adaptable for learning games or quizzes.
+<table>
+  <tr>
+    <td valign="top">
+      <h4>🎯 Game Overview</h4>
+      <p>Crude Cards is a <em>good</em> party game for <strong>bad</strong> people. Perfect for casual hangouts or virtual game nights. Real-time play for multiple players via a WebSocket-powered backend. Adaptable for learning games or quizzes.</p>
+    </td>
+    <td valign="top">
+      <h4>🤓 Educational Purpose</h4>
+      <p>More than entertainment—this project is a learning resource for full-stack, real-time app development. Find tutorials on building, deploying, and scaling the app in the cloud.</p>
+    </td>
+  </tr>
+</table>
 
-### 🤓 Educational Purpose
-More than entertainment—this project is a learning resource for full-stack, real-time app development. Find tutorials on building, deploying, and scaling the app in the cloud.
 
-### 🎨 CrudeCards - Game Dev Series
+## 🎨 CrudeCards - Game Dev Series
 
-#### Introduction to the Series
-This article provides an overview of the series, explaining what will be covered and the goals of creating a CAH clone.
+<table cellspacing="0" cellpadding="0" border="0">
+  <tr>
+<td valign="top" align="center"><img src="./internal/wiki/015.webp" alt="001" style="font-family: 'Helvetica Neue Bold', Arial, sans-serif; max-height: 120px;border-radius:12px;"><br><div align="left" style="font-family: 'Helvetica Neue Bold', Arial, sans-serif;"><strong>
+    Introduction to the Series
 
-#### Defining the Project: What and Why
-Detailed description of the CAH clone, including its purpose and goals.
+</strong><br><br>
+    This article provides an overview of the series, explaining what will be covered and the goals of creating a CAH clone.
+</div></td>
+<td valign="top" align="center"><img src="./internal/wiki/002.webp" alt="001" style="font-family: 'Helvetica Neue Bold', Arial, sans-serif; max-height: 120px;border-radius:12px;"><br><div align="left" style="font-family: 'Helvetica Neue Bold', Arial, sans-serif;"><strong>
+    Defining the Project: What and Why
+</strong><br><br>
+    Detailed description of the CAH clone, including its purpose and goals.
+</div></td>
+<td valign="top" align="center"><img src="./internal/wiki/003.webp" alt="001" style="font-family: 'Helvetica Neue Bold', Arial, sans-serif; max-height: 120px;border-radius:12px;"><br><div align="left" style="font-family: 'Helvetica Neue Bold', Arial, sans-serif;"><strong>
+    Defining the Audience and Stakeholders
 
-#### Defining the Audience and Stakeholders
-Identify the target audience and list stakeholders with their roles.
+</strong><br><br>
+    
+</div></td>
+</tr>
 
-#### Defining Stakeholder Personas
-The process of creating example users and applying them to the project.
+<tr>
+<td valign="top" align="center"><img src="./internal/wiki/010.webp" alt="001" style="font-family: 'Helvetica Neue Bold', Arial, sans-serif; max-height: 120px;border-radius:12px;"><br><div align="left" style="font-family: 'Helvetica Neue Bold', Arial, sans-serif;"><strong>
+    Defining Stakeholder Personas
 
-#### Conducting In-Person Testing and Gathering Feedback
-Methods for in-person testing and how to gather and analyze feedback.
+</strong><br><br>
+The process of creating example users and applying    
+</div></td>
+<td valign="top" align="center"><img src="./internal/wiki/005.webp" alt="001" style="font-family: 'Helvetica Neue Bold', Arial, sans-serif; max-height: 120px;border-radius:12px;"><br><div align="left" style="font-family: 'Helvetica Neue Bold', Arial, sans-serif;"><strong>
+    Conducting In-Person Testing and Gathering Feedback
 
-#### Creating Mockups and Prototypes
-Tools and techniques for creating mockups and prototypes, emphasizing their importance.
+</strong><br><br>
+Methods for in-person testing and how to gather and analyze feedback.    
+</div></td>
+<td valign="top" align="center"><img src="./internal/wiki/006.webp" alt="001" style="font-family: 'Helvetica Neue Bold', Arial, sans-serif; max-height: 120px;border-radius:12px;"><br><div align="left" style="font-family: 'Helvetica Neue Bold', Arial, sans-serif;"><strong>
+    Creating Mockups and Prototypes
 
-#### Choosing the Tech Stack
-Detailed explanation of the tech stack and reasons for choosing each technology.
+</strong><br><br>
+Tools and techniques for creating mockups and prototypes, emphasizing their importance.    
+</div></td>
+</tr>
 
-#### High-Level Application Architecture
-Overview of the application architecture, key components, and their interactions.
+<tr>
+<td valign="top" align="center"><img src="./internal/wiki/007.webp" alt="001" style="font-family: 'Helvetica Neue Bold', Arial, sans-serif; max-height: 120px;border-radius:12px;"><br><div align="left" style="font-family: 'Helvetica Neue Bold', Arial, sans-serif;"><strong>
+    Choosing the Tech Stack
 
-#### Version Control and Collaboration
-Importance of version control and best practices for collaboration.
+</strong><br><br>
+Detailed explanation of the tech stack and reasons for choosing each technology.    
+</div></td>
+<td valign="top" align="center"><img src="./internal/wiki/008.webp" alt="001" style="font-family: 'Helvetica Neue Bold', Arial, sans-serif; max-height: 120px;border-radius:12px;"><br><div align="left" style="font-family: 'Helvetica Neue Bold', Arial, sans-serif;"><strong>
+    High-Level Application Architecture
 
-#### Implementing CI/CD Pipelines
-Setting up continuous integration and deployment pipelines, including tools and best practices.
+</strong><br><br>
+Overview of the application architecture, key components, and their interactions.    
+</div></td>
+<td valign="top" align="center"><img src="./internal/wiki/009.webp" alt="001" style="font-family: 'Helvetica Neue Bold', Arial, sans-serif; max-height: 120px;border-radius:12px;"><br><div align="left" style="font-family: 'Helvetica Neue Bold', Arial, sans-serif;"><strong>
+    
+</strong><br><br>
+    
+</div></td>
+</tr>
 
-#### Managing Cloud Infrastructure with Terraform
-Building the User Interface with React. Basics of React for building the UI, including component structure and state management.
+<tr>
+<td valign="top" align="center"><img src="./internal/wiki/010.webp" alt="001" style="font-family: 'Helvetica Neue Bold', Arial, sans-serif; max-height: 120px;border-radius:12px;"><br><div align="left" style="font-family: 'Helvetica Neue Bold', Arial, sans-serif;"><strong>
+    Version Control and Collaboration
 
-#### Frontend State Management
-Introduction to Redux for managing application state, with examples.
+</strong><br><br>
+Importance of version control and best practices for collaboration.    
+</div></td>
+<td valign="top" align="center"><img src="./internal/wiki/011.webp" alt="001" style="font-family: 'Helvetica Neue Bold', Arial, sans-serif; max-height: 120px;border-radius:12px;"><br><div align="left" style="font-family: 'Helvetica Neue Bold', Arial, sans-serif;"><strong>
+    Implementing CI/CD Pipelines
 
-#### Architecting Cloud Infrastructure
-Designing the cloud infrastructure using services like Kubernetes and Docker.
+</strong><br><br>
+Setting up continuous integration and deployment pipelines, including tools and best practices.    
+</div></td>
+<td valign="top" align="center"><img src="./internal/wiki/012.webp" alt="001" style="font-family: 'Helvetica Neue Bold', Arial, sans-serif; max-height: 120px;border-radius:12px;"><br><div align="left" style="font-family: 'Helvetica Neue Bold', Arial, sans-serif;"><strong>
+    Managing Cloud Infrastructure with Terraform	
 
-#### Setting Up the Node.js Backend
-Basics of Node.js and Express, including how to structure the backend.
+</strong><br><br>
+Building the User Interface with React
+Basics of React for building the user interface, including component structure and state management.    
+</div></td>
+</tr>
 
-#### Connecting the Frontend and Backend
-How to connect a React frontend with a Node.js backend, including setting up API routes and handling requests.
+<tr>
+<td valign="top" align="center"><img src="./internal/wiki/013.webp" alt="001" style="font-family: 'Helvetica Neue Bold', Arial, sans-serif; max-height: 120px;border-radius:12px;"><br><div align="left" style="font-family: 'Helvetica Neue Bold', Arial, sans-serif;"><strong>
+Frontend State Management
 
-#### Quality Assurance and Testing
-Overview of testing methodologies including unit, integration, and end-to-end testing, and the tools used for each.
+</strong><br><br>
+Introduction to Redux for managing application state, with examples.    
+</div></td>
+<td valign="top" align="center"><img src="./internal/wiki/016.webp" alt="001" style="font-family: 'Helvetica Neue Bold', Arial, sans-serif; max-height: 120px;border-radius:12px;"><br><div align="left" style="font-family: 'Helvetica Neue Bold', Arial, sans-serif;"><strong>
+    Architecting Cloud Infrastructure
 
-#### Steps to Deploy the App on GCP
-Including tools and best practices for deployment.
+</strong><br><br>
+Designing the cloud infrastructure using services like Kubernetes and Docker.    
+</div></td>
+<td valign="top" align="center"><img src="./internal/wiki/015.webp" alt="001" style="font-family: 'Helvetica Neue Bold', Arial, sans-serif; max-height: 120px;border-radius:12px;"><br><div align="left" style="font-family: 'Helvetica Neue Bold', Arial, sans-serif;"><strong>
+    Setting Up the Node.js Backend
 
-#### Maintaining the Application
-Regular maintenance tasks and best practices for keeping the app up-to-date.
+</strong><br><br>
+Basics of Node.js and Express, including how to structure the backend.    
+</div></td>
+</tr>
 
-#### Performance Tuning
-Techniques for improving performance, including profiling and optimization.
+<tr>
+<td valign="top" align="center"><img src="./internal/wiki/016.webp" alt="001" style="font-family: 'Helvetica Neue Bold', Arial, sans-serif; max-height: 120px;border-radius:12px;"><br><div align="left" style="font-family: 'Helvetica Neue Bold', Arial, sans-serif;"><strong>
+    Connecting the Frontend and Backend
+</strong><br><br>
+How to connect a React frontend with a Node.js backend, including setting up API routes and handling requests.    
+</div></td>
+<td valign="top" align="center"><img src="./internal/wiki/010.webp" alt="001" style="font-family: 'Helvetica Neue Bold', Arial, sans-serif; max-height: 120px;border-radius:12px;"><br><div align="left" style="font-family: 'Helvetica Neue Bold', Arial, sans-serif;"><strong>
+    Quality Assurance and Testing
+</strong><br><br>
+Overview of testing methodologies including unit, integration, and end-to-end testing, and the tools used for each.    
+</div></td>
+<td valign="top" align="center"><img src="./internal/wiki/002.webp" alt="001" style="font-family: 'Helvetica Neue Bold', Arial, sans-serif; max-height: 120px;border-radius:12px;"><br><div align="left" style="font-family: 'Helvetica Neue Bold', Arial, sans-serif;"><strong>
+    Steps to deploy the app on GCP, including tools and best practices for deployment.
 
-#### Cost Management and Optimization
-Strategies for reducing costs, monitoring, and optimizing cloud expenses.
+</strong><br><br>
+    Description here. Beep Beep Boop.
+</div></td>
+</tr>
 
----
+<tr>
+<td valign="top" align="center"><img src="./internal/wiki/003.webp" alt="001" style="font-family: 'Helvetica Neue Bold', Arial, sans-serif; max-height: 120px;border-radius:12px;"><br><div align="left" style="font-family: 'Helvetica Neue Bold', Arial, sans-serif;"><strong>
+    Maintaining the Application
+
+</strong><br><br>
+Regular maintenance tasks and best practices for keeping the app up-to-date.    
+</div></td>
+<td valign="top" align="center"><img src="./internal/wiki/013.webp" alt="001" style="font-family: 'Helvetica Neue Bold', Arial, sans-serif; max-height: 120px;border-radius:12px;"><br><div align="left" style="font-family: 'Helvetica Neue Bold', Arial, sans-serif;"><strong>
+    Performance Tuning
+</strong><br><br>
+    Techniques for improving performance, including profiling and optimization.
+</div></td>
+<td valign="top" align="center"><img src="./internal/wiki/005.webp" alt="001" style="font-family: 'Helvetica Neue Bold', Arial, sans-serif; max-height: 120px;border-radius:12px;"><br><div align="left" style="font-family: 'Helvetica Neue Bold', Arial, sans-serif;"><strong>
+    Cost Management and Optimization
+</strong><br><br>
+    Strategies for reducing costs, monitoring and optimizing cloud expenses.
+</div></td>
+</tr>
+
+
+
+</table>
 
 ## 🚀 Tech Stack
 
 The tech stack is carefully chosen to showcase modern full-stack development practices. Here's a breakdown:
 
-| Layer           | Technology                              | Purpose                                               |
-| --------------- | --------------------------------------- | ----------------------------------------------------- |
-| **Frontend**    | ![React](https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg) **React** | UI development and rendering                          |
-|                 | ![Next.js](https://nextjs.org/static/favicon/favicon-16x16.png) **Next.js**  | Server-side rendering, routing, and API endpoints     |
-|                 | ![Mantine](https://mantine.dev/logo.svg) **Mantine** | UI components and styling                             |
-|                 | ![Redux](https://redux.js.org/img/redux.svg) **Redux Toolkit** | State management                                      |
-|                 | ![Socket.io](https://socket.io/images/logo.svg) **Socket.io Client** | Real-time communication                               |
-| **Backend**     | ![NestJS](https://d33wubrfki0l68.cloudfront.net/7f119d8c2e5d7e0516c9da5b7bbf08915311cb7a/83f17/img/logo.png) **NestJS** | Backend framework                                     |
-|                 | ![TypeORM](https://typeorm.io/img/logo.svg) **TypeORM** | Database ORM for managing entities and migrations     |
-|                 | ![Socket.io](https://socket.io/images/logo.svg) **Socket.io** | WebSocket server for real-time events                 |
-| **Infrastructure** | ![GCP](https://www.gstatic.com/devrel-devsite/prod/vfc07da888bba76c1c4c003a198d6e61b87696b912bbbe11354581a64d0862c38/cloud/images/favicons/onecloud/favicon.ico) **GCP** | Cloud hosting and deployment                           |
-|                 | ![Docker](https://www.docker.com/wp-content/uploads/2022/03/Moby-logo.png) **Docker** | Containerization                                      |
-|                 | ![Terraform](https://www.terraform.io/assets/images/og-image-8b3e4f7d.png) **Terraform** | Infrastructure as Code (IaC)                          |
-| **Testing**     | ![Jest](https://jestjs.io/img/jest.svg) **Jest** | Unit and integration testing                          |
-|                 | ![Testing Library](https://testing-library.com/img/octopus-128x128.png) **Testing Library** | UI testing                                            |
-|                 | ![Storybook](https://storybook.js.org/images/logos/icon-storybook.svg) **Storybook** | Component testing and documentation                   |
+<table style="width:100%">
+  <tr>
+    <th>Layer</th>
+    <th>Technology</th>
+    <th>Purpose</th>
+  </tr>
+  <tr>
+    <td>Frontend</td>
+    <td><img src="https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg" alt="React" width="20"/> React</td>
+    <td>UI development and rendering</td>
+  </tr>
+  <tr>
+    <td></td>
+    <td><img src="https://nextjs.org/static/favicon/favicon-16x16.png" alt="Next.js" width="20"/> Next.js</td>
+    <td>Server-side rendering, routing, and API endpoints</td>
+  </tr>
+  <tr>
+    <td></td>
+    <td><img src="https://mantine.dev/logo.svg" alt="Mantine" width="20"/> Mantine</td>
+    <td>UI components and styling</td>
+  </tr>
+  <tr>
+    <td></td>
+    <td><img src="https://redux.js.org/img/redux.svg" alt="Redux Toolkit" width="20"/> Redux Toolkit</td>
+    <td>State management</td>
+  </tr>
+  <tr>
+    <td></td>
+    <td><img src="https://socket.io/images/logo.svg" alt="Socket.io Client" width="20"/> Socket.io Client</td>
+    <td>Real-time communication</td>
+  </tr>
+  <tr>
+    <td>Backend</td>
+    <td><img src="https://d33wubrfki0l68.cloudfront.net/7f119d8c2e5d7e0516c9da5b7bbf08915311cb7a/83f17/img/logo.png" alt="NestJS" width="20"/> NestJS</td>
+    <td>Backend framework</td>
+  </tr>
+  <tr>
+    <td></td>
+    <td><img src="https://typeorm.io/img/logo.svg" alt="TypeORM" width="20"/> TypeORM</td>
+    <td>Database ORM for managing entities and migrations</td>
+  </tr>
+  <tr>
+    <td></td>
+    <td><img src="https://socket.io/images/logo.svg" alt="Socket.io" width="20"/> Socket.io</td>
+    <td>WebSocket server for real-time events</td>
+  </tr>
+  <tr>
+    <td>Infrastructure</td>
+    <td><img src="https://www.gstatic.com/devrel-devsite/prod/vfc07da888bba76c1c4c003a198d6e61b87696b912bbbe11354581a64d0862c38/cloud/images/favicons/onecloud/favicon.ico" alt="GCP" width="20"/> GCP</td>
+    <td>Cloud hosting and deployment</td>
+  </tr>
+  <tr>
+    <td></td>
+    <td><img src="https://www.docker.com/wp-content/uploads/2022/03/Moby-logo.png" alt="Docker" width="20"/> Docker</td>
+    <td>Containerization</td>
+  </tr>
+  <tr>
+    <td></td>
+    <td><img src="https://www.terraform.io/assets/images/og-image-8b3e4f7d.png" alt="Terraform" width="20"/> Terraform</td>
+    <td>Infrastructure as Code (IaC)</td>
+  </tr>
+  <tr>
+    <td>Testing</td>
+    <td><img src="https://jestjs.io/img/jest.svg" alt="Jest" width="20"/> Jest</td>
+    <td>Unit and integration testing</td>
+  </tr>
+  <tr>
+    <td></td>
+    <td><img src="https://testing-library.com/img/octopus-128x128.png" alt="Testing Library" width="20"/> Testing Library</td>
+    <td>UI testing</td>
+  </tr>
+  <tr>
+    <td></td>
+    <td><img src="https://storybook.js.org/images/logos/icon-storybook.svg" alt="Storybook" width="20"/> Storybook</td>
+    <td>Component testing and documentation</td>
+  </tr>
+</table>
 
----
 
-## 📖 Game Rules (Just Like Cards Against Humanity or Apples to Apples)
+## 📖 **Game Rules (Just Like Cards Against Humanity or Apples to Apples)**
 
-### Setup
-1. Players connect to a game session via a room code.
-2. One player is selected as the "Dealer" for each round.
+1. **Setup**: 
+    - Players connect to a game session via a room code.
+    - One player is selected as the "Dealer" for each round.
 
-### Gameplay
-1. The Dealer plays a black card with a prompt or question (e.g., "Why can't I sleep at night?").
-2. The other players choose the funniest white card from their hand to complete the sentence or answer the question.
-3. The Dealer reviews the responses and selects the one they find funniest.
+2. **Gameplay**:
+    - The Dealer plays a black card with a prompt or question (e.g., "Why can't I sleep at night?").
+    - The other players choose the funniest white card from their hand to complete the sentence or answer the question.
+    - The Dealer reviews the responses and selects the one they find funniest.
 
-### Winning
-- The player whose card is chosen wins that round and earns a point.
-- The first player to reach a predefined number of points wins the game.
+3. **Winning**:
+    - The player whose card is chosen wins that round and earns a point.
+    - The first player to reach a predefined number of points wins the game.
 
-### Additional "Fun"
-- The game is customizable with different rule variations to keep things interesting.
+4. **Additional "Fun"**:
+    - The game is customizable with different rule variations to keep things interesting.
 
----
 
-## 💻 How to Run the Game Locally
+## 💻 **How to Run the Game Locally**
 
 1. Clone the repository:
    ```bash
    git clone https://github.com/dandonahoe/crude-cards.git
+   ```
+2. Install dependencies:
+   ```bash
+   pnpm install
+   ```
+3. Run the development server:
+   ```bash
+   pnpm run reset
+   ```
+4. Open [http://localhost:3000](http://localhost:3000) in your browser to view the game.
+
+## 📜 **License**
+
+This project is licensed under a **Creative Commons Attribution-NonCommercial-NoDerivatives (CC BY-NC-ND) License with Custom Terms**. You can learn from it, share it, and use it for educational purposes, but you must obtain permission for commercial use or any significant modifications.
