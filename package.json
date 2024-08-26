@@ -37,7 +37,7 @@
         "job:codebase": "ts-node internal/script/codebase.ts",
         "job:disable-snooping": "next telemetry disable",
         "job:docs": "typedoc",
-        "job:relock": "rm -f pnpm-lock.yaml && pnpm install && cd src/api && rm -f pnpm-lock.yaml && pnpm install",
+        "job:relock": "rm -f pnpm-lock.yaml src/api/pnpm-lock.yaml && pnpm install && pnpm --prefix=src/api install",
         "lint": "next lint",
         "lint:all": "TZ=GMT pnpm lint:frontend && pnpm lint:backend && pnpm trunk:check",
         "lint:backend": "TZ=GMT pnpm --prefix src/api run lint",
