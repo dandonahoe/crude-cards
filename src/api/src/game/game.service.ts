@@ -348,6 +348,7 @@ export class GameService {
         transform : true,
     }))
     public async exitGame(
+        server : SocketIOServer,
         @Body(new ZodValidationPipe(ExitGameDTO.Schema))
         exitGame: ExitGameDTO,
     ): P<GameStateDTO> {
@@ -358,6 +359,8 @@ export class GameService {
 
         // Remove the player from the session
         await this.removePlayerFromSession(playerState);
+
+        await this.emitGameUpdate(server, playerState.game.game_code);
 
         // Build and return the game state DTO for the player
         return this.buildGameStateDTO(playerState.game.game_code!, playerState.currentPlayer.id!);
