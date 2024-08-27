@@ -136,6 +136,7 @@ Include a title, bullet points, and statistics in the commit message.
 ${combinedPrompt}`,
     );
 
+    // fully sanitize this to allow simple characters which will not trip up a git commit message
     const sanitizedCommitMessage = finalCommitMessage.replaceAll('`', '').trim();
     console.log(`\n\n\n-------------------------------\nFinal commit message:\n${sanitizedCommitMessage}`);
 

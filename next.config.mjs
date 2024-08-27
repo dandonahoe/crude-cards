@@ -51,7 +51,7 @@ const nextConfig = {
     },
 
     rewrites: () => [{
-        destination: '/game/game_code',
+        destination: '/game',
         source: '/game/:gameCode',
     }, {
         destination: '/contacts/detail',
