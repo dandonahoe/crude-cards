@@ -119,7 +119,7 @@ export class GameService {
         // to join at the next opportunity, which is at the end of the round when the existing
         // dealer is prompted to Accept, Reject or Skip players in Limbo.
 
-        this.joinGame(player, activeGameSession);
+        // this.joinGame(player, activeGameSession);
 
         this.log.info('Player connected', socketRequest);
 

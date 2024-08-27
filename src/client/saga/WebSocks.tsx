@@ -206,7 +206,7 @@ function* sagaSendWebSocketMessage(): Saga {
 
 function* sagaReconnect(): Saga {
 
-    Cookies
+    // Cookies
 
     // placeholder
     yield* takePayload(GameAction.dealerPickWinner)

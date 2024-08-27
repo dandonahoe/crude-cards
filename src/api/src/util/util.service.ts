@@ -1,6 +1,6 @@
-import { faker } from "@faker-js/faker";
-import { Inject, Injectable } from "@nestjs/common";
 import { WINSTON_MODULE_PROVIDER } from "nest-winston";
+import { Inject, Injectable } from "@nestjs/common";
+import { faker } from "@faker-js/faker";
 import { Logger } from "winston";
 
 /**
@@ -33,7 +33,7 @@ export class UtilService {
 
     public constructor(
         @Inject(WINSTON_MODULE_PROVIDER)
-        readonly log: Logger,
+        private readonly log: Logger,
     ) {}
 
 
@@ -50,6 +50,7 @@ export class UtilService {
         maxLength: number = 3,
         maxAttempts: number = 100,
     ) => {
+        this.log.silly('UtilService::startGame', { maxLength, maxAttempts });
 
         if (!maxLength || maxLength <= 0)
             throw new Error(`maxLength should be a positive integer ${maxLength}`);
@@ -68,8 +69,13 @@ export class UtilService {
 
             if (gameCode.length <= maxLength) {
                 const twoDigitNumber = getRandomTwoDigitNumber();
+
                 // Append or prepend the two-digit number
                 gameCode = Math.random() < 0.5 ? `${twoDigitNumber}${gameCode}` : `${gameCode}${twoDigitNumber}`;
+
+                this.log.silly('UtilService::startGame::generated', {
+                    maxLength, maxAttempts, gameCode,
+                });
 
                 return gameCode;
             }
@@ -79,6 +85,10 @@ export class UtilService {
         const twoDigitNumber = getRandomTwoDigitNumber();
         // Append or prepend the two-digit number to the fallback code
         fallbackCode = Math.random() < 0.5 ? `${twoDigitNumber}${fallbackCode}` : `${fallbackCode}${twoDigitNumber}`;
+
+        this.log.silly('UtilService::startGame::generated', {
+            maxLength, maxAttempts, gameCode : fallbackCode,
+        });
 
         return fallbackCode;
     }

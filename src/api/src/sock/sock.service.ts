@@ -18,6 +18,7 @@ export class SockService {
     public getRequestInfoFromSocket = async (
         socket : Socket,
     ) : P<SocketRequest> => {
+
         this.log.silly('SockService::getRequestInfoFromSocket');
 
         const requestUrl = socket.handshake.url;
