@@ -38,13 +38,13 @@ export class UtilService {
 
 
     /**
-     * Generates a random game code.
-     *
-     * @param maxLength - The maximum length of the game code.
-     * @param maxAttempts - The maximum number of attempts to generate a valid game code.
-     * @returns A promise that resolves to a valid game code.
-     * @throws An error if unable to generate a valid game code within the specified constraints.
-     */
+ * Generates a random game code.
+ *
+ * @param maxLength - The maximum length of the game code.
+ * @param maxAttempts - The maximum number of attempts to generate a valid game code.
+ * @returns A promise that resolves to a valid game code.
+ * @throws An error if unable to generate a valid game code within the specified constraints.
+ */
 
     public generateGameCode = async (
         maxLength: number = 3,
@@ -58,8 +58,8 @@ export class UtilService {
         if (!maxAttempts || maxAttempts <= 0)
             throw new Error(`maxAttempts should be a positive integer ${maxAttempts}`);
 
-        const getRandomGameCode = (): string =>
-            gameCodes[Math.floor(Math.random() * gameCodes.length)];
+    const getRandomGameCode = (): string =>
+        gameCodes[Math.floor(Math.random() * gameCodes.length)];
 
         const getRandomTwoDigitNumber = (): string =>
             Math.floor(10 + Math.random() * 90).toString();
