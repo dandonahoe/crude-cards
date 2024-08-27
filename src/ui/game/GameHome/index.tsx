@@ -45,7 +45,7 @@ export const GameHome : RFC = () => {
     const homepageUrl = Env.getValue<string>('NEXT_PUBLIC_BROWSER_WINDOW_LOCATION_ORIGIN');
 
     const handleResize = () : void => {
-        const _newWindow = window.open(homepageUrl, 'Cards Against Humanity', 'width=550,height=800');
+        window.open(homepageUrl, 'CrudeCards', 'width=550,height=800');
     };
 
     return (

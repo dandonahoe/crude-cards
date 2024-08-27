@@ -1,27 +1,46 @@
 {
     "version": "0.2.0",
+    "compounds": [
+        {
+            "name": "CrudeCards: Multi Browser",
+            "configurations": [
+                "CC: Full Stack",
+                "CC: Backend",
+                "CC: Multi Browser"
+            ]
+        },
+        {
+            "name": "CC: Full Stack Single Browser",
+            "configurations": [
+                "CC: Full Stack",
+                "CC: Backend",
+            ]
+        }
+    ],
     "configurations": [
         {
             "type": "node",
             "request": "launch",
-            "name": "CW: Backend",
+            "name": "CC: Backend",
             "skipFiles": [
                 "<node_internals>/**"
             ],
             "program": "${workspaceFolder}/src/api/src/main.ts",
             "console": "integratedTerminal",
-            "cwd": "${workspaceFolder}/src/api",
-            "runtimeExecutable": "npm",
+            // "cwd": "${workspaceFolder}/src/api",
+            "runtimeExecutable": "pnpm",
             "runtimeArgs": [
+                "--prefix",
+                "src/api",
                 "run",
                 "start:dev"
             ]
         },
         {
-            "name": "CW: Full Stack",
+            "name": "CC: Full Stack",
             "type": "node-terminal",
             "request": "launch",
-            "command": "npm run dev",
+            "command": "pnpm run dev",
             "serverReadyAction": {
                 "pattern": "- Local:.+(https?://.+)",
                 "uriFormat": "%s",
@@ -29,39 +48,22 @@
             }
         },
         {
-            "name": "CW: Storybook",
+            "name": "CrudeCards: Storybook",
             "type": "node-terminal",
             "request": "launch",
-            "command": "npm run storybook"
+            "command": "pnpm run storybook"
         },
         {
-            "name": "CW: Next.js Server",
+            "name": "CrudeCards: Next.js Server",
             "type": "node-terminal",
             "request": "launch",
-            "command": "npm run dev"
+            "command": "pnpm run dev"
         },
         {
-            "name": "CW: Multi Browser",
+            "name": "CC: Multi Browser",
             "type": "node-terminal",
             "request": "launch",
-            "command": "npm run puppet"
+            "command": "pnpm run puppet"
         }
     ],
-    "compounds": [
-        {
-            "name": "CW: Launch Multi Browser",
-            "configurations": [
-                "CW: Full Stack",
-                "CW: Backend",
-                "CW: Multi Browser"
-            ]
-        },
-        {
-            "name": "CW: Full Stack Single Browser",
-            "configurations": [
-                "CW: Full Stack",
-                "CW: Backend",
-            ]
-        }
-    ]
 }

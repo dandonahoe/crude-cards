@@ -1,6 +1,6 @@
-import { faker } from "@faker-js/faker";
-import { Inject, Injectable } from "@nestjs/common";
 import { WINSTON_MODULE_PROVIDER } from "nest-winston";
+import { Inject, Injectable } from "@nestjs/common";
+import { faker } from "@faker-js/faker";
 import { Logger } from "winston";
 
 /**
@@ -31,55 +31,67 @@ const gameCodes: string[] = [
 @Injectable()
 export class UtilService {
 
-    @Inject(WINSTON_MODULE_PROVIDER)
-    private readonly log: Logger;
+    public constructor(
+        @Inject(WINSTON_MODULE_PROVIDER)
+        private readonly log: Logger,
+    ) {}
+
 
     /**
- * Generates a random game code.
- *
- * @param maxLength - The maximum length of the game code.
- * @param maxAttempts - The maximum number of attempts to generate a valid game code.
- * @returns A promise that resolves to a valid game code.
- * @throws An error if unable to generate a valid game code within the specified constraints.
- */
+     * Generates a random game code.
+     *
+     * @param maxLength - The maximum length of the game code.
+     * @param maxAttempts - The maximum number of attempts to generate a valid game code.
+     * @returns A promise that resolves to a valid game code.
+     * @throws An error if unable to generate a valid game code within the specified constraints.
+     */
 
-public generateGameCode = async (
-    maxLength   : number = 3,
-    maxAttempts : number = 100,
-) => {
+    public generateGameCode = async (
+        maxLength: number = 3,
+        maxAttempts: number = 100,
+    ) => {
+        this.log.silly('UtilService::startGame', { maxLength, maxAttempts });
 
-    if(!maxLength || maxLength <= 0)
-        throw new Error(`maxLength should be a positive integer ${maxLength}`);
+        if (!maxLength || maxLength <= 0)
+            throw new Error(`maxLength should be a positive integer ${maxLength}`);
 
-    if(!maxAttempts || maxAttempts <= 0)
-        throw new Error(`maxAttempts should be a positive integer ${maxAttempts}`);
+        if (!maxAttempts || maxAttempts <= 0)
+            throw new Error(`maxAttempts should be a positive integer ${maxAttempts}`);
 
-    const getRandomGameCode = (): string =>
-        gameCodes[Math.floor(Math.random() * gameCodes.length)];
+        const getRandomGameCode = (): string =>
+            gameCodes[Math.floor(Math.random() * gameCodes.length)];
 
-    const getRandomTwoDigitNumber = (): string =>
-        Math.floor(10 + Math.random() * 90).toString();
+        const getRandomTwoDigitNumber = (): string =>
+            Math.floor(10 + Math.random() * 90).toString();
 
-    for (let attempt = 0; attempt < maxAttempts; attempt++) {
-        let gameCode = getRandomGameCode();
+        for (let attempt = 0; attempt < maxAttempts; attempt++) {
+            let gameCode = getRandomGameCode();
 
-        if (gameCode.length <= maxLength) {
-            const twoDigitNumber = getRandomTwoDigitNumber();
-            // Append or prepend the two-digit number
-            gameCode = Math.random() < 0.5 ? `${twoDigitNumber}${gameCode}` : `${gameCode}${twoDigitNumber}`;
+            if (gameCode.length <= maxLength) {
+                const twoDigitNumber = getRandomTwoDigitNumber();
 
-            return gameCode;
+                // Append or prepend the two-digit number
+                gameCode = Math.random() < 0.5 ? `${twoDigitNumber}${gameCode}` : `${gameCode}${twoDigitNumber}`;
+
+                this.log.silly('UtilService::startGame::generated', {
+                    maxLength, maxAttempts, gameCode,
+                });
+
+                return gameCode;
+            }
         }
+
+        let fallbackCode = faker.string.alpha(maxLength);
+        const twoDigitNumber = getRandomTwoDigitNumber();
+        // Append or prepend the two-digit number to the fallback code
+        fallbackCode = Math.random() < 0.5 ? `${twoDigitNumber}${fallbackCode}` : `${fallbackCode}${twoDigitNumber}`;
+
+        this.log.silly('UtilService::startGame::generated', {
+            maxLength, maxAttempts, gameCode : fallbackCode,
+        });
+
+        return fallbackCode;
     }
-
-    let fallbackCode = faker.string.alpha(maxLength);
-    const twoDigitNumber = getRandomTwoDigitNumber();
-    // Append or prepend the two-digit number to the fallback code
-    fallbackCode = Math.random() < 0.5 ? `${twoDigitNumber}${fallbackCode}` : `${fallbackCode}${twoDigitNumber}`;
-
-    return fallbackCode;
-}
-
 }
 
 // Exporting the gameCodes array for testing purposes

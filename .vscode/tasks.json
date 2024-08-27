@@ -9,7 +9,7 @@
                 "isDefault": true
             },
             "problemMatcher": [],
-            "label": "CW: Build All",
+            "label": "CrudeCards: Build All",
             "detail": "Builds the front and back end",
             "presentation": {
                 "reveal": "always",
