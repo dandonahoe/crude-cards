@@ -4,16 +4,16 @@
         {
             "name": "CrudeCards: Multi Browser",
             "configurations": [
-                "CC: Full Stack",
-                "CC: Backend",
-                "CC: Multi Browser"
+                "Frontend",
+                "Backend",
+                "Multi Browser"
             ]
         },
         {
-            "name": "CC: Full Stack Single Browser",
+            "name": "CrudeCards: Single Browser",
             "configurations": [
-                "CC: Full Stack",
-                "CC: Backend",
+                "Frontend",
+                "Backend",
             ]
         }
     ],
@@ -21,7 +21,7 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "CC: Backend",
+            "name": "Backend",
             "skipFiles": [
                 "<node_internals>/**"
             ],
@@ -37,7 +37,7 @@
             ]
         },
         {
-            "name": "CC: Full Stack",
+            "name": "Frontend",
             "type": "node-terminal",
             "request": "launch",
             "command": "pnpm run dev",
@@ -48,19 +48,13 @@
             }
         },
         {
-            "name": "CrudeCards: Storybook",
+            "name": "Storybook",
             "type": "node-terminal",
             "request": "launch",
             "command": "pnpm run storybook"
         },
         {
-            "name": "CrudeCards: Next.js Server",
-            "type": "node-terminal",
-            "request": "launch",
-            "command": "pnpm run dev"
-        },
-        {
-            "name": "CC: Multi Browser",
+            "name": "Multi Browser",
             "type": "node-terminal",
             "request": "launch",
             "command": "pnpm run puppet"

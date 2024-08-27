@@ -28,6 +28,7 @@ import {
     WebSocketGateway, SubscribeMessage, MessageBody,
     OnGatewayConnection, OnGatewayDisconnect,
     ConnectedSocket, WebSocketServer,
+    WsException,
 } from '@nestjs/websockets';
 
 
@@ -48,53 +49,31 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     ) { }
 
     public handleConnection = async (socket: Socket): P<unknown> => {
+        debugger;
+
         this.log.silly('GameGateway::handleConnection', { socketId : socket.id });
 
-        return handleOnGatewayConnection(socket, this.gameService, this.socketIoServer, this.log);
+        return this.gameService.connectPlayer(socket);
     }
 
     public handleDisconnect = async (socket: Socket): P<unknown> => {
-        this.log.silly('GameGateway:handleDisconnect');
+        debugger;
 
-        return handleOnGatewayDisconnect(socket, this.gameService,
-            this.socketIoServer, this.log);
+        this.log.silly('GameGateway:::handleDisconnect', { socketID : socket.id });
+
+        return this.gameService.disconnectPlayer(socket);
     }
 
-    public broadcastGameUpdateHelper = async (
-        gameCode: string,
-        includeDeck: boolean = false,
-    ) => {
-        this.log.silly('GameGateway::broadcastGameUpdateHelper', {
-            gameCode, includeDeck,
-        });
-
-        return broadcastGameUpdate(gameCode, this.gameService,
-            this.socketIoServer, this.log, includeDeck);
-    }
 
     @AllowPlayerTypes(PlayerType.Player)
     @SubscribeMessage(WebSocketEventType.CreateGame)
     public async createGame(
-        @ConnectedSocket()
-        socket: Socket,
-
         @MessageBody(new ZodValidationPipe(CreateGameDTO.Schema))
         createGame: CreateGameDTO,
     ): P<GameStateDTO> {
         this.log.info('GameGateway::createGame', { createGame });
-        // ('GameGateway::createGame', { createGame });
 
-        const gameState = await this.gameService.createGame(createGame);
-
-        this.log.info('Joining Room:', {
-            room : gameState.game_code,
-        });
-
-        socket.join(gameState.game_code!);
-
-        await this.broadcastGameUpdateHelper(gameState.game_code!);
-
-        return gameState;
+        return this.gameService.createGame(createGame);
     }
 
     @SubscribeMessage(WebSocketEventType.StartGame)
@@ -104,51 +83,29 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     ): P<GameStateDTO> {
         this.log.silly('GameGateway::startGame', { startGame });
 
-        const gameState = await this.gameService.startGame(startGame);
-
-        await this.broadcastGameUpdateHelper(gameState.game_code!, true);
-
-        return gameState;
+        return this.gameService.startGame(startGame);
     }
 
     @AllowPlayerTypes(PlayerType.Player)
     @SubscribeMessage(WebSocketEventType.JoinGame)
     public async joinGame(
-        @ConnectedSocket() socket: Socket,
         @MessageBody(new ZodValidationPipe(JoinGameDTO.Schema))
         joinGame: JoinGameDTO,
     ): P<GameStateDTO> {
         this.log.silly('GameGateway::joinGame', { joinGame });
 
-        const gameState = await this.gameService.joinGame(joinGame);
-
-        if (!gameState.error_message) {
-            socket.join(gameState.game_code!);
-
-            await this.broadcastGameUpdateHelper(gameState.game_code!);
-        }
-
-        return gameState;
+        return this.gameService.joinGame(joinGame);
     }
 
     @AllowPlayerTypes(PlayerType.Player)
     @SubscribeMessage(WebSocketEventType.ExitGame)
     public async exitGame(
-        @ConnectedSocket()
-        socket: Socket,
-
         @MessageBody(new ZodValidationPipe(ExitGameDTO.Schema))
         exitGame: ExitGameDTO,
     ): P<GameStateDTO> {
         this.log.silly('GameGateway::exitGame', { exitGame });
 
-        const gameState = await this.gameService.exitGame(exitGame);
-
-        socket.leave(gameState.current_player_id!);
-
-        await this.broadcastGameUpdateHelper(gameState.game_code!);
-
-        return gameState;
+        return this.gameService.exitGame(exitGame);
     }
 
     @AllowPlayerTypes(PlayerType.Player)
@@ -159,11 +116,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     ): P<GameStateDTO> {
         this.log.silly('GameGateway::playerSelectCard', { playerSelectCard });
 
-        const gameState = await this.gameService.playerSelectCard(playerSelectCard);
-
-        await this.broadcastGameUpdateHelper(gameState.game_code!);
-
-        return gameState;
+        return this.gameService.playerSelectCard(playerSelectCard);
     }
 
     @AllowPlayerTypes(PlayerType.Player, PlayerType.Visitor, PlayerType.Unknown)
@@ -185,11 +138,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     ): P<GameStateDTO> {
         this.log.silly('GameGateway::updateUsername', { updateUsername });
 
-        const gameState = await this.gameService.updateUsername(updateUsername);
-
-        await this.broadcastGameUpdateHelper(gameState.game_code!);
-
-        return gameState;
+        return this.gameService.updateUsername(updateUsername);
     }
 
     @AllowPlayerTypes(PlayerType.Player)
@@ -200,11 +149,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     ): P<GameStateDTO> {
         this.log.silly('GameGateway::dealerPickBlackCard', { dealerPickBlackCard });
 
-        const gameState = await this.gameService.dealerPickBlackCard(dealerPickBlackCard);
-
-        await this.broadcastGameUpdateHelper(gameState.game_code!);
-
-        return gameState;
+        return this.gameService.dealerPickBlackCard(dealerPickBlackCard);
     }
 
     @AllowPlayerTypes(PlayerType.Player)
@@ -215,11 +160,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     ): P<GameStateDTO> {
         this.log.silly('GameGateway::dealerPickWinner', { dealerPickWinner });
 
-        const gameState = await this.gameService.dealerPickWinner(dealerPickWinner);
-
-        await this.broadcastGameUpdateHelper(gameState.game_code!);
-
-        return gameState;
+        return this.gameService.dealerPickWinner(dealerPickWinner);
     }
 
     @AllowPlayerTypes(PlayerType.Player)
@@ -230,10 +171,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     ): P<GameStateDTO> {
         this.log.silly('GameGateway::nextHand', { nextHand });
 
-        const gameState = await this.gameService.nextHand(nextHand);
-
-        await this.broadcastGameUpdateHelper(gameState.game_code!);
-
-        return gameState;
+        return this.gameService.nextHand(nextHand);
     }
 }

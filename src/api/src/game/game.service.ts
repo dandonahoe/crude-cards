@@ -69,7 +69,7 @@ export class GameService {
         this.playerService.findPlayerBySocket(socket);
 
 
-    private getWebSocketAuthToken = (socket: Socket) : string | null =>
+    private getWebSocketAuthToken = (socket: Socket): string | null =>
         socket.handshake.auth[CookieType.AuthToken] ?? null;
 
     /**
@@ -80,10 +80,10 @@ export class GameService {
      *
      * @returns The connected player entity
      */
-    public connectPlayer = async (socket: Socket) : P<Player> => {
+    public connectPlayer = async (socket: Socket): P<Player> => {
         this.log.silly('GameService::connectPlayer', { socketId : socket.id });
 
-        let player : Player | null = null;
+        let player: Player | null = null;
 
         // just obtain formatted info about the request
         const socketRequest = await this.sockService.getRequestInfoFromSocket(socket);
@@ -91,12 +91,12 @@ export class GameService {
         // if there's an auth token, try to find the player. If no auth token
         // then theres no point. If a player is found, it doens't meant they're
         // in an active game, just that we matched it to a player that exists.
-        if(socketRequest.authToken)
-            player = await  this.findPlayerByAuthToken(socket, socketRequest.authToken);
+        if (socketRequest.authToken)
+            player = await this.findPlayerByAuthToken(socket, socketRequest.authToken);
 
         // now either they had no token or the one they had was bogus,
         // so create a new player to work with
-        if(!player)
+        if (!player)
             player = await this.playerService.createPlayer(socketRequest.socketId);
 
         // const game = this.getGameStateByGameCode
@@ -104,7 +104,7 @@ export class GameService {
 
         // Not in any game, reset the token, set them to connected. They will be directed
         // to the home page with root url on the front end.
-        if(!activeGameSession)
+        if (!activeGameSession)
             // ensures they're in a connected state and are set to receive a new auth token
             return this.playerService.connectWithNewAuthToken(player);
 
@@ -252,7 +252,7 @@ export class GameService {
             authToken,
         });
 
-        if(!authToken) return null;
+        if (!authToken) return null;
 
         return this.playerService.getPlayerByAuthToken(authToken);
     };
@@ -791,44 +791,46 @@ export class GameService {
  *
  * @returns The updated game state for the current player
  */
-@UsePipes(new ValidationPipe({ transform : true }))
-public async dealerPickWinner(
-    @Body(new ZodValidationPipe(DealerPickWinnerDTO.Schema))
-    dealerPickWinner: DealerPickWinnerDTO,
-): P<GameStateDTO> {
-    this.log.silly('GameService::dealerPickWinner - Start', dealerPickWinner);
+    @UsePipes(new ValidationPipe({ transform : true }))
+    public async dealerPickWinner(
+        @Body(new ZodValidationPipe(DealerPickWinnerDTO.Schema))
+        dealerPickWinner: DealerPickWinnerDTO,
+    ): P<GameStateDTO> {
+        this.log.silly('GameService::dealerPickWinner - Start', dealerPickWinner);
 
-    this.ensureProperGameState();
-    this.log.debug('Ensured proper game state');
+        this.ensureProperGameState();
+        this.log.debug('Ensured proper game state');
 
-    // Retrieve the player (dealer), game, session, and score log using the provided auth token
-    const {
-        dealer, players, game, session, scoreLog,
-    } = await this.getDealerAndSessionData(dealerPickWinner.auth_token!);
-    this.log.debug('Retrieved dealer and session data', { dealer, players, game, session, scoreLog });
+        // Retrieve the player (dealer), game, session, and score log using the provided auth token
+        const {
+            dealer, players, game, session, scoreLog,
+        } = await this.getDealerAndSessionData(dealerPickWinner.auth_token!);
+        this.log.debug('Retrieved dealer and session data', { dealer, players, game, session, scoreLog });
 
-    // Validate the score log and the dealer
-    this.validateDealerAndScoreLog(dealer, session, scoreLog);
-    this.log.debug('Validated dealer and score log', { dealer, session, scoreLog });
+        // Validate the score log and the dealer
+        this.validateDealerAndScoreLog(dealer, session, scoreLog);
+        this.log.debug('Validated dealer and score log', { dealer, session, scoreLog });
 
-    // Determine the winning player based on the selected card ID
-    const winningPlayer = await this.getWinningPlayer(players, dealerPickWinner.card_id!);
-    this.log.debug('Determined winning player', { winningPlayer, cardId : dealerPickWinner.card_id });
+        // Determine the winning player based on the selected card ID
+        const winningPlayer = await this.getWinningPlayer(players, dealerPickWinner.card_id!);
+        this.log.debug('Determined winning player', { winningPlayer, cardId : dealerPickWinner.card_id });
 
-    // Update the score log and player's score in parallel
-    await this.updateScoreAndPlayer(scoreLog, session, dealer, dealerPickWinner.card_id!, winningPlayer);
-    this.log.debug('Updated score and player', { scoreLog, session, dealer, cardId : dealerPickWinner.card_id, winningPlayer });
+        // Update the score log and player's score in parallel
+        await this.updateScoreAndPlayer(scoreLog, session, dealer, dealerPickWinner.card_id!, winningPlayer);
+        this.log.debug('Updated score and player', { scoreLog, session, dealer, cardId : dealerPickWinner.card_id, winningPlayer });
 
-    // Check if the game is complete and progress to the next stage accordingly
-    await this.progressGameOrShowHandResults(game, session, winningPlayer);
-    this.log.debug('Progressed game or showed hand results', { game, session, winningPlayer });
+        // Check if the game is complete and progress to the next stage accordingly
+        await this.progressGameOrShowHandResults(game, session, winningPlayer);
+        this.log.debug('Progressed game or showed hand results', { game, session, winningPlayer });
 
-    // Return the updated game state for the dealer
-    const gameState = await this.getGameStateAsPlayer(game.game_code!, dealer.id!);
-    this.log.silly('GameService::dealerPickWinner - End', gameState);
+        // Return the updated game state for the dealer
+        const gameState = await this.getGameStateAsPlayer(game.game_code!, dealer.id!);
+        this.log.silly('GameService::dealerPickWinner - End', gameState);
 
-    return gameState;
-}
+        await this.emaitGameUpdate(gameState.game_code!);
+
+        return gameState;
+    }
 
 
     /**
@@ -970,6 +972,8 @@ public async dealerPickWinner(
         // Set up the game session with the retrieved cards
         await this.setupGameSession(session, currentPlayer, allBlackCardIds, allWhiteCardIds);
 
+        await this.emaitGameUpdate(gameState.game_code, true);
+
         // Return the updated game state for the current player
         return this.getGameStateAsPlayer(game.game_code!, currentPlayer.id!);
     }
@@ -1110,6 +1114,8 @@ public async dealerPickWinner(
         // Update the player's username using the player service
         await this.playerService.updateUsername(currentPlayer, updateUsername.username);
 
+        await this.emaitGameUpdate(gameState.game_code!);
+
         // Return the updated game state for the current player
         return this.getGameStateAsPlayer(game.game_code!, currentPlayer.id!);
     }
@@ -1153,6 +1159,8 @@ public async dealerPickWinner(
             // Transition the game to the dealer's selection stage if all players have selected
             await this.gameSessionService.gotoDealerPickWinnerStage(session);
 
+
+        await this.emaitGameUpdate(gameState.game_code!);
 
         // Return the updated game state for the current player
         return this.getGameStateAsPlayer(game.game_code!, currentPlayer.id!);
@@ -1210,50 +1218,33 @@ public async dealerPickWinner(
         joinGame: JoinGameDTO,
     ): P<GameStateDTO> {
 
-        // todo: get rid of this try/catch block and handle api errors centrally
-        // with customized exceptions
 
-        try {
-            this.log.silly('GameService::joinGame', { joinGame });
+        this.log.silly('GameService::joinGame', { joinGame });
 
-            // The times when a game is joined is when
-            // 1 - A player enters the code and joins the game
-            // 2 - A player hits refresh and rejoins the game
-            // 3 - A player leaves the game and rejoins the game
-            // 4 - A player receives a custom url with a game code such as /game/dog
+        // The times when a game is joined is when
+        // 1 - A player enters the code and joins the game
+        // 2 - A player hits refresh and rejoins the game
+        // 3 - A player leaves the game and rejoins the game
+        // 4 - A player receives a custom url with a game code such as /game/dog
 
-            // At this point, the player has been created and should have a valid
-            // auth token
-            const { session, game } = await this.getGameStateByGameCode(joinGame.game_code!);
-            let { currentPlayer } = await this.getPlayerStateByAuthToken(joinGame.auth_token!);
+        // At this point, the player has been created and should have a valid
+        // auth token
+        const { session, game } = await this.getGameStateByGameCode(joinGame.game_code!);
+        let { currentPlayer } = await this.getPlayerStateByAuthToken(joinGame.auth_token!);
 
-            if (session.game_stage !== GameStage.Lobby)
-                throw new WebSockException('Game already started, idiot.');
+        if (session.game_stage !== GameStage.Lobby)
+            throw new WebSockException('Game already started, idiot.');
 
-            currentPlayer = await this.playerService.ensureReadyToJoin(currentPlayer);
+        currentPlayer = await this.playerService.ensureReadyToJoin(currentPlayer);
 
-            await this.gameSessionService.addPlayerToSession(currentPlayer, session);
+        await this.gameSessionService.addPlayerToSession(currentPlayer, session);
 
-            return this.getGameStateAsPlayer(
-                game.game_code!, currentPlayer.id, true);
+        await this.emaitGameUpdate(gameState.game_code!);
 
-        } catch (exc) {
-            if (exc instanceof WebSockException)
-                return {
-                    ...GameStateDTO.Default,
-                    error_message : exc.message,
-                }
-            else if (exc instanceof Error)
-                return {
-                    ...GameStateDTO.Default,
-                    error_message : exc.message,
-                }
-            else
-                return {
-                    ...GameStateDTO.Default,
-                    error_message : 'An unknown error occurred: ' + JSON.stringify(exc),
-                }
-        }
+        return this.getGameStateAsPlayer(
+            game.game_code!, currentPlayer.id, true);
+
+
     }
 
     /**
