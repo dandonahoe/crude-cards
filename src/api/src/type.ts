@@ -1,6 +1,15 @@
 import { Player } from './player/player.entity';
 import { Game } from './game/game.entity';
 
+
+type NullableString = string | null;
+
+
+export type AuthToken = NullableString;
+export type SocketID  = NullableString;
+export type GameCode  = NullableString;
+
+
 // Enum representing different types of timers used in the game.
 export enum TimerType {
     // Timer for the stage where players select a white card.

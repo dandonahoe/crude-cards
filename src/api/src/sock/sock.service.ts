@@ -1,8 +1,8 @@
 import { WINSTON_MODULE_PROVIDER } from "nest-winston";
 import { Inject, Injectable } from "@nestjs/common";
 import { P } from '../../../type/framework/data/P';
-import { AuthToken, SocketID, SocketRequest } from './type';
-import { CookieType } from '../type';
+import { SocketRequest } from './type';
+import { AuthToken, CookieType, SocketID } from '../type';
 import { Socket } from "socket.io";
 import { Logger } from "winston";
 
@@ -21,16 +21,14 @@ export class SockService {
 
         this.log.silly('SockService::getRequestInfoFromSocket');
 
-        const requestUrl = socket.handshake.url;
 
         const authToken : AuthToken = socket.handshake.auth[CookieType.AuthToken] ?? null;
         const socketId  : SocketID = socket.id;
 
         // todo: get the game code form the url
-        debugger;
 
         const socketRequest : SocketRequest = {
-            socketId,requestUrl, authToken, gameCode : '123xyz',
+            socketId, authToken, gameCode : 'todo',
         };
 
         this.log.silly('SockService::getRequestInfoFromSocket:response', socketRequest);

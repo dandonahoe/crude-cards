@@ -46,8 +46,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     ) { }
 
     public handleConnection = async (socket: Socket): P<unknown> => {
-        debugger;
-
         this.log.silly('GameGateway::handleConnection', { socketId : socket.id });
 
         return this.gameService.connectPlayer(socket);

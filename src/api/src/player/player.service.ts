@@ -16,10 +16,10 @@ import { P } from '../../../type/framework/data/P';
 import { In, IsNull, Repository } from 'typeorm';
 import { Player } from './player.entity';
 import { faker } from '@faker-js/faker';
-import { SocketID, AuthToken } from '../sock/type';
 import { Socket } from 'socket.io';
 import { v4 as uuid } from 'uuid';
 import { Logger } from 'winston';
+import { SocketID, AuthToken } from '../type';
 
 // @ai-lint-begin @ruleset/custom-name @ruleset/require-name @rule/import-line-length-descending
 
