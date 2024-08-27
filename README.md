@@ -357,7 +357,7 @@ The tech stack is carefully chosen to showcase modern full-stack development pra
 
 2. **Gameplay**:
 
-    - The Dealer plays a black card with a prompt or question e.g., "Wy can't I sleep at night?").
+    - The Dealer plays a black card with a prompt or question e.g., "Wy can't I sleep at night?")
     - The other players choose the funniest white card from their hand to complete the sentence or answer the question.
     - The Dealer reviews the responses and selects the one they find funniest.
 
