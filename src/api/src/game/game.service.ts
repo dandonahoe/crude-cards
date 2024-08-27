@@ -1,6 +1,7 @@
 import { Body, Inject, Injectable, UsePipes, ValidationPipe } from '@nestjs/common';
 import { DealerPickBlackCardDTO } from './dtos/dealer-pick-black-card.dto';
 import { GameSessionService } from '../game-session/game-session.service';
+import { WebSocketEventType } from '../constant/websocket-event.enum';
 import { PlayerSelectCardDTO } from './dtos/player-select-card.dto';
 import { DealerPickWinnerDTO } from './dtos/dealer-pick-winner.dto';
 import { GameSession } from '../game-session/game-session.entity';
@@ -18,6 +19,8 @@ import { type P } from '../../../type/framework/data/P';
 import { Feedback } from '../feedback/feedback.entity';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { CreateGameDTO } from './dtos/create-game.dto';
+import { CookieType, DisconnectPlayer } from '../type';
+import { Server as SocketIOServer } from 'socket.io';
 import { GameStateDTO } from './dtos/game-state.dto';
 import { StartGameDTO } from './dtos/start-game.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -28,8 +31,8 @@ import { NextHandDTO } from './dtos/next-hand.dto';
 import { JoinGameDTO } from './dtos/join-game.dto';
 import { ExitGameDTO } from './dtos/exit-game.dto';
 import { Player } from '../player/player.entity';
+import { WsException } from '@nestjs/websockets';
 import { PlayerDTO } from './dtos/player.dto';
-import { CookieType, DisconnectPlayer } from '../type';
 import { Repository } from 'typeorm';
 import { Game } from './game.entity';
 import { difference } from 'lodash';
@@ -47,13 +50,13 @@ export class GameService {
         @Inject(WINSTON_MODULE_PROVIDER)
         private readonly log: Logger,
 
-        private readonly gameSessionService: GameSessionService,
-        private readonly feedbackService: FeedbackService,
-        private readonly scoreLogService: ScoreLogService,
-        private readonly playerService: PlayerService,
-        private readonly utilService: UtilService,
-        private readonly sockService: SockService,
-        private readonly cardService: CardService,
+        private readonly gameSessionService : GameSessionService,
+        private readonly feedbackService    : FeedbackService,
+        private readonly scoreLogService    : ScoreLogService,
+        private readonly playerService      : PlayerService,
+        private readonly utilService        : UtilService,
+        private readonly sockService        : SockService,
+        private readonly cardService        : CardService,
     ) {
         this.log.silly('GameService::constructor()');
     }
@@ -258,24 +261,6 @@ export class GameService {
     };
 
     /**
-     * Creates a new player, associates the socket, and joins the player to a private room.
-     *
-     * @param socket - The player's socket instance
-     *
-     * @returns The newly created player entity
-     */
-    // private createNewPlayer = async (socket: Socket) => {
-
-    //     const newPlayer = await this.playerService.createPlayer(socket);
-
-    //     this.log.info('New player created', newPlayer);
-
-    //     socket.join(newPlayer.id!);
-
-    //     return newPlayer;
-    // };
-
-    /**
     * Disconnects a player from the game session and handles socket clean-up.
     *
     * @param socket - The player's socket instance
@@ -359,7 +344,9 @@ export class GameService {
      *
      * @returns The updated game state for the exiting player
      */
-    @UsePipes(new ValidationPipe({ transform : true }))
+    @UsePipes(new ValidationPipe({
+        transform : true,
+    }))
     public async exitGame(
         @Body(new ZodValidationPipe(ExitGameDTO.Schema))
         exitGame: ExitGameDTO,
@@ -529,9 +516,10 @@ export class GameService {
      *
      * @returns The submitted feedback entity
      */
-    @UsePipes(new ValidationPipe({ transform : true }))
+    @UsePipes(new ValidationPipe({
+        transform : true,
+    }))
     public async submitFeedback(
-
         @Body(new ZodValidationPipe(SubmitFeedbackDTO.Schema))
         submitFeedback: SubmitFeedbackDTO,
     ): P<Feedback> {
@@ -564,8 +552,11 @@ export class GameService {
      *
      * @returns The updated game state for the current player
      */
-    @UsePipes(new ValidationPipe({ transform : true }))
+    @UsePipes(new ValidationPipe({
+        transform : true,
+    }))
     public async nextHand(
+        server : SocketIOServer,
         @Body(new ZodValidationPipe(NextHandDTO.Schema))
         nextHand: NextHandDTO,
     ): P<GameStateDTO> {
@@ -607,8 +598,10 @@ export class GameService {
             newDealerId, newScoreLog, session,
         );
 
+        await this.emitGameUpdate(server, game.game_code);
+
         // Return the updated game state for the current player
-        return this.getGameStateAsPlayer(game.game_code!, currentPlayer.id!);
+        return this.getGameStateAsPlayer(game.game_code, currentPlayer.id);
     }
 
 
@@ -740,8 +733,11 @@ export class GameService {
      *
      * @returns The updated game state for the current player
      */
-    @UsePipes(new ValidationPipe({ transform : true }))
+    @UsePipes(new ValidationPipe({
+        transform : true,
+    }))
     public async dealerPickBlackCard(
+        server : SocketIOServer,
         @Body(new ZodValidationPipe(DealerPickBlackCardDTO.Schema))
         dealerPickBlackCard: DealerPickBlackCardDTO,
     ): P<GameStateDTO> {
@@ -762,8 +758,10 @@ export class GameService {
         // Await both promises concurrently
         const [{ currentPlayer, game }] = await Promise.all([playerStatePromise, updateSessionPromise]);
 
+        await this.emitGameUpdate(server, game.game_code);
+
         // Return the updated game state for the current player
-        return this.getGameStateAsPlayer(game.game_code!, currentPlayer.id!);
+        return this.getGameStateAsPlayer(game.game_code, currentPlayer.id);
     }
 
 
@@ -791,8 +789,11 @@ export class GameService {
  *
  * @returns The updated game state for the current player
  */
-    @UsePipes(new ValidationPipe({ transform : true }))
+    @UsePipes(new ValidationPipe({
+        transform : true,
+    }))
     public async dealerPickWinner(
+        server : SocketIOServer,
         @Body(new ZodValidationPipe(DealerPickWinnerDTO.Schema))
         dealerPickWinner: DealerPickWinnerDTO,
     ): P<GameStateDTO> {
@@ -824,12 +825,62 @@ export class GameService {
         this.log.debug('Progressed game or showed hand results', { game, session, winningPlayer });
 
         // Return the updated game state for the dealer
-        const gameState = await this.getGameStateAsPlayer(game.game_code!, dealer.id!);
+        const gameState = await this.getGameStateAsPlayer(game.game_code, dealer.id!);
         this.log.silly('GameService::dealerPickWinner - End', gameState);
 
-        await this.emaitGameUpdate(gameState.game_code!);
+        await this.emitGameUpdate(server, gameState.game_code);
 
         return gameState;
+    }
+
+
+    /**
+     * Sends a new auth token to the client
+     *
+     * @param player - The player entity
+     * @param server - The socket.io server instance
+     * @returns
+     */
+    private broadcastUpdatePlayerValidation = async (
+        player: Player,
+        server: SocketIOServer,
+    ) => {
+
+        return server
+            .to(player.id!)
+            .emit(
+                WebSocketEventType.UpdatePlayerValidation,
+                player.auth_token,
+            );
+    }
+
+
+    /**
+     * Broadcasts the game update to all players in the game.
+     *
+     * @param server - The socket.io server instance
+     * @param gameCode - The game code to broadcast the update to
+     * @param includeDeck - Whether to include the deck in the update
+     * @returns A promise that resolves when the game update has been broadcast to all players
+     */
+    private emitGameUpdate = async (
+        server      : SocketIOServer,
+        gameCode    : string | null,
+        includeDeck : boolean = false,
+    ) => {
+        this.log.silly('GameService::broadcastGameUpdate', { gameCode, includeDeck });
+
+        if(!gameCode) throw new WsException(`Invalid game code ${gameCode}`);
+
+        const gameStatusList = await this.getAllPlayersGameStatus(gameCode, includeDeck);
+
+        return Promise.all(
+            gameStatusList.map(gameStatus =>
+                server
+                    .to(gameStatus.current_player_id!)
+                    .emit(WebSocketEventType.UpdateGame, gameStatus),
+            ),
+        );
     }
 
 
@@ -930,15 +981,17 @@ export class GameService {
     }
 
     /**
- * Starts the game by assigning cards to players,
- * setting up the game session, and returning the updated game state.
- *
- * @param startGame - DTO containing the player's authentication token
- * @returns The updated game state for the current player
- */
-    @UsePipes(new ValidationPipe({ transform : true }))
-
+     * Starts the game by assigning cards to players,
+     * setting up the game session, and returning the updated game state.
+     *
+     * @param startGame - DTO containing the player's authentication token
+     * @returns The updated game state for the current player
+    */
+    @UsePipes(new ValidationPipe({
+        transform : true,
+    }))
     public async startGame(
+        server : SocketIOServer,
         @Body(new ZodValidationPipe(StartGameDTO.Schema))
         startGame: StartGameDTO,
     ): P<GameStateDTO> {
@@ -972,10 +1025,10 @@ export class GameService {
         // Set up the game session with the retrieved cards
         await this.setupGameSession(session, currentPlayer, allBlackCardIds, allWhiteCardIds);
 
-        await this.emaitGameUpdate(gameState.game_code, true);
+        await this.emitGameUpdate(server, game.game_code);
 
         // Return the updated game state for the current player
-        return this.getGameStateAsPlayer(game.game_code!, currentPlayer.id!);
+        return this.getGameStateAsPlayer(game.game_code, currentPlayer.id);
     }
 
     /**
@@ -1097,9 +1150,11 @@ export class GameService {
      *
      * @returns The updated game state for the current player
      */
-    @UsePipes(new ValidationPipe({ transform : true }))
+    @UsePipes(new ValidationPipe({
+        transform : true,
+    }))
     public async updateUsername(
-
+        server : SocketIOServer,
         @Body(new ZodValidationPipe(UpdateUsernameDTO.Schema))
         updateUsername: UpdateUsernameDTO,
     ): P<GameStateDTO> {
@@ -1114,10 +1169,10 @@ export class GameService {
         // Update the player's username using the player service
         await this.playerService.updateUsername(currentPlayer, updateUsername.username);
 
-        await this.emaitGameUpdate(gameState.game_code!);
+        await this.emitGameUpdate(server, game.game_code);
 
         // Return the updated game state for the current player
-        return this.getGameStateAsPlayer(game.game_code!, currentPlayer.id!);
+        return this.getGameStateAsPlayer(game.game_code, currentPlayer.id);
     }
 
 
@@ -1130,8 +1185,11 @@ export class GameService {
      *
      * @returns The updated game state for the current player
      */
-    @UsePipes(new ValidationPipe({ transform : true }))
+    @UsePipes(new ValidationPipe({
+        transform : true,
+    }))
     public async playerSelectCard(
+        server : SocketIOServer,
         @Body(new ZodValidationPipe(PlayerSelectCardDTO.Schema))
         playerSelectCard: PlayerSelectCardDTO,
 
@@ -1160,10 +1218,10 @@ export class GameService {
             await this.gameSessionService.gotoDealerPickWinnerStage(session);
 
 
-        await this.emaitGameUpdate(gameState.game_code!);
+        await this.emitGameUpdate(server, game.game_code);
 
         // Return the updated game state for the current player
-        return this.getGameStateAsPlayer(game.game_code!, currentPlayer.id!);
+        return this.getGameStateAsPlayer(game.game_code, currentPlayer.id);
     }
 
 
@@ -1175,8 +1233,11 @@ export class GameService {
      *
      * @returns The game state for the current player after creating the game
      */
-    @UsePipes(new ValidationPipe({ transform : true }))
+    @UsePipes(new ValidationPipe({
+        transform : true,
+    }))
     public async createGame(
+        server : SocketIOServer,
         @Body(new ZodValidationPipe(CreateGameDTO.Schema))
         createGame: CreateGameDTO,
     ): P<GameStateDTO> {
@@ -1209,11 +1270,14 @@ export class GameService {
         await this.gameRepo.update(game.id, { current_session_id : session.id! });
 
         // Return the updated game state for the current player
-        return this.getGameStateAsPlayer(game.game_code!, currentPlayer.id!);
+        return this.getGameStateAsPlayer(game.game_code, currentPlayer.id);
     }
 
-    @UsePipes(new ValidationPipe({ transform : true }))
+    @UsePipes(new ValidationPipe({
+        transform : true,
+    }))
     public async joinGame(
+        server : SocketIOServer,
         @Body(new ZodValidationPipe(JoinGameDTO.Schema))
         joinGame: JoinGameDTO,
     ): P<GameStateDTO> {
@@ -1239,10 +1303,9 @@ export class GameService {
 
         await this.gameSessionService.addPlayerToSession(currentPlayer, session);
 
-        await this.emaitGameUpdate(gameState.game_code!);
+        await this.emitGameUpdate(server, game.game_code);
 
-        return this.getGameStateAsPlayer(
-            game.game_code!, currentPlayer.id, true);
+        return this.getGameStateAsPlayer(game.game_code, currentPlayer.id, true);
 
 
     }
@@ -1260,13 +1323,16 @@ export class GameService {
      * @throws WebSockException if any error occurs while retrieving the game state.
      */
     public getGameStateAsPlayer = async (
-        gameCode: string,
-        playerId: string,
+        gameCode: string | null,
+        playerId: string | null,
         includeDeck: boolean = false,
     ): P<GameStateDTO> => {
         try {
             // Log the beginning of the game state retrieval process
             this.log.silly('GameService::getGameStateAsPlayer - Start', { gameCode, playerId, includeDeck });
+
+            if(!playerId) throw new WebSockException('Invalid player ID');
+            if(!gameCode) throw new WebSockException('Invalid game code');
 
             // Retrieve the game state using helper methods and adjust it to reflect the player's perspective
             const gameState = await this.getGameStateWithPlayerPerspective(gameCode, playerId, includeDeck);
@@ -1335,7 +1401,6 @@ export class GameService {
     private getPlayerOverMaxPoints = async (
         players: Player[], maxPointCount: number,
     ) => {
-
         // Log the beginning of the process
         this.log.silly('GameService::getPlayerOverMaxPoints', {
             maxPointCount, players,
