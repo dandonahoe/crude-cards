@@ -92,15 +92,6 @@ export class UtilService {
 
         return fallbackCode;
     }
-
-    let fallbackCode = faker.string.alpha(maxLength);
-    const twoDigitNumber = getRandomTwoDigitNumber();
-    // Append or prepend the two-digit number to the fallback code
-    fallbackCode = Math.random() < 0.5 ? `${twoDigitNumber}${fallbackCode}` : `${fallbackCode}${twoDigitNumber}`;
-
-    return fallbackCode;
-}
-
 }
 
 // Exporting the gameCodes array for testing purposes
