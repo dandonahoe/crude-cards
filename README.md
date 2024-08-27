@@ -345,7 +345,10 @@ The tech stack is carefully chosen to showcase modern full-stack development pra
   </tr>
 </table>
 
-## 📖 **Game Rules (Just Like Cards Against Humanity or Apples to Apples)**
+## 📖 **Game Rules**
+
+### Kind of Like Cards Against Humanity or Apples to Apples
+
 
 1. **Setup**:
 
@@ -354,7 +357,7 @@ The tech stack is carefully chosen to showcase modern full-stack development pra
 
 2. **Gameplay**:
 
-    - The Dealer plays a black card with a prompt or question (e.g., "Why can't I sleep at night?").
+    - The Dealer plays a black card with a prompt or question e.g., "Wy can't I sleep at night?")
     - The other players choose the funniest white card from their hand to complete the sentence or answer the question.
     - The Dealer reviews the responses and selects the one they find funniest.
 
@@ -381,6 +384,59 @@ The tech stack is carefully chosen to showcase modern full-stack development pra
     pnpm run reset
     ```
 4. Open [http://localhost:3000](http://localhost:3000) in your browser to view the game.
+
+
+```mermaid
+%%{init: {'theme': 'dark', 'themeVariables': { 
+
+}}}%%
+sequenceDiagram
+    participant Browser
+    participant GameService
+    participant PlayerService
+    participant WebSocket
+
+    Browser->>WebSocket: Connect with AuthToken
+    WebSocket->>GameService: Handle connection request
+    GameService->>PlayerService: Validate AuthToken
+    PlayerService->>GameService: Return existing Player (if found)
+    
+    alt AuthToken is valid and game is active
+        GameService->>Browser: Rejoin Player to game (Limbo status)
+        GameService->>Browser: Check if Player was the dealer
+        alt Player was the dealer
+            GameService->>Browser: Restore dealer status (if conditions are met)
+        end
+    else AuthToken is invalid or outdated
+        WebSocket->>GameService: Create new Player
+        GameService->>Browser: New Player stays on home page
+    end
+
+    alt Dealer leaves mid-game
+        GameService->>WebSocket: Wait 30 seconds for rejoin
+        alt Dealer rejoined
+            GameService->>Browser: Continue game
+        else Dealer does not rejoin
+            GameService->>Browser: Notify players of game end (all lose)
+        end
+    end
+
+    alt Player uses game code URL
+        GameService->>Browser: Validate AuthToken and game code
+        alt Game code matches player's current game
+            GameService->>Browser: Player joins Limbo status
+            GameService->>Browser: Prompt dealer to accept or skip Player
+            alt Dealer accepts Player
+                GameService->>Browser: Player joins game
+            else Dealer skips Player
+                GameService->>Browser: Notify Player of removal
+            end
+        else Game code does not match current game
+            Browser->>GameService: Prompt Player to leave current game
+        end
+    end
+
+```
 
 ## 📜 **License**
 

@@ -29,6 +29,12 @@ if (!Env.isBuilding() && !Env.isTest()) {
 
     // likely problem, its sending th token right off the bat
 
+    // set it invalid for testing bad auth on startup.
+    // Possibly geab it, wipe and submit, then wait for the new auth token
+    // in the usual flow.
+
+    Cookies.set(CookieType.AuthToken, 'INVALID');
+
     socket = io(origin, {
         withCredentials : true,
         auth            : {
@@ -196,9 +202,16 @@ function* sagaSendWebSocketMessage(): Saga {
     // todo: add checks here to move them into the proper game.
     if (gameState.game_code)
         Router.push(`/game/${gameState.game_code}`);
-
-    // yield* sagaDispatch(GameAction.updateGameState(gameStateString));
 }
+
+function* sagaReconnect(): Saga {
+
+    // Cookies
+
+    // placeholder
+    yield* takePayload(GameAction.dealerPickWinner)
+}
+
 
 function* sagaCreateGame(): Saga {
     yield* sagaDispatch(GameAction.sendWebSocketMessage({
@@ -255,6 +268,7 @@ function* sagaUpdateUsername(): Saga {
         data : yield* takePayload(GameAction.updateUsername),
     }));
 }
+
 function* sagaExitGame(): Saga {
     const exitGame = yield* takePayload(GameAction.exitGame)
 
@@ -338,7 +352,7 @@ function* sagaTimerComplete(): Saga {
 }
 
 
-export const WS = {
+export const WebSocks = {
     sagaSendWebSocketMessage,
     sagaStartUpdateListener,
     sagaDealerPickBlackCard,
@@ -349,6 +363,7 @@ export const WS = {
     sagaStartTimer,
     sagaCreateGame,
     sagaStartGame,
+    sagaReconnect,
     sagaFeedback,
     sagaNextHand,
     sagaJoinGame,
@@ -365,6 +380,7 @@ export const WS = {
         yield this.sagaStartTimer;
         yield this.sagaCreateGame;
         yield this.sagaStartGame;
+        yield this.sagaReconnect;
         yield this.sagaFeedback;
         yield this.sagaNextHand;
         yield this.sagaJoinGame;

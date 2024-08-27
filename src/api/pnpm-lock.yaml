@@ -65,6 +65,9 @@ importers:
       nest-winston:
         specifier: ^1.9.7
         version: 1.9.7(@nestjs/common@10.4.1(class-transformer@0.5.1)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1))(winston@3.14.2)
+      pg:
+        specifier: ^8.12.0
+        version: 8.12.0
       reflect-metadata:
         specifier: ^0.2.2
         version: 0.2.2
@@ -6496,6 +6499,53 @@ snapshots:
 
   path-type@4.0.0: {}
 
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+  pg-cloudflare@1.1.1:
+    optional: true
+
+  pg-connection-string@2.6.4: {}
+
+  pg-int8@1.0.1: {}
+
+  pg-pool@3.6.2(pg@8.12.0):
+    dependencies:
+      pg: 8.12.0
+
+  pg-protocol@1.6.1: {}
+
+  pg-types@2.2.0:
+    dependencies:
+      pg-int8: 1.0.1
+      postgres-array: 2.0.0
+      postgres-bytea: 1.0.0
+      postgres-date: 1.0.7
+      postgres-interval: 1.2.0
+
+  pg@8.12.0:
+    dependencies:
+      pg-connection-string: 2.6.4
+      pg-pool: 3.6.2(pg@8.12.0)
+      pg-protocol: 1.6.1
+      pg-types: 2.2.0
+      pgpass: 1.0.5
+    optionalDependencies:
+      pg-cloudflare: 1.1.1
+
+  pgpass@1.0.5:
+    dependencies:
+      split2: 4.2.0
+
+=======
+>>>>>>> @{-1}
+=======
+>>>>>>> main
+=======
+>>>>>>> @{-1}
+>>>>>>> dev
   picocolors@1.0.1: {}
 
   picomatch@2.3.1: {}
@@ -6510,6 +6560,28 @@ snapshots:
 
   pluralize@8.0.0: {}
 
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+  postgres-array@2.0.0: {}
+
+  postgres-bytea@1.0.0: {}
+
+  postgres-date@1.0.7: {}
+
+  postgres-interval@1.2.0:
+    dependencies:
+      xtend: 4.0.2
+
+=======
+>>>>>>> @{-1}
+=======
+>>>>>>> main
+=======
+>>>>>>> @{-1}
+>>>>>>> dev
   prelude-ls@1.2.1: {}
 
   pretty-format@29.7.0:
@@ -6805,6 +6877,20 @@ snapshots:
 
   source-map@0.7.4: {}
 
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+  split2@4.2.0: {}
+
+=======
+>>>>>>> @{-1}
+=======
+>>>>>>> main
+=======
+>>>>>>> @{-1}
+>>>>>>> dev
   sprintf-js@1.0.3: {}
 
   stack-trace@0.0.10: {}

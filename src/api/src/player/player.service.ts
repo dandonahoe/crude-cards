@@ -1,3 +1,12 @@
+// @ai-lint-begin @ruleset/custom-name @ruleset/require-name @rule/import-line-length-descending
+
+// Normally for repeated sections you would just create a ruleset of these rules to reduce
+// boilerplate, but for the sake of this example we show how rule overrides work. Rules and
+// rulesets are overridden from left to right, so the rightmost rule will take precedence.
+// In this case, I have a ruleset custom-name which is overridden and augmented by require-name,
+// the lastly an individual rule @rule/import-line-length-descending overrides everything.
+// Any time a @ai-lint-begin exists, it MUST be accompanied by a @ai-lint-end, similar to the
+
 import { GameSession } from '../game-session/game-session.entity';
 import { PlayerType } from '../constant/player-type.enum';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
@@ -7,12 +16,17 @@ import { P } from '../../../type/framework/data/P';
 import { In, IsNull, Repository } from 'typeorm';
 import { Player } from './player.entity';
 import { faker } from '@faker-js/faker';
+import { SocketID, AuthToken } from '../sock/type';
 import { Socket } from 'socket.io';
 import { v4 as uuid } from 'uuid';
 import { Logger } from 'winston';
 
+// @ai-lint-begin @ruleset/custom-name @ruleset/require-name @rule/import-line-length-descending
+
+
 @Injectable()
 export class PlayerService {
+
     public constructor(
         @Inject(WINSTON_MODULE_PROVIDER)
         private readonly log: Logger,
@@ -33,6 +47,13 @@ export class PlayerService {
             disconnected_at : IsNull(),
         });
 
+    public connectWithNewAuthToken = async (player: Player): P<Player> =>
+        this.playerRepo.save({
+            ...player,
+            disconnected_at : null,
+            auth_token      : uuid(),
+
+        });
     /**
      * Ensures the player is ready to join by setting their user type.
      * @param player - The player entity.
@@ -50,7 +71,9 @@ export class PlayerService {
      * @param newUsername - The new username.
      * @returns A promise that resolves to the updated player entity.
      */
-    public updateUsername = async (player: Player, newUsername: string): P<Player> =>
+    public updateUsername = async (
+        player: Player, newUsername: string,
+    ): P<Player> =>
         this.playerRepo.save({
             ...player,
             username : newUsername,
@@ -62,7 +85,9 @@ export class PlayerService {
      * @param whiteCardIds - The list of white card IDs.
      * @returns A promise that resolves when the update is complete.
      */
-    public updatePlayerWhiteCardIds = async (playerId: string, whiteCardIds: string[]) =>
+    public updatePlayerWhiteCardIds = async (
+        playerId: string, whiteCardIds: string[],
+    ) =>
         this.playerRepo.update(playerId, {
             card_id_list : whiteCardIds,
         });
@@ -84,7 +109,9 @@ export class PlayerService {
      * @param cardId - The ID of the card to add.
      * @returns A promise that resolves when the update is complete.
      */
-    public addWhiteCardToPlayer = async (playerId: string, cardId: string) =>
+    public addWhiteCardToPlayer = async (
+        playerId: string, cardId: string,
+    ) =>
         this.playerRepo
             .createQueryBuilder()
             .update(Player)
@@ -99,7 +126,7 @@ export class PlayerService {
      * @param session - The game session.
      * @returns A promise that resolves to an array of player entities.
      */
-    public findPlayersInSession = async (session: GameSession) =>
+    public findPlayersInSession = async (session: GameSession) : P<Player[]> =>
         this.playerRepo.find({
             where : {
                 id : In(session.player_id_list),
@@ -112,7 +139,9 @@ export class PlayerService {
      * @param socket - The socket instance.
      * @returns A promise that resolves when the update is complete.
      */
-    public updatePlayerSocketId = async (existingPlayer: Player, socket: Socket) =>
+    public updatePlayerSocketId = async (
+        existingPlayer: Player, socket: Socket,
+    ) : P<Player> =>
         this.playerRepo.save({
             ...existingPlayer,
             socket_id       : socket.id,
@@ -124,13 +153,13 @@ export class PlayerService {
      * @param socket - The socket instance.
      * @returns A promise that resolves to the newly created player entity.
      */
-    public createPlayer = async (socket: Socket): P<Player> =>
+    public createPlayer = async (socketId : SocketID): P<Player> =>
         this.playerRepo.save({
             card_id_list : [],
             auth_token   : uuid(),
             username     : `${faker.science.chemicalElement().name} ${faker.person.lastName()}`,
             user_type    : PlayerType.Unknown,
-            socket_id    : socket.id,
+            socket_id    : socketId,
         });
 
     /**
@@ -160,9 +189,8 @@ export class PlayerService {
      * @param authToken - The authentication token.
      * @returns A promise that resolves to the player entity.
      */
-    public getPlayerByAuthToken = async (authToken: string): Promise<Player> =>
+    public getPlayerByAuthToken = async (authToken: AuthToken): P<Player> =>
         this.playerRepo.findOneByOrFail({
-            auth_token      : authToken,
-            disconnected_at : IsNull(),
+            auth_token : authToken as string,
         });
 }

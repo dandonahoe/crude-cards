@@ -1,7 +1,7 @@
 {
-    "name": "Cards Against Humanity",
-    "short_name": "CAH",
-    "description": "A party game for horrible people.",
+    "name": "CrudeCards",
+    "short_name": "CrudeCards",
+    "description": "A good game for bad people.",
     "lang": "en-US",
     "dir": "ltr",
     "scope": "/",

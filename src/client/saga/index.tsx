@@ -1,11 +1,11 @@
 import { type Saga } from '@app/type/framework/core/CoreSaga';
 import { forkWhileAll } from '../SagaHelper';
-import { WS } from './WS';
+import { WebSocks } from './WebSocks';
 
 
 function* saga() : Saga {
     yield* forkWhileAll([
-        ...WS,
+        ...WebSocks,
     ]);
 }
 

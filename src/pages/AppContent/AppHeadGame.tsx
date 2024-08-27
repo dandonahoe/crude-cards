@@ -14,25 +14,25 @@ export const AppHeadGame : RFC = () =>
             content='width=device-width, initial-scale=1.0'
             name='viewport' />
         <title>
-            {'Cards Against Humanity'}
+            {'CrudeCards'}
         </title>
         <meta
             name='keywords'
-            content='cards, game, Cards Against Humanity, party game, card game' />
+            content='cards, game, CrudeCards, party game, card game' />
         <meta
             name='author'
             content='https://github.com/dandonahoe' />
         <meta
             name='description'
-            content='Cards Against Humanity: A Party Game for Horrible People.' />
+            content='CrudeCards: A Good Game for Bad People.' />
 
         {/* Open Graph tags */}
         <meta
             property='og:title'
-            content='Cards Against Humanity' />
+            content='CrudeCards' />
         <meta
             property='og:description'
-            content='Cards Against Humanity: A party game for horrible people.' />
+            content='CrudeCards: A Good Game for Bad People.' />
         <meta
             property='og:type'
             content='website' />
@@ -41,7 +41,7 @@ export const AppHeadGame : RFC = () =>
             content='https://dev.construct.works' />
         <meta
             property='og:site_name'
-            content='Cards Against Humanity' />
+            content='CrudeCards' />
 
         {/* Twitter Card tags */}
         <meta
@@ -49,10 +49,10 @@ export const AppHeadGame : RFC = () =>
             content='summary_large_image' />
         <meta
             name='twitter:title'
-            content='Cards Against Humanity' />
+            content='CrudeCards' />
         <meta
             name='twitter:description'
-            content='Cards Against Humanity: A party game for horrible people.' />
+            content='CrudeCards: A Good Game for Bad People.' />
         {/* <meta
             name='twitter:image'
             content='/twitter-image.png' /> */}
