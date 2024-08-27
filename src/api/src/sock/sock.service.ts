@@ -1,40 +1,94 @@
+import { OnGatewayConnection, OnGatewayDisconnect } from '@nestjs/websockets';
+import { WebSocketEventType } from '../constant/websocket-event.enum';
+import { Server as SocketIoServer, Socket } from 'socket.io';
+import { GameStateDTO } from '../game/dtos/game-state.dto';
 import { WINSTON_MODULE_PROVIDER } from "nest-winston";
+import { WebSocketServer } from "@nestjs/websockets";
 import { Inject, Injectable } from "@nestjs/common";
 import { P } from '../../../type/framework/data/P';
-import { AuthToken, SocketID, SocketRequest } from './type';
-import { CookieType } from '../type';
-import { Socket } from "socket.io";
+import { GameService } from '../game/game.service';
 import { Logger } from "winston";
 
 
 @Injectable()
 export class SockService {
 
+    @WebSocketServer()
+    private socketIoServer: SocketIoServer;
+
     public constructor(
         @Inject(WINSTON_MODULE_PROVIDER)
         private readonly log: Logger,
-    ) {}
+    ) { }
 
-    public getRequestInfoFromSocket = async (
-        socket : Socket,
-    ) : P<SocketRequest> => {
+    public handleConnection = async (socket: Socket): P<unknown> => {
+        this.log.silly('GameGateway::handleConnection', { socketId : socket.id });
 
-        this.log.silly('SockService::getRequestInfoFromSocket');
 
-        const requestUrl = socket.handshake.url;
+        const player = await gameService.connectPlayer(socket);
 
-        const authToken : AuthToken = socket.handshake.auth[CookieType.AuthToken] ?? null;
-        const socketId  : SocketID = socket.id;
+        this.log.info('Player connected', { playerId : player.id, socketId : socket.id });
 
-        // todo: get the game code form the url
-        debugger;
+        // set the auth cookie on the client
+        return broadcastUpdatePlayerValidation(
+            player, player.auth_token!, socketIoServer, log);
 
-        const socketRequest : SocketRequest = {
-            socketId,requestUrl, authToken, gameCode : '123xyz',
-        };
+    }
 
-        this.log.silly('SockService::getRequestInfoFromSocket:response', socketRequest);
+    public handleDisconnect = async (socket: Socket): P<void> => {
+        this.log.silly('GameGateway:handleDisconnect');
 
-        return socketRequest;
+        this.log.silly('Gateway Disconnection:', { socketID : socket.id });
+
+        // const player = await this.gameService.findPlayerBySocket(socket);
+
+        // if (!player) {
+        //     log.info('No player found for socket', { socketId : socket.id });
+
+        //     return;
+        // }
+
+        // const { game } = await gameService.disconnectPlayer(socket);
+
+        // if (!game) {
+        //     log.info('No game found for player', { socketId : socket.id });
+
+        //     return;
+        // }
+
+        // log.info('Game found for player, disconnecting...', {
+        //     socketId : socket.id, gameCode : game.game_code, player,
+        // });
+
+        // return broadcastGameUpdate(game.game_code!, gameService, socketIoServer, log);
+    }
+
+
+    public emitPlayerAuthToken = async (
+        playerId : string,
+        authToken: string,
+    ) => {
+        this.log.silly('GameService::broadcastUpdatePlayerValidation', { playerId });
+
+        return this.socketIoServer
+            .to(playerId)
+            .emit(
+                WebSocketEventType.UpdatePlayerValidation,
+                authToken,
+            );
+    }
+
+    public broadcastGameUpdate = async (
+        playerGameStates: GameStateDTO[],
+    ) : P<boolean[]> => {
+        this.log.silly('GameService::broadcastGameUpdate', { playerGameStates });
+
+        return Promise.all(
+            playerGameStates.map(gameStatus =>
+                this.socketIoServer
+                    .to(gameStatus.current_player_id!)
+                    .emit(WebSocketEventType.UpdateGame, gameStatus),
+            ),
+        );
     }
 }

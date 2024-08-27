@@ -1,4 +1,5 @@
 import { Body, Inject, Injectable, UsePipes, ValidationPipe } from '@nestjs/common';
+import { OnGatewayConnection, OnGatewayDisconnect, WsException } from '@nestjs/websockets';
 import { DealerPickBlackCardDTO } from './dtos/dealer-pick-black-card.dto';
 import { GameSessionService } from '../game-session/game-session.service';
 import { PlayerSelectCardDTO } from './dtos/player-select-card.dto';
@@ -18,6 +19,7 @@ import { type P } from '../../../type/framework/data/P';
 import { Feedback } from '../feedback/feedback.entity';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { CreateGameDTO } from './dtos/create-game.dto';
+import { CookieType, DisconnectPlayer } from '../type';
 import { GameStateDTO } from './dtos/game-state.dto';
 import { StartGameDTO } from './dtos/start-game.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -29,16 +31,15 @@ import { JoinGameDTO } from './dtos/join-game.dto';
 import { ExitGameDTO } from './dtos/exit-game.dto';
 import { Player } from '../player/player.entity';
 import { PlayerDTO } from './dtos/player.dto';
-import { CookieType, DisconnectPlayer } from '../type';
 import { Repository } from 'typeorm';
 import { Game } from './game.entity';
 import { difference } from 'lodash';
-import { Socket } from 'socket.io';
 import { Logger } from 'winston';
+import { Socket } from 'socket.io';
 
 
 @Injectable()
-export class GameService {
+export class GameService  implements OnGatewayConnection, OnGatewayDisconnect  {
 
     public constructor(
         @InjectRepository(Game)
@@ -56,6 +57,18 @@ export class GameService {
         private readonly cardService: CardService,
     ) {
         this.log.silly('GameService::constructor()');
+    }
+
+    public handleConnection = async (socket: Socket): P<unknown> => {
+        this.log.silly('GameGateway::handleConnection', { socketId : socket.id });
+
+        return this.sockService.handleConnection(socket);
+    }
+
+    public handleDisconnect = async (socket: Socket): P<unknown> => {
+        this.log.silly('GameService:handleDisconnect');
+
+        return this.sockService.handleDisconnect(socket);
     }
 
     /**
@@ -363,7 +376,8 @@ export class GameService {
     public async exitGame(
         @Body(new ZodValidationPipe(ExitGameDTO.Schema))
         exitGame: ExitGameDTO,
-    ): P<GameStateDTO> {
+        socket : Socket,
+    ): P<unknown> {
         this.log.silly('GameService::exitGame', exitGame);
 
         // Fetch player state based on auth token
@@ -372,8 +386,11 @@ export class GameService {
         // Remove the player from the session
         await this.removePlayerFromSession(playerState);
 
+        const playerGameStates = await this.getAllPlayersGameStates(playerState.game.game_code);
+
+        return this.sockService.broadcastGameUpdate(playerGameStates)
         // Build and return the game state DTO for the player
-        return this.buildGameStateDTO(playerState.game.game_code!, playerState.currentPlayer.id!);
+        // return this.buildGameStateDTO(playerState.game.game_code!, playerState.currentPlayer.id!);
     }
 
 
@@ -482,6 +499,7 @@ export class GameService {
         authToken: string,
     ): P<{
         currentPlayer: Player,
+        socket : Socket,
         scoreLog: ScoreLog | null,
         session: GameSession | null,
         players: Player[] | null,
@@ -531,7 +549,6 @@ export class GameService {
      */
     @UsePipes(new ValidationPipe({ transform : true }))
     public async submitFeedback(
-
         @Body(new ZodValidationPipe(SubmitFeedbackDTO.Schema))
         submitFeedback: SubmitFeedbackDTO,
     ): P<Feedback> {
@@ -547,10 +564,7 @@ export class GameService {
 
         // Submit the feedback using the feedback service and return the resulting feedback entity
         return this.feedbackService.submitFeedback(
-            submitFeedback,
-            currentPlayer,
-            session,
-            game,
+            submitFeedback, currentPlayer, session, game,
         );
     }
 
@@ -568,14 +582,14 @@ export class GameService {
     public async nextHand(
         @Body(new ZodValidationPipe(NextHandDTO.Schema))
         nextHand: NextHandDTO,
-    ): P<GameStateDTO> {
+    ): P<unknown> {
         this.log.silly('GameService::nextHand', nextHand);
 
         this.ensureProperGameState();
 
         // Retrieve the player, game, session, and player list using the provided auth token
         const {
-            currentPlayer, game, session, players,
+            game, session, players,
         } = await this.getPlayerStateByAuthTokenOrFail(nextHand.auth_token!);
 
         // Determine the next stage of the game based on round count and player scores
@@ -607,10 +621,19 @@ export class GameService {
             newDealerId, newScoreLog, session,
         );
 
-        // Return the updated game state for the current player
-        return this.getGameStateAsPlayer(game.game_code!, currentPlayer.id!);
+        return this.broadcastGameUpdate(game.game_code);
     }
 
+
+    private broadcastGameUpdate = async (
+        gameCode : string | null,
+    ) => {
+        if(!gameCode) throw new WsException('broadcastGameUpdate: Invalid Empty Game Code');
+
+        const playerGameStates = await this.getAllPlayersGameStates(gameCode)
+
+        return this.sockService.broadcastGameUpdate(playerGameStates);
+    };
 
     /**
  * Determines the next game stage based on the session's round count and player scores.
@@ -744,7 +767,7 @@ export class GameService {
     public async dealerPickBlackCard(
         @Body(new ZodValidationPipe(DealerPickBlackCardDTO.Schema))
         dealerPickBlackCard: DealerPickBlackCardDTO,
-    ): P<GameStateDTO> {
+    ): P<unknown> {
         this.log.silly('GameService::dealerPickBlackCard', {
             authToken : dealerPickBlackCard.auth_token,
         });
@@ -760,10 +783,12 @@ export class GameService {
         );
 
         // Await both promises concurrently
-        const [{ currentPlayer, game }] = await Promise.all([playerStatePromise, updateSessionPromise]);
+        const [{ game }] = await Promise.all([playerStatePromise, updateSessionPromise]);
+
+        return this.broadcastGameUpdate(game.game_code);
 
         // Return the updated game state for the current player
-        return this.getGameStateAsPlayer(game.game_code!, currentPlayer.id!);
+        // return this.getGameStateAsPlayer(game.game_code!, currentPlayer.id!);
     }
 
 
@@ -795,7 +820,7 @@ export class GameService {
 public async dealerPickWinner(
     @Body(new ZodValidationPipe(DealerPickWinnerDTO.Schema))
     dealerPickWinner: DealerPickWinnerDTO,
-): P<GameStateDTO> {
+): P<unknown> {
     this.log.silly('GameService::dealerPickWinner - Start', dealerPickWinner);
 
     this.ensureProperGameState();
@@ -805,29 +830,42 @@ public async dealerPickWinner(
     const {
         dealer, players, game, session, scoreLog,
     } = await this.getDealerAndSessionData(dealerPickWinner.auth_token!);
-    this.log.debug('Retrieved dealer and session data', { dealer, players, game, session, scoreLog });
+    this.log.debug('Retrieved dealer and session data', {
+        dealer, players, game, session, scoreLog,
+    });
 
     // Validate the score log and the dealer
     this.validateDealerAndScoreLog(dealer, session, scoreLog);
-    this.log.debug('Validated dealer and score log', { dealer, session, scoreLog });
+    this.log.debug('Validated dealer and score log', {
+        dealer, session, scoreLog,
+    });
 
     // Determine the winning player based on the selected card ID
     const winningPlayer = await this.getWinningPlayer(players, dealerPickWinner.card_id!);
-    this.log.debug('Determined winning player', { winningPlayer, cardId : dealerPickWinner.card_id });
+    this.log.debug('Determined winning player', {
+        winningPlayer, cardId : dealerPickWinner.card_id,
+    });
 
     // Update the score log and player's score in parallel
     await this.updateScoreAndPlayer(scoreLog, session, dealer, dealerPickWinner.card_id!, winningPlayer);
-    this.log.debug('Updated score and player', { scoreLog, session, dealer, cardId : dealerPickWinner.card_id, winningPlayer });
+    this.log.debug('Updated score and player', {
+        scoreLog, session, dealer, cardId : dealerPickWinner.card_id, winningPlayer,
+    });
 
     // Check if the game is complete and progress to the next stage accordingly
     await this.progressGameOrShowHandResults(game, session, winningPlayer);
-    this.log.debug('Progressed game or showed hand results', { game, session, winningPlayer });
+    this.log.debug('Progressed game or showed hand results', {
+        game, session, winningPlayer,
+    });
 
     // Return the updated game state for the dealer
     const gameState = await this.getGameStateAsPlayer(game.game_code!, dealer.id!);
     this.log.silly('GameService::dealerPickWinner - End', gameState);
 
-    return gameState;
+    return this.broadcastGameUpdate(game.game_code);
+    // await this.sockService.broadcastGameUpdate(gameState.game_code!);
+
+    // return gameState;
 }
 
 
@@ -1110,6 +1148,8 @@ public async dealerPickWinner(
         // Update the player's username using the player service
         await this.playerService.updateUsername(currentPlayer, updateUsername.username);
 
+        await this.broadcastGameUpdate(game.game_code!);
+
         // Return the updated game state for the current player
         return this.getGameStateAsPlayer(game.game_code!, currentPlayer.id!);
     }
@@ -1128,7 +1168,6 @@ public async dealerPickWinner(
     public async playerSelectCard(
         @Body(new ZodValidationPipe(PlayerSelectCardDTO.Schema))
         playerSelectCard: PlayerSelectCardDTO,
-
     ): P<GameStateDTO> {
         // Log the beginning of the playerSelectCard process
         this.log.silly('GameService::playerSelectCard', {
@@ -1154,6 +1193,8 @@ public async dealerPickWinner(
             await this.gameSessionService.gotoDealerPickWinnerStage(session);
 
 
+        await this.broadcastGameUpdate(game.game_code!);
+
         // Return the updated game state for the current player
         return this.getGameStateAsPlayer(game.game_code!, currentPlayer.id!);
     }
@@ -1171,12 +1212,10 @@ public async dealerPickWinner(
     public async createGame(
         @Body(new ZodValidationPipe(CreateGameDTO.Schema))
         createGame: CreateGameDTO,
-    ): P<GameStateDTO> {
-
+    ): P<unknown> {
 
         // Log the beginning of the game creation process
         this.log.silly('GameService::createGame', { createGame });
-
 
         // Retrieve the current player based on the provided auth token
         const { currentPlayer } = await this.getPlayerStateByAuthToken(createGame.auth_token!);
@@ -1200,60 +1239,40 @@ public async dealerPickWinner(
         // Update the game with the session reference after creation
         await this.gameRepo.update(game.id, { current_session_id : session.id! });
 
-        // Return the updated game state for the current player
-        return this.getGameStateAsPlayer(game.game_code!, currentPlayer.id!);
+        // await this.sockService.join(gameState.game_code!);
+
+        // socket.join(gameState.game_code!);
+
+        return this.broadcastGameUpdate(game.game_code);
     }
 
     @UsePipes(new ValidationPipe({ transform : true }))
     public async joinGame(
         @Body(new ZodValidationPipe(JoinGameDTO.Schema))
         joinGame: JoinGameDTO,
-    ): P<GameStateDTO> {
+    ): P<unknown> {
 
-        // todo: get rid of this try/catch block and handle api errors centrally
-        // with customized exceptions
+        this.log.silly('GameService::joinGame', { joinGame });
 
-        try {
-            this.log.silly('GameService::joinGame', { joinGame });
+        // The times when a game is joined is when
+        // 1 - A player enters the code and joins the game
+        // 2 - A player hits refresh and rejoins the game
+        // 3 - A player leaves the game and rejoins the game
+        // 4 - A player receives a custom url with a game code such as /game/dog
 
-            // The times when a game is joined is when
-            // 1 - A player enters the code and joins the game
-            // 2 - A player hits refresh and rejoins the game
-            // 3 - A player leaves the game and rejoins the game
-            // 4 - A player receives a custom url with a game code such as /game/dog
+        // At this point, the player has been created and should have a valid
+        // auth token
+        const { session, game } = await this.getGameStateByGameCode(joinGame.game_code!);
+        let { currentPlayer } = await this.getPlayerStateByAuthToken(joinGame.auth_token!);
 
-            // At this point, the player has been created and should have a valid
-            // auth token
-            const { session, game } = await this.getGameStateByGameCode(joinGame.game_code!);
-            let { currentPlayer } = await this.getPlayerStateByAuthToken(joinGame.auth_token!);
+        if (session.game_stage !== GameStage.Lobby)
+            throw new WebSockException('Game already started, idiot.');
 
-            if (session.game_stage !== GameStage.Lobby)
-                throw new WebSockException('Game already started, idiot.');
+        currentPlayer = await this.playerService.ensureReadyToJoin(currentPlayer);
 
-            currentPlayer = await this.playerService.ensureReadyToJoin(currentPlayer);
+        await this.gameSessionService.addPlayerToSession(currentPlayer, session);
 
-            await this.gameSessionService.addPlayerToSession(currentPlayer, session);
-
-            return this.getGameStateAsPlayer(
-                game.game_code!, currentPlayer.id, true);
-
-        } catch (exc) {
-            if (exc instanceof WebSockException)
-                return {
-                    ...GameStateDTO.Default,
-                    error_message : exc.message,
-                }
-            else if (exc instanceof Error)
-                return {
-                    ...GameStateDTO.Default,
-                    error_message : exc.message,
-                }
-            else
-                return {
-                    ...GameStateDTO.Default,
-                    error_message : 'An unknown error occurred: ' + JSON.stringify(exc),
-                }
-        }
+        return this.broadcastGameUpdate(game.game_code);
     }
 
     /**
@@ -1273,24 +1292,17 @@ public async dealerPickWinner(
         playerId: string,
         includeDeck: boolean = false,
     ): P<GameStateDTO> => {
-        try {
-            // Log the beginning of the game state retrieval process
-            this.log.silly('GameService::getGameStateAsPlayer - Start', { gameCode, playerId, includeDeck });
 
-            // Retrieve the game state using helper methods and adjust it to reflect the player's perspective
-            const gameState = await this.getGameStateWithPlayerPerspective(gameCode, playerId, includeDeck);
+        // Log the beginning of the game state retrieval process
+        this.log.silly('GameService::getGameStateAsPlayer - Start', { gameCode, playerId, includeDeck });
 
-            // Log success after successfully retrieving and adjusting the game state
-            this.log.silly('GameService::getGameStateAsPlayer - Success', { gameCode, playerId, includeDeck });
+        // Retrieve the game state using helper methods and adjust it to reflect the player's perspective
+        const gameState = await this.getGameStateWithPlayerPerspective(gameCode, playerId, includeDeck);
 
-            return gameState;
-        } catch (error) {
-            // Log any errors that occur during the process
-            this.log.error('GameService::getGameStateAsPlayer - Error', { gameCode, playerId, error });
+        // Log success after successfully retrieving and adjusting the game state
+        this.log.silly('GameService::getGameStateAsPlayer - Success', { gameCode, playerId, includeDeck });
 
-            // Throw a custom exception with a user-friendly message
-            throw new WebSockException('Error retrieving game state');
-        }
+        return gameState;
     };
 
     /**
@@ -1400,13 +1412,16 @@ public async dealerPickWinner(
      * @param includeDeck - Whether or not to include the deck details in the game state
      * @returns A list of game state DTOs, one for each player, reflecting their specific game view
      */
-    public getAllPlayersGameStatus = async (
-        gameCode: string, includeDeck: boolean = false,
+    public getAllPlayersGameStates = async (
+        gameCode: string | null,
+        includeDeck: boolean = false,
     ): P<GameStateDTO[]> => {
 
         this.log.silly('GameService::getAllPlayersGameStatus', {
             gameCode, includeDeck,
         });
+
+        if(!gameCode) throw new WsException('getAllPlayersGameStates: Invalid empty game code')
 
         // Retrieve the generic game state which includes player details
         const gameStateDTO = await this.getGameStateGeneric(gameCode, includeDeck);
