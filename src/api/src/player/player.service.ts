@@ -14,9 +14,9 @@ import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { P } from '../../../type/framework/data/P';
 import { In, IsNull, Repository } from 'typeorm';
+import { SocketID, AuthToken } from '../type';
 import { Player } from './player.entity';
 import { faker } from '@faker-js/faker';
-import { SocketID, AuthToken } from '../sock/type';
 import { Socket } from 'socket.io';
 import { v4 as uuid } from 'uuid';
 import { Logger } from 'winston';
@@ -47,26 +47,23 @@ export class PlayerService {
             disconnected_at : IsNull(),
         });
 
-    public connectWithNewAuthToken = async (player: Player): P<Player> =>
+    /**
+     *
+     * @param player -
+     * @returns
+     */
+    public updatePlayerAuthToken = async (
+        player: Player,
+    ): P<Player> =>
         this.playerRepo.save({
             ...player,
             disconnected_at : null,
             auth_token      : uuid(),
-
-        });
-    /**
-     * Ensures the player is ready to join by setting their user type.
-     * @param player - The player entity.
-     * @returns A promise that resolves to the updated player entity.
-     */
-    public ensureReadyToJoin = async (player: Player): P<Player> =>
-        this.playerRepo.save({
-            ...player,
-            user_type : PlayerType.Player,
         });
 
     /**
      * Updates the player's username.
+     *
      * @param player - The player entity.
      * @param newUsername - The new username.
      * @returns A promise that resolves to the updated player entity.
@@ -81,6 +78,7 @@ export class PlayerService {
 
     /**
      * Updates the white card IDs for a player.
+     *
      * @param playerId - The ID of the player.
      * @param whiteCardIds - The list of white card IDs.
      * @returns A promise that resolves when the update is complete.
@@ -94,6 +92,7 @@ export class PlayerService {
 
     /**
      * Increments the player's score by 1.
+     *
      * @param player - The player entity.
      * @returns A promise that resolves to the updated player entity.
      */
@@ -105,6 +104,7 @@ export class PlayerService {
 
     /**
      * Adds a white card to the player's list of cards.
+     *
      * @param playerId - The ID of the player.
      * @param cardId - The ID of the card to add.
      * @returns A promise that resolves when the update is complete.
@@ -123,6 +123,7 @@ export class PlayerService {
 
     /**
      * Finds all players in a given game session.
+     *
      * @param session - The game session.
      * @returns A promise that resolves to an array of player entities.
      */
@@ -135,6 +136,7 @@ export class PlayerService {
 
     /**
      * Updates the socket ID for a player.
+     *
      * @param existingPlayer - The existing player entity.
      * @param socket - The socket instance.
      * @returns A promise that resolves when the update is complete.
@@ -150,6 +152,7 @@ export class PlayerService {
 
     /**
      * Creates a new player with a unique auth token and random username.
+     *
      * @param socket - The socket instance.
      * @returns A promise that resolves to the newly created player entity.
      */
@@ -164,6 +167,7 @@ export class PlayerService {
 
     /**
      * Disconnects a player by updating their disconnected_at timestamp.
+     *
      * @param socket - The socket instance.
      * @returns A promise that resolves to the updated player entity.
      */
@@ -186,11 +190,34 @@ export class PlayerService {
 
     /**
      * Retrieves a player by their auth token.
+     *
      * @param authToken - The authentication token.
      * @returns A promise that resolves to the player entity.
      */
-    public getPlayerByAuthToken = async (authToken: AuthToken): P<Player> =>
-        this.playerRepo.findOneByOrFail({
+    public getPlayerByAuthTokenOrFail = async (
+        authToken: AuthToken,
+    ): P<Player> => {
+        const authTokenPlayer = await this.getPlayerByAuthToken(authToken);
+
+        if(authTokenPlayer) return authTokenPlayer;
+
+        const errorMessage = `getPlayerByAuthTokenOrFail::Player not found ${authToken}`;
+
+        this.log.error(errorMessage);
+        throw new Error(errorMessage);
+    }
+
+    /**
+     * Retrieves a player by their auth token.
+     *
+     * @param authToken - The authentication token.
+     * @returns A promise that resolves to the player entity.
+     */
+    public async getPlayerByAuthToken (
+        authToken: AuthToken,
+    ): P<Player | null> {
+        return this.playerRepo.findOneBy({
             auth_token : authToken as string,
         });
+    }
 }

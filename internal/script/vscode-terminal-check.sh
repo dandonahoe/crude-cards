@@ -7,7 +7,7 @@ echo "Started via: ($TERM_PROGRAM)"
 if [[ "$TERM_PROGRAM" == "vscode" ]]; then
 
     echo "This script must be run in a terminal outside VS Code."
-
+bB
     exit 1
 fi
 

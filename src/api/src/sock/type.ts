@@ -1,10 +1,7 @@
-export type AuthToken = string | null;
-export type SocketID  = string | null;
-export type GameCode  = string | null;
+import { GameCode, AuthToken, SocketID } from '../type';
 
 
 export interface SocketRequest {
-    requestUrl : string;
     authToken  : AuthToken;
     gameCode   : GameCode;
     socketId   : SocketID;

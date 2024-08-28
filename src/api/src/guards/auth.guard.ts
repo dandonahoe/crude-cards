@@ -94,9 +94,9 @@ export class AuthGuard implements CanActivate {
      * @param wsSocket - The WebSocket client socket.
      * @returns `true` if the connection is valid, otherwise `false`.
      */
-    private validateConnection = async (wsSocket: Socket): P<boolean>  =>{
+    private validateConnection = async (socket: Socket): P<boolean>  =>{
 
-        this.log.debug('TODO: Add AUth logic', { socketID : wsSocket.id });
+        this.log.silly('AuthGuard::validateConnection', { socketID : socket.id });
 
         return true;
     }

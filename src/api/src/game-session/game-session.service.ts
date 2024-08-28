@@ -23,24 +23,24 @@ export class GameSessionService {
 
     // leaveOpenSession(currentPlayer)
     public leaveOpenSession = async (currentPlayer: Player) => {
-        this.log.silly('GameSessionService::leaveOpenSession', { currentPlayer });
+        const prefix = 'GameSessionService::leaveOpenSession';
+
+        this.log.silly(prefix, { currentPlayer });
 
         const session = await this.findActivePlayerGameSession(currentPlayer);
 
-        this.log.silly('GameSessionService::leaveOpenSession', { currentPlayer, session });
-
         if (!session) {
-            this.log.info('GameSessionService::leaveOpenSession::NoSessionFound', currentPlayer);
+            this.log.info(`${prefix}::NoSessionFound`, currentPlayer);
 
             return;
         }
 
-        this.log.info('GameSessionService::leaveOpenSession Found a session, removing player', currentPlayer, session);
+        this.log.info(`${prefix} Found a session, removing player`, currentPlayer, session);
 
         return this.removePlayer(currentPlayer, session);
     };
 
-    public addPlayerToSession = async (currentPlayer: Player, session: GameSession) => {
+    public setPlayerGameSession = async (currentPlayer: Player, session: GameSession) => {
         this.log.silly('GameSessionService::addPlayerToSession', {
             currentPlayer, session,
         });
