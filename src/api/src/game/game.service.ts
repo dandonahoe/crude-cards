@@ -111,7 +111,7 @@ export class GameService {
             this.log.debug('New player created', player);
         }
 
-        this.log.debug('Joining the player to their socket by their playerId', player.id);
+        this.log.debug('Joining the player to their socket by their playerId', { playerId : player.id});
 
         await socket.join(player.id);
 
@@ -130,6 +130,8 @@ export class GameService {
             // to continue using their player. Maybe dont need to refresh it... but it
             // ensures they're in a connected state and are set to receive a new auth token
             player = await this.playerService.updatePlayerAuthToken(player)
+
+            this.emitPlayerAuthToken(server, player);
 
             return;
         }
@@ -883,20 +885,16 @@ export class GameService {
      *
      * @param player - The player entity
      * @param server - The socket.io server instance
+     *
      * @returns
      */
-    private broadcastUpdatePlayerValidation = async (
-        player: Player,
-        server: SocketIOServer,
-    ) => {
-
-        return server
+    private emitPlayerAuthToken = async (server : SocketIOServer, player : Player) =>
+        server
             .to(player.id!)
             .emit(
                 WebSocketEventType.UpdatePlayerValidation,
                 player.auth_token,
             );
-    }
 
 
     /**

@@ -61,6 +61,7 @@ if (socket)
         });
 
         socket.on(WebSocketEventType.UpdatePlayerValidation, (validation: string) => {
+            debugger;
             console.log('CLIENT GOT: validation', validation);
 
             Cookies.set(CookieType.AuthToken, validation);
