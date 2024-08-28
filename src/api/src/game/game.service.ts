@@ -8,6 +8,7 @@ import { GameSession } from '../game-session/game-session.entity';
 import { ScoreLogService } from '../score-log/score-log.service';
 import { WebSockException } from '../framework/WebSockException';
 import { ZodValidationPipe } from '../pipes/ZodValidation.pipe';
+import { validate as isUuidValid } from 'uuid';
 import { FeedbackService } from '../feedback/feedback.service';
 import { UpdateUsernameDTO } from './dtos/update-username.dto';
 import { SubmitFeedbackDTO } from './dtos/submit-feedback.dto';
@@ -72,7 +73,7 @@ export class GameService {
         this.playerService.findPlayerBySocket(socket);
 
 
-    private getWebSocketAuthToken = (socket: Socket): string | null =>
+    private getWebSocketAuthToken = (socket: Socket) : string | null =>
         socket.handshake.auth[CookieType.AuthToken] ?? null;
 
     /**
@@ -83,7 +84,10 @@ export class GameService {
      *
      * @returns The connected player entity
      */
-    public connectPlayer = async (socket: Socket): P<Player> => {
+    public connectPlayer = async (server : SocketIOServer, socket: Socket): P<void> => {
+
+        // todo: break logic down, unit test bits
+
         this.log.silly('GameService::connectPlayer', { socketId : socket.id });
 
         let player: Player | null = null;
@@ -99,18 +103,65 @@ export class GameService {
 
         // now either they had no token or the one they had was bogus,
         // so create a new player to work with
-        if (!player)
+        if (!player) {
+            this.log.debug('No player found for socket, creating new player.', socketRequest);
+
             player = await this.playerService.createPlayer(socketRequest.socketId);
 
+            this.log.debug('New player created', player);
+        }
+
+        this.log.debug('Joining the player to their socket by their playerId', player.id);
+
+        await socket.join(player.id);
+
+        this.log.debug('Player socket connected', player);
+
         // const game = this.getGameStateByGameCode
-        const activeGameSession = this.gameSessionService.findActivePlayerGameSession(player);
+        const activeGameSession = await this.gameSessionService.findActivePlayerGameSession(player);
 
         // Not in any game, reset the token, set them to connected. They will be directed
         // to the home page with root url on the front end.
-        if (!activeGameSession)
-            // ensures they're in a connected state and are set to receive a new auth token
-            return this.playerService.connectWithNewAuthToken(player);
+        if (!activeGameSession) {
 
+            this.log.debug('Player not in active game, updating auth token', player);
+
+            // This should keep the player tied to their existing player, but issued a new auth token
+            // to continue using their player. Maybe dont need to refresh it... but it
+            // ensures they're in a connected state and are set to receive a new auth token
+            player = await this.playerService.updatePlayerAuthToken(player)
+
+            return;
+        }
+
+        this.log.debug('Player found in active game session', {
+            activeGameSession,
+            player,
+        });
+
+        const game = await this.findGameByGameSession(activeGameSession);
+
+        if(!game)  {
+            this.log.error('There is no game found for the active game session.', activeGameSession);
+            // Notably missing, auth token. If something wrong happens now,
+            // invlaidate their token by just not reissuing it. They will
+            // land on the homepage in a fresh state and go through the
+            // auth process again.
+
+            return;
+        }
+
+        this.log.silly("Found an existing player in active session of a game, running standard join game routine", {
+            player, game, activeGameSession,
+        });
+
+        // Essentially the same as entering a game code on the homepage from here on.
+        // It handles the new vs existing player logic
+
+        return this.joinGame(
+            server, new JoinGameDTO(player.auth_token!, game.game_code),
+            'Joining Existing Game via Reconnect Routine');
+    };
         // At this point, we have
         // Used the connecting browser's AuthToken to find a
         // player which did exist and they were part of a
@@ -124,7 +175,7 @@ export class GameService {
 
         // this.joinGame(player, activeGameSession);
 
-        this.log.info('Player connected', socketRequest);
+        // this.log.info('Player connected', socketRequest);
 
 
         // Now we have a player, but are unsure if the are in a game or not
@@ -224,8 +275,6 @@ export class GameService {
 
         // SCAFFOLD
 
-        return player;
-    };
 
     /**
      * Ensures that the game is in a proper state before proceeding with any actions.
@@ -246,19 +295,22 @@ export class GameService {
      *
      * @returns The existing player entity, or null if not found
      */
-    private findPlayerByAuthToken = async (
+    private async findPlayerByAuthToken(
         socket: Socket,
         authToken: string | null,
-    ): P<Player | null> => {
-        this.log.silly('GameService::findPlayerByAuthToken', {
-            socketId : socket.id,
-            authToken,
-        });
+    ): P<Player | null> {
+        this.log.silly('GameService::findPlayerByAuthToken', { socketId : socket.id, authToken });
 
         if (!authToken) return null;
 
+        if(!isUuidValid(authToken)) {
+            this.log.warn('Invalid Auth Token', { socketId : socket.id, authToken });
+
+            return null;
+        }
+
         return this.playerService.getPlayerByAuthToken(authToken);
-    };
+    }
 
     /**
     * Disconnects a player from the game session and handles socket clean-up.
@@ -410,11 +462,11 @@ export class GameService {
     // public async updateUsername()
     public findGameByGameSession = async (
         gameSession: GameSession,
-    ): P<Game> => {
+    ): P<Game | null> => {
 
         this.log.silly('GameService::findGameByGameSession', gameSession);
 
-        return this.gameRepo.findOneByOrFail({
+        return this.gameRepo.findOneBy({
             id : gameSession.game_id!,
         });
     }
@@ -453,11 +505,7 @@ export class GameService {
         // created at startGame
 
         return {
-            currentPlayer,
-            scoreLog,
-            session,
-            players,
-            game,
+            currentPlayer, scoreLog, session, players, game,
         };
     };
 
@@ -488,11 +536,8 @@ export class GameService {
 
         if (!session)
             return {
+                scoreLog : null, session : null, players : null, game : null,
                 currentPlayer,
-                scoreLog : null,
-                session  : null,
-                players  : null,
-                game     : null,
             };
 
         const [
@@ -538,11 +583,7 @@ export class GameService {
 
         // Submit the feedback using the feedback service and return the resulting feedback entity
         return this.feedbackService.submitFeedback(
-            submitFeedback,
-            currentPlayer,
-            session,
-            game,
-        );
+            submitFeedback, currentPlayer, session, game);
     }
 
 
@@ -597,9 +638,9 @@ export class GameService {
 
         // Progress to the next hand in the game session
         await this.gameSessionService.nextHand(
-            newDealerCards, newWhiteCards, newGameStage,
-            newDealerId, newScoreLog, session,
-        );
+            newDealerCards, newWhiteCards,
+            newGameStage,   newDealerId,
+            newScoreLog,    session);
 
         await this.emitGameUpdate(server, game.game_code);
 
@@ -609,20 +650,20 @@ export class GameService {
 
 
     /**
- * Determines the next game stage based on the session's round count and player scores.
- * If the game has reached its maximum rounds or if a player has reached the winning score,
- * the game stage is set to GameComplete. Otherwise, it remains in the DealerPickBlackCard stage.
- *
- * @param session - The current game session
- * @param game    - The current game entity
- * @param players - The list of players in the session
- *
- * @returns The updated game stage
- */
+     * Determines the next game stage based on the session's round count and player scores.
+     * If the game has reached its maximum rounds or if a player has reached the winning score,
+     * the game stage is set to GameComplete. Otherwise, it remains in the DealerPickBlackCard stage.
+     *
+     * @param session - The current game session
+     * @param game    - The current game entity
+     * @param players - The list of players in the session
+     *
+     * @returns The updated game stage
+     */
     private determineNextGameStage = async (
-        session: GameSession,
-        game: Game,
-        players: Player[],
+        session : GameSession,
+        game    : Game,
+        players : Player[],
     ): P<GameStage> => {
         this.log.silly('GameService::determineNextGameStage', session);
 
@@ -666,14 +707,14 @@ export class GameService {
 
 
     /**
- * Deals new cards to players and returns the updated lists of dealer cards and white cards.
- * The dealer is assigned 10 new black cards, while each player (except the dealer) is assigned a new white card.
- * The card assignment operations are fully parallelized for maximum efficiency.
- *
- * @param session - The current game session
- *
- * @returns An array with the dealer's new black cards and the players' new white cards
- */
+     * Deals new cards to players and returns the updated lists of dealer cards and white cards.
+     * The dealer is assigned 10 new black cards, while each player (except the dealer) is assigned a new white card.
+     * The card assignment operations are fully parallelized for maximum efficiency.
+     *
+     * @param session - The current game session
+     *
+     * @returns An array with the dealer's new black cards and the players' new white cards
+     */
     private dealCardsToPlayers = async (
         session: GameSession,
     ): P<[string[], string[]]> => {
@@ -785,13 +826,13 @@ export class GameService {
     }
 
     /**
- * Handles the action when the dealer picks a winning white card.
- * Updates the score, checks for a game winner, and progresses the game stage accordingly.
- *
- * @param dealerPickWinner - DTO containing the selected winning white card ID and the dealer's auth token
- *
- * @returns The updated game state for the current player
- */
+     * Handles the action when the dealer picks a winning white card.
+     * Updates the score, checks for a game winner, and progresses the game stage accordingly.
+     *
+     * @param dealerPickWinner - DTO containing the selected winning white card ID and the dealer's auth token
+     *
+     * @returns The updated game state for the current player
+     */
     @UsePipes(new ValidationPipe({
         transform : true,
     }))
@@ -1283,10 +1324,10 @@ export class GameService {
         server : SocketIOServer,
         @Body(new ZodValidationPipe(JoinGameDTO.Schema))
         joinGame: JoinGameDTO,
-    ): P<GameStateDTO> {
+        debugContext ?: string,
+    ): P<void> {
 
-
-        this.log.silly('GameService::joinGame', { joinGame });
+        this.log.silly('GameService::joinGame', { joinGame, debugContext });
 
         // The times when a game is joined is when
         // 1 - A player enters the code and joins the game
@@ -1297,6 +1338,7 @@ export class GameService {
         // At this point, the player has been created and should have a valid
         // auth token
         const { session, game } = await this.getGameStateByGameCode(joinGame.game_code!);
+
         let { currentPlayer } = await this.getPlayerStateByAuthToken(joinGame.auth_token!);
 
         if (session.game_stage !== GameStage.Lobby)
@@ -1308,7 +1350,7 @@ export class GameService {
 
         await this.emitGameUpdate(server, game.game_code);
 
-        return this.getGameStateAsPlayer(game.game_code, currentPlayer.id, true);
+        // return this.getGameStateAsPlayer(game.game_code, currentPlayer.id, true);
 
 
     }

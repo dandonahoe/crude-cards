@@ -1,8 +1,8 @@
+import { AuthToken, CookieType, SocketID } from '../type';
 import { WINSTON_MODULE_PROVIDER } from "nest-winston";
 import { Inject, Injectable } from "@nestjs/common";
 import { P } from '../../../type/framework/data/P';
 import { SocketRequest } from './type';
-import { AuthToken, CookieType, SocketID } from '../type';
 import { Socket } from "socket.io";
 import { Logger } from "winston";
 
@@ -18,9 +18,7 @@ export class SockService {
     public getRequestInfoFromSocket = async (
         socket : Socket,
     ) : P<SocketRequest> => {
-
         this.log.silly('SockService::getRequestInfoFromSocket');
-
 
         const authToken : AuthToken = socket.handshake.auth[CookieType.AuthToken] ?? null;
         const socketId  : SocketID = socket.id;
