@@ -59,13 +59,14 @@ export class GameSession extends BaseEntity {
         default  : null })
     public current_score_log_id: string | null = null;
 
-    // @Column({
-    //     type     : 'simple-array',
-    //     nullable : false })
-    // public player_id_list: string[] = [];
-
     @Column('uuid', { array : true })
     public player_id_list: string[] = [];
+
+    @Column('uuid', { array : true })
+    public disconnected_player_id_list: string[] = [];
+
+    @Column('uuid', { array : true })
+    public limbo_player_id_list: string[] = [];
 
     @Column({
         type     : 'simple-array',

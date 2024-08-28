@@ -33,7 +33,7 @@ if (!Env.isBuilding() && !Env.isTest()) {
     // Possibly geab it, wipe and submit, then wait for the new auth token
     // in the usual flow.
 
-    Cookies.set(CookieType.AuthToken, 'INVALID');
+    // Cookies.set(CookieType.AuthToken, 'INVALID');
 
     socket = io(origin, {
         withCredentials : true,
@@ -188,6 +188,10 @@ function socketChannelRelay(
     });
 }
 
+// Double check this logic, i think its fallen out of date
+// and might be spawning lots of listeners., ideally get rid o this
+// and just use the relay channel
+
 function* sagaSendWebSocketMessage(): Saga {
 
     const message = yield* takePayload(GameAction.sendWebSocketMessage);
@@ -199,13 +203,9 @@ function* sagaSendWebSocketMessage(): Saga {
         message.type, message.data,
     );
 
-    const gameState = (yield* take(socketChannel)) as GameStateDTO;
+    yield* take(socketChannel);
 
     socketChannel.close();
-
-    // todo: add checks here to move them into the proper game.
-    if (gameState.game_code)
-        Router.push(`/game/${gameState.game_code}`);
 }
 
 function* sagaReconnect(): Saga {
