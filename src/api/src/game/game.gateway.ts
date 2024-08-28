@@ -1,4 +1,3 @@
-import { handleOnGatewayConnection, handleOnGatewayDisconnect } from './OnGateway';
 import { Inject, Injectable, UseGuards, UseInterceptors } from '@nestjs/common';
 import { AllowPlayerTypes } from '../decorators/allow-player-types.decorator';
 import { DealerPickBlackCardDTO } from './dtos/dealer-pick-black-card.dto';
@@ -16,7 +15,6 @@ import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { CreateGameDTO } from './dtos/create-game.dto';
 import { GameStateDTO } from './dtos/game-state.dto';
 import { StartGameDTO } from './dtos/start-game.dto';
-import { broadcastGameUpdate } from './GatewayUtil';
 import { JoinGameDTO } from './dtos/join-game.dto';
 import { NextHandDTO } from './dtos/next-hand.dto';
 import { ExitGameDTO } from './dtos/exit-game.dto';
@@ -25,9 +23,8 @@ import { GameService } from './game.service';
 import { corsPolicy } from './Cors';
 import { Logger } from 'winston';
 import {
+    OnGatewayConnection, OnGatewayDisconnect, WebSocketServer,
     WebSocketGateway, SubscribeMessage, MessageBody,
-    OnGatewayConnection, OnGatewayDisconnect,
-    ConnectedSocket, WebSocketServer,
 } from '@nestjs/websockets';
 
 
@@ -38,7 +35,7 @@ import {
 export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     @WebSocketServer()
-    private socketIoServer: SocketIoServer;
+    private server: SocketIoServer;
 
     public constructor(
         @Inject(WINSTON_MODULE_PROVIDER)
@@ -50,51 +47,26 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     public handleConnection = async (socket: Socket): P<unknown> => {
         this.log.silly('GameGateway::handleConnection', { socketId : socket.id });
 
-        return handleOnGatewayConnection(socket, this.gameService, this.socketIoServer, this.log);
+        return this.gameService.connectPlayer(this.server, socket);
     }
 
     public handleDisconnect = async (socket: Socket): P<unknown> => {
-        this.log.silly('GameGateway:handleDisconnect');
+        debugger;
 
-        return handleOnGatewayDisconnect(socket, this.gameService,
-            this.socketIoServer, this.log);
-    }
+        this.log.silly('GameGateway:::handleDisconnect', { socketID : socket.id });
 
-    public broadcastGameUpdateHelper = async (
-        gameCode: string,
-        includeDeck: boolean = false,
-    ) => {
-        this.log.silly('GameGateway::broadcastGameUpdateHelper', {
-            gameCode, includeDeck,
-        });
-
-        return broadcastGameUpdate(gameCode, this.gameService,
-            this.socketIoServer, this.log, includeDeck);
+        return this.gameService.disconnectPlayer(socket);
     }
 
     @AllowPlayerTypes(PlayerType.Player)
     @SubscribeMessage(WebSocketEventType.CreateGame)
     public async createGame(
-        @ConnectedSocket()
-        socket: Socket,
-
         @MessageBody(new ZodValidationPipe(CreateGameDTO.Schema))
         createGame: CreateGameDTO,
-    ): P<GameStateDTO> {
+    ): P<void> {
         this.log.info('GameGateway::createGame', { createGame });
-        // ('GameGateway::createGame', { createGame });
 
-        const gameState = await this.gameService.createGame(createGame);
-
-        this.log.info('Joining Room:', {
-            room : gameState.game_code,
-        });
-
-        socket.join(gameState.game_code!);
-
-        await this.broadcastGameUpdateHelper(gameState.game_code!);
-
-        return gameState;
+        return this.gameService.createGame(this.server, createGame);
     }
 
     @SubscribeMessage(WebSocketEventType.StartGame)
@@ -104,70 +76,44 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     ): P<GameStateDTO> {
         this.log.silly('GameGateway::startGame', { startGame });
 
-        const gameState = await this.gameService.startGame(startGame);
-
-        await this.broadcastGameUpdateHelper(gameState.game_code!, true);
-
-        return gameState;
+        return this.gameService.startGame(this.server, startGame);
     }
 
-    @AllowPlayerTypes(PlayerType.Player)
     @SubscribeMessage(WebSocketEventType.JoinGame)
+    @AllowPlayerTypes(PlayerType.Player)
     public async joinGame(
-        @ConnectedSocket() socket: Socket,
         @MessageBody(new ZodValidationPipe(JoinGameDTO.Schema))
         joinGame: JoinGameDTO,
-    ): P<GameStateDTO> {
+    ): P<void> {
         this.log.silly('GameGateway::joinGame', { joinGame });
 
-        const gameState = await this.gameService.joinGame(joinGame);
-
-        if (!gameState.error_message) {
-            socket.join(gameState.game_code!);
-
-            await this.broadcastGameUpdateHelper(gameState.game_code!);
-        }
-
-        return gameState;
+        return this.gameService.joinGame(this.server, joinGame);
     }
 
-    @AllowPlayerTypes(PlayerType.Player)
     @SubscribeMessage(WebSocketEventType.ExitGame)
+    @AllowPlayerTypes(PlayerType.Player)
     public async exitGame(
-        @ConnectedSocket()
-        socket: Socket,
-
         @MessageBody(new ZodValidationPipe(ExitGameDTO.Schema))
         exitGame: ExitGameDTO,
     ): P<GameStateDTO> {
         this.log.silly('GameGateway::exitGame', { exitGame });
 
-        const gameState = await this.gameService.exitGame(exitGame);
-
-        socket.leave(gameState.current_player_id!);
-
-        await this.broadcastGameUpdateHelper(gameState.game_code!);
-
-        return gameState;
+        return this.gameService.exitGame(this.server, exitGame);
     }
 
-    @AllowPlayerTypes(PlayerType.Player)
     @SubscribeMessage(WebSocketEventType.PlayerSelectCard)
+    @AllowPlayerTypes(PlayerType.Player)
     public async playerSelectCard(
         @MessageBody(new ZodValidationPipe(PlayerSelectCardDTO.Schema))
         playerSelectCard: PlayerSelectCardDTO,
     ): P<GameStateDTO> {
         this.log.silly('GameGateway::playerSelectCard', { playerSelectCard });
 
-        const gameState = await this.gameService.playerSelectCard(playerSelectCard);
-
-        await this.broadcastGameUpdateHelper(gameState.game_code!);
-
-        return gameState;
+        return this.gameService.playerSelectCard(this.server, playerSelectCard);
     }
 
-    @AllowPlayerTypes(PlayerType.Player, PlayerType.Visitor, PlayerType.Unknown)
     @SubscribeMessage(WebSocketEventType.SubmitFeedback)
+    @AllowPlayerTypes(PlayerType.Player, PlayerType.Visitor, PlayerType.Unknown)
     public async submitFeedback(
         @MessageBody(new ZodValidationPipe(SubmitFeedbackDTO.Schema))
         submitFeedback: SubmitFeedbackDTO,
@@ -177,63 +123,47 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         return this.gameService.submitFeedback(submitFeedback);
     }
 
-    @AllowPlayerTypes(PlayerType.Player)
     @SubscribeMessage(WebSocketEventType.UpdateUsername)
+    @AllowPlayerTypes(PlayerType.Player)
     public async updateUsername(
         @MessageBody(new ZodValidationPipe(UpdateUsernameDTO.Schema))
         updateUsername: UpdateUsernameDTO,
     ): P<GameStateDTO> {
         this.log.silly('GameGateway::updateUsername', { updateUsername });
 
-        const gameState = await this.gameService.updateUsername(updateUsername);
-
-        await this.broadcastGameUpdateHelper(gameState.game_code!);
-
-        return gameState;
+        return this.gameService.updateUsername(this.server, updateUsername);
     }
 
-    @AllowPlayerTypes(PlayerType.Player)
     @SubscribeMessage(WebSocketEventType.DealerPickBlackCard)
+    @AllowPlayerTypes(PlayerType.Player)
     public async dealerPickBlackCard(
         @MessageBody(new ZodValidationPipe(DealerPickBlackCardDTO.Schema))
         dealerPickBlackCard: DealerPickBlackCardDTO,
     ): P<GameStateDTO> {
         this.log.silly('GameGateway::dealerPickBlackCard', { dealerPickBlackCard });
 
-        const gameState = await this.gameService.dealerPickBlackCard(dealerPickBlackCard);
-
-        await this.broadcastGameUpdateHelper(gameState.game_code!);
-
-        return gameState;
+        return this.gameService.dealerPickBlackCard(this.server, dealerPickBlackCard);
     }
 
-    @AllowPlayerTypes(PlayerType.Player)
     @SubscribeMessage(WebSocketEventType.DealerPickWinner)
+    @AllowPlayerTypes(PlayerType.Player)
     public async dealerPickWinner(
         @MessageBody(new ZodValidationPipe(DealerPickWinnerDTO.Schema))
         dealerPickWinner: DealerPickWinnerDTO,
     ): P<GameStateDTO> {
         this.log.silly('GameGateway::dealerPickWinner', { dealerPickWinner });
 
-        const gameState = await this.gameService.dealerPickWinner(dealerPickWinner);
-
-        await this.broadcastGameUpdateHelper(gameState.game_code!);
-
-        return gameState;
+        return this.gameService.dealerPickWinner(this.server, dealerPickWinner);
     }
 
-    @AllowPlayerTypes(PlayerType.Player)
     @SubscribeMessage(WebSocketEventType.NextHand)
+    @AllowPlayerTypes(PlayerType.Player)
     public async nextHand(
         @MessageBody(new ZodValidationPipe(NextHandDTO.Schema))
         nextHand: NextHandDTO,
     ): P<GameStateDTO> {
         this.log.silly('GameGateway::nextHand', { nextHand });
 
-        const gameState = await this.gameService.nextHand(nextHand);
-
-        await this.broadcastGameUpdateHelper(gameState.game_code!);
-
-        return gameState;
+        return this.gameService.nextHand(this.server, nextHand);
     }
 }
