@@ -54,26 +54,10 @@ if (socket)
                 console.log('connect_error', error.message);
         });
 
-        socket.on(WebSocketEventType.UpdateGame, (gameState: GameStateDTO) => {
-            console.log('CLIENT GOT: PUSH_STATE_UPDATE', gameState);
-
-            // yield* sagaDispatch(GameAction.updateGameState(gameState));
-        });
-
         socket.on(WebSocketEventType.UpdatePlayerValidation, (validation: string) => {
-            // debugger;
             console.log('CLIENT GOT: validation', validation);
 
             Cookies.set(CookieType.AuthToken, validation);
-        });
-
-        socket.on('destroyAuthToken', (hummm: unknown) => {
-
-            debugger;
-
-            console.log('DESTROY AUTH TOKEN - I dont think its needed since token wipe on auth', hummm);
-
-            Cookies.remove(CookieType.AuthToken);
         });
     });
 
@@ -91,20 +75,37 @@ function* sagaStartUpdateListener(): Saga {
     console.log('Initial game state:', previousGameState);
 
     while (true) {
+
         console.log('Waiting for new game state...');
+
         const newGameState = (yield* take(socketChannel)) as GameStateDTO;
+
         console.log('New game state received:', newGameState);
 
         const newGameStateString = JSON.stringify(newGameState);
+
         yield* sagaDispatch(GameAction.updateGameState(newGameStateString));
+
         console.log('Game State Updated, checking timers');
 
+        debugger;
+
         if (newGameState.game_stage == previousGameState.game_stage) {
-            console.log('State didn\'t change, skipping timer');
+            console.log(`State didn't change from ${newGameState.game_stage}, skipping timer`);
             continue;
         }
 
-        console.log('State changed, updating timer');
+        // On any page but the homepage, put the game code
+        // in the url
+
+        if(newGameState.game_stage !== GameStage.Home) {
+            console.log(`Non homepage stage, updating url with game code $newGameState.game_stage}`);
+            Router.push(`/game/${newGameState.game_code}`);
+        }
+
+
+        console.log(`State changed to ${newGameState.game_stage}, updating timer`);
+
         yield* sagaDispatch(GameAction.updateTimer({
             timerType : null,
             timeLeft  : 0,

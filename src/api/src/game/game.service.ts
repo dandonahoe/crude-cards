@@ -86,10 +86,6 @@ export class GameService {
      */
     public connectPlayer = async (server : SocketIOServer, socket: Socket): P<void> => {
 
-        debugger;
-
-        // todo: break logic down, unit test bits
-
         this.log.silly('GameService::connectPlayer', { socketId : socket.id });
 
         let player: Player | null = null;
