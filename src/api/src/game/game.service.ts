@@ -488,7 +488,7 @@ export class GameService {
         players: Player[],
         game: Game,
     }> => {
-        this.log.silly('GameService::getPlayerStateByAuthTokenOrFail', authToken);
+        this.log.silly('GameService::getPlayerStateByAuthTokenOrFail', {  authToken});
 
         const { currentPlayer, game, session } = await this.getPlayerStateByAuthToken(authToken);
 
@@ -527,7 +527,7 @@ export class GameService {
         players: Player[] | null,
         game: Game | null,
     }> {
-        this.log.silly('GameService::getPlayerStateByAuthToken', authToken);
+        this.log.silly('GameService::getPlayerStateByAuthToken', { authToken });
 
         const currentPlayer = await this.playerService.getPlayerByAuthToken(authToken);
 
@@ -574,7 +574,7 @@ export class GameService {
         submitFeedback: SubmitFeedbackDTO,
     ): P<Feedback> {
         // Log the beginning of the feedback submission process
-        this.log.silly('GameService::submitFeedback', submitFeedback);
+        this.log.silly('GameService::submitFeedback', { submitFeedback });
 
         this.ensureProperGameState();
 
@@ -606,7 +606,7 @@ export class GameService {
         @Body(new ZodValidationPipe(NextHandDTO.Schema))
         nextHand: NextHandDTO,
     ): P<GameStateDTO> {
-        this.log.silly('GameService::nextHand', nextHand);
+        this.log.silly('GameService::nextHand', { nextHand });
 
         this.ensureProperGameState();
 
@@ -667,7 +667,7 @@ export class GameService {
         game    : Game,
         players : Player[],
     ): P<GameStage> => {
-        this.log.silly('GameService::determineNextGameStage', session);
+        this.log.silly('GameService::determineNextGameStage', { session, game });
 
         // Calculate the current round count for the session
         const gameRoundCountPromise = this.getCountGameRounds(session);
@@ -922,7 +922,7 @@ export class GameService {
                     .to(gameStatus.current_player_id!)
                     .emit(WebSocketEventType.UpdateGame, gameStatus),
             ),
-        );
+        ) ;
     }
 
 
@@ -1282,15 +1282,17 @@ export class GameService {
         server : SocketIOServer,
         @Body(new ZodValidationPipe(CreateGameDTO.Schema))
         createGame: CreateGameDTO,
-    ): P<GameStateDTO> {
-
+    ): P<void> {
 
         // Log the beginning of the game creation process
         this.log.silly('GameService::createGame', { createGame });
 
-
         // Retrieve the current player based on the provided auth token
         const { currentPlayer } = await this.getPlayerStateByAuthToken(createGame.auth_token!);
+
+        this.log.silly('GameService::createGame - Current Player', { currentPlayer });
+
+        this.log.silly('Leaving any existing games', { playerId : currentPlayer.id });
 
         // Ensure the player leaves any open sessions before starting a new game
         await this.gameSessionService.leaveOpenSession(currentPlayer);
@@ -1308,11 +1310,16 @@ export class GameService {
         // Initialize a new game session with the current player as the host
         const session = await this.gameSessionService.initSession(currentPlayer, game);
 
+        this.log.silly('GameService::createGame - Game Session Created', { session });
+
         // Update the game with the session reference after creation
         await this.gameRepo.update(game.id, { current_session_id : session.id! });
 
-        // Return the updated game state for the current player
-        return this.getGameStateAsPlayer(game.game_code, currentPlayer.id);
+        this.log.silly('GameService::createGame - Game Updated With SessionId', { game });
+
+        this.log.silly('Emitting Game Update', { gameCode : game.game_code });
+
+        this.emitGameUpdate(server, game.game_code);
     }
 
     @UsePipes(new ValidationPipe({
@@ -1324,6 +1331,8 @@ export class GameService {
         joinGame: JoinGameDTO,
         debugContext ?: string,
     ): P<void> {
+
+        debugger;
 
         this.log.silly('GameService::joinGame', { joinGame, debugContext });
 
@@ -1337,20 +1346,31 @@ export class GameService {
         // auth token
         const { session, game } = await this.getGameStateByGameCode(joinGame.game_code!);
 
-        let { currentPlayer } = await this.getPlayerStateByAuthToken(joinGame.auth_token!);
+        this.log.silly('GameService::joinGame - Session and Game', { session, game });
 
-        if (session.game_stage !== GameStage.Lobby)
-            throw new WebSockException('Game already started, idiot.');
+        const { currentPlayer : player } = await this.getPlayerStateByAuthToken(joinGame.auth_token!);
 
-        currentPlayer = await this.playerService.ensureReadyToJoin(currentPlayer);
+        if (session.game_stage !== GameStage.Lobby) {
 
-        await this.gameSessionService.addPlayerToSession(currentPlayer, session);
+            debugger;
+
+            // join limbo in existing game entity.
+            // Kept at the game level since they could sit there multiple sessions
+            // or boots and bans etc shoud retain through game sessions
+
+            return;
+        }
+
+        // Otherwise they're in the lobby like is supposed to be the usual
+        // usual flow, so add them into the game session right away
+
+        await this.exitGame(server, new ExitGameDTO(joinGame.auth_token));
+
+        // todo - possibly rename these to "set"PlayerToSessio, then encapsulate the code
+        // that ensures they can join this one (logs them out of existing sessions, validates, etc)
+        await this.gameSessionService.setPlayerGameSession(player, session);
 
         await this.emitGameUpdate(server, game.game_code);
-
-        // return this.getGameStateAsPlayer(game.game_code, currentPlayer.id, true);
-
-
     }
 
     /**
@@ -1370,27 +1390,23 @@ export class GameService {
         playerId: string | null,
         includeDeck: boolean = false,
     ): P<GameStateDTO> => {
-        try {
-            // Log the beginning of the game state retrieval process
-            this.log.silly('GameService::getGameStateAsPlayer - Start', { gameCode, playerId, includeDeck });
 
-            if(!playerId) throw new WebSockException('Invalid player ID');
-            if(!gameCode) throw new WebSockException('Invalid game code');
+        // Log the beginning of the game state retrieval process
+        this.log.silly('GameService::getGameStateAsPlayer - Start', {
+            gameCode, playerId, includeDeck });
 
-            // Retrieve the game state using helper methods and adjust it to reflect the player's perspective
-            const gameState = await this.getGameStateWithPlayerPerspective(gameCode, playerId, includeDeck);
+        if(!playerId) throw new WebSockException('Invalid player ID');
+        if(!gameCode) throw new WebSockException('Invalid game code');
 
-            // Log success after successfully retrieving and adjusting the game state
-            this.log.silly('GameService::getGameStateAsPlayer - Success', { gameCode, playerId, includeDeck });
+        // Retrieve the game state using helper methods and adjust it to reflect the player's perspective
+        const gameState = await this.getGameStateWithPlayerPerspective(
+            gameCode, playerId, includeDeck);
 
-            return gameState;
-        } catch (error) {
-            // Log any errors that occur during the process
-            this.log.error('GameService::getGameStateAsPlayer - Error', { gameCode, playerId, error });
+        // Log success after successfully retrieving and adjusting the game state
+        this.log.silly('GameService::getGameStateAsPlayer - Success', {
+            gameCode, playerId, includeDeck });
 
-            // Throw a custom exception with a user-friendly message
-            throw new WebSockException('Error retrieving game state');
-        }
+        return gameState;
     };
 
     /**
@@ -1518,50 +1534,43 @@ export class GameService {
     }
 
     /**
-     *  Retrieves the game state by the game code, including the session, score log, and players.
+     * Retrieves the game state by the game code, including the session, score log, and players.
+     *
      * @param gameCode - The unique code identifying the game session
      *
      * @returns - The game state DTO containing relevant game, session, and player data
      */
-    private getGameStateByGameCode = async (gameCode: string): P<{
-        scoreLog: ScoreLog | null;
-        session: GameSession;
-        players: Player[];
-        game: Game;
+    private getGameStateByGameCode = async (gameCode: string) : P<{
+        scoreLog : ScoreLog | null;
+        session  : GameSession;
+        players  : Player[];
+        game     : Game;
     }> => {
-        this.log.silly('GameService::getGameStateByGameCode', gameCode);
+        this.log.silly('GameService::getGameStateByGameCode', {
+            gameCode : gameCode ?? '[null]'});
 
-        try {
-            // Perform game lookup with cleaned game code
-            const cleanedGameCode = gameCode.toLowerCase().trim().replace(' ', '');
-            const game = await this.gameRepo.findOneByOrFail({ game_code : cleanedGameCode });
+        // Perform game lookup with cleaned game code
+        const cleanedGameCode = gameCode.toLowerCase().trim().replace(' ', '');
 
-            const session = await this.gameSessionService.findActiveGameSession(game);
+        const game    = await this.gameRepo.findOneByOrFail({ game_code : cleanedGameCode });
+        const session = await this.gameSessionService.findActiveGameSession(game);
 
-            // Initiate parallel queries for session, score log, and players
-            const [newSession, scoreLog, players] = await Promise.all([
-                this.gameSessionService.findActiveGameSession(game),
-                this.scoreLogService.findScoreLogBySession(session!),
-                this.playerService.findPlayersInSession(session!),
-            ]);
+        // Initiate parallel queries for session, score log, and players
+        const [
+            newSession, scoreLog, players,
+        ] = await Promise.all([
+            this.gameSessionService.findActiveGameSession(game),
+            this.scoreLogService.findScoreLogBySession(session!),
+            this.playerService.findPlayersInSession(session!),
+        ]);
 
-            this.log.silly('GameService::getGameStateByGameCode - Retrieved data', {
-                playerCount : players.length,
-                scoreLogId  : scoreLog?.id,
-                sessionId   : newSession.id,
-            });
+        this.log.silly('GameService::getGameStateByGameCode - Retrieved data', {
+            newSession, scoreLog, players,
+        });
 
-            return {
-                session : newSession,
-                scoreLog,
-                players,
-                game,
-            };
-        } catch (error) {
-            this.log.error('GameService::getGameStateByGameCode - Error retrieving data', { error });
-
-            throw new WebSockException('Error retrieving game state by game code');
-        }
+        return {
+            scoreLog, players, game, session : newSession,
+        };
     };
 
     /**

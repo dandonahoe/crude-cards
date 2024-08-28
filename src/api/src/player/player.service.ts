@@ -62,18 +62,6 @@ export class PlayerService {
         });
 
     /**
-     * Ensures the player is ready to join by setting their user type.
-     *
-     * @param player - The player entity.
-     * @returns A promise that resolves to the updated player entity.
-     */
-    public ensureReadyToJoin = async (player: Player): P<Player> =>
-        this.playerRepo.save({
-            ...player,
-            user_type : PlayerType.Player,
-        });
-
-    /**
      * Updates the player's username.
      *
      * @param player - The player entity.

@@ -61,14 +61,17 @@ if (socket)
         });
 
         socket.on(WebSocketEventType.UpdatePlayerValidation, (validation: string) => {
-            debugger;
+            // debugger;
             console.log('CLIENT GOT: validation', validation);
 
             Cookies.set(CookieType.AuthToken, validation);
         });
 
         socket.on('destroyAuthToken', (hummm: unknown) => {
-            console.log('DESTROY AUTH TOKEN', hummm);
+
+            debugger;
+
+            console.log('DESTROY AUTH TOKEN - I dont think its needed since token wipe on auth', hummm);
 
             Cookies.remove(CookieType.AuthToken);
         });

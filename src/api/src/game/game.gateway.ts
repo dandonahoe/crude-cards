@@ -63,7 +63,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     public async createGame(
         @MessageBody(new ZodValidationPipe(CreateGameDTO.Schema))
         createGame: CreateGameDTO,
-    ): P<GameStateDTO> {
+    ): P<void> {
         this.log.info('GameGateway::createGame', { createGame });
 
         return this.gameService.createGame(this.server, createGame);
