@@ -27,14 +27,6 @@ if (!Env.isBuilding() && !Env.isTest()) {
 
     console.log('Connecting to WebSocket:', origin);
 
-    // likely problem, its sending th token right off the bat
-
-    // set it invalid for testing bad auth on startup.
-    // Possibly geab it, wipe and submit, then wait for the new auth token
-    // in the usual flow.
-
-    Cookies.set(CookieType.AuthToken, 'INVALID');
-
     socket = io(origin, {
         withCredentials : true,
         auth            : {
@@ -54,26 +46,11 @@ if (socket)
                 console.log('connect_error', error.message);
         });
 
-        socket.on(WebSocketEventType.UpdateGame, (gameState: GameStateDTO) => {
-            console.log('CLIENT GOT: PUSH_STATE_UPDATE', gameState);
-
-            // yield* sagaDispatch(GameAction.updateGameState(gameState));
-        });
-
         socket.on(WebSocketEventType.UpdatePlayerValidation, (validation: string) => {
             // debugger;
             console.log('CLIENT GOT: validation', validation);
 
             Cookies.set(CookieType.AuthToken, validation);
-        });
-
-        socket.on('destroyAuthToken', (hummm: unknown) => {
-
-            debugger;
-
-            console.log('DESTROY AUTH TOKEN - I dont think its needed since token wipe on auth', hummm);
-
-            Cookies.remove(CookieType.AuthToken);
         });
     });
 
@@ -91,20 +68,35 @@ function* sagaStartUpdateListener(): Saga {
     console.log('Initial game state:', previousGameState);
 
     while (true) {
+
         console.log('Waiting for new game state...');
+
         const newGameState = (yield* take(socketChannel)) as GameStateDTO;
+
         console.log('New game state received:', newGameState);
 
         const newGameStateString = JSON.stringify(newGameState);
+
         yield* sagaDispatch(GameAction.updateGameState(newGameStateString));
+
         console.log('Game State Updated, checking timers');
 
         if (newGameState.game_stage == previousGameState.game_stage) {
-            console.log('State didn\'t change, skipping timer');
+            console.log(`State didn't change from ${newGameState.game_stage}, skipping timer`);
             continue;
         }
 
-        console.log('State changed, updating timer');
+        // On any page but the homepage, put the game code
+        // in the url
+
+        if(newGameState.game_stage !== GameStage.Home) {
+            console.log(`Non homepage stage, updating url with game code $newGameState.game_stage}`);
+            Router.push(`/game/${newGameState.game_code}`);
+        }
+
+
+        console.log(`State changed to ${newGameState.game_stage}, updating timer`);
+
         yield* sagaDispatch(GameAction.updateTimer({
             timerType : null,
             timeLeft  : 0,
@@ -167,13 +159,15 @@ function socketChannelRelay(
     messageData: unknown,
 ) {
     const auth_token = Cookies.get(CookieType.AuthToken)
+    const game_code = Router.query['game_code'] || Router.query['gameCode'];
 
     const message = {
         ...messageData as Record<string, unknown>,
         auth_token,
+        game_code,
     };
 
-    console.log('Sending WS Message to Server', auth_token, messageType, message);
+    console.log('Sending WS Message to Server', auth_token, messageType, message, game_code);
 
     return eventChannel(emit => {
         socket.emit(
@@ -188,6 +182,10 @@ function socketChannelRelay(
     });
 }
 
+// Double check this logic, i think its fallen out of date
+// and might be spawning lots of listeners., ideally get rid o this
+// and just use the relay channel
+
 function* sagaSendWebSocketMessage(): Saga {
 
     const message = yield* takePayload(GameAction.sendWebSocketMessage);
@@ -199,13 +197,9 @@ function* sagaSendWebSocketMessage(): Saga {
         message.type, message.data,
     );
 
-    const gameState = (yield* take(socketChannel)) as GameStateDTO;
+    yield* take(socketChannel);
 
     socketChannel.close();
-
-    // todo: add checks here to move them into the proper game.
-    if (gameState.game_code)
-        Router.push(`/game/${gameState.game_code}`);
 }
 
 function* sagaReconnect(): Saga {

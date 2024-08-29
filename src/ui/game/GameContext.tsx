@@ -1,9 +1,9 @@
 import { GameStateDTO } from '../../api/src/game/dtos/game-state.dto';
 import { GameContextType } from './type';
-import React from 'react';
+import { createContext } from 'react';
 
 
-export const GameContext = React.createContext<GameContextType>({
+export const GameContext = createContext<GameContextType>({
     dealerDealtCard : null,
     playerDealtCard : null,
     currentPlayer   : null,

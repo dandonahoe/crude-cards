@@ -6,7 +6,7 @@ import { useDispatch } from 'react-redux';
 import { useForm } from '@mantine/form';
 import { RFC } from '@app/ui/type';
 import { useState } from 'react';
-import z from 'zod';
+import { z } from 'zod';
 
 
 interface FeedbackForm {
