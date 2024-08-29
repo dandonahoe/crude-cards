@@ -49,8 +49,6 @@ if (socket)
         socket.on(WebSocketEventType.UpdatePlayerValidation, (validation: string) => {
             console.log('CLIENT GOT: validation', validation);
 
-            debugger;
-
             Cookies.set(CookieType.AuthToken, validation);
         });
     });
@@ -161,8 +159,6 @@ function socketChannelRelay(
 ) {
     const auth_token = Cookies.get(CookieType.AuthToken)
     const game_code = Router.query['game_code'] || Router.query['gameCode'];
-
-    debugger;
 
     const message = {
         ...messageData as Record<string, unknown>,

@@ -8,7 +8,6 @@ import { GameSession } from '../game-session/game-session.entity';
 import { ScoreLogService } from '../score-log/score-log.service';
 import { WebSockException } from '../framework/WebSockException';
 import { ZodValidationPipe } from '../pipes/ZodValidation.pipe';
-import { validate as isUuidValid } from 'uuid';
 import { FeedbackService } from '../feedback/feedback.service';
 import { UpdateUsernameDTO } from './dtos/update-username.dto';
 import { SubmitFeedbackDTO } from './dtos/submit-feedback.dto';
@@ -20,7 +19,6 @@ import { type P } from '../../../type/framework/data/P';
 import { Feedback } from '../feedback/feedback.entity';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { CreateGameDTO } from './dtos/create-game.dto';
-import { AuthToken, CookieType } from '../type';
 import { Server as SocketIOServer } from 'socket.io';
 import { GameStateDTO } from './dtos/game-state.dto';
 import { StartGameDTO } from './dtos/start-game.dto';
@@ -33,9 +31,11 @@ import { JoinGameDTO } from './dtos/join-game.dto';
 import { ExitGameDTO } from './dtos/exit-game.dto';
 import { Player } from '../player/player.entity';
 import { WsException } from '@nestjs/websockets';
+import { validate as isUuidValid } from 'uuid';
 import { PlayerDTO } from './dtos/player.dto';
 import { Repository } from 'typeorm';
 import { Game } from './game.entity';
+import { AuthToken } from '../type';
 import { difference } from 'lodash';
 import { Socket } from 'socket.io';
 import { Logger } from 'winston';
@@ -63,6 +63,73 @@ export class GameService {
     }
 
     /**
+     * Connects a player via socket, handles reconnection if the auth token is valid,
+     * or creates a new player if no valid auth token is found.
+     *
+     * @param socket - The player's socket instance
+     *
+     * @returns The connected player entity
+     */
+    public connectPlayer = async (server : SocketIOServer, socket: Socket): P<unknown> => {
+        const socketId = socket.id;
+
+        this.log.silly('GameService::connectPlayer', { socketId });
+
+        // just obtain formatted info about the request
+        const socketRequest = await this.sockService.getRequestInfoFromSocket(socket);
+
+        this.log.debug('Socket Request', { socketRequest });
+
+        debugger;
+
+        this.log.silly('Looking up player info by auth token', { authToken : socketRequest.authToken });
+        const playerState = await this.getPlayerStateByAuthToken(socketRequest.authToken);
+
+        let player : Player | null = null;
+
+        //If no player was found (bad token, outdated, etc.), create a new player
+        if (!playerState.currentPlayer) {
+            this.log.debug('No player found for socket, creating new player.', { socketRequest });
+
+            player = await this.playerService.createPlayer(socketRequest.socketId);
+
+            this.log.debug('New player created, grabbing new state', { player });
+
+            // grab the current state of the player now that they have been created
+            const { currentPlayer } = await this.getPlayerStateByAuthToken(player.auth_token);
+
+            if(!currentPlayer)
+                throw new WsException(`Player not found after creation, socket(${socketId})`);
+
+            this.log.debug('Emitting new player auth token', { player });
+
+            await socket.join(currentPlayer.id);
+
+            return this.emitPlayerAuthToken(server, currentPlayer);
+        }
+
+        // at this point, we have found an existing player
+        this.log.debug('Joining the player to their socket by their playerId', { playerId : playerState.currentPlayer.id});
+        await socket.join(playerState.currentPlayer.id);
+
+        this.log.debug('Player socket connected, sending AuthToken', { player });
+
+        // existing player needs a new token, they're wiped on connection
+        // to the server and this pushes a new one to be stored and supplied
+        // in followup calls. Should probably migrate to JWT for this.
+        await this.emitPlayerAuthToken(server, playerState.currentPlayer!)
+
+        // check auth token
+        return this.joinGame(
+            server,
+            new JoinGameDTO(
+                playerState.currentPlayer.auth_token!,
+                playerState.game!.game_code),
+            'Joining Existing Game via Reconnect Routine');
+    };
+
+
+    /**
      * Return a Player given an socket conection
      *
      * @param socket - The player's socket instance
@@ -74,182 +141,6 @@ export class GameService {
 
 
     /**
-     * Connects a player via socket, handles reconnection if the auth token is valid,
-     * or creates a new player if no valid auth token is found.
-     *
-     * @param socket - The player's socket instance
-     *
-     * @returns The connected player entity
-     */
-    public connectPlayer = async (server : SocketIOServer, socket: Socket): P<unknown> => {
-        this.log.silly('GameService::connectPlayer', { socketId : socket.id });
-
-        // just obtain formatted info about the request
-        const socketRequest = await this.sockService.getRequestInfoFromSocket(socket);
-
-        this.log.debug('Socket Request', { socketRequest });
-
-        this.log.silly('Looking up player info by auth token', { authToken : socketRequest.authToken });
-        let playerState = await this.getPlayerStateByAuthToken(socketRequest.authToken);
-        let player : Player | null = null;
-
-        //If no player was found (bad token, outdated, etc.), create a new player
-        if (!playerState.currentPlayer) {
-            this.log.debug('No player found for socket, creating new player.', { socketRequest });
-
-            player = await this.playerService.createPlayer(socketRequest.socketId);
-
-            this.log.debug('New player created', { player });
-
-            this.log.debug('Emitting new player auth token', { player });
-
-            // bit redundant, but state should be filtered though this
-            // to include additional game logic
-
-            // grab the current state of the player now that they have been created
-            playerState = await this.getPlayerStateByAuthToken(player.auth_token);
-
-
-            return this.emitPlayerAuthToken(server, playerState.currentPlayer!);
-        }
-
-        // existing player needs a new token, they're wiped on connection
-        // to the server and this pushes a new one to be stored and supplied
-        // in followup calls. Should probably migrate to JWT for this.
-        await this.emitPlayerAuthToken(server, playerState.currentPlayer!)
-
-        // at this point, we have found an existing player
-        this.log.debug('Joining the player to their socket by their playerId', { playerId : playerState.currentPlayer.id});
-
-
-        await socket.join(playerState.currentPlayer.id);
-
-        this.log.debug('Player socket connected', { player });
-
-
-        // check auth token
-        return this.joinGame(
-            server,
-            new JoinGameDTO(playerState.currentPlayer.auth_token!, playerState.game!.game_code),
-            'Joining Existing Game via Reconnect Routine');
-    };
-
-    // Notes
-    // At this point, we have
-    // Used the connecting browser's AuthToken to find a
-    // player which did exist and they were part of a
-    // game which is still active (like they hit refresh, back button, etc)
-
-
-    // set the player as part of the game again, however they should be added to a UUID list
-    // of player ids currently in "limbo" status. This is a list of players who are waiting
-    // to join at the next opportunity, which is at the end of the round when the existing
-    // dealer is prompted to Accept, Reject or Skip players in Limbo.
-
-    // this.joinGame(player, activeGameSession);
-
-    // this.log.info('Player connected', socketRequest);
-
-
-    // Now we have a player, but are unsure if the are in a game or not
-    // Grab the game code from the url, if present, and attempt
-    // to get the active game the player is in, if any.
-
-
-    // The player is in an active game already, but the game code in the url.
-    // is different. We need to ask them if they meant to rejoin their existing
-    // game, or join the new one. If the game code cannot be found in the database or
-    // if the game is already over, then prompt the user with a message about the game
-    // code being wrong, and ask them if they want to join the one they're actually active in.
-    // This could happen if someone closes their browser, and uses an old link or bookmark
-    // and needs to rejoin fast.
-
-    // if the url they landed on has a game code in it
-
-
-    // If the users token is valid, and their game is active, pick the existing player
-    // and put them back into the game. We need to add a flag to have a player wait in the lobby until the next hand begins.
-    // If they player was the dealer, they do not regain dealer status unless there are only 3 players.
-
-    // If the dealer leaves mid game, the dealer has 30 seconds to rejoin. If they rejoin in time, the game continues
-    // as normal. If they do not rejoin, tell the players they are all losers and end the game.
-
-    // When any player first loads the game, this method is called and passed whatever AuthToken
-    // value they have in their browser. It may or may not be valid, in that it may just be garbage, outdated
-    // the game is over or other reasons. Valid game tokens are are tied to an existing player in an currently
-    // active game.
-
-    // When the game starts, a game code is generated and a url is updated to reflect the game code,
-    // in the format https://crude.cards/game/{gameCode}. The game code is used to join the game room
-    // more easily when shared. When a player loads the app from a game code url, the regular auth routine
-    // followed to ensure their auth token is valid, then a a check is made with their game code. If the
-    // player is in the game specified by the game code, they are joined to the
-    // game and pur into "Limbo" status, where they wait until the
-    // next hand starts. The current dealer will be prompted to let them into the game, along with other waiting players.
-
-    // If if the player uses a game code url for a different game than the one they are currently in, they should
-    // receive a prompt about leaving the current game to join the new one.
-
-    // If the player uses a game code url that matches the AuthToken tied to a an existing player in that game, they
-    // automatically join the "Limbo" status and wait for the next hand to start. The dealer of the game has the chance to let them in,
-    // or skip them. If skipped, the lobby player receives a message they have been removed.
-    // If accepted, the player joins the game as usual at the start of the next player round.
-
-    // If the player hits the bare homepage, this connection function should lookup the AuthToken player, then
-    // attempt to autojoin the existing game if it is active. If the game is not active, a new player is created for the user
-    // and they remain on the home page.
-
-    // Just before this websocket connection is made, the AuthToken cookie data is copied and sent here, but deleted
-    // from the browser. The standard flow (this function) is meant to broadcast the AuthToken the regular way
-    // to keep the logic simplified. Plus if something breaks down, their token is cleared and the next page refresh is more
-    // likely to work. not a fix, just a bandaid that happens to be there (log error if this happens though).
-
-
-    // 1. Check if the socket has an auth token
-    //    YES - Try to rejoin the player to their existing room
-
-    //    NO  - Create a new player and join them to a new room
-    // we
-    // const authToken = this.getWebSocketAuthToken(socket);
-
-    // if (authToken) {
-    //     this.log.info('Auth token found in socket', { authToken, socketId : socket.id });
-
-    //     const existingPlayer = await this.findPlayerByAuthToken(socket, authToken);
-
-    //     if (existingPlayer) {
-    //         this.log.info('Player reconnected to private socket room', { playerId : existingPlayer.id });
-
-    //         return existingPlayer;
-    //     }
-
-    // } else {
-    //     this.log.info('No auth token found in socket', { socketId : socket.id });
-    // }
-
-    // const newPlayer = await this.createNewPlayer(socket);
-
-    // this.log.info('Player joined private socket room', { playerId : newPlayer.id });
-
-    // return newPlayer;
-
-    // this.isTokenValid()
-    // this.getPlayerByAuthToken()
-    // this.getActiveGameByAuthToken()
-    // this.getActiveSessionByAuthToken()
-    // this.bootPlayerFromGame();
-    // this.bootDealerFromGame();
-    // this.bootBlayerFromGame();
-    // this.acceptPlayerFromLimbo();
-    // this.rejectPlayerFromLimbo();
-    // this.leaveGame();
-    // this.replaceDealer(game);
-    // this.endGame();
-
-    // SCAFFOLD
-
-
-    /**
      * Ensures that the game is in a proper state before proceeding with any actions.
      * This method is used to validate the game state before any player actions are executed.
      */
@@ -258,6 +149,7 @@ export class GameService {
 
         return true;
     }
+
 
     /**
      * Attempts to find an existing player by auth token.
@@ -272,12 +164,15 @@ export class GameService {
         socket: Socket,
         authToken: string | null,
     ): P<Player | null> {
-        this.log.silly('GameService::findPlayerByAuthToken', { socketId : socket.id, authToken });
+
+        const debugBundle = { socketId : socket.id, authToken };
+
+        this.log.silly('GameService::findPlayerByAuthToken', debugBundle);
 
         if (!authToken) return null;
 
         if(!isUuidValid(authToken)) {
-            this.log.warn('Invalid Auth Token', { socketId : socket.id, authToken });
+            this.log.warn('Invalid Auth Token', debugBundle);
 
             return null;
         }
@@ -295,13 +190,14 @@ export class GameService {
     public disconnectPlayer = async (
         socket : Socket,
     ): P<unknown> => {
-        this.log.debug('Updating player disconnection status.', { socketId : socket.id });
+        this.log.debug('TODO: ENABLE DISCONNECT ROUTINE.', { socketId : socket.id });
 
-        const player = await this.playerService.findPlayerBySocket(socket);
+        // const player = await this.playerService.findPlayerBySocket(socket);
 
-        this.log.debug('Player found by socket, disconnecting...', { player, socketId : socket.id });
+        // this.log.debug('Player found by socket, disconnecting...', { player, socketId : socket.id });
 
-        return this.playerService.disconnectPlayer(player);
+        return;
+        // return this.playerService.disconnectPlayer(player);
     }
 
     /**
@@ -441,18 +337,15 @@ export class GameService {
 
         if(!authToken)
             return {
-                currentPlayer : null,
-                scoreLog      : null,
-                session       : null,
-                players       : null,
-                game          : null,
+                currentPlayer : null, scoreLog : null, session : null, players : null, game : null,
              };
-
 
         const currentPlayer = await this.playerService.getPlayerByAuthToken(authToken);
 
-        if (!currentPlayer)
-            throw new WebSockException(`Invalid Auth Token (${authToken}), No Player Found`);
+        if(!currentPlayer)
+            return {
+                currentPlayer : null, scoreLog : null, session : null, players : null, game : null,
+             };
 
         const session = await this.gameSessionService.findActivePlayerGameSession(currentPlayer);
 
