@@ -20,7 +20,7 @@ import { type P } from '../../../type/framework/data/P';
 import { Feedback } from '../feedback/feedback.entity';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { CreateGameDTO } from './dtos/create-game.dto';
-import { CookieType } from '../type';
+import { AuthToken, CookieType } from '../type';
 import { Server as SocketIOServer } from 'socket.io';
 import { GameStateDTO } from './dtos/game-state.dto';
 import { StartGameDTO } from './dtos/start-game.dto';
@@ -327,9 +327,13 @@ export class GameService {
     * @returns The disconnected player and the associated game session details (if any)
     */
     public disconnectPlayer = async (
-        player : Player,
+        socket : Socket,
     ): P<unknown> => {
-        this.log.debug('Updating player disconnection status.', { player });
+        this.log.debug('Updating player disconnection status.', { socketId : socket.id });
+
+        const player = await this.playerService.findPlayerBySocket(socket);
+
+        this.log.debug('Player found by socket, disconnecting...', { player, socketId : socket.id });
 
         return this.playerService.disconnectPlayer(player);
     }
@@ -423,7 +427,7 @@ export class GameService {
      * @returns - The game state for the current player
      */
     public getPlayerStateByAuthTokenOrFail = async (
-        authToken: string,
+        authToken: AuthToken,
     ): P<{
         currentPlayer: Player,
         scoreLog: ScoreLog | null,
@@ -446,9 +450,6 @@ export class GameService {
             this.playerService.findPlayersInSession(session),
         ]);
 
-        // There is no score log when the game is in lobby mode before beginning. It's
-        // created at startGame
-
         return {
             currentPlayer, scoreLog, session, players, game,
         };
@@ -462,7 +463,7 @@ export class GameService {
      * @returns Objects related to the user with authToken
      */
     public async getPlayerStateByAuthToken(
-        authToken: string,
+        authToken: AuthToken,
     ): P<{
         currentPlayer: Player,
         scoreLog: ScoreLog | null,

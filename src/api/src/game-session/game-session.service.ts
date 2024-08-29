@@ -57,18 +57,15 @@ export class GameSessionService {
             }],
         });
 
-        if(activeGameSessionList.length > 1)
+        if(activeGameSessionList.length !== 1)
             this.log.error('GameSessionService::addPlayerToSession::MultipleActiveSessions', {
                 currentPlayer, activeGameSessionList,
             });
 
-
-        //promise.all updating all the sessions with this.removePlayer
         await Promise.all(
             activeGameSessionList.map(
                 async activeSession =>
                     this.removePlayer(currentPlayer, activeSession)));
-
 
         return this.gameSessionRepo
             .createQueryBuilder()
@@ -79,7 +76,6 @@ export class GameSessionService {
             .where("id = :id", { id : session.id })
             .execute();
     }
-
 
     public initSession = async (
         currentPlayer: Player, game: Game,

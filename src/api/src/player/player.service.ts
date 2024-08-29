@@ -126,11 +126,17 @@ export class PlayerService {
      * @param session - The game session.
      * @returns A promise that resolves to an array of player entities.
      */
-    public findPlayersInSession = async (session: GameSession) : P<Player[]> =>
+    public findPlayersInSession = async ({
+        disconnected_player_id_list, limbo_player_id_list, player_id_list,
+    } : GameSession) : P<Player[]> =>
         this.playerRepo.find({
-            where : {
-                id : In(session.player_id_list),
-            },
+            where : [{
+                id : In([
+                    ...disconnected_player_id_list,
+                    ...limbo_player_id_list,
+                    ...player_id_list,
+                ]),
+            }],
         });
 
     /**
