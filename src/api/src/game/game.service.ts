@@ -327,68 +327,11 @@ export class GameService {
     * @returns The disconnected player and the associated game session details (if any)
     */
     public disconnectPlayer = async (
-        server : SocketIOServer,
-        socket : Socket,
+        player : Player,
     ): P<unknown> => {
-        this.log.debug('Disconnecting player from game.', { socketId : socket.id });
+        this.log.debug('Updating player disconnection status.', { player });
 
-        // check what state the socket is in.
-        const player = await this.findPlayerBySocket(socket);
-
-        let session = this.gameSessionService.findActivePlayerGameSession(player);
-
-        // first mark the player themself as disconnected, then attempt
-        // to move them into limbo of the game they're actively in so
-        // the new dealer will have
-        if (!session)
-            return this.playerService.disconnectPlayer(player);
-
-        const game = this.getGameBySession(session);
-
-        // The player is in an active game, so move them into limbo
-
-        // ensures their ID is part of the `limbo_player_id_list`
-        session = await this.gameSessionService.addPlayerToLimbo(session, player);
-
-        this.log.info('Player disconnected successfully', {
-            playerId : player.id,
-            socketId : socket.id,
-            gameCode : game?.game_code,
-        });
-
-        return this.emitGameUpdate(server, game.game_code);
-    }
-
-    /**
-     * Makes the socket leave the player's room.
-     *
-     * @param socket - The player's socket instance
-     * @param player - The player entity
-     */
-    private leavePlayerSocketRoom = async (
-        socket: Socket, player: Player,
-    ) => {
-        const roomId = player.id;
-
-        socket.leave(roomId);
-
-        this.log.debug(`Player left room: ${roomId}`, {
-            roomId, socketId : socket.id, player,
-        });
-    }
-
-    /**
-     * Makes the socket leave the game's room.
-     *
-     * @param socket - The player's socket instance
-     * @param game - The game entity
-     */
-    private leaveGameSocketRoom = async (
-        socket: Socket, game: Game,
-    ) => {
-        socket.leave(game.game_code!);
-
-        this.log.debug(`Player left game room: ${game.game_code}`, { game });
+        return this.playerService.disconnectPlayer(player);
     }
 
     /**
@@ -915,7 +858,7 @@ export class GameService {
         if(!gameCode) throw new WsException(`Invalid game code ${gameCode}`);
 
         // todo: update this to handle people in the disconnected and limbo states
-        const gameStatusList = await this.getAllPlayersGameSt atus(gameCode, includeDeck);
+        const gameStatusList = await this.getAllPlayersGameStatus(gameCode, includeDeck);
 
         return Promise.all(
             gameStatusList.map(gameStatus => server
@@ -1571,6 +1514,8 @@ export class GameService {
         this.log.silly('GameService::getGameStateGeneric', {
             gameCode, includeDeck,
         });
+
+        // todo: update this to take disconnected and limbo players into account
 
         // Retrieve the game state using the provided game code
         const {
