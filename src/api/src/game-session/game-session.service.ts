@@ -10,6 +10,7 @@ import { Player } from '../player/player.entity';
 import { WsException } from '@nestjs/websockets';
 import { Game } from '../game/game.entity';
 import { Logger } from 'winston';
+import { debug } from 'console';
 
 
 export enum JoinGameScenario {
@@ -240,16 +241,59 @@ export class GameSessionService {
         //         game_stage : GameStage.GameComplete,
         //     })
         //     .execute();
+
+    // Reconnecting Disconnected Player
+    // IF: They are listed in the disconnected_player_id_list, then
+    // they were disconnected and the server properly registerd the
+    // disconnnect, and the players were notified with updated state
+    // reflecting the dicsconnected player.
+    // ACTION: Remove them from the disconnected_player_id_list.
+    // The player_id_list has all players, so just removing it from
+    // disconnected reconnectes them to the session. Joining players
+    // who were previously disconnected properly should be
+    // added back automatically. They skip limbo since they're
+    // already known to be in the game and are dealt in.
     private joinGameViaReconnectingDisconnectedPlayer =  async (
         player: Player, session: GameSession,
     ) : P<unknown> => {
-        this.log.silly('GameSessionService::joinGameViaReconnectingDisconnectedPlayer', {
-            player, session,
-        });
+        const debugBundle = { player, session };
+        const debugText = `playerId(${player.id}) sessionId(${session.id})`;
 
-        return;
+        this.log.silly('GameSessionService::DisconnectedPlayer', debugBundle);
+
+        if(!session.disconnected_player_id_list.includes(player.id)) {
+            this.log.error(`DisconnectedPlayer::player - Player is not in the disconnected list`, debugBundle);
+            throw new WsException(`DisconnectedPlayer::player ${debugBundle}`);
+        }
+
+        if(session.limbo_player_id_list.includes(player.id)) {
+            this.log.error(`DisconnectedPlayer::limbo - Player is in limbo`, debugBundle);
+            throw new WsException(`DisconnectedPlayer::limbo ${debugText}`);
+        }
+
+        if(session.player_id_list.includes(player.id)) {
+            this.log.error(`DisconnectedPlayer::player - Player is in disconnect, but not in player list.`, debugBundle);
+            throw new WsException(`DisconnectedPlayer::player ${debugText}`);
+        }
+
+        // just remove from the disconnected player array,
+        // they are already in the player_list
+        return this.gameSessionRepo.update(session.id, {
+            ...session,
+            disconnected_player_id_list : () =>
+                `array_remove(disconnected_player_id_list, '${player.id}')`,
+        });
     };
 
+    // Joining Player is Already in Limbo
+    // IF: If they are listed in the limbo_player_id_list and
+    // are NOT in disconnected_player_id_list, then they're
+    // joinged as a new player while the game is already in progress and
+    // were put into limbo previously. This could happen if they
+    // were in limbo and refreshed the page or rejoined the game multiple
+    // times as the same user
+    // ACTION: do nothing. Could happen if they are in limbo and refresh,
+    // they should just stay there. Emit update to players
     private joinGameViaJoiningPlayerIsAlreadyInLimbo =  async (
         player: Player, session: GameSession,
     ) : P<unknown> => {
@@ -260,6 +304,13 @@ export class GameSessionService {
         return;
     };
 
+    // PLAYER IS ALREADY IN GAME
+    // IF: The player joining is already in this game and
+    // their player_id is NOT in disconnected_player_id_list
+    // AND NOT in limbo_player_id_list. So they're just an active
+    // player already but a joing game request was sent.
+    // ACTION: Do nothing, they are already in the game so noop.
+    // Emit update to players, but possibly not necessary.
     private joinGameViaPlayerIsAlreadyInGame =  async (
         player: Player, session: GameSession,
     ) : P<unknown> => {
@@ -270,14 +321,48 @@ export class GameSessionService {
         return;
     };
 
+    // PLAYER JOINS MIDGAME
+    // IF: The new player is unknown to the current game session and
+    // the game has already started (no longer in lobby mode). They are
+    // joining late and have not been dealt in yet.
+    // ACTION: Add their player_id to the limbo_player_id_list
+    // and emit the updated session to all players in the session.
+    // Once the current hand ends, they will be dealt in. Later
+    // on, it will have "Admit / Ignore / Ban" etc options to
+    // allow players to optionally let players in limbo into the game [idea].
     private joinGameViaPlayerJoinsMidGame =  async (
         player: Player, session: GameSession,
     ) : P<unknown> => {
-        this.log.silly('GameSessionService::joinGameViaPlayerJoinsMidGame', {
-            player, session,
-        });
 
-        return;
+        debugger;
+
+        const debugBundle = { player, session };
+
+        this.log.silly('GameSessionService::joinGameViaPlayerJoinsMidGame', debugBundle);
+
+        const { limbo_player_id_list, player_id_list } = session;
+
+        const debugText = `playerId(${player.id}) sessionId(${session.id})`;
+
+        // players in limbo
+        if(player_id_list.includes(player.id)) {
+            this.log.error(`playerJoinsMidGame::player - Player is already in the game`, debugBundle);
+            throw new WsException(`playerJoinsMidGame::player (${debugText})`);
+        }
+
+        if(limbo_player_id_list.includes(player.id)) {
+            // Not throwing an error here, because they could have been midgame,
+            // left, some back migame of another hand, so they just remain in limbo
+            this.log.info(`playerJoinsMidGame::limbo - Player is already in limbo`, debugBundle);
+
+            return;
+        }
+
+        return this.gameSessionRepo.update(session.id, {
+            ...session,
+            limbo_player_id_list : () =>
+                `array_append(array_remove(limbo_player_id_list, '${player.id}'), '${player.id}')`,
+        });
     };
 
     // PLAYER FAST REFRESH
