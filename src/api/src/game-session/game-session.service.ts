@@ -45,6 +45,33 @@ export class GameSessionService {
             currentPlayer, session,
         });
 
+        // where in player_id_list or in should be at most one though
+
+
+        const activeGameSessionList = await this.gameSessionRepo.find({
+            where : [
+        {
+            player_id_list : ArrayContains([currentPlayer.id]),
+        },
+        {
+            disconnected_player_id_list : ArrayContains([currentPlayer.id]),
+        },
+    ],
+        });
+
+        if(activeGameSessionList.length > 1)
+            this.log.error('GameSessionService::addPlayerToSession::MultipleActiveSessions', {
+                currentPlayer, activeGameSessionList,
+            });
+
+
+        //promise.all updating all the sessions with this.removePlayer
+        await Promise.all(
+            activeGameSessionList.map(
+                async activeSession =>
+                    this.removePlayer(currentPlayer, activeSession)));
+
+
         return this.gameSessionRepo
             .createQueryBuilder()
             .update(GameSession)
@@ -148,7 +175,7 @@ export class GameSessionService {
         });
 
     public removePlayer = async (player: Player, session: GameSession) =>
-        this.gameSessionRepo.update(player.id, {
+        this.gameSessionRepo.update(session.id, {
             ...session,
             player_id_list : () => `array_remove('${player.id}', player_id_list)`,
         });

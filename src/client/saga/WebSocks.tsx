@@ -27,14 +27,6 @@ if (!Env.isBuilding() && !Env.isTest()) {
 
     console.log('Connecting to WebSocket:', origin);
 
-    // likely problem, its sending th token right off the bat
-
-    // set it invalid for testing bad auth on startup.
-    // Possibly geab it, wipe and submit, then wait for the new auth token
-    // in the usual flow.
-
-    // Cookies.set(CookieType.AuthToken, 'INVALID');
-
     socket = io(origin, {
         withCredentials : true,
         auth            : {
