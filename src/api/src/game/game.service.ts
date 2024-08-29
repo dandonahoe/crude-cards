@@ -30,7 +30,6 @@ import { NextHandDTO } from './dtos/next-hand.dto';
 import { JoinGameDTO } from './dtos/join-game.dto';
 import { ExitGameDTO } from './dtos/exit-game.dto';
 import { Player } from '../player/player.entity';
-import { WsException } from '@nestjs/websockets';
 import { validate as isUuidValid } from 'uuid';
 import { PlayerDTO } from './dtos/player.dto';
 import { Repository } from 'typeorm';
@@ -98,7 +97,7 @@ export class GameService {
             const { currentPlayer } = await this.getPlayerStateByAuthToken(player.auth_token);
 
             if(!currentPlayer)
-                throw new WsException(`Player not found after creation, socket(${socketId})`);
+                throw new WebSockException(`Player not found after creation, socket(${socketId})`);
 
             this.log.debug('Emitting new player auth token', { player });
 
@@ -724,7 +723,7 @@ export class GameService {
     ) => {
         this.log.silly('GameService::broadcastGameUpdate', { gameCode, includeDeck });
 
-        if(!gameCode) throw new WsException(`Invalid game code ${gameCode}`);
+        if(!gameCode) throw new WebSockException(`Invalid game code ${gameCode}`);
 
         // todo: update this to handle people in the disconnected and limbo states
         const gameStatusList = await this.getAllPlayersGameStatus(gameCode, includeDeck);
@@ -1100,11 +1099,8 @@ export class GameService {
         // Retrieve the current player based on the provided auth token
         const { currentPlayer } = await this.getPlayerStateByAuthToken(createGame.auth_token!);
 
-        if(!currentPlayer) {
-            debugger;
-
+        if(!currentPlayer)
             throw new WebSockException(`CreateGame::Invalid Player (${createGame.auth_token})`);
-        }
 
         this.log.silly('GameService::createGame - Current Player', { currentPlayer });
 
@@ -1147,8 +1143,6 @@ export class GameService {
         joinGame: JoinGameDTO,
         debugContext ?: string,
     ): P<void> {
-
-        debugger;
 
         this.log.silly('GameService::joinGame', { joinGame, debugContext });
 
