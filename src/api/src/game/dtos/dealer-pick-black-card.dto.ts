@@ -12,10 +12,11 @@ export class DealerPickBlackCardDTO extends AuthDTO implements z.infer<typeof De
     public card_id: string | null = null;
 
     public constructor(
-        auth_token?: string,
-        card_id?: string | null,
+        auth_token ?: string,
+        card_id    ?: string | null,
+        game_code  ?: string | null,
     ) {
-        super(auth_token);
+        super(auth_token, game_code);
 
         if (card_id !== undefined) this.card_id = card_id;
     }

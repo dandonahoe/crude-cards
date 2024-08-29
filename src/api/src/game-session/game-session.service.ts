@@ -7,10 +7,9 @@ import { Injectable, Inject } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { P } from '../../../type/framework/data/P';
 import { Player } from '../player/player.entity';
+import { WsException } from '@nestjs/websockets';
 import { Game } from '../game/game.entity';
 import { Logger } from 'winston';
-import { WsException } from '@nestjs/websockets';
-import { join } from 'path';
 
 
 export enum JoinGameScenario {
@@ -70,9 +69,8 @@ export class GameSessionService {
         // ACTION: Add player to the player_id_list and emit the
         // updated session to all players in the session.
         if (session.game_stage === GameStage.Lobby &&
-            !player_id_list.includes(player.id)) {
+            !player_id_list.includes(player.id))
             return JoinGameScenario.NewGameAndPlayer;
-        }
 
         // PLAYER FAST REFRESH
         // Fast Reconnect / Page Refresh
@@ -90,10 +88,9 @@ export class GameSessionService {
         // nothing should have changed for them)
         if (player_id_list.includes(player.id) &&
             !disconnected_player_id_list.includes(player.id) &&
-            !limbo_player_id_list.includes(player.id)
-        ) {
+            !limbo_player_id_list.includes(player.id))
             return JoinGameScenario.PlayerFastRefresh;
-        }
+
 
         // Joining Player is Already in Limbo
         // IF: If they are listed in the limbo_player_id_list and
@@ -105,10 +102,9 @@ export class GameSessionService {
         // ACTION: do nothing. Could happen if they are in limbo and refresh,
         // they should just stay there. Emit update to players
         if (limbo_player_id_list.includes(player.id) &&
-            !disconnected_player_id_list.includes(player.id)
-        ) {
+            !disconnected_player_id_list.includes(player.id))
             return JoinGameScenario.JoiningPlayerIsAlreadyInLimbo;
-        }
+
 
         // Reconnecting Disconnected Player
         // IF: They are listed in the disconnected_player_id_list, then
@@ -121,9 +117,9 @@ export class GameSessionService {
         // who were previously disconnected properly should be
         // added back automatically. They skip limbo since they're
         // already known to be in the game and are dealt in.
-        if (disconnected_player_id_list.includes(player.id)) {
+        if (disconnected_player_id_list.includes(player.id))
             return JoinGameScenario.ReconnectingDisconnectedPlayer;
-        }
+
 
         // PLAYER IS ALREADY IN GAME
         // IF: The player joining is already in this game and
@@ -134,10 +130,9 @@ export class GameSessionService {
         // Emit update to players, but possibly not necessary.
         if (player_id_list.includes(player.id) &&
             !disconnected_player_id_list.includes(player.id) &&
-            !limbo_player_id_list.includes(player.id)
-        ) {
+            !limbo_player_id_list.includes(player.id))
             return JoinGameScenario.PlayerIsAlreadyInGame;
-        }
+
 
         // PLAYER JOINS MIDGAME
         // IF: The new player is unknown to the current game session and
@@ -149,10 +144,9 @@ export class GameSessionService {
         // on, it will have "Admit / Ignore / Ban" etc options to
         // allow players to optionally let players in limbo into the game [idea].
         if (!player_id_list.includes(player.id) &&
-            session.game_stage !== GameStage.Lobby
-        ) {
+            session.game_stage !== GameStage.Lobby)
             return JoinGameScenario.PlayerJoinsMidGame;
-        }
+
 
         // Additional Cases
         // 1. Player Attempts to Join a Full Game
@@ -243,6 +237,7 @@ export class GameSessionService {
     };
 
     private joinGameViaNewGameAndPlayer =  async () : P<void> => {
+
 
     };
 

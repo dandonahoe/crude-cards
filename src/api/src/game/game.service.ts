@@ -97,24 +97,26 @@ export class GameService {
 
         this.log.silly('Looking up player info by auth token', { authToken : socketRequest.authToken });
         let playerState = await this.getPlayerStateByAuthToken(socketRequest.authToken);
-        const player : Player | null = null;
+        let player : Player | null = null;
 
         //If no player was found (bad token, outdated, etc.), create a new player
         if (!playerState.currentPlayer) {
             this.log.debug('No player found for socket, creating new player.', { socketRequest });
 
-            await this.playerService.createPlayer(socketRequest.socketId);
+            player = await this.playerService.createPlayer(socketRequest.socketId);
 
             this.log.debug('New player created', { player });
 
             this.log.debug('Emitting new player auth token', { player });
 
+            // bit redundant, but state should be filtered though this
+            // to include additional game logic
+
             // grab the current state of the player now that they have been created
-            playerState = await this.getPlayerStateByAuthToken(socketRequest.authToken);
+            playerState = await this.getPlayerStateByAuthToken(player.auth_token);
 
             debugger;
 
-            // new player, leave them on the homescreen and send them a new auth token
             this.emitPlayerAuthToken(server, playerState.currentPlayer!);
 
             return;
