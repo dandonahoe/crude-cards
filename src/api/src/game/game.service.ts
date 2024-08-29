@@ -80,7 +80,6 @@ export class GameService {
 
         this.log.debug('Socket Request', { socketRequest });
 
-        debugger;
 
         this.log.silly('Looking up player info by auth token', { authToken : socketRequest.authToken });
         const playerState = await this.getPlayerStateByAuthToken(socketRequest.authToken);
@@ -1095,16 +1094,17 @@ export class GameService {
         createGame: CreateGameDTO,
     ): P<void> {
 
-        debugger;
-
         // Log the beginning of the game creation process
         this.log.silly('GameService::createGame', { createGame });
 
         // Retrieve the current player based on the provided auth token
         const { currentPlayer } = await this.getPlayerStateByAuthToken(createGame.auth_token!);
 
-        if(!currentPlayer)
+        if(!currentPlayer) {
+            debugger;
+
             throw new WebSockException(`CreateGame::Invalid Player (${createGame.auth_token})`);
+        }
 
         this.log.silly('GameService::createGame - Current Player', { currentPlayer });
 
