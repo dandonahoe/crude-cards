@@ -13,8 +13,8 @@ import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { P } from '../../../type/framework/data/P';
-import { In, IsNull, Repository } from 'typeorm';
 import { SocketID, AuthToken } from '../type';
+import { In, Repository } from 'typeorm';
 import { Player } from './player.entity';
 import { faker } from '@faker-js/faker';
 import { Socket } from 'socket.io';
@@ -41,10 +41,9 @@ export class PlayerService {
      * @param socket - The socket instance.
      * @returns A promise that resolves to the player entity.
      */
-    public findPlayerBySocket = async (socket: Socket): P<Player | null> =>
-        this.playerRepo.findOneBy({
-            socket_id       : socket.id,
-            disconnected_at : IsNull(),
+    public findPlayerBySocket = async (socket: Socket): P<Player> =>
+        this.playerRepo.findOneByOrFail({
+            socket_id : socket.id,
         });
 
     /**
@@ -127,11 +126,17 @@ export class PlayerService {
      * @param session - The game session.
      * @returns A promise that resolves to an array of player entities.
      */
-    public findPlayersInSession = async (session: GameSession) : P<Player[]> =>
+    public findPlayersInSession = async ({
+        disconnected_player_id_list, limbo_player_id_list, player_id_list,
+    } : GameSession) : P<Player[]> =>
         this.playerRepo.find({
-            where : {
-                id : In(session.player_id_list),
-            },
+            where : [{
+                id : In([
+                    ...disconnected_player_id_list,
+                    ...limbo_player_id_list,
+                    ...player_id_list,
+                ]),
+            }],
         });
 
     /**
@@ -171,16 +176,9 @@ export class PlayerService {
      * @param socket - The socket instance.
      * @returns A promise that resolves to the updated player entity.
      */
-    public disconnectPlayer = async (socket: Socket): P<Player> => {
+    public disconnectPlayer = async (player : Player): P<Player> => {
 
-        this.log.silly('Disconnecting player', { socketId : socket.id });
-
-        const player = await this.playerRepo.findOneByOrFail({
-            socket_id       : socket.id,
-            disconnected_at : IsNull(),
-        });
-
-        this.log.debug('Disconnecting player', player);
+        this.log.silly('Disconnecting player', { player });
 
         return this.playerRepo.save({
             ...player,

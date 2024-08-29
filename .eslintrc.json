@@ -158,7 +158,7 @@
                 "functions": "always-multiline"
             }
         ],
-        "no-extra-semi": "error",
+        "no-extra-semi": "off",
         "no-multiple-empty-lines": [
             "error",
             {

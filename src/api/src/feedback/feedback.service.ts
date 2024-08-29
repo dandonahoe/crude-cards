@@ -18,14 +18,14 @@ export class FeedbackService {
 
     public submitFeedback = async (
         submitFeedback: SubmitFeedbackDTO,
-        currentPlayer: Player,
+        currentPlayer: Player | null,
         session: GameSession | null,
         game: Game | null,
     ): P<Feedback> => this.feedbackRepo.save({
         created_by : currentPlayer ? currentPlayer.id : null,
         session_id : session ? session.id : null,
         game_code  : game ? game.game_code : null,
-        player_id  : currentPlayer.id!,
+        player_id  : currentPlayer ? currentPlayer.id : null,
         message    : submitFeedback.message!,
         email      : submitFeedback.email!,
         name       : submitFeedback.name!,
