@@ -10,7 +10,6 @@ import { Player } from '../player/player.entity';
 import { WsException } from '@nestjs/websockets';
 import { Game } from '../game/game.entity';
 import { Logger } from 'winston';
-import { debug } from 'console';
 
 
 export enum JoinGameScenario {
@@ -259,22 +258,24 @@ export class GameSessionService {
         const debugBundle = { player, session };
         const debugText = `playerId(${player.id}) sessionId(${session.id})`;
 
-        this.log.silly('GameSessionService::DisconnectedPlayer', debugBundle);
+        this.log.silly('GameSessionService::DisconnectedPlayer', { debugBundle });
 
         if(!session.disconnected_player_id_list.includes(player.id)) {
-            this.log.error(`DisconnectedPlayer::player - Player is not in the disconnected list`, debugBundle);
+            this.log.error(`DisconnectedPlayer::player - Player is not in the disconnected list`, { debugBundle });
             throw new WsException(`DisconnectedPlayer::player ${debugBundle}`);
         }
 
         if(session.limbo_player_id_list.includes(player.id)) {
-            this.log.error(`DisconnectedPlayer::limbo - Player is in limbo`, debugBundle);
+            this.log.error(`DisconnectedPlayer::limbo - Player is in limbo`, { debugBundle });
             throw new WsException(`DisconnectedPlayer::limbo ${debugText}`);
         }
 
         if(session.player_id_list.includes(player.id)) {
-            this.log.error(`DisconnectedPlayer::player - Player is in disconnect, but not in player list.`, debugBundle);
+            this.log.error(`DisconnectedPlayer::player - Player is in disconnect, but not in player list.`, { debugBundle });
             throw new WsException(`DisconnectedPlayer::player ${debugText}`);
         }
+
+        this.log.info('Reconnecting Disconnected Player', { debugBundle });
 
         // just remove from the disconnected player array,
         // they are already in the player_list
@@ -297,11 +298,11 @@ export class GameSessionService {
     private joinGameViaJoiningPlayerIsAlreadyInLimbo =  async (
         player: Player, session: GameSession,
     ) : P<unknown> => {
-        this.log.silly('GameSessionService::joinGameViaJoiningPlayerIsAlreadyInLimbo', {
-            player, session,
-        });
+        const debugBundle = { player, session };
 
-        return;
+        this.log.silly('GameSessionService::joinGameViaJoiningPlayerIsAlreadyInLimbo', { debugBundle });
+
+        return this.log.debug('Player is already in limbo, no action required',  { debugBundle });
     };
 
     // PLAYER IS ALREADY IN GAME
@@ -314,11 +315,26 @@ export class GameSessionService {
     private joinGameViaPlayerIsAlreadyInGame =  async (
         player: Player, session: GameSession,
     ) : P<unknown> => {
-        this.log.silly('GameSessionService::joinGameViaPlayerIsAlreadyInGame', {
-            player, session,
-        });
+        const debugBundle = { player, session };
 
-        return;
+        this.log.silly('GameSessionService::joinGameViaPlayerIsAlreadyInGame', { debugBundle });
+
+        if(session.disconnected_player_id_list.includes(player.id)) {
+            this.log.error(`playerIsAlreadyInGame::disconnected - Incorrect Flow`, { debugBundle });
+            throw new WsException(`playerIsAlreadyInGame::disconnected`);
+        }
+
+        if(session.limbo_player_id_list.includes(player.id)) {
+            this.log.error(`playerIsAlreadyInGame::limbo - Incorrect Flow`, { debugBundle });
+            throw new WsException(`playerIsAlreadyInGame::limbo`);
+        }
+
+        if(!session.player_id_list.includes(player.id)) {
+            this.log.error(`playerIsAlreadyInGame::player - Player isn't in this game`, { debugBundle });
+            throw new WsException(`playerIsAlreadyInGame::player`);
+        }
+
+        return this.log.info('Player is already in the game, no action required', { debugBundle });
     };
 
     // PLAYER JOINS MIDGAME
@@ -334,26 +350,23 @@ export class GameSessionService {
         player: Player, session: GameSession,
     ) : P<unknown> => {
 
-        debugger;
-
         const debugBundle = { player, session };
+        const debugText = `playerId(${player.id}) sessionId(${session.id})`;
 
-        this.log.silly('GameSessionService::joinGameViaPlayerJoinsMidGame', debugBundle);
+        this.log.silly('GameSessionService::joinGameViaPlayerJoinsMidGame', { debugBundle });
 
         const { limbo_player_id_list, player_id_list } = session;
 
-        const debugText = `playerId(${player.id}) sessionId(${session.id})`;
-
         // players in limbo
         if(player_id_list.includes(player.id)) {
-            this.log.error(`playerJoinsMidGame::player - Player is already in the game`, debugBundle);
+            this.log.error(`playerJoinsMidGame::player - Player is already in the game`, { debugBundle });
             throw new WsException(`playerJoinsMidGame::player (${debugText})`);
         }
 
         if(limbo_player_id_list.includes(player.id)) {
             // Not throwing an error here, because they could have been midgame,
             // left, some back migame of another hand, so they just remain in limbo
-            this.log.info(`playerJoinsMidGame::limbo - Player is already in limbo`, debugBundle);
+            this.log.info(`playerJoinsMidGame::limbo - Player is already in limbo`, { debugBundle });
 
             return;
         }
@@ -384,7 +397,7 @@ export class GameSessionService {
     ) : P<unknown> => {
         const debugBundle = { player, session };
 
-        this.log.silly('GameSessionService::joinGameViaPlayerFastRefresh', debugBundle);
+        this.log.silly('GameSessionService::joinGameViaPlayerFastRefresh', { debugBundle });
 
         const {
             disconnected_player_id_list, limbo_player_id_list, player_id_list,
@@ -393,20 +406,20 @@ export class GameSessionService {
         const debugText = `playerId(${player.id}) sessionId(${session.id})`;
 
         if(disconnected_player_id_list.includes(player.id)) {
-            this.log.error(`playerFastRefresh::disconnected - Incorrect Flow`, debugBundle);
+            this.log.error(`playerFastRefresh::disconnected - Incorrect Flow`, { debugBundle });
             throw new WsException(`playerFastRefresh::disconnected (${debugText})`);
         }
         if(limbo_player_id_list.includes(player.id)) {
-            this.log.error(`playerFastRefresh::limbo - Already In Limbo`, debugBundle);
+            this.log.error(`playerFastRefresh::limbo - Already In Limbo`, { debugBundle });
             throw new WsException(`playerFastRefresh::limbo (${debugText})`);
         }
 
         if(!player_id_list.includes(player.id)) {
-            this.log.error(`playerFastRefresh::player - Player isn't in this game`, debugBundle);
+            this.log.error(`playerFastRefresh::player - Player isn't in this game`, { debugBundle });
             throw new WsException(`playerFastRefresh::player (${debugText})`);
         }
 
-        this.log.debug('Valid Fast Refresh Detected, Doin Nothin At All. Nothin at All.', debugBundle);
+        this.log.debug('Valid Fast Refresh Detected, Doin Nothin At All. Nothin at All.', { debugBundle });
 
         // fast refreshes are noops and other players shouldnt notice
         return;
@@ -423,9 +436,7 @@ export class GameSessionService {
 
         const debugBundle = { player, session };
 
-        this.log.silly('GameSessionService::joinGameViaNewGameAndPlayer', debugBundle);
-
-        debugger;
+        this.log.silly('GameSessionService::joinGameViaNewGameAndPlayer', { debugBundle });
 
         // ensure there's only one copy of the playerid by
         // attempting to remove one of the same name before
@@ -440,22 +451,22 @@ export class GameSessionService {
         const debugText = `playerId(${player.id}) sessionId(${session.id})`;
 
         if(disconnected_player_id_list.includes(player.id)) {
-            this.log.error(`playerFastRefresh::disconnected -  Client previously disconnected, incorrect flow.`, debugBundle);
+            this.log.error(`playerFastRefresh::disconnected -  Client previously disconnected, incorrect flow.`, { debugBundle });
             throw new WsException(`playerFastRefresh::disconnected (${debugText})`);
         }
 
         if(limbo_player_id_list.includes(player.id)) {
-            this.log.error(`playerFastRefresh::limbo - Already In Limbo.`, debugBundle);
+            this.log.error(`playerFastRefresh::limbo - Already In Limbo.`, { debugBundle });
             throw new WsException(`playerFastRefresh::limbo (${debugText})`);
         }
 
         // player is not already in the game
         if(!player_id_list.includes(player.id)) {
-            this.log.error(`playerFastRefresh::player - Already in Session Player List`, debugBundle);
+            this.log.error(`playerFastRefresh::player - Already in Session Player List`, { debugBundle });
             throw new WsException(`playerFastRefresh::player (${debugText})`);
         }
 
-        this.log.debug('Adding Player to Game Session', debugBundle);
+        this.log.debug('Adding Player to Game Session', { debugBundle });
 
         return this.gameSessionRepo.update(session.id, {
             ...session,

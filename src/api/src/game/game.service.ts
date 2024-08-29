@@ -73,9 +73,6 @@ export class GameService {
         this.playerService.findPlayerBySocket(socket);
 
 
-    private getWebSocketAuthToken = (socket: Socket) : string | null =>
-        socket.handshake.auth[CookieType.AuthToken] ?? null;
-
     /**
      * Connects a player via socket, handles reconnection if the auth token is valid,
      * or creates a new player if no valid auth token is found.
@@ -84,10 +81,7 @@ export class GameService {
      *
      * @returns The connected player entity
      */
-    public connectPlayer = async (server : SocketIOServer, socket: Socket): P<void> => {
-
-        debugger;
-
+    public connectPlayer = async (server : SocketIOServer, socket: Socket): P<unknown> => {
         this.log.silly('GameService::connectPlayer', { socketId : socket.id });
 
         // just obtain formatted info about the request
@@ -115,23 +109,25 @@ export class GameService {
             // grab the current state of the player now that they have been created
             playerState = await this.getPlayerStateByAuthToken(player.auth_token);
 
-            debugger;
 
-            this.emitPlayerAuthToken(server, playerState.currentPlayer!);
-
-            return;
+            return this.emitPlayerAuthToken(server, playerState.currentPlayer!);
         }
+
+        // existing player needs a new token, they're wiped on connection
+        // to the server and this pushes a new one to be stored and supplied
+        // in followup calls. Should probably migrate to JWT for this.
+        await this.emitPlayerAuthToken(server, playerState.currentPlayer!)
 
         // at this point, we have found an existing player
         this.log.debug('Joining the player to their socket by their playerId', { playerId : playerState.currentPlayer.id});
 
-        debugger;
 
         await socket.join(playerState.currentPlayer.id);
 
         this.log.debug('Player socket connected', { player });
 
 
+        // check auth token
         return this.joinGame(
             server,
             new JoinGameDTO(playerState.currentPlayer.auth_token!, playerState.game!.game_code),
@@ -1206,6 +1202,8 @@ export class GameService {
         createGame: CreateGameDTO,
     ): P<void> {
 
+        debugger;
+
         // Log the beginning of the game creation process
         this.log.silly('GameService::createGame', { createGame });
 
@@ -1213,7 +1211,7 @@ export class GameService {
         const { currentPlayer } = await this.getPlayerStateByAuthToken(createGame.auth_token!);
 
         if(!currentPlayer)
-            throw new WebSockException(`Invalid Player (${createGame.auth_token})`);
+            throw new WebSockException(`CreateGame::Invalid Player (${createGame.auth_token})`);
 
         this.log.silly('GameService::createGame - Current Player', { currentPlayer });
 
@@ -1269,7 +1267,7 @@ export class GameService {
         const { currentPlayer : player } = await this.getPlayerStateByAuthToken(joinGame.auth_token!);
 
         if(!player)
-            throw new WebSockException(`Invalid Player (${joinGame.auth_token})`);
+            throw new WebSockException(`JoinGame::Invalid Player (${joinGame.auth_token})`);
 
         this.log.silly('GameService::joinGame - Session and Game', { session, game });
 

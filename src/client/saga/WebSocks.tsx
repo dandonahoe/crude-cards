@@ -49,6 +49,8 @@ if (socket)
         socket.on(WebSocketEventType.UpdatePlayerValidation, (validation: string) => {
             console.log('CLIENT GOT: validation', validation);
 
+            debugger;
+
             Cookies.set(CookieType.AuthToken, validation);
         });
     });
@@ -79,8 +81,6 @@ function* sagaStartUpdateListener(): Saga {
         yield* sagaDispatch(GameAction.updateGameState(newGameStateString));
 
         console.log('Game State Updated, checking timers');
-
-        debugger;
 
         if (newGameState.game_stage == previousGameState.game_stage) {
             console.log(`State didn't change from ${newGameState.game_stage}, skipping timer`);
@@ -170,7 +170,7 @@ function socketChannelRelay(
         game_code,
     };
 
-    console.log('Sending WS Message to Server', auth_token, messageType, message);
+    console.log('Sending WS Message to Server', auth_token, messageType, message, game_code);
 
     return eventChannel(emit => {
         socket.emit(
