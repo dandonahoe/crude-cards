@@ -20,7 +20,7 @@ import { type P } from '../../../type/framework/data/P';
 import { Feedback } from '../feedback/feedback.entity';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { CreateGameDTO } from './dtos/create-game.dto';
-import { CookieType, DisconnectPlayer } from '../type';
+import { CookieType } from '../type';
 import { Server as SocketIOServer } from 'socket.io';
 import { GameStateDTO } from './dtos/game-state.dto';
 import { StartGameDTO } from './dtos/start-game.dto';
@@ -69,7 +69,7 @@ export class GameService {
      *
      * @returns Player if they exist or null if there's no existing player tied to this socket
      */
-    public findPlayerBySocket = async (socket: Socket) =>
+    public findPlayerBySocket = async (socket: Socket) : P<Player> =>
         this.playerService.findPlayerBySocket(socket);
 
 
@@ -326,34 +326,29 @@ export class GameService {
     *
     * @returns The disconnected player and the associated game session details (if any)
     */
-    public disconnectPlayer = async (socket: Socket): P<DisconnectPlayer> => {
-
-        this.log.debug('Disconnecting player from game', { socketId : socket.id });
+    public disconnectPlayer = async (
+        server : SocketIOServer,
+        socket : Socket,
+    ): P<unknown> => {
+        this.log.debug('Disconnecting player from game.', { socketId : socket.id });
 
         // check what state the socket is in.
         const player = await this.findPlayerBySocket(socket);
 
-        if (!player) {
-            // tell the client to destroy its Auth Token
-            // if it exists. Or do nothing and wait for the re-up to kill it
-            //..... actually thats better, central place. Noop here
+        let session = this.gameSessionService.findActivePlayerGameSession(player);
 
-            this.log.warn(`Player not found for socket ID: ${socket.id}`, { socketId : socket.id });
+        // first mark the player themself as disconnected, then attempt
+        // to move them into limbo of the game they're actively in so
+        // the new dealer will have
+        if (!session)
+            return this.playerService.disconnectPlayer(player);
 
-            return { game : null, player : null };
-        }
+        const game = this.getGameBySession(session);
 
-        const { game, session } = await this.getPlayerStateByAuthToken(player.auth_token!);
+        // The player is in an active game, so move them into limbo
 
-        await this.leavePlayerSocketRoom(socket, player);
-
-        if (session && game)
-            this.leaveGameSocketRoom(socket, game!);
-        else
-            this.log.error('No game or session found for player', {
-                playerId : player.id,
-                socketId : socket.id,
-            });
+        // ensures their ID is part of the `limbo_player_id_list`
+        session = await this.gameSessionService.addPlayerToLimbo(session, player);
 
         this.log.info('Player disconnected successfully', {
             playerId : player.id,
@@ -361,7 +356,7 @@ export class GameService {
             gameCode : game?.game_code,
         });
 
-        return { game, player };
+        return this.emitGameUpdate(server, game.game_code);
     }
 
     /**
@@ -919,7 +914,8 @@ export class GameService {
 
         if(!gameCode) throw new WsException(`Invalid game code ${gameCode}`);
 
-        const gameStatusList = await this.getAllPlayersGameStatus(gameCode, includeDeck);
+        // todo: update this to handle people in the disconnected and limbo states
+        const gameStatusList = await this.getAllPlayersGameSt atus(gameCode, includeDeck);
 
         return Promise.all(
             gameStatusList.map(gameStatus => server

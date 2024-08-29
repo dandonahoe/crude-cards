@@ -51,11 +51,9 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
 
     public handleDisconnect = async (socket: Socket): P<unknown> => {
-        // debugger;
-
         this.log.silly('GameGateway:::handleDisconnect', { socketID : socket.id });
 
-        return; // this.gameService.disconnectPlayer(socket);
+        return this.gameService.disconnectPlayer(this.server, socket);
     }
 
     @AllowPlayerTypes(PlayerType.Player)

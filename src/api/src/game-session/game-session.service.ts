@@ -47,16 +47,14 @@ export class GameSessionService {
 
         // where in player_id_list or in should be at most one though
 
-
         const activeGameSessionList = await this.gameSessionRepo.find({
-            where : [
-        {
-            player_id_list : ArrayContains([currentPlayer.id]),
-        },
-        {
-            disconnected_player_id_list : ArrayContains([currentPlayer.id]),
-        },
-    ],
+            where : [{
+                player_id_list : ArrayContains([currentPlayer.id]),
+            }, {
+                disconnected_player_id_list : ArrayContains([currentPlayer.id]),
+            }, {
+                limbo_player_id_list : ArrayContains([currentPlayer.id]),
+            }],
         });
 
         if(activeGameSessionList.length > 1)

@@ -41,10 +41,9 @@ export class PlayerService {
      * @param socket - The socket instance.
      * @returns A promise that resolves to the player entity.
      */
-    public findPlayerBySocket = async (socket: Socket): P<Player | null> =>
-        this.playerRepo.findOneBy({
-            socket_id       : socket.id,
-            disconnected_at : IsNull(),
+    public findPlayerBySocket = async (socket: Socket): P<Player> =>
+        this.playerRepo.findOneByOrFail({
+            socket_id : socket.id,
         });
 
     /**
@@ -171,16 +170,9 @@ export class PlayerService {
      * @param socket - The socket instance.
      * @returns A promise that resolves to the updated player entity.
      */
-    public disconnectPlayer = async (socket: Socket): P<Player> => {
+    public disconnectPlayer = async (player : Player): P<Player> => {
 
-        this.log.silly('Disconnecting player', { socketId : socket.id });
-
-        const player = await this.playerRepo.findOneByOrFail({
-            socket_id       : socket.id,
-            disconnected_at : IsNull(),
-        });
-
-        this.log.debug('Disconnecting player', player);
+        this.log.silly('Disconnecting player', { player });
 
         return this.playerRepo.save({
             ...player,
