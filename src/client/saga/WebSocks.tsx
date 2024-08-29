@@ -160,6 +160,7 @@ function socketChannelRelay(
     messageData: unknown,
 ) {
     const auth_token = Cookies.get(CookieType.AuthToken)
+    // const auth_token = '87d0e85f-9b02-4980-a68e-64591661c73a';
 
     const message = {
         ...messageData as Record<string, unknown>,
