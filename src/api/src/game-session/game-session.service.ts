@@ -156,11 +156,9 @@ export class GameSessionService {
         return JoinGameScenario.JoiningPlayerIsAlreadyInLimbo;
     }
 
-    public setPlayerGameSession = async (
-        player: Player, session: GameSession,
-    ) : P<void> => {
-        this.log.silly('GameSessionService::addPlayerToSession', { player, session });
-
+    public getActiveGameSessionList = async (
+        player : Player, session : GameSession,
+    ) => {
         const stageAndId = {
             game_stage : Not(GameStage.GameComplete),
             id         : Not(session.id),
@@ -168,9 +166,7 @@ export class GameSessionService {
 
         const playerIdArray = ArrayContains([player.id]);
 
-        // Find all active game sessions this player is tied to and
-        // remove them, except for the session we're adding outselves to.
-        const activeGameSessionList = await this.gameSessionRepo.find({
+        return this.gameSessionRepo.find({
             where : [{
                 disconnected_player_id_list : playerIdArray,
                 ...stageAndId,
@@ -182,23 +178,51 @@ export class GameSessionService {
                 ...stageAndId,
             }],
         });
+    }
+
+    /**
+     *  Adds a player to a game session
+     *
+     * @param player   - The player to add to the session
+     * @param session  - The session to add the player to
+     *
+     * @returns void
+     */
+    public setPlayerGameSession = async (
+        player: Player, session: GameSession,
+    ) : P<unknown> => {
+        this.log.silly('GameSessionService::addPlayerToSession', { player, session });
+
+        // Find all active game sessions this player is tied to and
+        // remove them, except for the session we're adding outselves to.
+        const activeGameSessionList = await this.getActiveGameSessionList(player, session);
 
         // Removes player from any active session aside
         // from the one we're joining
         await Promise.all(
-            activeGameSessionList.map(
-                async activeSession =>
-                    this.removePlayer(player, activeSession)));
+            activeGameSessionList.map(async activeSession =>
+                this.removePlayer(player, activeSession)));
 
         const joinGameState = this.getJoinGameScenario(player, session);
 
         switch(joinGameState) {
-            case JoinGameScenario.ReconnectingDisconnectedPlayer: this.joinGameViaReconnectingDisconnectedPlayer(); break;
-            case JoinGameScenario.JoiningPlayerIsAlreadyInLimbo : this.joinGameViaJoiningPlayerIsAlreadyInLimbo();  break;
-            case JoinGameScenario.PlayerIsAlreadyInGame         : this.joinGameViaPlayerIsAlreadyInGame();          break;
-            case JoinGameScenario.PlayerJoinsMidGame            : this.joinGameViaPlayerJoinsMidGame();             break;
-            case JoinGameScenario.PlayerFastRefresh             : this.joinGameViaPlayerFastRefresh();              break;
-            case JoinGameScenario.NewGameAndPlayer              : this.joinGameViaNewGameAndPlayer();               break;
+            case JoinGameScenario.ReconnectingDisconnectedPlayer:
+                return this.joinGameViaReconnectingDisconnectedPlayer(player, session);
+
+            case JoinGameScenario.JoiningPlayerIsAlreadyInLimbo:
+                return this.joinGameViaJoiningPlayerIsAlreadyInLimbo(player, session);
+
+            case JoinGameScenario.PlayerIsAlreadyInGame:
+                return this.joinGameViaPlayerIsAlreadyInGame(player, session);
+
+            case JoinGameScenario.PlayerJoinsMidGame:
+                return this.joinGameViaPlayerJoinsMidGame(player, session);
+
+            case JoinGameScenario.PlayerFastRefresh:
+                return this.joinGameViaPlayerFastRefresh(player, session);
+
+            case JoinGameScenario.NewGameAndPlayer:
+                return this.joinGameViaNewGameAndPlayer(player, session);
 
             default: throw new WsException(`Invalid Join Game Scenario ${joinGameState}`);
         }
@@ -216,29 +240,143 @@ export class GameSessionService {
         //         game_stage : GameStage.GameComplete,
         //     })
         //     .execute();
-    private joinGameViaReconnectingDisconnectedPlayer =  async () : P<void> => {
+    private joinGameViaReconnectingDisconnectedPlayer =  async (
+        player: Player, session: GameSession,
+    ) : P<unknown> => {
+        this.log.silly('GameSessionService::joinGameViaReconnectingDisconnectedPlayer', {
+            player, session,
+        });
 
+        return;
     };
 
-    private joinGameViaJoiningPlayerIsAlreadyInLimbo =  async () : P<void> => {
+    private joinGameViaJoiningPlayerIsAlreadyInLimbo =  async (
+        player: Player, session: GameSession,
+    ) : P<unknown> => {
+        this.log.silly('GameSessionService::joinGameViaJoiningPlayerIsAlreadyInLimbo', {
+            player, session,
+        });
 
+        return;
     };
 
-    private joinGameViaPlayerIsAlreadyInGame =  async () : P<void> => {
+    private joinGameViaPlayerIsAlreadyInGame =  async (
+        player: Player, session: GameSession,
+    ) : P<unknown> => {
+        this.log.silly('GameSessionService::joinGameViaPlayerIsAlreadyInGame', {
+            player, session,
+        });
 
+        return;
     };
 
-    private joinGameViaPlayerJoinsMidGame =  async () : P<void> => {
+    private joinGameViaPlayerJoinsMidGame =  async (
+        player: Player, session: GameSession,
+    ) : P<unknown> => {
+        this.log.silly('GameSessionService::joinGameViaPlayerJoinsMidGame', {
+            player, session,
+        });
 
+        return;
     };
 
-    private joinGameViaPlayerFastRefresh =  async () : P<void> => {
+    // PLAYER FAST REFRESH
+    // Fast Reconnect / Page Refresh
+    // IF: The player is reconnecting and the game doesn't realize they were even
+    // gone. Means disconnect didnt' go through as expected (hence the possible
+    // reason for the disconnect) they they rapidly joined back before any timers
+    // moved them into disconnected state. Means they exist in the player_id_list,
+    // but not in the disconnected_player_id_list or limbo_player_id_list
+    // ACTION: Check the game session and ensure their player_id is only in
+    // the player_id_list and not in the disconnected_player_id_list or limbo_player_id_list
+    // and the game should continue as if nothing happened from other players
+    // perspective. The current user may have just refreshed their browser or lost
+    // connection, server crash whatever the case may be. Should broadcase to all
+    // players (though ther may be an efficiency gain by skipping other players,
+    // nothing should have changed for them)
+    private joinGameViaPlayerFastRefresh =  async (
+        player: Player, session: GameSession,
+    ) : P<unknown> => {
+        const debugBundle = { player, session };
 
+        this.log.silly('GameSessionService::joinGameViaPlayerFastRefresh', debugBundle);
+
+        const {
+            disconnected_player_id_list, limbo_player_id_list, player_id_list,
+        } = session;
+
+        const debugText = `playerId(${player.id}) sessionId(${session.id})`;
+
+        if(disconnected_player_id_list.includes(player.id)) {
+            this.log.error(`playerFastRefresh::disconnected - Incorrect Flow`, debugBundle);
+            throw new WsException(`playerFastRefresh::disconnected (${debugText})`);
+        }
+        if(limbo_player_id_list.includes(player.id)) {
+            this.log.error(`playerFastRefresh::limbo - Already In Limbo`, debugBundle);
+            throw new WsException(`playerFastRefresh::limbo (${debugText})`);
+        }
+
+        if(!player_id_list.includes(player.id)) {
+            this.log.error(`playerFastRefresh::player - Player isn't in this game`, debugBundle);
+            throw new WsException(`playerFastRefresh::player (${debugText})`);
+        }
+
+        this.log.debug('Valid Fast Refresh Detected, Doin Nothin At All. Nothin at All.', debugBundle);
+
+        // fast refreshes are noops and other players shouldnt notice
+        return;
     };
 
-    private joinGameViaNewGameAndPlayer =  async () : P<void> => {
+    // NEW GAME AND PLAYER
+    // Joined Pregame Lobby
+    // IF: The game is in lobby mode still before the game has started.
+    // ACTION: Add player to the player_id_list and emit the
+    // updated session to all players in the session.
+    private joinGameViaNewGameAndPlayer =  async (
+        player: Player, session: GameSession,
+    ) : P<unknown> => {
 
+        const debugBundle = { player, session };
 
+        this.log.silly('GameSessionService::joinGameViaNewGameAndPlayer', debugBundle);
+
+        debugger;
+
+        // ensure there's only one copy of the playerid by
+        // attempting to remove one of the same name before
+        // appending it to the list
+
+        const {
+            disconnected_player_id_list,
+            limbo_player_id_list,
+            player_id_list,
+        } = session;
+
+        const debugText = `playerId(${player.id}) sessionId(${session.id})`;
+
+        if(disconnected_player_id_list.includes(player.id)) {
+            this.log.error(`playerFastRefresh::disconnected -  Client previously disconnected, incorrect flow.`, debugBundle);
+            throw new WsException(`playerFastRefresh::disconnected (${debugText})`);
+        }
+
+        if(limbo_player_id_list.includes(player.id)) {
+            this.log.error(`playerFastRefresh::limbo - Already In Limbo.`, debugBundle);
+            throw new WsException(`playerFastRefresh::limbo (${debugText})`);
+        }
+
+        // player is not already in the game
+        if(!player_id_list.includes(player.id)) {
+            this.log.error(`playerFastRefresh::player - Already in Session Player List`, debugBundle);
+            throw new WsException(`playerFastRefresh::player (${debugText})`);
+        }
+
+        this.log.debug('Adding Player to Game Session', debugBundle);
+
+        return this.gameSessionRepo.update(session.id, {
+            ...session,
+            player_id_list : () =>
+                `array_append(array_remove(player_id_list, '${player.id}'), '${player.id}')`,
+        });
     };
 
 
