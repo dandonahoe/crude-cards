@@ -116,7 +116,6 @@ export const GameHome : RFC = () => {
                                 fz={rem(60)}
                                 fw={600}
                                 mb='xl'
-
                                 lh={1}>
                                 {'CrudeCards'}
                             </Text>
@@ -127,12 +126,12 @@ export const GameHome : RFC = () => {
                                 {'A Party Game for Terrible People'}
                             </Text>
                             <Text
-                                fz={rem(32)}
-                                c='#eee'
+                                fz={rem(24)}
                                 ta='center'
+                                c='#eee'
                                 fw={600}
                                 mb='xl'>
-                                {'Like You!'}
+                                {'Like You'}
                             </Text>
                         </Box>
                         <br />

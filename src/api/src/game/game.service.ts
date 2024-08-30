@@ -219,19 +219,18 @@ export class GameService {
         server : SocketIOServer,
         @Body(new ZodValidationPipe(ExitGameDTO.Schema))
         exitGame: ExitGameDTO,
-    ): P<GameStateDTO> {
+    ): P<unknown> {
         this.log.silly('GameService::exitGame', { exitGame });
 
         // Fetch player state based on auth token
-        const playerState = await this.getPlayerStateByAuthTokenOrFail(exitGame.auth_token!);
+        const {
+            game, currentPlayer, session,
+        } = await this.getPlayerStateByAuthTokenOrFail(exitGame.auth_token!);
 
         // Remove the player from the session
-        await this.removePlayerFromSession(playerState);
+        await this.removePlayerFromSession(currentPlayer, session);
 
-        await this.emitGameUpdate(server, playerState.game.game_code);
-
-        // Build and return the game state DTO for the player
-        return this.buildGameStateDTO(playerState.game.game_code!, playerState.currentPlayer.id!);
+        return this.emitGameUpdate(server, game.game_code);
     }
 
 
@@ -240,20 +239,14 @@ export class GameService {
      * @param playerState - The state object containing the current player, game, and session details
      */
     private removePlayerFromSession = async (
-        playerState: {
-            currentPlayer: Player,
-            game: Game,
-            session: GameSession
-        },
+        currentPlayer : Player, session : GameSession,
     ) => {
-        const { currentPlayer, session } = playerState;
-
-        await this.gameSessionService.removePlayer(currentPlayer, session);
-
         this.log.info('Player removed from session', {
             playerId  : currentPlayer.id,
             sessionId : session.id,
         });
+
+        return this.gameSessionService.removePlayer(currentPlayer, session);
     };
 
     /**

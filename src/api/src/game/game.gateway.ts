@@ -93,7 +93,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     public async exitGame(
         @MessageBody(new ZodValidationPipe(ExitGameDTO.Schema))
         exitGame: ExitGameDTO,
-    ): P<GameStateDTO> {
+    ): P<unknown> {
         this.log.silly('GameGateway::exitGame', { exitGame });
 
         return this.gameService.exitGame(this.server, exitGame);
