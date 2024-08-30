@@ -11,6 +11,7 @@ import { ZodValidationPipe } from '../pipes/ZodValidation.pipe';
 import { FeedbackService } from '../feedback/feedback.service';
 import { UpdateUsernameDTO } from './dtos/update-username.dto';
 import { SubmitFeedbackDTO } from './dtos/submit-feedback.dto';
+import { PlayerType } from '../constant/player-type.enum';
 import { PlayerService } from '../player/player.service';
 import { ScoreLog } from '../score-log/score-log.entity';
 import { GameStage } from '../constant/game-stage.enum';
@@ -34,11 +35,10 @@ import { validate as isUuidValid } from 'uuid';
 import { PlayerDTO } from './dtos/player.dto';
 import { Repository } from 'typeorm';
 import { Game } from './game.entity';
-import { AuthToken } from '../type';
+import { AuthToken, GameExitReason } from '../type';
 import { difference } from 'lodash';
 import { Socket } from 'socket.io';
 import { Logger } from 'winston';
-import { PlayerType } from '../constant/player-type.enum';
 
 
 @Injectable()
@@ -219,8 +219,12 @@ export class GameService {
         server : SocketIOServer,
         @Body(new ZodValidationPipe(ExitGameDTO.Schema))
         exitGame: ExitGameDTO,
+        runtimeContext = '',
     ): P<unknown> {
-        this.log.silly('GameService::exitGame', { exitGame });
+
+        debugger;
+
+        this.log.silly('GameService::exitGame', { exitGame, runtimeContext });
 
         // Fetch player state based on auth token
         const {
@@ -228,29 +232,17 @@ export class GameService {
         } = await this.getPlayerStateByAuthTokenOrFail(exitGame.auth_token!);
 
         // Remove the player from the session
-        await this.removePlayerFromSession(currentPlayer, session);
+        await this.gameSessionService.removePlayer(
+            currentPlayer,
+            session,
+            GameExitReason.LeftByChoice,
+            'ExitGame Service Routine');
 
         // not run routine to patch up games which may be valid or not
         // THen broadcast whatever the final state is
 
         return this.emitGameUpdate(server, game.game_code);
     }
-
-
-    /**
-     * Removes a player from the session and handles session cleanup.
-     * @param playerState - The state object containing the current player, game, and session details
-     */
-    private removePlayerFromSession = async (
-        currentPlayer : Player, session : GameSession,
-    ) => {
-        this.log.info('Player removed from session', {
-            playerId  : currentPlayer.id,
-            sessionId : session.id,
-        });
-
-        return this.gameSessionService.removePlayer(currentPlayer, session);
-    };
 
     /**
      * Constructs the game state DTO for the specified player.
@@ -317,7 +309,6 @@ export class GameService {
             currentPlayer, scoreLog, session, players, game,
         };
     };
-
 
     /**
      * Gets as much data about the user, given the authToken
@@ -1110,7 +1101,10 @@ export class GameService {
         this.log.silly('Leaving any existing games', { playerId : currentPlayer.id });
 
         // Ensure the player leaves any open sessions before starting a new game
-        await this.gameSessionService.leaveOpenSession(currentPlayer);
+        await this.gameSessionService.exitActiveGameSession(
+            currentPlayer,
+            GameExitReason.CreatedNewGame,
+            'Creating a new game and logging out of existing sessions');
 
         // Generate a new game entity and persist it in the repository
         const game = await this.gameRepo.save({

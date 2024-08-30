@@ -34,7 +34,7 @@ export const GameMenu : RFC = () => {
     // if they're not in a game, drop "Leave" from the menu
     if(gameState.game_stage === GameStage.Home)
         FinalMenuItemList = MenuItems.filter(
-            item => item.id !== MenuItem.Quit && item.id !== MenuItem.Scoreboard);
+            item => item.id !== MenuItem.Leave && item.id !== MenuItem.Scoreboard);
 
     return (
         (<Menu

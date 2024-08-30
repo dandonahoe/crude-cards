@@ -138,7 +138,7 @@ export const GameHome : RFC = () => {
                         <Flex justify='center'>
                             <GameButton
                                 onClick={handleStartGame}
-                                text='meh' />
+                                text='Go' />
                         </Flex>
                         <br />
                     </GameCardContainer>,

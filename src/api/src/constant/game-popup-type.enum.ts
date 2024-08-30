@@ -6,7 +6,7 @@ export enum GamePopupType {
     Settings   = 'Settings',
     Feedback   = 'Feedback',
     Unknown    = 'Unknown',
-    Quit       = 'Quit',
+    Leave      = 'Leave',
 }
 
 deepFreeze(GamePopupType);

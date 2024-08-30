@@ -18,13 +18,15 @@ export const GameQuit : RFC = () => {
             <Text
                 ta='center'
                 fz='xl'
+                pb='xl'
+                fw={600}
                 mb='md'>
-                {'You Sure?'}
+                {'Double Checking'}
             </Text>
             <Center>
                 <GameButton
                     onClick={handleClick}
-                    text='Quit' />
+                    text='Exit' />
             </Center>
         </Box>
     );

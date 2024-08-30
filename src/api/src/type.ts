@@ -42,3 +42,36 @@ export interface DisconnectPlayer {
     // The game entity associated with the disconnected player. Null if no player / game is found.
     game: Game | null;
 }
+
+
+export enum GameExitReason {
+
+     // Could happen if opens two browsers and tries to play two games with the same player
+    CreatedNewGame = 'CreatedNewGame',
+
+    // Chose Leave from the Menu or other official way to leaving the game
+    LeftByChoice = 'LeftByChoice',
+
+    // Connection crapped out, nobody being blammed, just no communication
+    Disconnected = 'Disconnected',
+
+    // Player joined another game (open two browsers, try to play two games with the same AuthToken / Player)
+    JoiningOther = 'JoiningOther',
+
+    // Player didnt respond in time and the player is exited
+    // to keep the game moving
+    Timedout = 'Timedout',
+
+    // Player was booted from the game
+    Booted = 'Booted',
+}
+
+
+export enum JoinGameReason {
+    ReconnectingDisconnectedPlayer = 'ReconnectingDisconnectedPlayer',
+    JoiningPlayerIsAlreadyInLimbo  = 'JoiningPlayerIsAlreadyInLimbo',
+    PlayerIsAlreadyInGame          = 'PlayerIsAlreadyInGame',
+    PlayerJoinsMidGame             = 'PlayerJoinsMidGame',
+    PlayerFastRefresh              = 'PlayerFastRefresh',
+    NewGameAndPlayer               = 'NewGameAndPlayer',
+};

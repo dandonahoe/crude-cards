@@ -5,6 +5,7 @@ import { createTheme, rem } from '@mantine/core';
 export const AppTheme = createTheme({
     // fontFamily          : '\'Open Sans\', sans-serif',
     // fontFamilyMonospace : 'Monaco, Courier, monospace',
+    
 
     fontSizes : {
         xs : rem(10),

@@ -41,6 +41,7 @@ export const GameTemplate : RFC<Props>= ({
                 headerHeight,
             }}>
             <MantineProvider
+                defaultColorScheme='dark'
                 forceColorScheme='dark'
                 theme={GameTheme}>
                 <AppShell

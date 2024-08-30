@@ -27,7 +27,7 @@ export const GamePopup : RFC= () => {
     switch(popupTypeId) {
         case GamePopupType.Scoreboard: popup = <GameScoreboard />; break;
         case GamePopupType.Feedback:   popup = <GameFeedback   />; break;
-        case GamePopupType.Quit:       popup = <GameQuit       />; break;
+        case GamePopupType.Leave:      popup = <GameQuit       />; break;
 
         default: popup = <GameError />; break;
     }
@@ -38,20 +38,13 @@ export const GamePopup : RFC= () => {
             withCloseButton={true}
             radius={rem(40)}
             centered={true}
+
             opened={true}
-            size='lg'
+            size='sm'
             overlayProps={{
-                backgroundOpacity : 0.10,
+                backgroundOpacity : 0.12,
                 blur              : 5,
-            }}
-            title={
-                <Text
-                    fw={600}
-                    fz='md'
-                    p='md'>
-                    {popupTypeId}
-                </Text>
-            }>
+            }}>
             <Flex
                 p='xl'
                 justify='center'>
