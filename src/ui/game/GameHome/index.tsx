@@ -34,17 +34,47 @@ export const GameHome : RFC = () => {
     const handleCameCodeChange = (e : React.ChangeEvent<HTMLInputElement>) : CA => {
         setGameCode(e.target.value);
 
-        if(e.target.value.trim().length === 6) {
-            const game_code = e.target.value.trim();
+        let userInput = e.target.value;
 
-            console.log('Dispatching JoinGame with game_code:', game_code);
+        // use lodash to remove all non alpha numeric characters from, so they
+        // can get the code foo123 and all these work
+        // "foo123"
+        // "foo-123"
+        // "foo 123"
+        // "foo 123 "
+        // " foo 123  "
+        // "  foo 123  "
+        // "  f o o 1 2 3   "
+        // " !! fFGGGo$$o##@@1$#2@@3~~"
+        // " !! fFGGGo$$o##@@1$#2@@3~~ "
+        // " !! fFGGGo$$o##@@1$#2@@3~~  "
+        // "  !! fFGGGo$$o##@@1$#2@@3~~  "
+        // "  !! fFGGGo$$o##@@1$#2@@3~~   "
 
-            return dispatch(GameAction.joinGame({
-                game_code,
-            }));
-        }
+        // todo: make a utility and unit test this
+        userInput = userInput.replace(/[^a-zA-Z0-9]/g, '').trim();
 
-        return dispatch(GameAction.noOp());
+        // rapid join before they generally can hit the join button
+        // invalid codes submitted this way do not error out, since they
+        // may be the result of a typo the user is simply fixing, but
+        // the odds of an accidental submission of an invalid code that
+        // reaches a wrong but valid game are essentially zero mathmeticaly.
+        // On mobile especially this is useful to prevent them from having to move their
+        // finger to a new input, and every device works differenty and could potentially
+        // interfere with the join button (cover it up). Apple does this with
+        // 2FA codes on macOS, where entering the final digit auto submits the form
+        // and its pleasantly suprising.
+
+        if(userInput.length !== 6)
+            return dispatch(GameAction.noOp());
+
+        const game_code = e.target.value.trim();
+
+        console.log('Dispatching JoinGame with game_code:', game_code);
+
+        return dispatch(GameAction.joinGame({
+            game_code,
+        }));
     }
 
     const homepageUrl = Env.getValue<string>('NEXT_PUBLIC_BROWSER_WINDOW_LOCATION_ORIGIN');
