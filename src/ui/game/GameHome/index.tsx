@@ -126,12 +126,20 @@ export const GameHome : RFC = () => {
                                 fw={600}>
                                 {'A Party Game for Terrible People'}
                             </Text>
+                            <Text
+                                fz={rem(32)}
+                                c='#eee'
+                                ta='center'
+                                fw={600}
+                                mb='xl'>
+                                {'Like You!'}
+                            </Text>
                         </Box>
                         <br />
                         <Flex justify='center'>
                             <GameButton
                                 onClick={handleStartGame}
-                                text='Go' />
+                                text='meh' />
                         </Flex>
                         <br />
                     </GameCardContainer>,
