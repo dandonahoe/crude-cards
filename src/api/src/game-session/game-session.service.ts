@@ -57,6 +57,8 @@ export class GameSessionService {
         player: Player, session: GameSession,
     ) : JoinGameScenario => {
 
+        debugger;
+
         const {
             disconnected_player_id_list,
             limbo_player_id_list,
@@ -461,9 +463,10 @@ export class GameSessionService {
         }
 
         // player is not already in the game
-        if(!player_id_list.includes(player.id)) {
-            this.log.error(`playerFastRefresh::player - Already in Session Player List`, { debugBundle });
-            throw new WsException(`playerFastRefresh::player (${debugText})`);
+        if(player_id_list.includes(player.id)) {
+            this.log.error(`playerFastRefresh::player - Already in Session Player List, NoOp.`, { debugBundle });
+
+            return;
         }
 
         this.log.debug('Adding Player to Game Session', { debugBundle });

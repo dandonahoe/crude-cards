@@ -38,6 +38,7 @@ import { AuthToken } from '../type';
 import { difference } from 'lodash';
 import { Socket } from 'socket.io';
 import { Logger } from 'winston';
+import { PlayerType } from '../constant/player-type.enum';
 
 
 @Injectable()
@@ -78,9 +79,8 @@ export class GameService {
         const socketRequest = await this.sockService.getRequestInfoFromSocket(socket);
 
         this.log.debug('Socket Request', { socketRequest });
-
-
         this.log.silly('Looking up player info by auth token', { authToken : socketRequest.authToken });
+
         const playerState = await this.getPlayerStateByAuthToken(socketRequest.authToken);
 
         let player : Player | null = null;
@@ -101,10 +101,14 @@ export class GameService {
 
             this.log.debug('Emitting new player auth token', { player });
 
+            // let the server talk to the plaayer by their id
             await socket.join(currentPlayer.id);
 
+            // and push the new token down as the first message received
             return this.emitPlayerAuthToken(server, currentPlayer);
         }
+
+        debugger;
 
         // at this point, we have found an existing player
         this.log.debug('Joining the player to their socket by their playerId', { playerId : playerState.currentPlayer.id});
@@ -115,7 +119,12 @@ export class GameService {
         // existing player needs a new token, they're wiped on connection
         // to the server and this pushes a new one to be stored and supplied
         // in followup calls. Should probably migrate to JWT for this.
-        await this.emitPlayerAuthToken(server, playerState.currentPlayer!)
+        // await this.emitPlayerAuthToken(server, playerState.currentPlayer!)
+        // Testing keeping the exiting auth token
+
+        // we're in the game and need to find the game code to reuse the existing
+        // join functionality
+        await socket.join(playerState.currentPlayer.id);
 
         // check auth token
         return this.joinGame(
@@ -1128,7 +1137,6 @@ export class GameService {
         await this.gameRepo.update(game.id, { current_session_id : session.id! });
 
         this.log.silly('GameService::createGame - Game Updated With SessionId', { game });
-
         this.log.silly('Emitting Game Update', { gameCode : game.game_code });
 
         this.emitGameUpdate(server, game.game_code);
@@ -1151,12 +1159,17 @@ export class GameService {
         const { session, game } = await this.getGameStateByGameCode(joinGame.game_code!);
 
         // not using the session and game from here since we're no in the game yet
-        const { currentPlayer : player } = await this.getPlayerStateByAuthToken(joinGame.auth_token!);
+        let { currentPlayer : player } = await this.getPlayerStateByAuthToken(joinGame.auth_token!);
 
         if(!player)
             throw new WebSockException(`JoinGame::Invalid Player (${joinGame.auth_token})`);
 
         this.log.silly('GameService::joinGame - Session and Game', { session, game });
+
+        // Update the player to a real player, rather than the unknown
+        // player type everyone gets when first connecting. Further joins
+        // still run this, but it won't update anything
+        player = await this.playerService.updatePlayerType(player, PlayerType.Player);
 
         // that ensures they can join this one (logs them out of existing sessions, validates, etc).
         await this.gameSessionService.setPlayerGameSession(player, session);

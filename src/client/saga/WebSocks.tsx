@@ -161,18 +161,14 @@ function socketChannelRelay(
     // puggyback the auth token onto every websocket request.
     // Again, this probably should be handled via JWTs of something
     const auth_token = Cookies.get(CookieType.AuthToken)
-    debugger;
 
-
+    // if there's already a game code in the action, use it. For instance when
+    // a player joins a game, the game code is what they type.
     const game_code =
         (messageData as Record<string, unknown>)['game_code']
         || Router.query['game_code']
         || Router.query['gameCode']
         || null;
-
-    // if there's already a game code in the action, use it. For instance when
-    //  a player joins a game, the game code is what they type.
-
 
     const message = {
         ...messageData as Record<string, unknown>,
@@ -184,10 +180,9 @@ function socketChannelRelay(
 
     return eventChannel(emit => {
         socket.emit(
-            messageType,
-            message,
+            messageType, message,
             (gameState: GameStateDTO) =>
-                emit(gameState));
+                emit(gameState))
 
         return () => {
             console.log('Socket channel closed');

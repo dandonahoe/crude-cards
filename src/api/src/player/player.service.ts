@@ -60,6 +60,13 @@ export class PlayerService {
             auth_token      : uuid(),
         });
 
+    public updatePlayerType = async (
+        player : Player, playerType : PlayerType,
+    ) : P<Player> =>
+        this.playerRepo.save({
+            ...player,
+            user_type : playerType,
+        });
     /**
      * Updates the player's username.
      *
