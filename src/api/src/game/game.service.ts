@@ -230,6 +230,9 @@ export class GameService {
         // Remove the player from the session
         await this.removePlayerFromSession(currentPlayer, session);
 
+        // not run routine to patch up games which may be valid or not
+        // THen broadcast whatever the final state is
+
         return this.emitGameUpdate(server, game.game_code);
     }
 
