@@ -39,8 +39,6 @@ export const GameHome : RFC = () => {
 
             console.log('Dispatching JoinGame with game_code:', game_code);
 
-            // debugger;
-
             return dispatch(GameAction.joinGame({
                 game_code,
             }));

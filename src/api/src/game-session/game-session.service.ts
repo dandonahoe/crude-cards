@@ -56,9 +56,6 @@ export class GameSessionService {
     private getJoinGameScenario = (
         player: Player, session: GameSession,
     ) : JoinGameScenario => {
-
-        debugger;
-
         const {
             disconnected_player_id_list,
             limbo_player_id_list,

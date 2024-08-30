@@ -108,8 +108,6 @@ export class GameService {
             return this.emitPlayerAuthToken(server, currentPlayer);
         }
 
-        debugger;
-
         // at this point, we have found an existing player
         this.log.debug('Joining the player to their socket by their playerId', { playerId : playerState.currentPlayer.id});
         await socket.join(playerState.currentPlayer.id);
