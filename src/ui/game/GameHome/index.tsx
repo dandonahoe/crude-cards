@@ -36,23 +36,26 @@ export const GameHome : RFC = () => {
 
         let userInput = e.target.value;
 
-        // use lodash to remove all non alpha numeric characters from, so they
-        // can get the code foo123 and all these work
+        // Remove all non alpha numeric characters from, so they
+        // can get the code foo123 and all these work (below). Typing is hard, joining should
+        // be forgiving and easy to sloppy (usual) input.
+
         // "foo123"
-        // "foo-123"
+        // "foo123."
+        // " FOO-123"
         // "foo 123"
         // "foo 123 "
-        // " foo 123  "
+        // " FOO       12     3  "
         // "  foo 123  "
         // "  f o o 1 2 3   "
         // " !! fFGGGo$$o##@@1$#2@@3~~"
-        // " !! fFGGGo$$o##@@1$#2@@3~~ "
+        // " !! fFGGGO$$O##@@1$#2@@3~~ "
         // " !! fFGGGo$$o##@@1$#2@@3~~  "
-        // "  !! fFGGGo$$o##@@1$#2@@3~~  "
+        // "  !! FFGGGo$$o##@@1$#2@@3~~  "
         // "  !! fFGGGo$$o##@@1$#2@@3~~   "
 
         // todo: make a utility and unit test this
-        userInput = userInput.replace(/[^a-zA-Z0-9]/g, '').trim();
+        userInput = userInput.replace(/[^a-zA-Z0-9]/g, '').trim().toLowerCase();
 
         // rapid join before they generally can hit the join button
         // invalid codes submitted this way do not error out, since they
@@ -110,25 +113,27 @@ export const GameHome : RFC = () => {
                             h={rem(260)}
                             pt={rem(60)}>
                             <Text
-                                fz={rem(40)}
-                                ta='center'
-                                fw={600}>
-                                {'Cards Against'}
-                            </Text>
-                            <Text
                                 fz={rem(60)}
                                 fw={600}
                                 mb='xl'
-                                pb='xl'
+
                                 lh={1}>
-                                {'Humanity'}
+                                {'CrudeCards'}
+                            </Text>
+                            <Text
+                                fz={rem(32)}
+                                ta='center'
+                                fw={600}>
+                                {'A Party Game for Terrible People'}
                             </Text>
                         </Box>
+                        <br />
                         <Flex justify='center'>
                             <GameButton
                                 onClick={handleStartGame}
-                                text='New' />
+                                text='Go' />
                         </Flex>
+                        <br />
                     </GameCardContainer>,
                     <GameCardContainer
                         key='sdssf'
