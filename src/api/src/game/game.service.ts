@@ -1141,7 +1141,7 @@ export class GameService {
         server : SocketIOServer,
         @Body(new ZodValidationPipe(JoinGameDTO.Schema))
         joinGame: JoinGameDTO,
-        debugContext ?: string,
+        debugContext : string = '',
     ): P<void> {
 
         this.log.silly('GameService::joinGame', { joinGame, debugContext });
@@ -1337,8 +1337,7 @@ export class GameService {
         players  : Player[];
         game     : Game;
     }> => {
-        this.log.silly('GameService::getGameStateByGameCode', {
-            gameCode : gameCode ?? '[null]'});
+        this.log.silly('GameService::getGameStateByGameCode', { gameCode : gameCode ?? '[null]'});
 
         // Perform game lookup with cleaned game code
         const cleanedGameCode = gameCode.toLowerCase().trim().replace(' ', '');
