@@ -9,6 +9,7 @@ export enum WebSocketEventType {
     MenuItemClicked        = 'MenuItemClicked',
     UpdateUsername         = 'UpdateUsername',
     SubmitFeedback         = 'SubmitFeedback',
+    Disconnected           = 'Disconnected',
     UpdateGame             = 'UpdateGame',
     CreateGame             = 'CreateGame',
     StartGame              = 'StartGame',

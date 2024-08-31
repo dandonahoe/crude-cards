@@ -621,8 +621,8 @@ export class GameSessionService {
                 break;
 
             case GameExitReason.LeftByChoice:
-                // Re-add the player's ID to the player list (assuming they might rejoin)
-                sessionUpdates.player_id_list = () => `array_append(player_id_list, '${player.id}')`;
+debugger;
+                sessionUpdates.player_id_list = () => `array_remove(player_id_list, '${player.id}')`;
                 break;
         }
 

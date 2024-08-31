@@ -244,10 +244,18 @@ export class GameService {
             GameExitReason.LeftByChoice,
             'ExitGame Service Routine');
 
+        this.log.silly('GameService::exitGame - Player removed from session', {
+            game_code : game.game_code,
+        });
+
         // not run routine to patch up games which may be valid or not
         // THen broadcast whatever the final state is
-
-        return this.emitGameUpdate(server, game.game_code);
+        return this.emitGameUpdate(
+            server,
+            game.game_code, // to any players remaining
+            false, // dont include the deck
+            [currentPlayer],
+            runtimeContext); // send disconnect success message to client
     }
 
     /**
@@ -717,21 +725,40 @@ export class GameService {
      * @returns A promise that resolves when the game update has been broadcast to all players
      */
     private emitGameUpdate = async (
-        server      : SocketIOServer,
-        gameCode    : string | null,
-        includeDeck : boolean = false,
+        server              : SocketIOServer,
+        gameCode            : string | null,
+        includeDeck         : boolean = false,
+        disconnectPlayers   : Player[] = [],
+        runtimeContext      : string = '',
     ) => {
-        this.log.silly('GameService::broadcastGameUpdate', { gameCode, includeDeck });
+        this.log.silly('GameService::broadcastGameUpdate', { gameCode, includeDeck, disconnectPlayers, runtimeContext });
+        this.log.info('Broadcasting Disconnecting players', { runtimeContext });
 
-        if(!gameCode) throw new WebSockException(`Invalid game code ${gameCode}`);
+        await Promise.all(disconnectPlayers.map(player =>
+            server.to(player.id).emit(
+                WebSocketEventType.UpdateGame,{
+                    ...GameStateDTO.Default,
+                    new_auth_token : player.auth_token,
+                },
+            )));
+
+        if(!gameCode)
+            throw new WebSockException(`Invalid game code ${gameCode} runtimeContext(${runtimeContext})`);
 
         // todo: update this to handle people in the disconnected and limbo states
-        const gameStatusList = await this.getAllPlayersGameStatus(gameCode, includeDeck);
+        const gameStatusList = await this.getAllPlayersGameStatus(gameCode, includeDeck,
+            `Emitting Game Update to gameCode(${gameCode}) \n\nruntimeContext(${runtimeContext})` );
 
+        // TODO - CHECK ABOVE - I think its returning people that just left the game
+        // gameStatusList
+// gameStatusList
+
+        // todo: probably check return values here instead of just spray and pray
+        // todo: consider passing context to client to maintain continuity between logs
         return Promise.all(
             gameStatusList.map(gameStatus => server
                 .to(gameStatus.current_player_id!)
-                .emit(WebSocketEventType.UpdateGame, gameStatus)));
+                .emit(WebSocketEventType.UpdateGame, gameStatus))); /// pew pew pew
     }
 
 
@@ -1314,15 +1341,17 @@ export class GameService {
      * @returns A list of game state DTOs, one for each player, reflecting their specific game view
      */
     public getAllPlayersGameStatus = async (
-        gameCode: string, includeDeck: boolean = false,
+        gameCode: string,
+        includeDeck: boolean = false,
+        runtimeContext: string = '',
     ): P<GameStateDTO[]> => {
 
         this.log.silly('GameService::getAllPlayersGameStatus', {
-            gameCode, includeDeck,
+            gameCode, includeDeck, runtimeContext,
         });
 
         // Retrieve the generic game state which includes player details
-        const gameStateDTO = await this.getGameStateGeneric(gameCode, includeDeck);
+        const gameStateDTO = await this.getGameStateGeneric(gameCode, includeDeck, runtimeContext);
 
         // Map the generic game state to individual game states for each player
         return gameStateDTO.player_list.map(player => ({
@@ -1338,13 +1367,17 @@ export class GameService {
      *
      * @returns - The game state DTO containing relevant game, session, and player data
      */
-    private getGameStateByGameCode = async (gameCode: string) : P<{
+    private getGameStateByGameCode = async (
+        gameCode: string,
+        runtimeContext : string = '',
+    ) : P<{
         scoreLog : ScoreLog | null;
         session  : GameSession;
         players  : Player[];
         game     : Game;
     }> => {
-        this.log.silly('GameService::getGameStateByGameCode', { gameCode : gameCode ?? '[null]'});
+        this.log.silly('GameService::getGameStateByGameCode', {
+            runtimeContext, gameCode : gameCode ?? '[null]' });
 
         // Perform game lookup with cleaned game code
         const cleanedGameCode = gameCode.toLowerCase().trim().replace(' ', '');
@@ -1381,9 +1414,10 @@ export class GameService {
     private getGameStateGeneric = async (
         gameCode: string,
         includeDeck: boolean = false,
+        runtimeContext : string = '',
     ): P<GameStateDTO> => {
         this.log.silly('GameService::getGameStateGeneric', {
-            gameCode, includeDeck,
+            gameCode, includeDeck, runtimeContext,
         });
 
         // todo: update this to take disconnected and limbo players into account
@@ -1391,7 +1425,7 @@ export class GameService {
         // Retrieve the game state using the provided game code
         const {
             game, session, scoreLog, players,
-        } = await this.getGameStateByGameCode(gameCode);
+        } = await this.getGameStateByGameCode(gameCode, runtimeContext);
 
         // Transform the list of players into DTOs for consistency
         const playerListDTO: PlayerDTO[] = players.map(player => ({
@@ -1420,6 +1454,8 @@ export class GameService {
         const countOfRoundsPlayed = await this.getCountGameRounds(session);
 
         // Build and return the game state DTO
+        // todo: send back runtimeContext as configutable in debug mode
+
         return {
             selected_card_id_list : session.selected_card_id_list,
             dealer_card_id_list   : session.dealer_card_id_list,
@@ -1443,6 +1479,7 @@ export class GameService {
             session_id            : session.id,
             game_code             : game.game_code,
             dealer_id             : session.dealer_id,
+            new_auth_token        : null,
         };
     };
 

@@ -29,6 +29,7 @@ const GameStateDTOSchema = z.object({
     session_id            : z.string().nullable().default(null),
     dealer_id             : z.string().nullable().default(null),
     game_code             : z.string().nullable().default(null),
+    new_auth_token        : z.string().nullable().default(null),
 }).strict();
 
 export class GameStateDTO implements z.infer<typeof GameStateDTOSchema> {
@@ -55,6 +56,7 @@ export class GameStateDTO implements z.infer<typeof GameStateDTOSchema> {
     public session_id: string | null = null;
     public dealer_id: string | null = null;
     public game_code: string | null = null;
+    public new_auth_token: string | null = null;
 
     public constructor(
         selected_card_id_list: string[] = [],
@@ -79,6 +81,7 @@ export class GameStateDTO implements z.infer<typeof GameStateDTOSchema> {
         session_id: string | null = null,
         dealer_id: string | null = null,
         game_code: string | null = null,
+        new_auth_token: string | null = null,
     ) {
         this.selected_card_id_list = selected_card_id_list;
         this.dealer_card_id_list = dealer_card_id_list;
@@ -102,6 +105,7 @@ export class GameStateDTO implements z.infer<typeof GameStateDTOSchema> {
         this.session_id = session_id;
         this.dealer_id = dealer_id;
         this.game_code = game_code;
+        this.new_auth_token = new_auth_token;
     }
 
     // Expose the schema for external use

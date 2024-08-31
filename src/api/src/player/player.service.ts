@@ -17,9 +17,11 @@ import { SocketID, AuthToken } from '../type';
 import { In, Repository } from 'typeorm';
 import { Player } from './player.entity';
 import { faker } from '@faker-js/faker';
+import { v4 as uuidv4 } from 'uuid';
 import { Socket } from 'socket.io';
 import { v4 as uuid } from 'uuid';
 import { Logger } from 'winston';
+
 
 // @ai-lint-begin @ruleset/custom-name @ruleset/require-name @rule/import-line-length-descending
 
@@ -189,6 +191,7 @@ export class PlayerService {
 
         return this.playerRepo.save({
             ...player,
+            auth_token      : uuidv4(),
             disconnected_at : new Date(),
         });
     };

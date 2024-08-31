@@ -19,8 +19,7 @@ export const GamePopup : RFC= () => {
 
     if(!popupTypeId) return null;
 
-    const handleClosePopup = () : CA =>
-        dispatch(GameAction.closePopup());
+    const handleClosePopup = () : CA => dispatch(GameAction.closePopup());
 
     let popup : ReactNode | null = null;
 
@@ -39,7 +38,6 @@ export const GamePopup : RFC= () => {
             withCloseButton={true}
             radius={rem(40)}
             centered={true}
-
             opened={true}
             size='sm'
             overlayProps={{

@@ -10,8 +10,13 @@ export const GameQuit : RFC = () => {
 
     const dispatch = useDispatch();
 
-    const handleClick = () : CA =>
+    const handleClick = () : CA => {
         dispatch(GameAction.leaveGame({}));
+
+        console.log('Sent Message to Disconnect, Closing Popup Window')
+
+        return dispatch(GameAction.closePopup());
+    }
 
     return (
         <Box pb='xl'>

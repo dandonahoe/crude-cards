@@ -1,19 +1,19 @@
 import { selectCurrentPlayer, selectGameState, selectIsDealer, selectTimer } from '../selector/game';
 import { WebSocketEventType } from '../../api/src/constant/websocket-event.enum';
+import { call, delay, select, take, takeEvery } from 'typed-redux-saga';
 import { GameStateDTO } from '../../api/src/game/dtos/game-state.dto';
 import { GameStage } from '../../api/src/constant/game-stage.enum';
-import { call, delay, select, take, takeEvery } from 'typed-redux-saga';
 import { TimerType, CookieType } from '../../api/src/type';
 import { Saga } from '../../type/framework/core/CoreSaga';
-import { Socket, io } from 'socket.io-client';
 import { GameAction } from '../action/game.action';
+import { PayloadAction } from '@reduxjs/toolkit';
+import { Socket, io } from 'socket.io-client';
 import { takePayload } from '../SagaHelper';
 import { eventChannel } from 'redux-saga';
 import { sagaDispatch } from '..';
 import Router from 'next/router';
 import Cookies from 'js-cookie';
 import { Env } from '@app/Env';
-import { PayloadAction } from '@reduxjs/toolkit';
 
 
 let socket: Socket | null = null;
@@ -36,7 +36,6 @@ if (!Env.isBuilding() && !Env.isTest()) {
 }
 
 if (socket)
-
     socket.on('connect', () => {
         console.log('Client WebSocket Connected');
 
@@ -48,8 +47,6 @@ if (socket)
         });
 
         socket.on(WebSocketEventType.UpdatePlayerValidation, (validation: string) => {
-            // debugger;
-
             console.log('CLIENT GOT: validation', validation);
 
             Cookies.set(CookieType.AuthToken, validation);
@@ -82,7 +79,6 @@ export function createGameUpdateReceiverSagaChannel(socket : Socket) {
 }
 
 // All this does is listen, no sending
-
 function* sagaStartUpdateListener(): Saga {
     if (!socket)
         return;
@@ -109,16 +105,28 @@ function* sagaStartUpdateListener(): Saga {
 
         yield* sagaDispatch(GameAction.updateGameState(newGameStateString));
 
+        // This can happen when the server is disconnecting a player
+        if(newGameState.new_auth_token) {
+            console.log('New Auth Token Received in Game Update', newGameState.new_auth_token);
+            Cookies.set(CookieType.AuthToken, newGameState.new_auth_token);
+        }
+
+        if(newGameState.game_stage === GameStage.Home) {
+            console.log('Game stage is Home, clearing game code from url');
+            Router.push('/');
+        }
+
         console.log('Game State Updated, checking timers');
+
         if (newGameState.game_stage == previousGameState.game_stage) {
             console.log(`State didn't change from ${newGameState.game_stage}, skipping timer`);
             continue;
         }
 
-        // On any page but the homepage, put the game code
-        // in the url
-
+        // On any page but the homepage, put the game code in the url
         if(newGameState.game_stage !== GameStage.Home) {
+            debugger;
+            
             console.log(`Non homepage stage, updating url with game code $newGameState.game_stage}`);
             Router.push(`/game/${newGameState.game_code}`);
         }
@@ -189,19 +197,11 @@ function* onSendWebSocketMessage(action : PayloadAction<Record<string, unknown>>
         return;
     }
 
-    // debugger;
-
-        // puggyback the auth token onto every websocket request.
+    // puggyback the auth token onto every websocket request.
     // Again, this probably should be handled via JWTs of something
     const auth_token = Cookies.get(CookieType.AuthToken);
 
     console.log('Auth Token:', auth_token);
-
-    // if(!auth_token)
-    //     alert('No auth token available, please refresh the page');
-
-    if(action.type === WebSocketEventType.LeaveGame)
-        debugger;
 
     const payload = action.payload as Record<string, unknown>;
 
@@ -221,32 +221,10 @@ function* onSendWebSocketMessage(action : PayloadAction<Record<string, unknown>>
         game_code,
     };
 
-    // debugger;
     // Pew pew pew!
     console.log(socketPayload);
 
-    const _channel =  eventChannel(emit => {
-        socket.emit(
-            action.type,
-            socketPayload,
-            (gameState: GameStateDTO) => {
-                debugger;
-
-                return emit(gameState);
-            },
-        );
-
-
-        return () => {
-            console.log('Socket channel closed');
-        };
-    });
-
-    // todo: reenable this, testing race conditon
-    // channel.close();
-    // socket.emit(action.type, socketPayload);
-
-    console.log('======Sending WS SocketPayload to Server', socketPayload);
+    socket.emit(action.type, socketPayload);
 }
 
 // Double check this logic, i think its fallen out of date
@@ -268,82 +246,6 @@ function* sagaSendWebSocketMessage(): Saga {
         GameAction.nextHand,
     ], onSendWebSocketMessage);
 }
-
-// function* sagaReconnect(): Saga {
-
-    // yield* takePayload(GameAction.dealerPickWinner)
-// }
-
-
-// function* sagaCreateGame(): Saga {
-//     yield* sagaDispatch(GameAction.sendWebSocketMessage({
-//         type : WebSocketEventType.CreateGame,
-//         data : yield* takePayload(GameAction.createGame),
-//     }));
-// }
-
-// function* sagaDealerPickBlackCard(): Saga {
-//     yield* sagaDispatch(GameAction.sendWebSocketMessage({
-//         type : WebSocketEventType.DealerPickBlackCard,
-//         data : yield* takePayload(GameAction.dealerPickBlackCard),
-//     }));
-// }
-
-// function* sagaStartGame(): Saga {
-//     yield* sagaDispatch(GameAction.sendWebSocketMessage({
-//         type : WebSocketEventType.StartGame,
-//         data : yield* takePayload(GameAction.startGame),
-//     }));
-// }
-
-// function* sagaJoinGame(): Saga {
-//     yield* sagaDispatch(GameAction.sendWebSocketMessage({
-//         type : WebSocketEventType.JoinGame,
-//         data : yield* takePayload(GameAction.joinGame),
-//     }));
-// }
-
-// function* sagaPlayerSelectCard(): Saga {
-//     yield* sagaDispatch(GameAction.sendWebSocketMessage({
-//         type : WebSocketEventType.PlayerSelectCard,
-//         data : yield* takePayload(GameAction.playerSelectCard),
-//     }));
-// }
-
-// function* sagaDealerPickWinner(): Saga {
-//     yield* sagaDispatch(GameAction.sendWebSocketMessage({
-//         type : WebSocketEventType.DealerPickWinner,
-//         data : yield* takePayload(GameAction.dealerPickWinner),
-//     }));
-// }
-
-// function* sagaNextHand(): Saga {
-//     yield* sagaDispatch(GameAction.sendWebSocketMessage({
-//         type : WebSocketEventType.NextHand,
-//         data : yield* takePayload(GameAction.nextHand),
-//     }));
-// }
-
-// function* sagaUpdateUsername(): Saga {
-//     yield* sagaDispatch(GameAction.sendWebSocketMessage({
-//         type : WebSocketEventType.UpdateUsername,
-//         data : yield* takePayload(GameAction.updateUsername),
-//     }));
-// }
-
-// function* sagaLeaveGame(): Saga {
-//     yield* sagaDispatch(GameAction.sendWebSocketMessage({
-//         type : WebSocketEventType.LeaveGame,
-//         data : yield* takePayload(GameAction.leaveGame),
-//     }));
-// }
-
-// function* sagaFeedback(): Saga {
-//     yield* sagaDispatch(GameAction.sendWebSocketMessage({
-//         type : WebSocketEventType.SubmitFeedback,
-//         data : yield* takePayload(GameAction.submitFeedback),
-//     }));
-// }
 
 function* sagaStartTimer(): Saga {
 
