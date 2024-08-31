@@ -25,7 +25,15 @@ export class GameSessionService {
         private readonly gameSessionRepo: Repository<GameSession>,
     ) { }
 
-
+    /**
+     * Whatever game session the player is in, remove them from it
+     *
+     * @param currentPlayer - The player to remove from the session
+     * @param session - The session to remove the player from
+     * @param exitReason - The reason the player is being removed
+     *
+     * @returns - The updated session with the player in the exited list
+     */
     public exitActiveGameSession = async (
         currentPlayer: Player,
         exitReason: GameExitReason,
@@ -55,6 +63,14 @@ export class GameSessionService {
     };
 
 
+    /**
+     * Determines the reason a player is joining a game session.
+     *
+     * @param player - The player attempting to join the game.
+     * @param session - The current game session.
+     *
+     * @returns The reason the player is joining the game.
+     */
     private getJoinGameReason = (
         player: Player, session: GameSession,
     ): JoinGameReason => {
@@ -64,13 +80,15 @@ export class GameSessionService {
             player_id_list,
         } = session;
 
+        const playerId = player.id;
+
         // NEW GAME AND PLAYER
         // Joined Pregame Lobby
         // IF: The game is in lobby mode still before the game has started.
         // ACTION: Add player to the player_id_list and emit the
         // updated session to all players in the session.
-        if (session.game_stage === GameStage.Lobby &&
-            !player_id_list.includes(player.id))
+        if (session.game_stage === GameStage.Lobby
+            && !player_id_list.includes(playerId))
             return JoinGameReason.NewGameAndPlayer;
 
         // PLAYER FAST REFRESH
@@ -87,9 +105,9 @@ export class GameSessionService {
         // connection, server crash whatever the case may be. Should broadcase to all
         // players (though ther may be an efficiency gain by skipping other players,
         // nothing should have changed for them)
-        if (player_id_list.includes(player.id) &&
-            !exited_player_id_list.includes(player.id) &&
-            !limbo_player_id_list.includes(player.id))
+        if (player_id_list.includes(playerId)
+            && !exited_player_id_list.includes(playerId)
+            && !limbo_player_id_list.includes(playerId))
             return JoinGameReason.PlayerFastRefresh;
 
 
@@ -102,8 +120,8 @@ export class GameSessionService {
         // times as the same user
         // ACTION: do nothing. Could happen if they are in limbo and refresh,
         // they should just stay there. Emit update to players
-        if (limbo_player_id_list.includes(player.id) &&
-            !exited_player_id_list.includes(player.id))
+        if (limbo_player_id_list.includes(playerId)
+            && !exited_player_id_list.includes(playerId))
             return JoinGameReason.JoiningPlayerIsAlreadyInLimbo;
 
 
@@ -118,7 +136,7 @@ export class GameSessionService {
         // who were previously disconnected properly should be
         // added back automatically. They skip limbo since they're
         // already known to be in the game and are dealt in.
-        if (exited_player_id_list.includes(player.id))
+        if (exited_player_id_list.includes(playerId))
             return JoinGameReason.ReconnectingDisconnectedPlayer;
 
 
@@ -129,9 +147,9 @@ export class GameSessionService {
         // player already but a joing game request was sent.
         // ACTION: Do nothing, they are already in the game so noop.
         // Emit update to players, but possibly not necessary.
-        if (player_id_list.includes(player.id) &&
-            !exited_player_id_list.includes(player.id) &&
-            !limbo_player_id_list.includes(player.id))
+        if (player_id_list.includes(playerId)
+            && !exited_player_id_list.includes(playerId)
+            && !limbo_player_id_list.includes(playerId))
             return JoinGameReason.PlayerIsAlreadyInGame;
 
 
@@ -144,8 +162,8 @@ export class GameSessionService {
         // Once the current hand ends, they will be dealt in. Later
         // on, it will have "Admit / Ignore / Ban" etc options to
         // allow players to optionally let players in limbo into the game [idea].
-        if (!player_id_list.includes(player.id) &&
-            session.game_stage !== GameStage.Lobby)
+        if (!player_id_list.includes(playerId)
+            && session.game_stage !== GameStage.Lobby)
             return JoinGameReason.PlayerJoinsMidGame;
 
 
@@ -496,7 +514,8 @@ export class GameSessionService {
     };
 
     /**
-     * Initialize a new game session
+     * Initialize a new game session. This is called when a player creates a new game
+     * and is the first player in the game session.
      *
      * @param currentPlayer - The player to initialize the session for
      * @param game - The game to initialize the session for
@@ -504,7 +523,8 @@ export class GameSessionService {
      * @returns - The new game session
      */
     public initSession = async (
-        currentPlayer: Player, game: Game,
+        currentPlayer : Player,
+        game          : Game,
     ) => {
         this.log.silly('GameSessionService::initSession', {
             currentPlayer, game,
@@ -567,17 +587,93 @@ export class GameSessionService {
             dealer_id             : currentPlayer.id!,
         });
 
+    /**
+     * Promote a random player to the host of the game session
+     * This is used when the host leaves the game and a new host needs to be selected
+     * from the list of players in the game session, and also stages them to be the first
+     * dealer whent the game starts.
+     *
+     * @param session - The session to promote a player to host
+     * @param runtimeContext - Additional context for debugging
+     *
+     * @returns - The updated session with the new host / dealer
+     */
+    public promoteRandomPlayerToHost = async (
+        session: GameSession,
+        runtimeContext: string,
+    ) : P<GameSession> => {
+        const debugBundle = { session, runtimeContext };
+
+        this.log.silly('GameSessionService::promotePlayerToHost', { debugBundle });
+
+        if(session.game_stage !== GameStage.Lobby) {
+            this.log.error('Cannot promote player to host in a non-lobby game', { debugBundle });
+
+            throw new WsException('Cannot promote player to host in a non-lobby game');
+        }
+
+        // if there are no other players, kill the game. There could be people
+        // in limbo waiting forever if all the players leave the lobby
+        if(session.player_id_list.length === 0) {
+            this.log.error('Cannot promote player to host in a game with no players', { debugBundle });
+
+            throw new WsException(`Cannot promote player to host in a game with no players, session(${session.id})`);
+        }
+
+        // pick a random player from the player_id_list and promote them to the host,
+        // which also sets them to be the first dealer when the game starts.
+        const newLobbyHost = session.player_id_list[0];
+
+        this.log.silly('Player promoted to host', { newLobbyHost, debugBundle });
+
+        await this.gameSessionRepo.update(session.id, {
+            ...session,
+            lobby_host_id : newLobbyHost,
+            dealer_id     : newLobbyHost,
+        });
+
+        return this.gameSessionRepo.findOneByOrFail({
+            id : session.id,
+        });
+    }
+
+    /**
+     * Moves the game to the next stage, where dealer picks from
+     * the list of player selected cards
+     *
+     * @param session - The session to update
+     *
+     * @returns - The updated session
+     */
     public gotoDealerPickWinnerStage = async (session: GameSession) =>
         this.gameSessionRepo.save({
             ...session,
             game_stage : GameStage.DealerPickWinner,
         });
 
+    /**
+     * Player selects a white card for the game, appending it to the list of
+     * player selected cards for this hand
+     *
+     * @param session - The session to update
+     * @param selectedCardId - The ID of the card the player selected
+     *
+     * @returns - The updated session with the new card appended to the list
+     */
     public playerSelectsWhiteCard = async (session: GameSession, selectedCardId: string) =>
         this.gameSessionRepo.save({
             ...session,
             selected_card_id_list : [...session.selected_card_id_list, selectedCardId],
-        })
+        });
+
+    /**
+     * Moves the game into the results stage, and marks the hand as complete
+     * by incrementing hand count
+     *
+     * @param session - The session to update
+     *
+     * @returns - The updated session with updated hand number
+     */
     public showHandResults = async (session: GameSession) =>
         this.gameSessionRepo.save({
             ...session,
@@ -585,6 +681,14 @@ export class GameSessionService {
             hand_number : session.hand_number + 1,
         });
 
+    /**
+     * Dealer picks a black card for the game, and moves the game to the next stage
+     *
+     * @param session - The session to update
+     * @param dealerPickedCardId - The ID of the card the dealer picked
+     *
+     * @returns - The updated session
+     */
     public dealerPickedBlackCard = async (session: GameSession, dealerPickedCardId: string) =>
         this.gameSessionRepo.save({
             ...session,
@@ -592,6 +696,14 @@ export class GameSessionService {
             game_stage     : GameStage.PlayerPickWhiteCard,
         });
 
+    /**
+     * Find the active game session for a player, ensuring that
+     * the associated session with this game is still active
+     *
+     * @param player - The player to find the active game session for
+     *
+     * @returns - The active game session for the player
+     */
     public findActiveGameSession = async (game: Game) =>
         this.gameSessionRepo.findOneOrFail({
             where : {
@@ -694,14 +806,15 @@ export class GameSessionService {
         });
 
     /**
-     * Move to the next hand in the game
+     * Move the game to the next hand, dealing new cards to the dealer and players
+     * and updating the game stage.
      *
      * @param newDealerCards - The new cards to be dealt to the dealer
-     * @param newWhiteCards - The new white cards to be dealt to the players
-     * @param newGameStage - The new stage of the game
-     * @param newDealerId - The ID of the new dealer
-     * @param newScoreLog - The new score log for the game
-     * @param session - The session to update
+     * @param newWhiteCards  - The new white cards to be dealt to the players
+     * @param newGameStage   - The new stage of the game
+     * @param newDealerId    - The ID of the new dealer
+     * @param newScoreLog    - The new score log for the game
+     * @param session        - The session to update
      *
      * @returns - The updated session
      */

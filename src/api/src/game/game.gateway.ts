@@ -63,7 +63,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         @ConnectedSocket() socket: Socket,
         @MessageBody(new ZodValidationPipe(CreateGameDTO.Schema))
         createGame: CreateGameDTO,
-    ): P<void> {
+    ) : P<unknown>{
         this.log.info('GameGateway::createGame', { createGame });
 
         return this.gameService.createGame(this.server, socket, createGame);
@@ -73,7 +73,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     public async startGame(
         @MessageBody(new ZodValidationPipe(StartGameDTO.Schema))
         startGame: StartGameDTO,
-    ): P<GameStateDTO> {
+    ): P<unknown> {
         this.log.silly('GameGateway::startGame', { startGame });
 
         return this.gameService.startGame(this.server, startGame);
@@ -85,7 +85,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         @ConnectedSocket() socket: Socket,
         @MessageBody(new ZodValidationPipe(JoinGameDTO.Schema))
         joinGame: JoinGameDTO,
-    ): P<void> {
+    ) : P<unknown> {
         this.log.silly('GameGateway::joinGame', { joinGame });
 
         return this.gameService.joinGame(this.server, socket, joinGame, 'Joining via WebSocketEventType.JoinGame');
@@ -96,7 +96,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     public async leaveGame(
         @MessageBody(new ZodValidationPipe(LeaveGameDTO.Schema))
         leaveGame: LeaveGameDTO,
-    ): P<unknown> {
+    ) : P<unknown> {
         this.log.silly('GameGateway::leaveGame', { leaveGame });
 
         return this.gameService.leaveGame(this.server, leaveGame);
@@ -107,7 +107,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     public async playerSelectCard(
         @MessageBody(new ZodValidationPipe(PlayerSelectCardDTO.Schema))
         playerSelectCard: PlayerSelectCardDTO,
-    ): P<GameStateDTO> {
+    ) : P<unknown> {
         this.log.silly('GameGateway::playerSelectCard', { playerSelectCard });
 
         return this.gameService.playerSelectCard(this.server, playerSelectCard);
@@ -118,7 +118,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     public async submitFeedback(
         @MessageBody(new ZodValidationPipe(SubmitFeedbackDTO.Schema))
         submitFeedback: SubmitFeedbackDTO,
-    ) {
+    ) : P<unknown> {
         this.log.silly('GameGateway::submitFeedback', submitFeedback);
 
         return this.gameService.submitFeedback(submitFeedback);
@@ -129,7 +129,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     public async updateUsername(
         @MessageBody(new ZodValidationPipe(UpdateUsernameDTO.Schema))
         updateUsername: UpdateUsernameDTO,
-    ): P<GameStateDTO> {
+    ): P<unknown> {
         this.log.silly('GameGateway::updateUsername', { updateUsername });
 
         return this.gameService.updateUsername(this.server, updateUsername);
@@ -140,7 +140,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     public async dealerPickBlackCard(
         @MessageBody(new ZodValidationPipe(DealerPickBlackCardDTO.Schema))
         dealerPickBlackCard: DealerPickBlackCardDTO,
-    ): P<GameStateDTO> {
+    ): P<unknown> {
         this.log.silly('GameGateway::dealerPickBlackCard', { dealerPickBlackCard });
 
         return this.gameService.dealerPickBlackCard(this.server, dealerPickBlackCard);

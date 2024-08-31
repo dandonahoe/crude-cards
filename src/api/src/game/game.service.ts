@@ -23,19 +23,19 @@ import { CreateGameDTO } from './dtos/create-game.dto';
 import { Server as SocketIOServer } from 'socket.io';
 import { GameStateDTO } from './dtos/game-state.dto';
 import { StartGameDTO } from './dtos/start-game.dto';
+import { LeaveGameDTO } from './dtos/leave-game.dto';
+import { AuthToken, GameExitReason } from '../type';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UtilService } from '../util/util.service';
 import { SockService } from '../sock/sock.service';
 import { CardService } from '../card/card.service';
 import { NextHandDTO } from './dtos/next-hand.dto';
 import { JoinGameDTO } from './dtos/join-game.dto';
-import { LeaveGameDTO } from './dtos/leave-game.dto';
 import { Player } from '../player/player.entity';
 import { validate as isUuidValid } from 'uuid';
 import { PlayerDTO } from './dtos/player.dto';
 import { Repository } from 'typeorm';
 import { Game } from './game.entity';
-import { AuthToken, GameExitReason } from '../type';
 import { difference } from 'lodash';
 import { Socket } from 'socket.io';
 import { Logger } from 'winston';
@@ -153,18 +153,6 @@ export class GameService {
     public findPlayerBySocket = async (socket: Socket) : P<Player> =>
         this.playerService.findPlayerBySocket(socket);
 
-
-    /**
-     * Ensures that the game is in a proper state before proceeding with any actions.
-     * This method is used to validate the game state before any player actions are executed.
-     */
-    private ensureProperGameState = async () => {
-        this.log.silly('GameGateway::ensureProperGameState');
-
-        return true;
-    }
-
-
     /**
      * Attempts to find an existing player by auth token.
      * If found, updates the socket ID and returns the player.
@@ -183,6 +171,7 @@ export class GameService {
 
         this.log.silly('GameService::findPlayerByAuthToken', debugBundle);
 
+        // Weed out a few fast fails
         if (!authToken) return null;
 
         if(!isUuidValid(authToken)) {
@@ -206,24 +195,33 @@ export class GameService {
     ): P<unknown> => {
         this.log.debug('TODO: ENABLE DISCONNECT ROUTINE.', { socketId : socket.id });
 
-        // const player = await this.playerService.findPlayerBySocket(socket);
-
-        // this.log.debug('Player found by socket, disconnecting...', { player, socketId : socket.id });
-
         return;
-        // return this.playerService.disconnectPlayer(player);
     }
 
-    private ensureValidSessionState = async (existingSession: GameSession) => {
-        const debugBundle = { existingSession };
+    /**
+     * Emits the player's authentication token to the player's socket. Good place to bunch edge cases
+     *
+     * @param server - The socket server instance
+     * @param player - The player entity
+     *
+     * @returns The player entity
+     */
+    private ensureValidSessionState = async (
+        existingSession: GameSession | null | undefined,
+        runtimeContext : string,
+    ) : P<GameSession> => {
+        if(!existingSession) {
+            this.log.error('GameService::ensureValidSessionState - Bogus Session', { runtimeContext });
+            throw new WebSockException('GameService::ensureValidSessionState::Bogus Session', { runtimeContext });
+        }
 
-        debugger;
+        const debugBundle = { existingSession };
 
         this.log.silly('GameService::ensureValidSessionState', { debugBundle });
 
         let session = existingSession;
 
-        // if there arent enough players for the game to continue, end the game
+        // If there arent enough players for the game to continue, end the game
         // TODO: Drop them into limbo until a quarum is reached and give the
         // new dealer the option to restart the game. Allows other players to
         // reconnect. Could happen if internets go out and everyone bounces
@@ -232,16 +230,21 @@ export class GameService {
             // End the game entirely
             this.log.warn('Game Ended Due to Insufficient Players', debugBundle);
 
+            // Don't award anyone, just end the game. The front end knows
+            // what to do with this message.
             session = await this.gameSessionService.awardWinnerAndComplete(
                 session, null, 'Insufficient Players, You\'re All Losers.');
         }
 
-        // if there's no host... zombie game? I guess promote the first player,
-        // but log an error because this seems odd and push forward
-        if(!session.lobby_host_id) {
-            this.log.error('Game Host Missing', debugBundle);
-            session = await this.gameSessionService.promotePlayerToHost(session);
+        // if there's no host... or the host on the game session is no longer in the
+        // player_id_list, they're gone, so replace them
+        if(!session.lobby_host_id || !session.player_id_list.includes(session.lobby_host_id)) {
+            this.log.error('Game Host Missing', { debugBundle, session });
 
+            session = await this.gameSessionService.promoteRandomPlayerToHost(
+                session, `Validating Session State: Game Host Missing, context(${runtimeContext})`);
+
+            // this is mostly to treat it non null easier below
             if(!session.lobby_host_id) {
                 const errorMessage = 'Game Host Missing Again, Check Logs for Edge Case';
 
@@ -254,10 +257,11 @@ export class GameService {
         // The host is not longer an active player, promote someone
         if (!session.player_id_list.includes(session.lobby_host_id)
             && session.game_stage === GameStage.Lobby) {
-            this.log.warn('Game Host Missing', debugBundle);
+            this.log.warn('The host is no longer a player', debugBundle);
 
             // Promote the first player in the list to the host
-            session = await this.gameSessionService.promotePlayerToHost(session);
+            session = await this.gameSessionService.promoteRandomPlayerToHost(
+                session, `Validating Session State: The host is no longer a player, context(${runtimeContext})`);
         }
 
         // If there's no dealer, promote a player and tell
@@ -267,8 +271,10 @@ export class GameService {
             this.log.warn('Dealer is Missing During Session Validation, Ending Hand, Next Dealer Goes', debugBundle);
 
             // Promote the first player in the list to the dealer
-            session = await this.gameSessionService.promotePlayerToDealer(session);
+            session = await this.gameSessionService.promoteRandomPlayerToDealer(session);
         }
+
+        return session;
     }
 
     /**
@@ -318,7 +324,7 @@ export class GameService {
         // to check if the state is valid and reconfigure
         // First check, if the host is leaving, promote someone.
         // If the host is leaving and nobody is around, end the game.
-        this.ensureValidSessionState(session);
+        this.ensureValidSessionState(session, `Leaving Game, Context (${runtimeContext})`);
 
         // not run routine to patch up games which may be valid or not
         // THen broadcast whatever the final state is
@@ -408,13 +414,13 @@ export class GameService {
      * @returns Objects related to the user with authToken
      */
     public async getPlayerStateByAuthToken(
-        authToken: AuthToken,
+        authToken : AuthToken,
     ): P<{
-        currentPlayer: Player | null,
-        scoreLog: ScoreLog | null,
-        session: GameSession | null,
-        players: Player[] | null,
-        game: Game | null,
+        currentPlayer : Player      | null,
+        scoreLog      : ScoreLog    | null,
+        session       : GameSession | null,
+        players       : Player[]    | null,
+        game          : Game        | null,
     }> {
         this.log.silly('GameService::getPlayerStateByAuthToken', { authToken });
 
@@ -430,13 +436,15 @@ export class GameService {
                 currentPlayer : null, scoreLog : null, session : null, players : null, game : null,
              };
 
-        const session = await this.gameSessionService.findActivePlayerGameSession(currentPlayer);
+        let session = await this.gameSessionService.findActivePlayerGameSession(currentPlayer);
 
         if (!session)
             return {
                 scoreLog : null, session : null, players : null, game : null,
                 currentPlayer,
             };
+
+        session = await this.ensureValidSessionState(session, 'Dealer Picking Black Card');
 
         const [
             scoreLog, players, game,
@@ -472,7 +480,6 @@ export class GameService {
         // Log the beginning of the feedback submission process
         this.log.silly('GameService::submitFeedback', { submitFeedback });
 
-        this.ensureProperGameState();
 
         // Retrieve the current player, session, and game based on the auth token
         const {
@@ -504,12 +511,12 @@ export class GameService {
     ): P<GameStateDTO> {
         this.log.silly('GameService::nextHand', { nextHand });
 
-        this.ensureProperGameState();
-
         // Retrieve the player, game, session, and player list using the provided auth token
         const {
             currentPlayer, game, session, players,
         } = await this.getPlayerStateByAuthTokenOrFail(nextHand.auth_token!);
+
+        await this.ensureValidSessionState(session, 'Determining Next Hand');
 
         // Determine the next stage of the game based on round count and player scores
         const newGameStagePromise = this.determineNextGameStage(session, game, players);
@@ -592,7 +599,9 @@ export class GameService {
         if (winningPlayer) {
             this.log.info('GameService::determineNextGameStage - Game Complete due to winning player', { winningPlayer });
 
-            await this.gameSessionService.awardWinnerAndComplete(session, winningPlayer.id!);
+            await this.gameSessionService.awardWinnerAndComplete(
+                session, winningPlayer.id!,
+                `Determining Next Game Stage session(${session.id}) game(${game.id}) winner(${winningPlayer.id})`);
 
             return GameStage.GameComplete;
         }
@@ -682,28 +691,29 @@ export class GameService {
         server : SocketIOServer,
         @Body(new ZodValidationPipe(DealerPickBlackCardDTO.Schema))
         dealerPickBlackCard: DealerPickBlackCardDTO,
-    ): P<GameStateDTO> {
+    ): P<unknown> {
+
         this.log.silly('GameService::dealerPickBlackCard', {
             authToken : dealerPickBlackCard.auth_token,
         });
 
-        this.ensureProperGameState();
-
         // Retrieve the player, game, and session details using the provided auth token
-        const playerStatePromise = this.getPlayerStateByAuthTokenOrFail(dealerPickBlackCard.auth_token!);
+        const playerState = await this.getPlayerStateByAuthTokenOrFail(dealerPickBlackCard.auth_token!);
 
-        // Update the session with the dealer's selected black card
-        const updateSessionPromise = playerStatePromise.then(({ session }) =>
-            this.updateSessionWithDealerPick(session, dealerPickBlackCard.card_id!),
-        );
+        this.log.silly('GameService::dealerPickBlackCard - Player State', {
+            playerState,
+            dealerPickBlackCard,
+        });
 
-        // Await both promises concurrently
-        const [{ currentPlayer, game }] = await Promise.all([playerStatePromise, updateSessionPromise]);
+        await this.updateSessionWithDealerPick(
+            playerState.session,
+            dealerPickBlackCard.card_id!);
 
-        await this.emitGameUpdate(server, game.game_code);
+        const game = await this.gameRepo.findOneByOrFail({
+            id : playerState.session.game_id!,
+        });
 
-        // Return the updated game state for the current player
-        return this.getGameStateAsPlayer(game.game_code, currentPlayer.id);
+        return this.emitGameUpdate(server, game.game_code);
     }
 
 
@@ -741,7 +751,6 @@ export class GameService {
     ): P<GameStateDTO> {
         this.log.silly('GameService::dealerPickWinner - Start', { dealerPickWinner });
 
-        this.ensureProperGameState();
         this.log.debug('Ensured proper game state');
 
         // Retrieve the player (dealer), game, session, and score log using the provided auth token
@@ -749,10 +758,6 @@ export class GameService {
             dealer, players, game, session, scoreLog,
         } = await this.getDealerAndSessionData(dealerPickWinner.auth_token!);
         this.log.debug('Retrieved dealer and session data', { dealer, players, game, session, scoreLog });
-
-        // Validate the score log and the dealer
-        this.validateDealerAndScoreLog(dealer, session, scoreLog);
-        this.log.debug('Validated dealer and score log', { dealer, session, scoreLog });
 
         // Determine the winning player based on the selected card ID
         const winningPlayer = await this.getWinningPlayer(players, dealerPickWinner.card_id!);
@@ -775,7 +780,6 @@ export class GameService {
         return gameState;
     }
 
-
     /**
      * Sends a new auth token to the client
      *
@@ -791,7 +795,6 @@ export class GameService {
                 WebSocketEventType.UpdatePlayerValidation,
                 player.auth_token,
             );
-
 
     /**
      * Broadcasts the game update to all players in the game.
@@ -865,20 +868,6 @@ export class GameService {
     }
 
     /**
-     * Validates that the current player is the dealer and that a valid score log is present.
-     *
-     * @param dealer - The current player acting as the dealer
-     * @param session - The current game session
-     * @param scoreLog - The current score log
-     */
-    private validateDealerAndScoreLog = async (
-        dealer: Player, session: GameSession, scoreLog: ScoreLog,
-    ) => {
-        if (dealer.id !== session.dealer_id)
-            throw new WebSockException(`Player ${dealer.id} is not the dealer $${scoreLog.id}`);
-    }
-
-    /**
      * Identifies the winning player based on the selected card ID.
      *
      * @param players - The list of players in the session
@@ -935,7 +924,8 @@ export class GameService {
         winningPlayer: Player,
     ) => {
         if (winningPlayer.score >= game.max_point_count)
-            return this.gameSessionService.awardWinnerAndComplete(session, winningPlayer.id!);
+            return this.gameSessionService.awardWinnerAndComplete(
+                session, winningPlayer.id!, 'Progressing Hand or Showing Results');
         else
             return this.gameSessionService.showHandResults(session);
     }
@@ -956,8 +946,6 @@ export class GameService {
         startGame: StartGameDTO,
     ): P<GameStateDTO> {
         this.log.silly('GameService::startGame');
-
-        this.ensureProperGameState();
 
         const {
             currentPlayer, game, session,
@@ -1121,8 +1109,6 @@ export class GameService {
         // Log the beginning of the username update process
         this.log.silly('GameService::updateUsername', { updateUsername });
 
-        this.ensureProperGameState();
-
         // Retrieve the current player and game based on the provided auth token
         const { currentPlayer, game } = await this.getPlayerStateByAuthTokenOrFail(updateUsername.auth_token!);
 
@@ -1158,8 +1144,6 @@ export class GameService {
         this.log.silly('GameService::playerSelectCard', {
             authToken : playerSelectCard.auth_token,
         });
-
-        this.ensureProperGameState();
 
         // Retrieve the player's game state based on the provided auth token
         const playerState = await this.getPlayerStateByAuthTokenOrFail(
