@@ -47,7 +47,7 @@ export class GameSessionService {
             currentPlayer, exitReason, session,
         });
 
-        return this.removePlayer(
+        return this.removePlayerFromSession(
             currentPlayer,
             session,
             exitReason,
@@ -157,6 +157,14 @@ export class GameSessionService {
         return JoinGameReason.JoiningPlayerIsAlreadyInLimbo;
     }
 
+    /**
+     * Get all active game sessions this player is tied to
+     * 
+     * @param player - The player to get the active game sessions for
+     * @param session - The session to exclude from the list
+     * 
+     * @returns - The list of active game sessions
+     */
     public getActiveGameSessionList = async (
         player: Player, session: GameSession,
     ) => {
@@ -186,7 +194,8 @@ export class GameSessionService {
      *
      * @param player   - The player to add to the session
      * @param session  - The session to add the player to
-     *
+     * @param runtimeContext - Additional context for debugging
+     * 
      * @returns void
      */
     public setPlayerGameSession = async (
@@ -202,7 +211,8 @@ export class GameSessionService {
         // from the one we're joining
         await Promise.all(
             activeGameSessionList.map(async activeSession =>
-                this.removePlayer(player, activeSession, GameExitReason.JoiningOther,
+                this.removePlayerFromSession(player, activeSession, 
+                    GameExitReason.JoiningOther, // TODO - doesnt make sense, can tell proper context
                     `Removing player from any active session` + runtimeContext)));
 
         const joinGameState = this.getJoinGameReason(player, session);
@@ -485,7 +495,14 @@ export class GameSessionService {
         });
     };
 
-
+    /**
+     * Initialize a new game session
+     * 
+     * @param currentPlayer - The player to initialize the session for
+     * @param game - The game to initialize the session for
+     * 
+     * @returns - The new game session
+     */
     public initSession = async (
         currentPlayer: Player, game: Game,
     ) => {
@@ -516,7 +533,19 @@ export class GameSessionService {
         });
     }
 
-
+    /**
+     * Setup a new game session
+     * 
+     * @param session - The session to setup
+     * @param currentPlayer - The player to setup the session for
+     * @param currentScoreLog - The current score log for the game
+     * @param dealerCardIdList - The list of dealer cards to use
+     * @param usedWhiteCardIds - The list of used white cards
+     * @param allBlackCardIds - The list of all black cards
+     * @param allWhiteCardIds - The list of all white cards
+     * 
+     * @returns - The session update object, not the session itself
+     */
     public setupNewGameSession = async (
         session: GameSession,
         currentPlayer: Player,
@@ -588,7 +617,7 @@ export class GameSessionService {
      *
      * @returns - The updated session
      */
-    public removePlayer = async (
+    public removePlayerFromSession = async (
         player: Player,
         session: GameSession,
         exitReason: GameExitReason,
@@ -599,45 +628,59 @@ export class GameSessionService {
         // Log the initial state of the removal process for debugging purposes
         this.log.silly('GameSessionService::removePlayer', { debugBundle });
 
-
         // Determine additional updates based on the exit reason
         switch (exitReason) {
             case GameExitReason.Disconnected:
                 debugger;
 
                 // Append the player's ID to the disconnected player list
-                return this.gameSessionRepo.update(session.id, {
+                await this.gameSessionRepo.update(session.id, {
                     ...session,
                     exited_player_id_list : () => `array_append(exited_player_id_list, '${player.id}')`,
-                    limbo_player_id_list  : () => `array_remove(limbo_player_id_list,        '${player.id}')`,
-                    player_id_list        : () => `array_remove(player_id_list,              '${player.id}')` });
+                    limbo_player_id_list  : () => `array_remove(limbo_player_id_list,  '${player.id}')`,
+                    player_id_list        : () => `array_remove(player_id_list,        '${player.id}')` });
+                    break;
 
             case GameExitReason.Booted:
                 debugger;
 
                 // Append the player's ID to the disconnected player list
-                return this.gameSessionRepo.update(session.id, {
+                await this.gameSessionRepo.update(session.id, {
                     ...session,
                     exited_player_id_list : () => `array_remove(exited_player_id_list, '${player.id}')`,
-                    limbo_player_id_list  : () => `array_remove(limbo_player_id_list,        '${player.id}')`,
-                    player_id_list        : () => `array_remove(player_id_list,              '${player.id}')`,
-
+                    limbo_player_id_list  : () => `array_remove(limbo_player_id_list,  '${player.id}')`,
+                    player_id_list        : () => `array_remove(player_id_list,        '${player.id}')`,
                 });
+                break;
 
             case GameExitReason.JoiningOther:
             case GameExitReason.LeftByChoice:
-                debugger;
+                this.log.info('Player exiting game, exit reason', { exitReason });
 
-                return this.gameSessionRepo.update(session.id, {
+                await this.gameSessionRepo.update(session.id, {
                     ...session,
                     exited_player_id_list : () => `array_append(exited_player_id_list, '${player.id}')`,
-                    limbo_player_id_list  : () => `array_remove(limbo_player_id_list,        '${player.id}')`,
-                    player_id_list        : () => `array_remove(player_id_list,              '${player.id}')`,
+                    limbo_player_id_list  : () => `array_remove(limbo_player_id_list,  '${player.id}')`,
+                    player_id_list        : () => `array_remove(player_id_list,        '${player.id}')`,
             });
+            break;
         }
+
+        // return the updated session
+        return this.gameSessionRepo.findOneByOrFail({
+            id : session.id,
+        });
     }
 
 
+    /** 
+     * Award the winner of the game and mark the game as complete
+     * 
+     * @param session - The session to award the winner of
+     * @param winnerId - The ID of the player who won the game
+     * 
+     * @returns - The updated session
+     */
     public awardWinnerAndComplete = async (session: GameSession, winnerId: string) =>
         this.gameSessionRepo.update(session.id, {
             champion_player_id : winnerId,
@@ -645,6 +688,18 @@ export class GameSessionService {
             game_stage         : GameStage.GameComplete,
         });
 
+    /**
+     * Move to the next hand in the game
+     * 
+     * @param newDealerCards - The new cards to be dealt to the dealer
+     * @param newWhiteCards - The new white cards to be dealt to the players
+     * @param newGameStage - The new stage of the game
+     * @param newDealerId - The ID of the new dealer
+     * @param newScoreLog - The new score log for the game
+     * @param session - The session to update
+     * 
+     * @returns - The updated session
+     */
     public nextHand = async (
         newDealerCards: string[], newWhiteCards: string[], newGameStage: GameStage,
         newDealerId: string, newScoreLog: ScoreLog, session: GameSession,
@@ -660,15 +715,20 @@ export class GameSessionService {
             dealer_id             : newDealerId,
         });
 
+    /**
+     * Find the active game session for a player
+     * 
+     * @param player - The player to find the active game session for
+     * 
+     * @returns - The active game session for the player
+    */
     public findActivePlayerGameSession = async (
         player: Player,
-    ): P<GameSession | null> => {
-
-        return this.gameSessionRepo.findOne({
+    ): P<GameSession | null> => 
+        this.gameSessionRepo.findOne({
             where : {
                 completed_at   : IsNull(),
                 player_id_list : ArrayContains([player.id]),
             },
-        });
-    }
+        })
 }

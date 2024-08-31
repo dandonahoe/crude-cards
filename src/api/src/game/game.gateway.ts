@@ -25,6 +25,7 @@ import { Logger } from 'winston';
 import {
     OnGatewayConnection, OnGatewayDisconnect, WebSocketServer,
     WebSocketGateway, SubscribeMessage, MessageBody,
+    ConnectedSocket,
 } from '@nestjs/websockets';
 
 
@@ -59,12 +60,13 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @AllowPlayerTypes(PlayerType.Player)
     @SubscribeMessage(WebSocketEventType.CreateGame)
     public async createGame(
+        @ConnectedSocket() socket: Socket,
         @MessageBody(new ZodValidationPipe(CreateGameDTO.Schema))
         createGame: CreateGameDTO,
     ): P<void> {
         this.log.info('GameGateway::createGame', { createGame });
 
-        return this.gameService.createGame(this.server, createGame);
+        return this.gameService.createGame(this.server, socket, createGame);
     }
 
     @SubscribeMessage(WebSocketEventType.StartGame)
@@ -80,12 +82,13 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @SubscribeMessage(WebSocketEventType.JoinGame)
     @AllowPlayerTypes(PlayerType.Player)
     public async joinGame(
+        @ConnectedSocket() socket: Socket,
         @MessageBody(new ZodValidationPipe(JoinGameDTO.Schema))
         joinGame: JoinGameDTO,
     ): P<void> {
         this.log.silly('GameGateway::joinGame', { joinGame });
 
-        return this.gameService.joinGame(this.server, joinGame);
+        return this.gameService.joinGame(this.server, socket, joinGame, 'Joining via WebSocketEventType.JoinGame');
     }
 
     @SubscribeMessage(WebSocketEventType.LeaveGame)

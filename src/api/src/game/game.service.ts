@@ -101,7 +101,9 @@ export class GameService {
 
             this.log.debug('Emitting new player auth token', { player });
 
-            // let the server talk to the plaayer by their id
+            // let the server talk to the plaayer by their id. Always active,
+            // but when they join a game it will create another channel in parellel to
+            // communicate with this player in the context of their game as [game_id]_[player_id]
             await socket.join(currentPlayer.id);
 
             // and push the new token down as the first message received
@@ -109,7 +111,12 @@ export class GameService {
         }
 
         // at this point, we have found an existing player
+
+        // let the server talk to the plaayer by their id. Always active,
         this.log.debug('Joining the player to their socket by their playerId', { playerId : playerState.currentPlayer.id});
+
+        // but when they join a game it will create another channel in parellel to
+        // communicate with this player in the context of their game as [game_id]_[player_id]
         await socket.join(playerState.currentPlayer.id);
 
         this.log.debug('Player socket connected, sending AuthToken', { player });
@@ -120,10 +127,6 @@ export class GameService {
         // await this.emitPlayerAuthToken(server, playerState.currentPlayer!)
         // Testing keeping the exiting auth token
 
-        // we're in the game and need to find the game code to reuse the existing
-        // join functionality
-        await socket.join(playerState.currentPlayer.id);
-
         if(!playerState.game) {
             this.log.debug('No game found for player, skipping join', { playerState });
 
@@ -132,7 +135,7 @@ export class GameService {
 
         // check auth token
         return this.joinGame(
-            server,
+            server, socket,
             new JoinGameDTO(
                 playerState.currentPlayer.auth_token!,
                 playerState.game!.game_code),
@@ -211,6 +214,14 @@ export class GameService {
         // return this.playerService.disconnectPlayer(player);
     }
 
+    private ensureValidSessionState = async (session: GameSession) => {
+        const debugBundle = { session };
+
+        debugger;
+        
+        this.log.silly('GameService::ensureValidSessionState', { debugBundle });
+    }
+
     /**
      * Handles the process of exiting a game for a player, including session cleanup and returning the updated game state.
      *
@@ -228,25 +239,37 @@ export class GameService {
         runtimeContext = '',
     ): P<unknown> {
 
-        console.log('HELLO TEST 1234')
-
         this.log.silly('GameService::exitGame', { exitGame, runtimeContext });
 
         // Fetch player state based on auth token
-        const {
-            game, currentPlayer, session,
-        } = await this.getPlayerStateByAuthTokenOrFail(exitGame.auth_token!);
+        const playerState = await this.getPlayerStateByAuthTokenOrFail(exitGame.auth_token!);
+
+        const { currentPlayer : player, game } = playerState;
 
         // Remove the player from the session
-        await this.gameSessionService.removePlayer(
-            currentPlayer,
-            session,
+        const session = await this.gameSessionService.removePlayerFromSession(
+            player,
+            playerState.session,
+            // added to the exited_player_id_list, removed from the player_id_list
+            // and extra check to ensure not in limbo
             GameExitReason.LeftByChoice,
             'ExitGame Service Routine');
 
         this.log.silly('GameService::exitGame - Player removed from session', {
-            game_code : game.game_code,
+            game_code : game.game_code, session,
         });
+
+        // TODO: HERE IS A CHOKE POINT
+        // good place because reconfiguring the game here
+        // will let the full lookup done by emitGameUpdate
+        // to pull the changes. Can do dicy things here, and this
+        // should be called in similar situations and frequently.
+        // but should only do things whent he state has gone bogus
+
+        // to check if the state is valid and reconfigure
+        // First check, if the host is leaving, promote someone.
+        // If the host is leaving and nobody is around, end the game.
+        this.ensureValidSessionState(session);
 
         // not run routine to patch up games which may be valid or not
         // THen broadcast whatever the final state is
@@ -254,7 +277,7 @@ export class GameService {
             server,
             game.game_code, // to any players remaining
             false, // dont include the deck
-            [currentPlayer.id], // only send reset state actions to players leaving now,
+            [player.id], // only send reset state actions to players leaving now,
             // and not include everyone in the exited_player_id_list since they could
             // have joined another game, but still have the same id. 
             // TODO: Possibly think about combining game_id_player_id to be the channel
@@ -750,13 +773,13 @@ export class GameService {
             `Emitting Game Update to gameCode(${gameCode}) \n\nruntimeContext(${runtimeContext})` );
 
         this.log.silly('GameService::broadcastGameUpdate - Disconnecting Players', { gameStatusList });
-
-        debugger;
         
+        const game = await this.gameRepo.findOneByOrFail({ game_code : gameCode });
+
         // Players who have left just now, tell them to reset their state to default
         // which will land them on the homepage. 
         await Promise.all(disconnectPlayerIds.map(playerId =>
-            server.to(playerId).emit(
+            server.to(`${game.id}_${playerId}`).emit(
                 WebSocketEventType.UpdateGame,
                 GameStateDTO.Default)));
 
@@ -1126,6 +1149,7 @@ export class GameService {
     }))
     public async createGame(
         server : SocketIOServer,
+        socket : Socket,
         @Body(new ZodValidationPipe(CreateGameDTO.Schema))
         createGame: CreateGameDTO,
     ): P<void> {
@@ -1139,9 +1163,8 @@ export class GameService {
         if(!currentPlayer)
             throw new WebSockException(`CreateGame::Invalid Player (${createGame.auth_token})`);
 
-        this.log.silly('GameService::createGame - Current Player', { currentPlayer });
-
-        this.log.silly('Leaving any existing games', { playerId : currentPlayer.id });
+        this.log.debug('GameService::createGame - Current Player', { currentPlayer });
+        this.log.silly('Leaving any existing games', { currentPlayer });
 
         // Ensure the player leaves any open sessions before starting a new game
         await this.gameSessionService.exitActiveGameSession(
@@ -1159,11 +1182,15 @@ export class GameService {
             game_code          : await this.utilService.generateGameCode(4), // Generate a 4-character game code
         });
 
+        this.log.info('Joining Game Specific Channel During Game Creation')
+        socket.join(`${game.id}_${currentPlayer.id}`);
+
         // Initialize a new game session with the current player as the host
         const session = await this.gameSessionService.initSession(currentPlayer, game);
 
         this.log.silly('GameService::createGame - Game Session Created', { session });
 
+        // TODO: Consider using the setGameSession
         // Update the game with the session reference after creation
         await this.gameRepo.update(game.id, { current_session_id : session.id! });
 
@@ -1178,23 +1205,34 @@ export class GameService {
     }))
     public async joinGame(
         server : SocketIOServer,
+        socket : Socket,
         @Body(new ZodValidationPipe(JoinGameDTO.Schema))
         joinGame: JoinGameDTO,
-        debugContext : string = '',
+        runtimeContext : string = '',
     ): P<void> {
+        const debugBundle = { joinGame, runtimeContext, socketId : socket.id };
 
-        this.log.silly('GameService::joinGame', { joinGame, debugContext });
+        this.log.silly('GameService::joinGame', debugBundle);
 
         // we're not in the game yet, so look it up by the game
         // code first to get the game and session
         const { session, game } = await this.getGameStateByGameCode(joinGame.game_code!);
-
+        
         // not using the session and game from here since we're no in the game yet
         let { currentPlayer : player } = await this.getPlayerStateByAuthToken(joinGame.auth_token!);
 
         if(!player)
             throw new WebSockException(`JoinGame::Invalid Player (${joinGame.auth_token})`);
 
+        if(session.exited_player_id_list.includes(player.id)) {
+            const errorMessage = `Player ${player.username} has already exited the game, no take backsies.`;
+
+            this.log.error(errorMessage, debugBundle);
+
+            throw new WebSockException(errorMessage);
+        }
+        
+        
         this.log.silly('GameService::joinGame - Session and Game', { session, game });
 
         // Update the player to a real player, rather than the unknown
@@ -1205,7 +1243,19 @@ export class GameService {
         // that ensures they can join this one (logs them out of existing sessions, validates, etc).
         await this.gameSessionService.setPlayerGameSession(player, session);
 
-        await this.emitGameUpdate(server, game.game_code);
+        // Add a specific channel for this game and player
+        const playerGameChannel = `${game.id}_${player.id}`;
+
+        this.log.info('Joining Player Specific Game Channel', { playerGameChannel });
+
+        socket.join(playerGameChannel);
+
+        await this.emitGameUpdate(
+            server, 
+            game.game_code, 
+            false,  // no deck
+            [], // no disconnects
+            runtimeContext);
     }
 
     /**
