@@ -17,7 +17,8 @@ const slice = createSlice({
     name         : ProjectName,
 
     extraReducers : builder => {
-        builder.addCase(GameAction.exitGame, state => {
+
+        builder.addCase(GameAction.resetGameState, state => {
             state.game.gameState = GameStateDTO.Default;
             state.game.popupTypeId = null;
         });

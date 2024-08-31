@@ -2,14 +2,13 @@ import { selectCurrentPlayer, selectGameState, selectIsDealer, selectTimer } fro
 import { WebSocketEventType } from '../../api/src/constant/websocket-event.enum';
 import { GameStateDTO } from '../../api/src/game/dtos/game-state.dto';
 import { GameStage } from '../../api/src/constant/game-stage.enum';
-import { call, delay, select, take } from 'typed-redux-saga';
+import { call, delay, select, take, takeEvery } from 'typed-redux-saga';
 import { TimerType, CookieType } from '../../api/src/type';
 import { Saga } from '../../type/framework/core/CoreSaga';
-import { createSocketChannel } from './channel';
 import { Socket, io } from 'socket.io-client';
 import { GameAction } from '../action/game';
 import { takePayload } from '../SagaHelper';
-import { eventChannel } from 'redux-saga';
+import { Action, eventChannel } from 'redux-saga';
 import { sagaDispatch } from '..';
 import Router from 'next/router';
 import Cookies from 'js-cookie';
@@ -54,13 +53,41 @@ if (socket)
     });
 
 
+// this function creates an event channel from a given socket
+// Setup subscription to incoming update events
+export function createGameUpdateReceiverSagaChannel(socket : Socket) {
+    console.log('createGameUpdateReceiverSagaChannel ');
+
+    // `eventChannel` takes a subscriber function
+    // the subscriber function takes an `emit` argument to put messages onto the channel
+    return eventChannel(emit => {
+
+        socket.on(WebSocketEventType.UpdateGame,
+            (gameState : GameStateDTO) =>
+                emit(gameState),
+        );
+
+        // the subscriber must return an unsubscribe function
+        // this will be invoked when the saga calls `channel.close` method
+        const unsubscribe = () => {
+            socket.off(WebSocketEventType.UpdateGame);
+        }
+
+        return unsubscribe
+    })
+}
+
+// All this does is listen, no sending
+
 function* sagaStartUpdateListener(): Saga {
     if (!socket)
         return;
 
     console.log('sagaStartUpdateListener started');
 
-    const socketChannel = yield* call(createSocketChannel, socket);
+    // listen and respond only to GameUpdate events pushed from the server
+
+    const channelGameUpdateListener = yield* call(createGameUpdateReceiverSagaChannel, socket);
     console.log('Socket channel created');
 
     let previousGameState = yield* select(selectGameState);
@@ -70,7 +97,7 @@ function* sagaStartUpdateListener(): Saga {
 
         console.log('Waiting for new game state...');
 
-        const newGameState = (yield* take(socketChannel)) as GameStateDTO;
+        const newGameState = (yield* take(channelGameUpdateListener)) as GameStateDTO;
 
         console.log('New game state received:', newGameState);
 
@@ -92,7 +119,6 @@ function* sagaStartUpdateListener(): Saga {
             console.log(`Non homepage stage, updating url with game code $newGameState.game_stage}`);
             Router.push(`/game/${newGameState.game_code}`);
         }
-
 
         console.log(`State changed to ${newGameState.game_stage}, updating timer`);
 
@@ -152,14 +178,19 @@ function* sagaStartUpdateListener(): Saga {
 
 
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-function socketChannelRelay(
+function _socketChannelRelay(
     socket: Socket,
     messageType: string,
     messageData: unknown,
 ) {
     // puggyback the auth token onto every websocket request.
     // Again, this probably should be handled via JWTs of something
-    const auth_token = Cookies.get(CookieType.AuthToken)
+    const auth_token = Cookies.get(CookieType.AuthToken);
+
+    console.log('Auth Token:', auth_token);
+
+    if(messageType === WebSocketEventType.LeaveGame)
+        debugger;
 
     // if there's already a game code in the action, use it. For instance when
     // a player joins a game, the game code is what they type.
@@ -177,16 +208,27 @@ function socketChannelRelay(
 
     console.log('Sending WS Message to Server', message);
 
-    return eventChannel(emit => {
+    return eventChannel(maybeDispatch => {
         socket.emit(
             messageType, message,
-            (gameState: GameStateDTO) =>
-                emit(gameState))
+            (gameState: GameStateDTO) => {
+                console.log('Event Channel Received and will Emit:', gameState);
+
+                debugger;
+
+                return maybeDispatch(gameState);
+            })
+
 
         return () => {
             console.log('Socket channel closed');
         };
     });
+}
+
+// eslint-disable-next-line require-yield
+function* onSendWebSocketMessage(action : Action) : Saga {
+    console.log('onSendWebSocketMessage', action);
 }
 
 // Double check this logic, i think its fallen out of date
@@ -195,102 +237,123 @@ function socketChannelRelay(
 
 function* sagaSendWebSocketMessage(): Saga {
 
-    const message = yield* takePayload(GameAction.sendWebSocketMessage);
 
-    if (!socket) return;
+    const action = yield* takeEvery([
+        GameAction.playerSelectCard,
+        GameAction.dealerPickWinner,
+        GameAction.updateUsername,
+        GameAction.submitFeedback,
+        GameAction.createGame,
+        GameAction.startGame,
+        GameAction.leaveGame,
+        GameAction.joinGame,
+        GameAction.nextHand,
+    ], onSendWebSocketMessage);
 
-    const socketChannel = yield* call(
-        socketChannelRelay, socket,
-        message.type, message.data,
-    );
 
-    yield* take(socketChannel);
+    console.log('asdf', action);
+    // const message = yield* takePayload(GameAction.sendWebSocketMessage);
 
-    socketChannel.close();
+    // // take any of these that come in
+    // yield* take
+    // GameAction.startGame
+    // GameAction.joinGame
+    // GameAction.playerSelectCard
+    // GameAction.dealerPickWinner
+    // GameAction.nextHand
+    // GameAction.updateUsername
+    // GameAction.leaveGame
+    // GameAction.submitFeedback
+
+    // if (!socket) return;
+
+    // const foo = yield* call(
+    //     socketChannelRelay, socket,
+    //     message.type, message.data,
+    // );
+
+    // console.log('SOCKET CHANNEL:', foo);;
+
+    // yield* take(socketChannel);
+
+    // socketChannel.close();
 }
 
-function* sagaReconnect(): Saga {
+// function* sagaReconnect(): Saga {
 
-    // Cookies
-
-    // placeholder
-    yield* takePayload(GameAction.dealerPickWinner)
-}
+    // yield* takePayload(GameAction.dealerPickWinner)
+// }
 
 
-function* sagaCreateGame(): Saga {
-    yield* sagaDispatch(GameAction.sendWebSocketMessage({
-        type : WebSocketEventType.CreateGame,
-        data : yield* takePayload(GameAction.createGame),
-    }));
-}
+// function* sagaCreateGame(): Saga {
+//     yield* sagaDispatch(GameAction.sendWebSocketMessage({
+//         type : WebSocketEventType.CreateGame,
+//         data : yield* takePayload(GameAction.createGame),
+//     }));
+// }
 
-function* sagaDealerPickBlackCard(): Saga {
-    yield* sagaDispatch(GameAction.sendWebSocketMessage({
-        type : WebSocketEventType.DealerPickBlackCard,
-        data : yield* takePayload(GameAction.dealerPickBlackCard),
-    }));
-}
+// function* sagaDealerPickBlackCard(): Saga {
+//     yield* sagaDispatch(GameAction.sendWebSocketMessage({
+//         type : WebSocketEventType.DealerPickBlackCard,
+//         data : yield* takePayload(GameAction.dealerPickBlackCard),
+//     }));
+// }
 
-function* sagaStartGame(): Saga {
-    yield* sagaDispatch(GameAction.sendWebSocketMessage({
-        type : WebSocketEventType.StartGame,
-        data : yield* takePayload(GameAction.startGame),
-    }));
-}
+// function* sagaStartGame(): Saga {
+//     yield* sagaDispatch(GameAction.sendWebSocketMessage({
+//         type : WebSocketEventType.StartGame,
+//         data : yield* takePayload(GameAction.startGame),
+//     }));
+// }
 
-function* sagaJoinGame(): Saga {
-    yield* sagaDispatch(GameAction.sendWebSocketMessage({
-        type : WebSocketEventType.JoinGame,
-        data : yield* takePayload(GameAction.joinGame),
-    }));
-}
+// function* sagaJoinGame(): Saga {
+//     yield* sagaDispatch(GameAction.sendWebSocketMessage({
+//         type : WebSocketEventType.JoinGame,
+//         data : yield* takePayload(GameAction.joinGame),
+//     }));
+// }
 
-function* sagaPlayerSelectCard(): Saga {
-    yield* sagaDispatch(GameAction.sendWebSocketMessage({
-        type : WebSocketEventType.PlayerSelectCard,
-        data : yield* takePayload(GameAction.playerSelectCard),
-    }));
-}
+// function* sagaPlayerSelectCard(): Saga {
+//     yield* sagaDispatch(GameAction.sendWebSocketMessage({
+//         type : WebSocketEventType.PlayerSelectCard,
+//         data : yield* takePayload(GameAction.playerSelectCard),
+//     }));
+// }
 
-function* sagaDealerPickWinner(): Saga {
-    yield* sagaDispatch(GameAction.sendWebSocketMessage({
-        type : WebSocketEventType.DealerPickWinner,
-        data : yield* takePayload(GameAction.dealerPickWinner),
-    }));
-}
+// function* sagaDealerPickWinner(): Saga {
+//     yield* sagaDispatch(GameAction.sendWebSocketMessage({
+//         type : WebSocketEventType.DealerPickWinner,
+//         data : yield* takePayload(GameAction.dealerPickWinner),
+//     }));
+// }
 
-function* sagaNextHand(): Saga {
-    yield* sagaDispatch(GameAction.sendWebSocketMessage({
-        type : WebSocketEventType.NextHand,
-        data : yield* takePayload(GameAction.nextHand),
-    }));
-}
+// function* sagaNextHand(): Saga {
+//     yield* sagaDispatch(GameAction.sendWebSocketMessage({
+//         type : WebSocketEventType.NextHand,
+//         data : yield* takePayload(GameAction.nextHand),
+//     }));
+// }
 
-function* sagaUpdateUsername(): Saga {
-    yield* sagaDispatch(GameAction.sendWebSocketMessage({
-        type : WebSocketEventType.UpdateUsername,
-        data : yield* takePayload(GameAction.updateUsername),
-    }));
-}
+// function* sagaUpdateUsername(): Saga {
+//     yield* sagaDispatch(GameAction.sendWebSocketMessage({
+//         type : WebSocketEventType.UpdateUsername,
+//         data : yield* takePayload(GameAction.updateUsername),
+//     }));
+// }
 
-function* sagaExitGame(): Saga {
-    const exitGame = yield* takePayload(GameAction.exitGame)
+// function* sagaLeaveGame(): Saga {
+//     yield* sagaDispatch(GameAction.sendWebSocketMessage({
+//         type : WebSocketEventType.LeaveGame,
+//         data : yield* takePayload(GameAction.leaveGame),
+//     }));
+// }
 
-    Router.push('/');
-
-    yield* sagaDispatch(GameAction.sendWebSocketMessage({
-        type : WebSocketEventType.ExitGame,
-        data : exitGame,
-    }));
-}
-
-function* sagaFeedback(): Saga {
-    yield* sagaDispatch(GameAction.sendWebSocketMessage({
-        type : WebSocketEventType.SubmitFeedback,
-        data : yield* takePayload(GameAction.submitFeedback),
-    }));
-}
+// function* sagaFeedback(): Saga {
+//     yield* sagaDispatch(GameAction.sendWebSocketMessage({
+//         type : WebSocketEventType.SubmitFeedback,
+//         data : yield* takePayload(GameAction.submitFeedback),
+//     }));
+// }
 
 function* sagaStartTimer(): Saga {
 
@@ -360,35 +423,35 @@ function* sagaTimerComplete(): Saga {
 export const WebSocks = {
     sagaSendWebSocketMessage,
     sagaStartUpdateListener,
-    sagaDealerPickBlackCard,
-    sagaPlayerSelectCard,
-    sagaDealerPickWinner,
-    sagaUpdateUsername,
+    // sagaDealerPickBlackCard,
+    // sagaPlayerSelectCard,
+    // sagaDealerPickWinner,
+    // sagaUpdateUsername,
     sagaTimerComplete,
     sagaStartTimer,
-    sagaCreateGame,
-    sagaStartGame,
-    sagaReconnect,
-    sagaFeedback,
-    sagaNextHand,
-    sagaJoinGame,
-    sagaExitGame,
+    // sagaCreateGame,
+    // sagaStartGame,
+    // sagaReconnect,
+    // sagaFeedback,
+    // sagaNextHand,
+    // sagaJoinGame,
+    // sagaLeaveGame,
 
     *[Symbol.iterator]() {
         yield this.sagaSendWebSocketMessage;
         yield this.sagaStartUpdateListener;
-        yield this.sagaDealerPickBlackCard;
-        yield this.sagaPlayerSelectCard;
-        yield this.sagaDealerPickWinner;
-        yield this.sagaUpdateUsername;
+        // yield this.sagaDealerPickBlackCard;
+        // yield this.sagaPlayerSelectCard;
+        // yield this.sagaDealerPickWinner;
+        // yield this.sagaUpdateUsername;
         yield this.sagaTimerComplete;
         yield this.sagaStartTimer;
-        yield this.sagaCreateGame;
-        yield this.sagaStartGame;
-        yield this.sagaReconnect;
-        yield this.sagaFeedback;
-        yield this.sagaNextHand;
-        yield this.sagaJoinGame;
-        yield this.sagaExitGame;
+        // yield this.sagaCreateGame;
+        // yield this.sagaStartGame;
+        // yield this.sagaReconnect;
+        // yield this.sagaFeedback;
+        // yield this.sagaNextHand;
+        // yield this.sagaJoinGame;
+        // yield this.sagaLeaveGame;
     },
 };

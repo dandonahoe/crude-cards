@@ -29,7 +29,7 @@ import { SockService } from '../sock/sock.service';
 import { CardService } from '../card/card.service';
 import { NextHandDTO } from './dtos/next-hand.dto';
 import { JoinGameDTO } from './dtos/join-game.dto';
-import { ExitGameDTO } from './dtos/exit-game.dto';
+import { LeaveGameDTO } from './dtos/leave-game.dto';
 import { Player } from '../player/player.entity';
 import { validate as isUuidValid } from 'uuid';
 import { PlayerDTO } from './dtos/player.dto';
@@ -124,6 +124,12 @@ export class GameService {
         // join functionality
         await socket.join(playerState.currentPlayer.id);
 
+        if(!playerState.game) {
+            this.log.debug('No game found for player, skipping join', { playerState });
+
+            return;
+        }
+
         // check auth token
         return this.joinGame(
             server,
@@ -215,14 +221,14 @@ export class GameService {
     @UsePipes(new ValidationPipe({
         transform : true,
     }))
-    public async exitGame(
+    public async leaveGame(
         server : SocketIOServer,
-        @Body(new ZodValidationPipe(ExitGameDTO.Schema))
-        exitGame: ExitGameDTO,
+        @Body(new ZodValidationPipe(LeaveGameDTO.Schema))
+        exitGame: LeaveGameDTO,
         runtimeContext = '',
     ): P<unknown> {
 
-        debugger;
+        console.log('HELLO TEST 1234')
 
         this.log.silly('GameService::exitGame', { exitGame, runtimeContext });
 

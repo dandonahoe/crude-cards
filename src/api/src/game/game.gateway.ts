@@ -17,7 +17,7 @@ import { GameStateDTO } from './dtos/game-state.dto';
 import { StartGameDTO } from './dtos/start-game.dto';
 import { JoinGameDTO } from './dtos/join-game.dto';
 import { NextHandDTO } from './dtos/next-hand.dto';
-import { ExitGameDTO } from './dtos/exit-game.dto';
+import { LeaveGameDTO } from './dtos/leave-game.dto';
 import { AuthGuard } from '../guards/auth.guard';
 import { GameService } from './game.service';
 import { corsPolicy } from './Cors';
@@ -88,15 +88,15 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         return this.gameService.joinGame(this.server, joinGame);
     }
 
-    @SubscribeMessage(WebSocketEventType.ExitGame)
+    @SubscribeMessage(WebSocketEventType.LeaveGame)
     @AllowPlayerTypes(PlayerType.Player)
-    public async exitGame(
-        @MessageBody(new ZodValidationPipe(ExitGameDTO.Schema))
-        exitGame: ExitGameDTO,
+    public async leaveGame(
+        @MessageBody(new ZodValidationPipe(LeaveGameDTO.Schema))
+        leaveGame: LeaveGameDTO,
     ): P<unknown> {
-        this.log.silly('GameGateway::exitGame', { exitGame });
+        this.log.silly('GameGateway::leaveGame', { leaveGame });
 
-        return this.gameService.exitGame(this.server, exitGame);
+        return this.gameService.leaveGame(this.server, leaveGame);
     }
 
     @SubscribeMessage(WebSocketEventType.PlayerSelectCard)

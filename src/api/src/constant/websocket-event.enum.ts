@@ -14,7 +14,7 @@ export enum WebSocketEventType {
     StartGame              = 'StartGame',
     NextHand               = 'NextHand',
     JoinGame               = 'JoinGame',
-    ExitGame               = 'ExitGame',
+    LeaveGame              = 'LeaveGame',
 }
 
 

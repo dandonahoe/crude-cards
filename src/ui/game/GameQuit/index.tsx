@@ -11,7 +11,7 @@ export const GameQuit : RFC = () => {
     const dispatch = useDispatch();
 
     const handleClick = () : CA =>
-        dispatch(GameAction.exitGame({}));
+        dispatch(GameAction.leaveGame({}));
 
     return (
         <Box pb='xl'>
