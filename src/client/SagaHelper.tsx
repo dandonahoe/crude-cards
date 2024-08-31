@@ -2,7 +2,7 @@ import type { ActionCreatorWithPayload } from '@reduxjs/toolkit';
 import { CoreAction } from '../constant/framework/CoreAction';
 import { all, fork, call, take } from 'typed-redux-saga';
 import { Saga } from '../type/framework/core/CoreSaga';
-import { GameAction } from './action/game';
+import { GameAction } from './action/game.action';
 import { AxiosError } from 'axios';
 import { sagaDispatch } from '.';
 

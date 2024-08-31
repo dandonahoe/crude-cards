@@ -1,5 +1,5 @@
+import { GameAction } from '../../../client/action/game.action';
 import { CA } from '../../../constant/framework/CoreAction';
-import { GameAction } from '@app/client/action/game';
 import { Box, Center, Text } from '@mantine/core';
 import { useDispatch } from '@app/client/hook';
 import { GameButton } from '../GameButton';

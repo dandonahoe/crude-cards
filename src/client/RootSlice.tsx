@@ -6,7 +6,7 @@ import { GameStage } from '../api/src/constant/game-stage.enum';
 import { PlayerDTO } from '../api/src/game/dtos/player.dto';
 import { CardDTO } from '../api/src/game/dtos/card.dto';
 import { createSlice } from '@reduxjs/toolkit';
-import { GameAction } from './action/game';
+import { GameAction } from './action/game.action';
 
 import _ from 'lodash';
 

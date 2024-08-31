@@ -1,10 +1,10 @@
 import { selectGameChampion, selectAllPlayerStatus, selectIsPlayerWinner } from '../../../client/selector/game';
 import { Box, Button, Center, Flex, Stack, Text } from '@mantine/core';
+import { GameAction } from '../../../client/action/game.action';
 import { useDispatch, useSelector } from '@app/client/hook';
 import { CA } from '../../../constant/framework/CoreAction';
 import { GameStatusTable } from '../GameStatusTable';
 import { IconArrowRight } from '@tabler/icons-react';
-import { GameAction } from '@app/client/action/game';
 import { useViewportSize } from '@mantine/hooks';
 import classes from './GameComplete.module.css';
 import Confetti from 'react-confetti'

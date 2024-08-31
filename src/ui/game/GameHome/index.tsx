@@ -1,8 +1,8 @@
 import { Text, rem, Flex, Stack, TextInput, Button, Group, FocusTrap, Box } from '@mantine/core';
 import { CardColor } from '../../../api/src/constant/card-color.enum';
+import { GameAction } from '../../../client/action/game.action';
 import { CA } from '../../../constant/framework/CoreAction';
 import { GameCardContainer } from '../GameCardContainer';
-import { GameAction } from '@app/client/action/game';
 import { GameDeckLayout } from '../GameDeckLayout';
 import { useDispatch } from '@app/client/hook';
 import { GameButton } from '../GameButton';

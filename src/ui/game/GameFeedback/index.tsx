@@ -1,6 +1,6 @@
 import { Button, Group, TextInput, Textarea, Text } from '@mantine/core';
+import { GameAction } from '../../../client/action/game.action';
 import { zodResolver } from 'mantine-form-zod-resolver';
-import { GameAction } from '@app/client/action/game';
 import { useFocusTrap } from '@mantine/hooks';
 import { useDispatch } from 'react-redux';
 import { useForm } from '@mantine/form';

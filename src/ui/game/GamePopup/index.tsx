@@ -1,6 +1,6 @@
 import { GamePopupType } from '../../../api/src/constant/game-popup-type.enum';
 import { CA } from '../../../constant/framework/CoreAction';
-import { GameAction } from '../../../client/action/game';
+import { GameAction } from '../../../client/action/game.action';
 import { GameScoreboard } from '../GameScoreboard';
 import { Flex, Modal, rem } from '@mantine/core';
 import { useDispatch } from '@app/client/hook';

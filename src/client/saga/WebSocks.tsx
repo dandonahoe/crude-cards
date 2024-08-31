@@ -6,13 +6,14 @@ import { call, delay, select, take, takeEvery } from 'typed-redux-saga';
 import { TimerType, CookieType } from '../../api/src/type';
 import { Saga } from '../../type/framework/core/CoreSaga';
 import { Socket, io } from 'socket.io-client';
-import { GameAction } from '../action/game';
+import { GameAction } from '../action/game.action';
 import { takePayload } from '../SagaHelper';
-import { Action, eventChannel } from 'redux-saga';
+import { eventChannel } from 'redux-saga';
 import { sagaDispatch } from '..';
 import Router from 'next/router';
 import Cookies from 'js-cookie';
 import { Env } from '@app/Env';
+import { PayloadAction } from '@reduxjs/toolkit';
 
 
 let socket: Socket | null = null;
@@ -177,58 +178,54 @@ function* sagaStartUpdateListener(): Saga {
 }
 
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-function _socketChannelRelay(
-    socket: Socket,
-    messageType: string,
-    messageData: unknown,
-) {
-    // puggyback the auth token onto every websocket request.
+// eslint-disable-next-line require-yield
+function* onSendWebSocketMessage(action : PayloadAction<Record<string, unknown>>) : Saga {
+    debugger;
+
+    console.log('onSendWebSocketMessage', action);
+
+    if(!socket) {
+        console.error('No socket available');
+
+        return;
+    }
+
+    debugger;
+
+        // puggyback the auth token onto every websocket request.
     // Again, this probably should be handled via JWTs of something
     const auth_token = Cookies.get(CookieType.AuthToken);
 
     console.log('Auth Token:', auth_token);
 
-    if(messageType === WebSocketEventType.LeaveGame)
+    if(!auth_token)
+        alert('No auth token available, please refresh the page');
+
+    if(action.type === WebSocketEventType.LeaveGame)
         debugger;
 
     // if there's already a game code in the action, use it. For instance when
     // a player joins a game, the game code is what they type.
     const game_code =
-        (messageData as Record<string, unknown>)['game_code']
-        || Router.query['game_code']
-        || Router.query['gameCode']
-        || null;
+        // if game_code was included in the payload, prioritize it over the url
+        (action.payload as Record<string, unknown>)['game_code']?.toString()
 
-    const message = {
-        ...messageData as Record<string, unknown>,
+        // todo: which if these is working?
+        || Router.query['game_code']?.toString()
+        || Router.query['gameCode']?.toString()
+        || null; // todo: Use Standard Error String or something
+
+    // todo: add runtimeContext
+    const socketPayload = {
+        ...action.payload as Record<string, unknown>,
         auth_token,
         game_code,
     };
 
-    console.log('Sending WS Message to Server', message);
+    // Pew pew pew!
+    socket.emit(action.type, socketPayload);
 
-    return eventChannel(maybeDispatch => {
-        socket.emit(
-            messageType, message,
-            (gameState: GameStateDTO) => {
-                console.log('Event Channel Received and will Emit:', gameState);
-
-                debugger;
-
-                return maybeDispatch(gameState);
-            })
-
-
-        return () => {
-            console.log('Socket channel closed');
-        };
-    });
-}
-
-// eslint-disable-next-line require-yield
-function* onSendWebSocketMessage(action : Action) : Saga {
-    console.log('onSendWebSocketMessage', action);
+    console.log('Sending WS SocketPayload to Server', socketPayload);
 }
 
 // Double check this logic, i think its fallen out of date
@@ -236,7 +233,6 @@ function* onSendWebSocketMessage(action : Action) : Saga {
 // and just use the relay channel
 
 function* sagaSendWebSocketMessage(): Saga {
-
 
     const action = yield* takeEvery([
         GameAction.playerSelectCard,
@@ -249,7 +245,6 @@ function* sagaSendWebSocketMessage(): Saga {
         GameAction.joinGame,
         GameAction.nextHand,
     ], onSendWebSocketMessage);
-
 
     console.log('asdf', action);
     // const message = yield* takePayload(GameAction.sendWebSocketMessage);
