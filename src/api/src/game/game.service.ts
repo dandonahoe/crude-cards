@@ -728,7 +728,7 @@ export class GameService {
         server              : SocketIOServer,
         gameCode            : string | null,
         includeDeck         : boolean = false,
-        disconnectPlayers   : Player[] = [],
+        // disconnectPlayers   : Player[] = [],
         runtimeContext      : string = '',
     ) => {
         this.log.silly('GameService::broadcastGameUpdate', { gameCode, includeDeck, disconnectPlayers, runtimeContext });
@@ -736,11 +736,8 @@ export class GameService {
 
         await Promise.all(disconnectPlayers.map(player =>
             server.to(player.id).emit(
-                WebSocketEventType.UpdateGame,{
-                    ...GameStateDTO.Default,
-                    new_auth_token : player.auth_token,
-                },
-            )));
+                WebSocketEventType.UpdateGame,
+                GameStateDTO.Default)));
 
         if(!gameCode)
             throw new WebSockException(`Invalid game code ${gameCode} runtimeContext(${runtimeContext})`);

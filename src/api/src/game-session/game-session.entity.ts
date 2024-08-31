@@ -71,6 +71,9 @@ export class GameSession extends BaseEntity {
     @Column('uuid', { array : true })
     public banned_player_id_list: string[] = [];
 
+    @Column('uuid', { array : true })
+    public exited_player_id_list: string[] = [];
+
     @Column({
         type     : 'simple-array',
         nullable : false })

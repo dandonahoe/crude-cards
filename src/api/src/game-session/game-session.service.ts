@@ -598,42 +598,43 @@ export class GameSessionService {
         // Log the initial state of the removal process for debugging purposes
         this.log.silly('GameSessionService::removePlayer', { debugBundle });
 
-        // Initial updates to remove the player from the player_id_list
-        const sessionUpdates: Record<string, () => string> = {
-            player_id_list : () => `array_remove('${player.id}', player_id_list)`,
-        };
 
         // Determine additional updates based on the exit reason
         switch (exitReason) {
             case GameExitReason.Disconnected:
+                debugger;
+
                 // Append the player's ID to the disconnected player list
-                sessionUpdates.disconnected_player_id_list = () => `array_append(disconnected_player_id_list, '${player.id}')`;
-                break;
+                return this.gameSessionRepo.update(session.id, {
+                    ...session,
+                    disconnected_player_id_list : () => `array_append(disconnected_player_id_list, '${player.id}')`,
+                    limbo_player_id_list        : () => `array_remove(limbo_player_id_list,        '${player.id}')`,
+                    player_id_list              : () => `array_remove(player_id_list,              '${player.id}')` });
 
             case GameExitReason.Booted:
-                // Append the player's ID to the banned player list
-                sessionUpdates.banned_player_id_list = () => `array_append(banned_player_id_list, '${player.id}')`;
-                break;
+                debugger;
+
+                // Append the player's ID to the disconnected player list
+                return this.gameSessionRepo.update(session.id, {
+                    ...session,
+                    disconnected_player_id_list : () => `array_remove(disconnected_player_id_list, '${player.id}')`,
+                    banned_player_id_list       : () => `array_append(banned_player_id_list,       '${player.id}')`,
+                    limbo_player_id_list        : () => `array_remove(limbo_player_id_list,        '${player.id}')`,
+                    player_id_list              : () => `array_remove(player_id_list,              '${player.id}')`,
+
+                });
 
             case GameExitReason.JoiningOther:
-                // Append the player's ID to the banned player list (same as booted)
-                sessionUpdates.banned_player_id_list = () => `array_append(banned_player_id_list, '${player.id}')`;
-                break;
-
             case GameExitReason.LeftByChoice:
-debugger;
-                sessionUpdates.player_id_list = () => `array_remove(player_id_list, '${player.id}')`;
-                break;
+                debugger;
+
+                return this.gameSessionRepo.update(session.id, {
+                    ...session,
+                    disconnected_player_id_list : () => `array_append(disconnected_player_id_list, '${player.id}')`,
+                    limbo_player_id_list        : () => `array_remove(limbo_player_id_list,        '${player.id}')`,
+                    player_id_list              : () => `array_remove(player_id_list,              '${player.id}')`,
+            });
         }
-
-        // Log the session updates for debugging purposes
-        this.log.silly('GameSessionService::removePlayer - Updating Session Fields', { debugBundle, sessionUpdates });
-
-        // Apply the updates to the session and return the updated session
-        return this.gameSessionRepo.update(session.id, {
-            ...session,
-            ...sessionUpdates,
-        });
     }
 
 
