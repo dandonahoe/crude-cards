@@ -203,20 +203,20 @@ function* onSendWebSocketMessage(action : PayloadAction<Record<string, unknown>>
     if(action.type === WebSocketEventType.LeaveGame)
         debugger;
 
+    const payload = action.payload as Record<string, unknown>;
+
     // if there's already a game code in the action, use it. For instance when
     // a player joins a game, the game code is what they type.
+
     const game_code =
         // if game_code was included in the payload, prioritize it over the url
-        (action.payload as Record<string, unknown>)['game_code']?.toString()
-
-        // todo: which if these is working?
-        || Router.query['game_code']?.toString()
+        payload['game_code']?.toString()
         || Router.query['gameCode']?.toString()
         || null; // todo: Use Standard Error String or something
 
     // todo: add runtimeContext
     const socketPayload = {
-        ...action as Record<string, unknown>,
+        ...action.payload as Record<string, unknown>,
         auth_token,
         game_code,
     };
