@@ -214,12 +214,61 @@ export class GameService {
         // return this.playerService.disconnectPlayer(player);
     }
 
-    private ensureValidSessionState = async (session: GameSession) => {
-        const debugBundle = { session };
+    private ensureValidSessionState = async (existingSession: GameSession) => {
+        const debugBundle = { existingSession };
 
         debugger;
-        
+
         this.log.silly('GameService::ensureValidSessionState', { debugBundle });
+
+        let session = existingSession;
+
+        // if there arent enough players for the game to continue, end the game
+        // TODO: Drop them into limbo until a quarum is reached and give the
+        // new dealer the option to restart the game. Allows other players to
+        // reconnect. Could happen if internets go out and everyone bounces
+        // for instance.
+        if(session.player_id_list.length <= 3) {
+            // End the game entirely
+            this.log.warn('Game Ended Due to Insufficient Players', debugBundle);
+
+            session = await this.gameSessionService.awardWinnerAndComplete(
+                session, null, 'Insufficient Players, You\'re All Losers.');
+        }
+
+        // if there's no host... zombie game? I guess promote the first player,
+        // but log an error because this seems odd and push forward
+        if(!session.lobby_host_id) {
+            this.log.error('Game Host Missing', debugBundle);
+            session = await this.gameSessionService.promotePlayerToHost(session);
+
+            if(!session.lobby_host_id) {
+                const errorMessage = 'Game Host Missing Again, Check Logs for Edge Case';
+
+                this.log.error(errorMessage, debugBundle);
+
+                throw new WebSockException(errorMessage, debugBundle);
+            }
+        }
+
+        // The host is not longer an active player, promote someone
+        if (!session.player_id_list.includes(session.lobby_host_id)
+            && session.game_stage === GameStage.Lobby) {
+            this.log.warn('Game Host Missing', debugBundle);
+
+            // Promote the first player in the list to the host
+            session = await this.gameSessionService.promotePlayerToHost(session);
+        }
+
+        // If there's no dealer, promote a player and tell
+        // everyone they're a loser this hand
+
+        if(session.dealer_id === null) {
+            this.log.warn('Dealer is Missing During Session Validation, Ending Hand, Next Dealer Goes', debugBundle);
+
+            // Promote the first player in the list to the dealer
+            session = await this.gameSessionService.promotePlayerToDealer(session);
+        }
     }
 
     /**
@@ -279,7 +328,7 @@ export class GameService {
             false, // dont include the deck
             [player.id], // only send reset state actions to players leaving now,
             // and not include everyone in the exited_player_id_list since they could
-            // have joined another game, but still have the same id. 
+            // have joined another game, but still have the same id.
             // TODO: Possibly think about combining game_id_player_id to be the channel
             // to directly communicate with a user. One connection per game, and only
             // one game is allowed per person, so one still.
@@ -773,11 +822,11 @@ export class GameService {
             `Emitting Game Update to gameCode(${gameCode}) \n\nruntimeContext(${runtimeContext})` );
 
         this.log.silly('GameService::broadcastGameUpdate - Disconnecting Players', { gameStatusList });
-        
+
         const game = await this.gameRepo.findOneByOrFail({ game_code : gameCode });
 
         // Players who have left just now, tell them to reset their state to default
-        // which will land them on the homepage. 
+        // which will land them on the homepage.
         await Promise.all(disconnectPlayerIds.map(playerId =>
             server.to(`${game.id}_${playerId}`).emit(
                 WebSocketEventType.UpdateGame,
@@ -886,9 +935,9 @@ export class GameService {
         winningPlayer: Player,
     ) => {
         if (winningPlayer.score >= game.max_point_count)
-            this.gameSessionService.awardWinnerAndComplete(session, winningPlayer.id!);
+            return this.gameSessionService.awardWinnerAndComplete(session, winningPlayer.id!);
         else
-            this.gameSessionService.showHandResults(session);
+            return this.gameSessionService.showHandResults(session);
     }
 
     /**
@@ -1217,7 +1266,7 @@ export class GameService {
         // we're not in the game yet, so look it up by the game
         // code first to get the game and session
         const { session, game } = await this.getGameStateByGameCode(joinGame.game_code!);
-        
+
         // not using the session and game from here since we're no in the game yet
         let { currentPlayer : player } = await this.getPlayerStateByAuthToken(joinGame.auth_token!);
 
@@ -1231,8 +1280,8 @@ export class GameService {
 
             throw new WebSockException(errorMessage);
         }
-        
-        
+
+
         this.log.silly('GameService::joinGame - Session and Game', { session, game });
 
         // Update the player to a real player, rather than the unknown
@@ -1251,8 +1300,8 @@ export class GameService {
         socket.join(playerGameChannel);
 
         await this.emitGameUpdate(
-            server, 
-            game.game_code, 
+            server,
+            game.game_code,
             false,  // no deck
             [], // no disconnects
             runtimeContext);
@@ -1523,11 +1572,13 @@ export class GameService {
             champion_player_id    : session.champion_player_id,
             current_player_id     : null,
             winner_player_id      : scoreLog?.winner_player_id ?? null,
+            game_end_message      : session.game_end_message,
             max_round_count       : game.max_round_count,
             max_point_count       : game.max_point_count,
             winner_card_id        : scoreLog?.winner_card_id || null,
             dealer_card_id        : session.dealer_card_id,
             host_player_id        : game.host_player_id,
+            new_auth_token        : null,
             error_message         : null,
             round_number          : countOfRoundsPlayed,
             player_list           : playerListDTO,
@@ -1539,7 +1590,6 @@ export class GameService {
             session_id            : session.id,
             game_code             : game.game_code,
             dealer_id             : session.dealer_id,
-            new_auth_token        : null,
         };
     };
 

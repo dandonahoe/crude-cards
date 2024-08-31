@@ -159,10 +159,10 @@ export class GameSessionService {
 
     /**
      * Get all active game sessions this player is tied to
-     * 
+     *
      * @param player - The player to get the active game sessions for
      * @param session - The session to exclude from the list
-     * 
+     *
      * @returns - The list of active game sessions
      */
     public getActiveGameSessionList = async (
@@ -195,7 +195,7 @@ export class GameSessionService {
      * @param player   - The player to add to the session
      * @param session  - The session to add the player to
      * @param runtimeContext - Additional context for debugging
-     * 
+     *
      * @returns void
      */
     public setPlayerGameSession = async (
@@ -211,7 +211,7 @@ export class GameSessionService {
         // from the one we're joining
         await Promise.all(
             activeGameSessionList.map(async activeSession =>
-                this.removePlayerFromSession(player, activeSession, 
+                this.removePlayerFromSession(player, activeSession,
                     GameExitReason.JoiningOther, // TODO - doesnt make sense, can tell proper context
                     `Removing player from any active session` + runtimeContext)));
 
@@ -263,7 +263,7 @@ export class GameSessionService {
         runtimeContext: string = '',
     ): P<unknown> => {
         debugger;
-        
+
         const debugBundle = { player, session, runtimeContext };
 
         const debugText = `runtimeContext(${runtimeContext}) playerId(${player.id}) sessionId(${session.id})`;
@@ -497,10 +497,10 @@ export class GameSessionService {
 
     /**
      * Initialize a new game session
-     * 
+     *
      * @param currentPlayer - The player to initialize the session for
      * @param game - The game to initialize the session for
-     * 
+     *
      * @returns - The new game session
      */
     public initSession = async (
@@ -535,7 +535,7 @@ export class GameSessionService {
 
     /**
      * Setup a new game session
-     * 
+     *
      * @param session - The session to setup
      * @param currentPlayer - The player to setup the session for
      * @param currentScoreLog - The current score log for the game
@@ -543,7 +543,7 @@ export class GameSessionService {
      * @param usedWhiteCardIds - The list of used white cards
      * @param allBlackCardIds - The list of all black cards
      * @param allWhiteCardIds - The list of all white cards
-     * 
+     *
      * @returns - The session update object, not the session itself
      */
     public setupNewGameSession = async (
@@ -673,31 +673,36 @@ export class GameSessionService {
     }
 
 
-    /** 
+    /**
      * Award the winner of the game and mark the game as complete
-     * 
+     *
      * @param session - The session to award the winner of
      * @param winnerId - The ID of the player who won the game
-     * 
+     *
      * @returns - The updated session
      */
-    public awardWinnerAndComplete = async (session: GameSession, winnerId: string) =>
-        this.gameSessionRepo.update(session.id, {
+    public awardWinnerAndComplete = async (
+        session: GameSession,
+        winnerId: string | null,
+        gameEndMessage : string) =>
+        this.gameSessionRepo.save({
+            ...session,
             champion_player_id : winnerId,
+            game_end_message   : gameEndMessage,
             completed_at       : new Date(),
             game_stage         : GameStage.GameComplete,
         });
 
     /**
      * Move to the next hand in the game
-     * 
+     *
      * @param newDealerCards - The new cards to be dealt to the dealer
      * @param newWhiteCards - The new white cards to be dealt to the players
      * @param newGameStage - The new stage of the game
      * @param newDealerId - The ID of the new dealer
      * @param newScoreLog - The new score log for the game
      * @param session - The session to update
-     * 
+     *
      * @returns - The updated session
      */
     public nextHand = async (
@@ -717,14 +722,14 @@ export class GameSessionService {
 
     /**
      * Find the active game session for a player
-     * 
+     *
      * @param player - The player to find the active game session for
-     * 
+     *
      * @returns - The active game session for the player
     */
     public findActivePlayerGameSession = async (
         player: Player,
-    ): P<GameSession | null> => 
+    ): P<GameSession | null> =>
         this.gameSessionRepo.findOne({
             where : {
                 completed_at   : IsNull(),

@@ -54,6 +54,13 @@ export class GameSession extends BaseEntity {
     public game_id: string | null = null;
 
     @Column({
+        type     : 'text',
+        nullable : true,
+        default  : null,
+    })
+    public game_end_message: string | null = '';
+
+    @Column({
         type     : 'uuid',
         nullable : true,
         default  : null })
