@@ -59,7 +59,7 @@ export class GameSessionService {
         player: Player, session: GameSession,
     ): JoinGameReason => {
         const {
-            disconnected_player_id_list,
+            exited_player_id_list,
             limbo_player_id_list,
             player_id_list,
         } = session;
@@ -79,23 +79,23 @@ export class GameSessionService {
         // gone. Means disconnect didnt' go through as expected (hence the possible
         // reason for the disconnect) they they rapidly joined back before any timers
         // moved them into disconnected state. Means they exist in the player_id_list,
-        // but not in the disconnected_player_id_list or limbo_player_id_list
+        // but not in the exited_player_id_list or limbo_player_id_list
         // ACTION: Check the game session and ensure their player_id is only in
-        // the player_id_list and not in the disconnected_player_id_list or limbo_player_id_list
+        // the player_id_list and not in the exited_player_id_list or limbo_player_id_list
         // and the game should continue as if nothing happened from other players
         // perspective. The current user may have just refreshed their browser or lost
         // connection, server crash whatever the case may be. Should broadcase to all
         // players (though ther may be an efficiency gain by skipping other players,
         // nothing should have changed for them)
         if (player_id_list.includes(player.id) &&
-            !disconnected_player_id_list.includes(player.id) &&
+            !exited_player_id_list.includes(player.id) &&
             !limbo_player_id_list.includes(player.id))
             return JoinGameReason.PlayerFastRefresh;
 
 
         // Joining Player is Already in Limbo
         // IF: If they are listed in the limbo_player_id_list and
-        // are NOT in disconnected_player_id_list, then they're
+        // are NOT in exited_player_id_list, then they're
         // joinged as a new player while the game is already in progress and
         // were put into limbo previously. This could happen if they
         // were in limbo and refreshed the page or rejoined the game multiple
@@ -103,34 +103,34 @@ export class GameSessionService {
         // ACTION: do nothing. Could happen if they are in limbo and refresh,
         // they should just stay there. Emit update to players
         if (limbo_player_id_list.includes(player.id) &&
-            !disconnected_player_id_list.includes(player.id))
+            !exited_player_id_list.includes(player.id))
             return JoinGameReason.JoiningPlayerIsAlreadyInLimbo;
 
 
         // Reconnecting Disconnected Player
-        // IF: They are listed in the disconnected_player_id_list, then
+        // IF: They are listed in the exited_player_id_list, then
         // they were disconnected and the server properly registerd the
         // disconnnect, and the players were notified with updated state
         // reflecting the dicsconnected player.
-        // ACTION: Remove them from the disconnected_player_id_list.
+        // ACTION: Remove them from the exited_player_id_list.
         // The player_id_list has all players, so just removing it from
         // disconnected reconnectes them to the session. Joining players
         // who were previously disconnected properly should be
         // added back automatically. They skip limbo since they're
         // already known to be in the game and are dealt in.
-        if (disconnected_player_id_list.includes(player.id))
+        if (exited_player_id_list.includes(player.id))
             return JoinGameReason.ReconnectingDisconnectedPlayer;
 
 
         // PLAYER IS ALREADY IN GAME
         // IF: The player joining is already in this game and
-        // their player_id is NOT in disconnected_player_id_list
+        // their player_id is NOT in exited_player_id_list
         // AND NOT in limbo_player_id_list. So they're just an active
         // player already but a joing game request was sent.
         // ACTION: Do nothing, they are already in the game so noop.
         // Emit update to players, but possibly not necessary.
         if (player_id_list.includes(player.id) &&
-            !disconnected_player_id_list.includes(player.id) &&
+            !exited_player_id_list.includes(player.id) &&
             !limbo_player_id_list.includes(player.id))
             return JoinGameReason.PlayerIsAlreadyInGame;
 
@@ -169,7 +169,7 @@ export class GameSessionService {
 
         return this.gameSessionRepo.find({
             where : [{
-                disconnected_player_id_list : playerIdArray,
+                exited_player_id_list : playerIdArray,
                 ...stageAndId,
             }, {
                 limbo_player_id_list : playerIdArray,
@@ -237,11 +237,11 @@ export class GameSessionService {
     }
 
     // Reconnecting Disconnected Player
-    // IF: They are listed in the disconnected_player_id_list, then
+    // IF: They are listed in the exited_player_id_list, then
     // they were disconnected and the server properly registerd the
     // disconnnect, and the players were notified with updated state
     // reflecting the dicsconnected player.
-    // ACTION: Remove them from the disconnected_player_id_list.
+    // ACTION: Remove them from the exited_player_id_list.
     // The player_id_list has all players, so just removing it from
     // disconnected reconnectes them to the session. Joining players
     // who were previously disconnected properly should be
@@ -252,13 +252,15 @@ export class GameSessionService {
         session: GameSession,
         runtimeContext: string = '',
     ): P<unknown> => {
+        debugger;
+        
         const debugBundle = { player, session, runtimeContext };
 
         const debugText = `runtimeContext(${runtimeContext}) playerId(${player.id}) sessionId(${session.id})`;
 
         this.log.silly('GameSessionService::DisconnectedPlayer', { debugBundle });
 
-        if (!session.disconnected_player_id_list.includes(player.id)) {
+        if (!session.exited_player_id_list.includes(player.id)) {
             this.log.error(`DisconnectedPlayer::player - Player is not in the disconnected list`, { debugBundle });
             throw new WsException(`DisconnectedPlayer::player ${debugBundle}`);
         }
@@ -279,14 +281,14 @@ export class GameSessionService {
         // they are already in the player_list
         return this.gameSessionRepo.update(session.id, {
             ...session,
-            disconnected_player_id_list : () =>
-                `array_remove(disconnected_player_id_list, '${player.id}')`,
+            exited_player_id_list : () =>
+                `array_remove(exited_player_id_list, '${player.id}')`,
         });
     };
 
     // Joining Player is Already in Limbo
     // IF: If they are listed in the limbo_player_id_list and
-    // are NOT in disconnected_player_id_list, then they're
+    // are NOT in exited_player_id_list, then they're
     // joinged as a new player while the game is already in progress and
     // were put into limbo previously. This could happen if they
     // were in limbo and refreshed the page or rejoined the game multiple
@@ -307,7 +309,7 @@ export class GameSessionService {
 
     // PLAYER IS ALREADY IN GAME
     // IF: The player joining is already in this game and
-    // their player_id is NOT in disconnected_player_id_list
+    // their player_id is NOT in exited_player_id_list
     // AND NOT in limbo_player_id_list. So they're just an active
     // player already but a joing game request was sent.
     // ACTION: Do nothing, they are already in the game so noop.
@@ -322,7 +324,7 @@ export class GameSessionService {
 
         this.log.silly('GameSessionService::joinGameViaPlayerIsAlreadyInGame', { debugBundle });
 
-        if (session.disconnected_player_id_list.includes(player.id)) {
+        if (session.exited_player_id_list.includes(player.id)) {
             this.log.error(`playerIsAlreadyInGame::disconnected - Incorrect Flow`, { debugBundle });
             throw new WsException(`playerIsAlreadyInGame::disconnected debugText(${debugText})`);
         }
@@ -389,9 +391,9 @@ export class GameSessionService {
     // gone. Means disconnect didnt' go through as expected (hence the possible
     // reason for the disconnect) they they rapidly joined back before any timers
     // moved them into disconnected state. Means they exist in the player_id_list,
-    // but not in the disconnected_player_id_list or limbo_player_id_list
+    // but not in the exited_player_id_list or limbo_player_id_list
     // ACTION: Check the game session and ensure their player_id is only in
-    // the player_id_list and not in the disconnected_player_id_list or limbo_player_id_list
+    // the player_id_list and not in the exited_player_id_list or limbo_player_id_list
     // and the game should continue as if nothing happened from other players
     // perspective. The current user may have just refreshed their browser or lost
     // connection, server crash whatever the case may be. Should broadcase to all
@@ -407,12 +409,12 @@ export class GameSessionService {
         this.log.silly('GameSessionService::joinGameViaPlayerFastRefresh', { debugBundle });
 
         const {
-            disconnected_player_id_list, limbo_player_id_list, player_id_list,
+            exited_player_id_list, limbo_player_id_list, player_id_list,
         } = session;
 
         const debugText = `playerId(${player.id}) sessionId(${session.id})`;
 
-        if (disconnected_player_id_list.includes(player.id)) {
+        if (exited_player_id_list.includes(player.id)) {
             this.log.error(`playerFastRefresh::disconnected - Incorrect Flow`, { debugBundle });
             throw new WsException(`playerFastRefresh::disconnected (${debugText})`);
         }
@@ -452,12 +454,12 @@ export class GameSessionService {
         // appending it to the list
 
         const {
-            disconnected_player_id_list, limbo_player_id_list, player_id_list,
+            exited_player_id_list, limbo_player_id_list, player_id_list,
         } = session;
 
         const debugText = `runtimeContext(${runtimeContext}) playerId(${player.id}) sessionId(${session.id})`;
 
-        if (disconnected_player_id_list.includes(player.id)) {
+        if (exited_player_id_list.includes(player.id)) {
             this.log.error(`playerFastRefresh::disconnected -  Client previously disconnected, incorrect flow.`, { debugBundle });
             throw new WsException(`playerFastRefresh::disconnected (${debugText})`);
         }
@@ -492,26 +494,25 @@ export class GameSessionService {
         });
 
         return this.gameSessionRepo.save({
-            disconnected_player_id_list : [],
-            banned_player_id_list       : [],
-            selected_card_id_list       : [],
-            limbo_player_id_list        : [],
-            current_score_log_id        : null,
-            dealer_card_id_list         : [],
-            game_card_id_list           : [],
-            used_black_cards            : [],
-            used_white_cards            : [],
-            player_id_list              : [currentPlayer.id],
-            lobby_host_id               : currentPlayer.id,
-            round_number                : 0,
-            player_list                 : [currentPlayer.id],
-            black_cards                 : [],
-            white_cards                 : [],
-            hand_number                 : 0,
-            created_by                  : currentPlayer.id,
-            game_stage                  : GameStage.Lobby,
-            dealer_id                   : currentPlayer.id,
-            game_id                     : game.id,
+            exited_player_id_list : [],
+            selected_card_id_list : [],
+            limbo_player_id_list  : [],
+            current_score_log_id  : null,
+            dealer_card_id_list   : [],
+            game_card_id_list     : [],
+            used_black_cards      : [],
+            used_white_cards      : [],
+            player_id_list        : [currentPlayer.id],
+            lobby_host_id         : currentPlayer.id,
+            round_number          : 0,
+            player_list           : [currentPlayer.id],
+            black_cards           : [],
+            white_cards           : [],
+            hand_number           : 0,
+            created_by            : currentPlayer.id,
+            game_stage            : GameStage.Lobby,
+            dealer_id             : currentPlayer.id,
+            game_id               : game.id,
         });
     }
 
@@ -607,9 +608,9 @@ export class GameSessionService {
                 // Append the player's ID to the disconnected player list
                 return this.gameSessionRepo.update(session.id, {
                     ...session,
-                    disconnected_player_id_list : () => `array_append(disconnected_player_id_list, '${player.id}')`,
-                    limbo_player_id_list        : () => `array_remove(limbo_player_id_list,        '${player.id}')`,
-                    player_id_list              : () => `array_remove(player_id_list,              '${player.id}')` });
+                    exited_player_id_list : () => `array_append(exited_player_id_list, '${player.id}')`,
+                    limbo_player_id_list  : () => `array_remove(limbo_player_id_list,        '${player.id}')`,
+                    player_id_list        : () => `array_remove(player_id_list,              '${player.id}')` });
 
             case GameExitReason.Booted:
                 debugger;
@@ -617,10 +618,9 @@ export class GameSessionService {
                 // Append the player's ID to the disconnected player list
                 return this.gameSessionRepo.update(session.id, {
                     ...session,
-                    disconnected_player_id_list : () => `array_remove(disconnected_player_id_list, '${player.id}')`,
-                    banned_player_id_list       : () => `array_append(banned_player_id_list,       '${player.id}')`,
-                    limbo_player_id_list        : () => `array_remove(limbo_player_id_list,        '${player.id}')`,
-                    player_id_list              : () => `array_remove(player_id_list,              '${player.id}')`,
+                    exited_player_id_list : () => `array_remove(exited_player_id_list, '${player.id}')`,
+                    limbo_player_id_list  : () => `array_remove(limbo_player_id_list,        '${player.id}')`,
+                    player_id_list        : () => `array_remove(player_id_list,              '${player.id}')`,
 
                 });
 
@@ -630,9 +630,9 @@ export class GameSessionService {
 
                 return this.gameSessionRepo.update(session.id, {
                     ...session,
-                    disconnected_player_id_list : () => `array_append(disconnected_player_id_list, '${player.id}')`,
-                    limbo_player_id_list        : () => `array_remove(limbo_player_id_list,        '${player.id}')`,
-                    player_id_list              : () => `array_remove(player_id_list,              '${player.id}')`,
+                    exited_player_id_list : () => `array_append(exited_player_id_list, '${player.id}')`,
+                    limbo_player_id_list  : () => `array_remove(limbo_player_id_list,        '${player.id}')`,
+                    player_id_list        : () => `array_remove(player_id_list,              '${player.id}')`,
             });
         }
     }

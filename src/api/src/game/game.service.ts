@@ -254,7 +254,12 @@ export class GameService {
             server,
             game.game_code, // to any players remaining
             false, // dont include the deck
-            [currentPlayer],
+            [currentPlayer.id], // only send reset state actions to players leaving now,
+            // and not include everyone in the exited_player_id_list since they could
+            // have joined another game, but still have the same id. 
+            // TODO: Possibly think about combining game_id_player_id to be the channel
+            // to directly communicate with a user. One connection per game, and only
+            // one game is allowed per person, so one still.
             runtimeContext); // send disconnect success message to client
     }
 
@@ -316,7 +321,7 @@ export class GameService {
 
         const [scoreLog, players] = await Promise.all([
             this.scoreLogService.findScoreLogBySession(session),
-            this.playerService.findPlayersInSession(session),
+            this.playerService.findActivePlayersInSession(session),
         ]);
 
         return {
@@ -365,7 +370,7 @@ export class GameService {
             scoreLog, players, game,
         ] = await Promise.all([
             this.scoreLogService.findScoreLogBySession(session),
-            this.playerService.findPlayersInSession(session),
+            this.playerService.findActivePlayersInSession(session),
             this.findGameByGameSession(session),
         ]);
 
@@ -728,16 +733,14 @@ export class GameService {
         server              : SocketIOServer,
         gameCode            : string | null,
         includeDeck         : boolean = false,
-        // disconnectPlayers   : Player[] = [],
+        disconnectPlayerIds : string[] = [],
         runtimeContext      : string = '',
     ) => {
-        this.log.silly('GameService::broadcastGameUpdate', { gameCode, includeDeck, disconnectPlayers, runtimeContext });
-        this.log.info('Broadcasting Disconnecting players', { runtimeContext });
+        const debugBundle = { gameCode, includeDeck, disconnectPlayerIds, runtimeContext };
 
-        await Promise.all(disconnectPlayers.map(player =>
-            server.to(player.id).emit(
-                WebSocketEventType.UpdateGame,
-                GameStateDTO.Default)));
+        this.log.silly('GameService::broadcastGameUpdate', debugBundle);
+
+        this.log.info('Broadcasting Disconnecting players', debugBundle);
 
         if(!gameCode)
             throw new WebSockException(`Invalid game code ${gameCode} runtimeContext(${runtimeContext})`);
@@ -746,9 +749,19 @@ export class GameService {
         const gameStatusList = await this.getAllPlayersGameStatus(gameCode, includeDeck,
             `Emitting Game Update to gameCode(${gameCode}) \n\nruntimeContext(${runtimeContext})` );
 
+        this.log.silly('GameService::broadcastGameUpdate - Disconnecting Players', { gameStatusList });
+
+        debugger;
+        
+        // Players who have left just now, tell them to reset their state to default
+        // which will land them on the homepage. 
+        await Promise.all(disconnectPlayerIds.map(playerId =>
+            server.to(playerId).emit(
+                WebSocketEventType.UpdateGame,
+                GameStateDTO.Default)));
+
         // TODO - CHECK ABOVE - I think its returning people that just left the game
         // gameStatusList
-// gameStatusList
 
         // todo: probably check return values here instead of just spray and pray
         // todo: consider passing context to client to maintain continuity between logs
@@ -1388,7 +1401,7 @@ export class GameService {
         ] = await Promise.all([
             this.gameSessionService.findActiveGameSession(game),
             this.scoreLogService.findScoreLogBySession(session!),
-            this.playerService.findPlayersInSession(session!),
+            this.playerService.findActivePlayersInSession(session!),
         ]);
 
         this.log.silly('GameService::getGameStateByGameCode - Retrieved data', {

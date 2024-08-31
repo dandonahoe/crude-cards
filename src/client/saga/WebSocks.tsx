@@ -125,8 +125,6 @@ function* sagaStartUpdateListener(): Saga {
 
         // On any page but the homepage, put the game code in the url
         if(newGameState.game_stage !== GameStage.Home) {
-            debugger;
-            
             console.log(`Non homepage stage, updating url with game code $newGameState.game_stage}`);
             Router.push(`/game/${newGameState.game_code}`);
         }
