@@ -26,16 +26,12 @@ const slice = createSlice({
         builder.addCase(GameAction.updateGameState, (state, { payload : gameStateString }) => {
             const gameState = JSON.parse(gameStateString) as GameStateDTO;
 
-            debugger;
-
             const {
                 new_deck_card_list, player_list,
                 ...rootGameState
             } = gameState;
 
             if(rootGameState.game_stage === GameStage.Home) {
-                debugger;
-
                 state.game.previousHandDealerCardId = null;
                 state.game.previousHandWinnerCardId = null;
                 state.game.gameState = gameState;
