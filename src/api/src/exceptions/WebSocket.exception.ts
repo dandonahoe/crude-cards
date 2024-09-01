@@ -18,9 +18,9 @@ export class WebSocketException extends WsException {
      * @returns void
      */
     public constructor(
-        public readonly httpStatus  : HttpStatus,
-        public readonly message     : string,
-        public readonly debugBundle : Record<string, unknown> = {},
+        public readonly httpStatus       : HttpStatus,
+        public override readonly message : string,
+        public readonly debugBundle      : Record<string, unknown> = {},
     ) {
         super(message);
 

@@ -24,9 +24,10 @@ import { GameService } from './game.service';
 import { corsPolicy } from './Cors';
 import { Logger } from 'winston';
 import {
-    OnGatewayConnection, OnGatewayDisconnect, WebSocketServer,
-    WebSocketGateway, SubscribeMessage, MessageBody,
-    ConnectedSocket,
+    ConnectedSocket, OnGatewayConnection,
+    OnGatewayDisconnect, WebSocketServer,
+    SubscribeMessage, MessageBody,
+    WebSocketGateway,
 } from '@nestjs/websockets';
 
 

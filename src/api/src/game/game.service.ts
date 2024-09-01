@@ -1,4 +1,6 @@
+import { GameTooFewPlayersException } from '../exceptions/GameTooFewPlayers.exception';
 import { Body, Inject, Injectable, UsePipes, ValidationPipe } from '@nestjs/common';
+import { GameCompleteException } from '../exceptions/GameComplete.exception';
 import { DealerPickBlackCardDTO } from './dtos/dealer-pick-black-card.dto';
 import { GameSessionService } from '../game-session/game-session.service';
 import { WebSocketEventType } from '../constant/websocket-event.enum';
@@ -39,7 +41,6 @@ import { Game } from './game.entity';
 import { difference } from 'lodash';
 import { Socket } from 'socket.io';
 import { Logger } from 'winston';
-import { GameCompleteException } from '../exceptions/GameComplete.exception copy';
 
 @Injectable()
 export class GameService {
@@ -238,67 +239,81 @@ export class GameService {
 
             this.log.info('Game Ended In Lobby Mode Due to No Players', { debugBundle });
 
-            throw new GameCompleteException('No Players in Lobby', 'In the lobby and the player count is zero', debugBundle);
-
-            // This is encountered when:
-            // Three people in lobby
-            // First Non Host Leaves
-            // Second Non Host Leaves
-            // Host (Last Player) Leaves
-
-            // await this.gameSessionService.skipToNextHand(session, 'No Players in Lobby');
+            throw new GameCompleteException(
+                'No players in lobby, ending game', runtimeContext,
+                debugBundle, this.log);
         }
 
+        // If the game is in progress and the players drop to
+        // zero with nobody waiting in limbo, end the game
+        if(session.game_stage !== GameStage.Lobby
+            && playerCount === 0
+            && session.limbo_player_id_list.length === 0) {
+                this.log.info('Not enough players to continue, sending remaining players to limbo',
+                    debugBundle,
+                );
 
-        if (session.game_stage !== GameStage.Lobby
-            && session.player_id_list.length <= 3) {
-            // End the game entirely
-            this.log.warn('Game Ended Due to Insufficient Players', debugBundle);
+            throw new GameCompleteException(
+                'No players in lobby, ending game',
+                `Validating Session Context(${runtimeContext})`,
+                debugBundle, this.log);
+        }
 
-            // Don't award anyone, just end the game. The front end knows
-            // what to do with this message.
-            session = await this.gameSessionService.awardWinnerAndComplete(
-                session, null, 'Insufficient Players, Losers.');
+        // if the game is in progress and the number of players drops
+        // below the minimum required to continue, but is greater than zero
+        // (previous case), send the remaining players to limbo. This will
+        // let them get others to rejoin.
+
+        if(session.game_stage !== GameStage.Lobby
+            && playerCount === 0
+            && session.limbo_player_id_list.length < 3) {
+                this.log.info('Not enough players to continue, pausing game', debugBundle );
+
+            debugger;
+
+            // todo: routine to put people into limbo, verify thats the way to
+            // do it first
+            throw new GameTooFewPlayersException(
+                'No players in lobby, ending game',
+                `Validating Session Context(${runtimeContext})`,
+                debugBundle, this.log);
         }
 
         // if there's no host... or the host on the game session is no longer in the
         // player_id_list, they're gone, so replace them
-        if(!session.lobby_host_id || !session.player_id_list.includes(session.lobby_host_id)) {
+        // either no host (weird) or the host is not in the active player list
+        if (session.game_stage === GameStage.Lobby
+            && ( !session.lobby_host_id || !session.player_id_list.includes(session.lobby_host_id!))) {
+
+            debugger;
+
             this.log.error('Game Host Missing', { debugBundle, session });
 
             // Make a random other player the host in the lobby. They will
             // also be selected as the first dealer when the game starts
             session = await this.gameSessionService.promoteRandomPlayerToHost(
                 session, `Validating Session State: Game Host Missing, context(${runtimeContext})`);
-
-            // this is mostly to treat it non null easier below
-            if(!session.lobby_host_id) {
-                const errorMessage = 'Game Host Missing Again, Check Logs for Edge Case';
-
-                this.log.error(errorMessage, { session, debugBundle });
-
-                throw WSE.InternalServerError500(errorMessage, { session, debugBundle });
-            }
         }
 
-        // The host is not longer an active player, promote someone
-        if (!session.player_id_list.includes(session.lobby_host_id)
-            && session.game_stage === GameStage.Lobby) {
-            this.log.warn('The host is no longer a player', debugBundle);
+        // this is mostly to treat it non null easier below
+        if(!session.lobby_host_id) {
+            const errorMessage = 'Game Host Missing Again, Check Logs for Edge Case';
 
-            // Promote the first player in the list to the host
-            session = await this.gameSessionService.promoteRandomPlayerToHost(
-                session, `Validating Session State: The host is no longer a player, context(${runtimeContext})`);
+            this.log.error(errorMessage, { session, debugBundle });
+
+            // unfixable situation, error
+            throw WSE.InternalServerError500(errorMessage, { session, debugBundle });
         }
 
-        // If there's no dealer, promote a player and tell
+        // If theIf there's no dealer, promote a player and tell
         // everyone they're a loser this hand
 
         // in other cases, the dealer could leave midgame. In that
         // case, the current hand is scrubbed and moves to the next
         // round, which promotes a new player to dealer.
-        if(session.dealer_id === null) {
-            this.log.warn('Dealer is Missing During Session Validation, Ending Hand, Next Dealer Goes', debugBundle);
+        if(session.game_stage !== GameStage.Lobby
+            && (session.dealer_id === null || !session.player_id_list.includes(session.dealer_id))) {
+            this.log.warn('Dealer is invalid or no longer an active player, promote someone', debugBundle);
 
             // Promote the first player in the list to the dealer
             session = await this.gameSessionService.promoteRandomPlayerToDealer(
@@ -984,7 +999,10 @@ export class GameService {
 
         debugger;
 
-        throw new GameCompleteException('Game Already Started', 'Game Already Started');
+        throw new GameCompleteException(
+            'Game is already complete',
+            'Starting Game Test Exception',
+            { startGame }, this.log);
 
         // const {
         //     currentPlayer, game, session,
