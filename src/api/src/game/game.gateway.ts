@@ -3,6 +3,7 @@ import { WebSocketExceptionFilter } from '../filters/WebSocketException.filter';
 import { AllowPlayerTypes } from '../decorators/allow-player-types.decorator';
 import { DealerPickBlackCardDTO } from './dtos/dealer-pick-black-card.dto';
 import { WebSocketEventType } from './../constant/websocket-event.enum';
+import { GameExceptionFilter } from '../filters/GameException.filter';
 import { PlayerSelectCardDTO } from './dtos/player-select-card.dto';
 import { DealerPickWinnerDTO } from './dtos/dealer-pick-winner.dto';
 import { GameInterceptor } from '../interceptors/game.interceptor';
@@ -31,7 +32,7 @@ import {
 } from '@nestjs/websockets';
 
 
-@UseFilters(new WebSocketExceptionFilter())
+@UseFilters(WebSocketExceptionFilter, GameExceptionFilter)
 @WebSocketGateway({ cors : corsPolicy })
 @UseInterceptors(GameInterceptor)
 @UseGuards(AuthGuard)
@@ -63,57 +64,70 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @AllowPlayerTypes(PlayerType.Player)
     @SubscribeMessage(WebSocketEventType.CreateGame)
     public async createGame(
-        @ConnectedSocket() socket: Socket,
+        @ConnectedSocket()
+        socket: Socket,
+
         @MessageBody(new ZodValidationPipe(CreateGameDTO.Schema))
         createGame: CreateGameDTO,
     ) : P<unknown>{
         this.log.info('GameGateway::createGame', { createGame });
 
-        return this.gameService.createGame(this.server, socket, createGame);
+        return this.gameService.createGame(socket, createGame);
     }
 
     @SubscribeMessage(WebSocketEventType.StartGame)
     public async startGame(
+        @ConnectedSocket()
+        socket: Socket,
+
         @MessageBody(new ZodValidationPipe(StartGameDTO.Schema))
         startGame: StartGameDTO,
     ): P<unknown> {
         this.log.silly('GameGateway::startGame', { startGame });
 
-        return this.gameService.startGame(this.server, startGame);
+        return this.gameService.startGame(socket, startGame);
     }
 
     @SubscribeMessage(WebSocketEventType.JoinGame)
     @AllowPlayerTypes(PlayerType.Player)
     public async joinGame(
-        @ConnectedSocket() socket: Socket,
+        @ConnectedSocket()
+        socket: Socket,
+
         @MessageBody(new ZodValidationPipe(JoinGameDTO.Schema))
         joinGame: JoinGameDTO,
     ) : P<unknown> {
         this.log.silly('GameGateway::joinGame', { joinGame });
 
-        return this.gameService.joinGame(this.server, socket, joinGame, 'Joining via WebSocketEventType.JoinGame');
+        return this.gameService.joinGame(socket, joinGame, 'Joining via WebSocketEventType.JoinGame');
     }
 
     @SubscribeMessage(WebSocketEventType.LeaveGame)
     @AllowPlayerTypes(PlayerType.Player)
     public async leaveGame(
+        @ConnectedSocket()
+        socket: Socket,
+
         @MessageBody(new ZodValidationPipe(LeaveGameDTO.Schema))
         leaveGame: LeaveGameDTO,
     ) : P<unknown> {
         this.log.silly('GameGateway::leaveGame', { leaveGame });
 
-        return this.gameService.leaveGame(this.server, leaveGame);
+        return this.gameService.leaveGame(socket, leaveGame);
     }
 
     @SubscribeMessage(WebSocketEventType.PlayerSelectCard)
     @AllowPlayerTypes(PlayerType.Player)
     public async playerSelectCard(
+        @ConnectedSocket()
+        socket: Socket,
+
         @MessageBody(new ZodValidationPipe(PlayerSelectCardDTO.Schema))
         playerSelectCard: PlayerSelectCardDTO,
     ) : P<unknown> {
         this.log.silly('GameGateway::playerSelectCard', { playerSelectCard });
 
-        return this.gameService.playerSelectCard(this.server, playerSelectCard);
+        return this.gameService.playerSelectCard(socket, playerSelectCard);
     }
 
     @SubscribeMessage(WebSocketEventType.SubmitFeedback)
@@ -130,44 +144,56 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @SubscribeMessage(WebSocketEventType.UpdateUsername)
     @AllowPlayerTypes(PlayerType.Player)
     public async updateUsername(
+        @ConnectedSocket()
+        socket: Socket,
+
         @MessageBody(new ZodValidationPipe(UpdateUsernameDTO.Schema))
         updateUsername: UpdateUsernameDTO,
     ): P<unknown> {
         this.log.silly('GameGateway::updateUsername', { updateUsername });
 
-        return this.gameService.updateUsername(this.server, updateUsername);
+        return this.gameService.updateUsername(socket, updateUsername);
     }
 
     @SubscribeMessage(WebSocketEventType.DealerPickBlackCard)
     @AllowPlayerTypes(PlayerType.Player)
     public async dealerPickBlackCard(
+        @ConnectedSocket()
+        socket: Socket,
+
         @MessageBody(new ZodValidationPipe(DealerPickBlackCardDTO.Schema))
         dealerPickBlackCard: DealerPickBlackCardDTO,
     ): P<unknown> {
         this.log.silly('GameGateway::dealerPickBlackCard', { dealerPickBlackCard });
 
-        return this.gameService.dealerPickBlackCard(this.server, dealerPickBlackCard);
+        return this.gameService.dealerPickBlackCard(socket, dealerPickBlackCard);
     }
 
     @SubscribeMessage(WebSocketEventType.DealerPickWinner)
     @AllowPlayerTypes(PlayerType.Player)
     public async dealerPickWinner(
+        @ConnectedSocket()
+        socket: Socket,
+
         @MessageBody(new ZodValidationPipe(DealerPickWinnerDTO.Schema))
         dealerPickWinner: DealerPickWinnerDTO,
     ): P<GameStateDTO> {
         this.log.silly('GameGateway::dealerPickWinner', { dealerPickWinner });
 
-        return this.gameService.dealerPickWinner(this.server, dealerPickWinner);
+        return this.gameService.dealerPickWinner(socket, dealerPickWinner);
     }
 
     @SubscribeMessage(WebSocketEventType.NextHand)
     @AllowPlayerTypes(PlayerType.Player)
     public async nextHand(
+        @ConnectedSocket()
+        socket: Socket,
+
         @MessageBody(new ZodValidationPipe(NextHandDTO.Schema))
         nextHand: NextHandDTO,
     ): P<GameStateDTO> {
         this.log.silly('GameGateway::nextHand', { nextHand });
 
-        return this.gameService.nextHand(this.server, nextHand);
+        return this.gameService.nextHand(socket, nextHand);
     }
 }

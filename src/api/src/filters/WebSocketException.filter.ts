@@ -1,18 +1,24 @@
-import { ArgumentsHost, Catch, ExceptionFilter, HttpException, Inject } from '@nestjs/common';
+import { ArgumentsHost, Catch, ExceptionFilter, Inject, Injectable } from '@nestjs/common';
 import { WebSocketException } from '../exceptions/WebSocket.exception';
 import { WebSocketEventType } from '../constant/websocket-event.enum';
+import { GameException } from '../exceptions/Game.exception';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { Socket } from 'socket.io';
 import { Logger } from 'winston';
 
+
 @Catch(WebSocketException)
+@Injectable()
 export class WebSocketExceptionFilter implements ExceptionFilter {
 
-    @Inject(WINSTON_MODULE_PROVIDER)
-    private readonly log: Logger;
+    public constructor(
+        @Inject(WINSTON_MODULE_PROVIDER)
+        private readonly log: Logger,
+    ) {
+        this.log.silly('WebSocketExceptionFilter::constructor');
+    }
 
-    public catch(exception: HttpException, host: ArgumentsHost) {
-
+    public catch = (exception: GameException, host: ArgumentsHost) => {
         debugger;
 
         const ctx = host.switchToWs();
@@ -20,7 +26,7 @@ export class WebSocketExceptionFilter implements ExceptionFilter {
         const socket = ctx.getClient() as Socket;
         const data   = ctx.getData(); // TODO: check, no data i think
 
-        const status = exception.getStatus();
+        const status = '200';
 
         this.log.error('WebSocketExceptionFilter::catch', { socketId : socket.id, status, exception });
         this.log.silly('WebSocketExceptionFilter::catch::data', { data });
@@ -29,10 +35,7 @@ export class WebSocketExceptionFilter implements ExceptionFilter {
             statusCode : status,
             timestamp  : new Date().toISOString(),
             message    : exception.message,
-
-            // TODO: CHeck data format
-            path : data.url || data.event,
-
+            path       : data.url || data.event, // TODO: CHeck data format
         });
     }
 }

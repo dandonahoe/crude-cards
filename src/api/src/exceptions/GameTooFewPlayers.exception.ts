@@ -8,8 +8,8 @@ import { Logger } from "winston";
 export class GameTooFewPlayersException extends GameException {
     public constructor(
         public override readonly message : string,
-        public readonly runtimeContext   : string,
-        public readonly debugBundle      : Record<string, unknown> = {},
+        public override readonly runtimeContext   : string,
+        public override readonly debugBundle      : Record<string, unknown> = {},
         public readonly log: Logger,
     ) {
         super(message, runtimeContext, debugBundle, log);
