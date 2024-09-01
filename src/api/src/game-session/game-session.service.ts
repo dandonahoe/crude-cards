@@ -701,12 +701,15 @@ export class GameSessionService {
             game_stage : GameStage.DealerPickWinner,
         });
 
-    public skipToNextHand = async (session: GameSession) => {
-        this.log.silly('GameSessionService::handleSkipToNextHand', { session });
+    public skipToNextHand = async (session: GameSession, runtimeContext : string) => {
+        const debugBundle = { session, runtimeContext };
 
-        console.log('handleSkipToNextHand', session);
+        this.log.silly('GameSessionService::handleSkipToNextHand', { debugBundle });
+
+        console.log('handleSkipToNextHand', debugBundle);
 
         debugger;
+
         return;
     }
 

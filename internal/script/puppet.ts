@@ -5,7 +5,7 @@ import puppeteer from 'puppeteer';
 
     // the number of supplimental popup windows to create when debugging,
     // puppet controlled browser windows
-    const additionalWindowCount = 1;
+    const additionalWindowCount = 2;
 
     const urls = Array.from({
         length : additionalWindowCount,
