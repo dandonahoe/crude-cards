@@ -235,6 +235,12 @@ export class GameService {
 
             this.log.info('Game Ended In Lobby Mode Due to No Players', debugBundle);
 
+            // This is encountered when:
+            // Three people in lobby
+            // First Non Host Leaves
+            // Second Non Host Leaves
+            // Host (Last Player) Leaves
+
             await this.gameSessionService.skipToNextHand(session, 'No Players in Lobby');
         }
 
