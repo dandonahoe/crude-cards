@@ -1,8 +1,12 @@
+import { GameNotEnoughPlayersException } from '../exceptions/GameNotEnoughPlayers.exception';
 import { ArgumentsHost, Catch, ExceptionFilter, Inject, Injectable } from '@nestjs/common';
+import { GameNoPlayersException } from '../exceptions/GameNoPlayers.exception';
+import { GameCompleteException } from '../exceptions/GameComplete.exception';
 import { GameException } from '../exceptions/Game.exception';
+import { WSE } from '../exceptions/WebSocket.exception';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { GameService } from '../game/game.service';
-import { P } from '../../../type/framework/data/P';
+import { AuthDTO } from '../game/dtos/auth.dto';
 import { Socket } from 'socket.io';
 import { Logger } from 'winston';
 
@@ -21,26 +25,61 @@ export class GameExceptionFilter implements ExceptionFilter {
         this.log.silly('GameExceptionFilter::constructor');
     }
 
-    public catch = async (exception: GameException, host: ArgumentsHost) : P<unknown> => {
-        debugger;
+    public catch = async (
+        exc: GameException,
+        argumentHost: ArgumentsHost,
+    ) => {
+        const executionContext = argumentHost.switchToWs();
 
-        const ctx = host.switchToWs();
+        const socket = executionContext.getClient<Socket>();
+        const baseDTO = executionContext.getData<AuthDTO>();
 
-        const socket = ctx.getClient() as Socket;
-        const data   = ctx.getData(); // TODO: check, no data i think
+        const debugBundle = { socketId : socket.id, exc, baseDTO };
 
-        return this.gameService.emitGameUpdate(socket, data.game_code, false, [], 'In the GameExceptionFilter');
+        if (!baseDTO.game_code) {
+            this.log.error('GameExceptionFilter::catch - No game code provided', { debugBundle });
+            throw WSE.InternalServerError500('No game code provided', { debugBundle });
+        }
 
-        // const status = '200';
+        // Run the specifi handler in the original types
+        if (exc instanceof GameNoPlayersException)
+            return this.onGameNoPlayersException(exc, baseDTO.game_code)
 
-        // this.log.error('GameExceptionFilter::catch', { socketId : socket.id, status, exception });
-        // this.log.silly('GameExceptionFilter::catch::data', { data });
+        else if (exc instanceof GameNotEnoughPlayersException)
+            return this.onGameNotEnoughPlayersException(exc, baseDTO.game_code)
 
-        // socket.emit(WebSocketEventType.ServerError, {
-        //     statusCode : status,
-        //     timestamp  : new Date().toISOString(),
-        //     message    : exception.message,
-        //     path       : data.url || data.event, // TODO: CHeck data format
-        // });
+        else if (exc instanceof GameCompleteException)
+            return this.onGameCompleteException(exc, baseDTO.game_code);
+
+        else if (exc instanceof GameException)
+            return this.onGameException(exc, baseDTO.game_code);
+    }
+
+    private onGameNoPlayersException = async (
+        exception: GameNoPlayersException,
+        gameCode: string,
+    ) => {
+        this.log.silly('GameExceptionFilter::onNoPlayersException', { gameCode, exception });
+    }
+
+    private onGameNotEnoughPlayersException = async (
+        exception: GameNotEnoughPlayersException,
+        gameCode: string,
+    ) => {
+        this.log.silly('GameExceptionFilter::onNotEnoughPlayersException', { gameCode });
+    }
+
+    private onGameException = async (
+        exception: GameException,
+        gameCode: string,
+    ) => {
+        this.log.silly('GameExceptionFilter::onException', { gameCode });
+    }
+
+    private onGameCompleteException = async (
+        exception: GameNoPlayersException,
+        gameCode: string,
+    ) => {
+        this.log.silly('GameExceptionFilter::onCompleteException', { gameCode });
     }
 }

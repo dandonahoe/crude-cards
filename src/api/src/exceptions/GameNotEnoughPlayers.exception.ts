@@ -5,7 +5,7 @@ import { Logger } from "winston";
 
 
 @Injectable()
-export class GameCompleteMinPlayersException extends GameException {
+export class GameNotEnoughPlayersException extends GameException {
     public constructor(
         public override readonly message : string,
         public override readonly runtimeContext   : string,

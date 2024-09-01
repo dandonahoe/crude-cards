@@ -1,4 +1,4 @@
-import { GameTooFewPlayersException } from '../exceptions/GameTooFewPlayers.exception';
+import { GameTooFewPlayersException } from '../exceptions/GameNotEnoughPlayers.exception';
 import { Body, Inject, Injectable, UsePipes, ValidationPipe } from '@nestjs/common';
 import { GameCompleteException } from '../exceptions/GameComplete.exception';
 import { DealerPickBlackCardDTO } from './dtos/dealer-pick-black-card.dto';
