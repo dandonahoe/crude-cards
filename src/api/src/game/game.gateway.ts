@@ -1,4 +1,5 @@
-import { Inject, Injectable, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Inject, Injectable, UseFilters, UseGuards, UseInterceptors } from '@nestjs/common';
+import { WebSocketExceptionFilter } from '../filters/WebSocketException.filter';
 import { AllowPlayerTypes } from '../decorators/allow-player-types.decorator';
 import { DealerPickBlackCardDTO } from './dtos/dealer-pick-black-card.dto';
 import { WebSocketEventType } from './../constant/websocket-event.enum';
@@ -15,9 +16,9 @@ import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { CreateGameDTO } from './dtos/create-game.dto';
 import { GameStateDTO } from './dtos/game-state.dto';
 import { StartGameDTO } from './dtos/start-game.dto';
+import { LeaveGameDTO } from './dtos/leave-game.dto';
 import { JoinGameDTO } from './dtos/join-game.dto';
 import { NextHandDTO } from './dtos/next-hand.dto';
-import { LeaveGameDTO } from './dtos/leave-game.dto';
 import { AuthGuard } from '../guards/auth.guard';
 import { GameService } from './game.service';
 import { corsPolicy } from './Cors';
@@ -29,6 +30,7 @@ import {
 } from '@nestjs/websockets';
 
 
+@UseFilters(new WebSocketExceptionFilter())
 @WebSocketGateway({ cors : corsPolicy })
 @UseInterceptors(GameInterceptor)
 @UseGuards(AuthGuard)
