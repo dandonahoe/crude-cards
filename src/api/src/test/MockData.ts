@@ -66,11 +66,11 @@ export const MockData: MockDataHierarchy = {
     GamePopupType : {
         Valid : {
             List : [
-                GamePopupType.Feedback,
-                GamePopupType.Quit,
                 GamePopupType.Scoreboard,
+                GamePopupType.Feedback,
                 GamePopupType.Settings,
                 GamePopupType.Unknown,
+                GamePopupType.Leave,
             ],
             Value : GamePopupType.Feedback,
         },
@@ -144,9 +144,9 @@ export const MockData: MockDataHierarchy = {
                 WebSocketEventType.UpdateGame,
                 WebSocketEventType.CreateGame,
                 WebSocketEventType.StartGame,
+                WebSocketEventType.LeaveGame,
                 WebSocketEventType.NextHand,
                 WebSocketEventType.JoinGame,
-                WebSocketEventType.ExitGame,
             ],
             Value : WebSocketEventType.JoinGame,
         },

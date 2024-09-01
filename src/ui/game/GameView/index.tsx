@@ -1,7 +1,7 @@
 import { GameStage } from '../../../api/src/constant/game-stage.enum';
 import { GameDealerSelection } from '../GameDealerSelection/index';
 import { GamePlayerSelection } from '../GamePlayerSelection';
-import { GameAction } from '../../../client/action/game';
+import { GameAction } from '../../../client/action/game.action';
 import { GameDealerJudge } from '../GameDealerJudge';
 import { GameResults } from '../GameResults/index';
 import { GameComplete } from '../GameComplete';

@@ -1,7 +1,7 @@
 import { GameStage } from '../../../../api/src/constant/game-stage.enum';
+import { GameAction } from '../../../../client/action/game.action';
 import { selectIsHost } from '../../../../client/selector/game';
 import { CA } from '../../../../constant/framework/CoreAction';
-import { GameAction } from '@app/client/action/game';
 import { GameContext } from '../../GameContext';
 import { useDispatch } from '@app/client/hook';
 import { GameBanner } from '../../GameBanner';
@@ -15,15 +15,14 @@ import { useContext } from 'react';
 export const LobbyHeader: RFC = () => {
 
     const { gameState } = useContext(GameContext);
-
-    const isHost = useSelector(selectIsHost);
-
-    let subtitleMessage = undefined;
-
     const dispatch = useDispatch();
 
     const handleStartGame = (): CA =>
         dispatch(GameAction.startGame({}));
+
+    let subtitleMessage = undefined;
+
+    const isHost = useSelector(selectIsHost);
 
     const playerCount = gameState.player_list.length;
     const needMoreCount = 3 - playerCount;

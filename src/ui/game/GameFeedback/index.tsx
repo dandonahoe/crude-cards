@@ -1,6 +1,6 @@
 import { Button, Group, TextInput, Textarea, Text } from '@mantine/core';
+import { GameAction } from '../../../client/action/game.action';
 import { zodResolver } from 'mantine-form-zod-resolver';
-import { GameAction } from '@app/client/action/game';
 import { useFocusTrap } from '@mantine/hooks';
 import { useDispatch } from 'react-redux';
 import { useForm } from '@mantine/form';
@@ -68,6 +68,7 @@ export const GameFeedback : RFC = () => {
     return (
         <form onSubmit={form.onSubmit(handleSubmit)}>
             <TextInput
+                fw={600}
                 ref={focusTrapRef}
                 {...form.getInputProps('name')}
                 key={form.key('name')}
@@ -78,6 +79,7 @@ export const GameFeedback : RFC = () => {
 
             <TextInput
                 {...form.getInputProps('email')}
+                fw={600}
                 key={form.key('email')}
                 withAsterisk={true}
                 aria-label='Email'
@@ -88,6 +90,7 @@ export const GameFeedback : RFC = () => {
             <Textarea
                 {...form.getInputProps('message')}
                 key={form.key('message')}
+                fw={600}
                 withAsterisk={true}
                 aria-label='Message'
                 label='Message'
@@ -95,10 +98,17 @@ export const GameFeedback : RFC = () => {
                 rows={4} />
 
             <Group
-                justify='flex-end'
+                justify='center'
+                align='center'
                 tabIndex={0}
                 mt='md'>
-                <Button type='submit'>
+                <Button
+                    variant='outline'
+                    color='#000'
+                    size='sm'
+                    m='lg'
+                    fw={600}
+                    type='submit'>
                     {'Submit'}
                 </Button>
             </Group>

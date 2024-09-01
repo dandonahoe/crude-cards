@@ -3,7 +3,7 @@ import { Meta, StoryObj } from '@storybook/react';
 import { Props } from './type';
 import { TextInputDebounced } from './index';
 import { CA } from '../../../constant/framework/CoreAction';
-import { GameAction } from '../../../client/action/game';
+import { GameAction } from '../../../client/action/game.action';
 
 // Set up default exports for Storybook
 const meta: Meta<typeof TextInputDebounced> = {

@@ -1,11 +1,11 @@
 import { selectSelectedCards } from '@app/client/selector/game';
-import { useSelector , useDispatch } from '@app/client/hook';
+import { GameAction } from '../../../client/action/game.action';
 import { CardDTO } from '../../../api/src/game/dtos/card.dto';
-import { GameAction } from '@app/client/action/game';
+import { useSelector , useDispatch } from '@app/client/hook';
+import { CA } from '../../../constant/framework/CoreAction';
 import { GameDeck } from '../GameDeck';
 import { Flex } from '@mantine/core';
 import { RFC } from '@app/ui/type';
-import { CA } from '../../../constant/framework/CoreAction';
 
 
 export const GameDealerJudge : RFC = () => {

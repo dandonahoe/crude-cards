@@ -7,7 +7,7 @@ export enum MenuItem {
     Settings   = 'Settings',
     Feedback   = 'Feedback',
     Unknown    = 'Unknown',
-    Quit       = 'Quit',
+    Leave       = 'Leave',
 }
 
 const IconStyle = {
@@ -29,6 +29,6 @@ export const MenuItems = [{
     id   : MenuItem.Settings,
 }, {
     icon : <IconDoorExit style={IconStyle} />,
-    text : 'Quit',
-    id   : MenuItem.Quit,
+    text : 'Leave',
+    id   : MenuItem.Leave,
 }];

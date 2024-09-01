@@ -54,6 +54,13 @@ export class GameSession extends BaseEntity {
     public game_id: string | null = null;
 
     @Column({
+        type     : 'text',
+        nullable : true,
+        default  : null,
+    })
+    public game_end_message: string | null = '';
+
+    @Column({
         type     : 'uuid',
         nullable : true,
         default  : null })
@@ -63,7 +70,7 @@ export class GameSession extends BaseEntity {
     public player_id_list: string[] = [];
 
     @Column('uuid', { array : true })
-    public disconnected_player_id_list: string[] = [];
+    public exited_player_id_list: string[] = [];
 
     @Column('uuid', { array : true })
     public limbo_player_id_list: string[] = [];

@@ -1,8 +1,8 @@
 import { Text, rem, Flex, Stack, TextInput, Button, Group, FocusTrap, Box } from '@mantine/core';
 import { CardColor } from '../../../api/src/constant/card-color.enum';
+import { GameAction } from '../../../client/action/game.action';
 import { CA } from '../../../constant/framework/CoreAction';
 import { GameCardContainer } from '../GameCardContainer';
-import { GameAction } from '@app/client/action/game';
 import { GameDeckLayout } from '../GameDeckLayout';
 import { useDispatch } from '@app/client/hook';
 import { GameButton } from '../GameButton';
@@ -34,12 +34,50 @@ export const GameHome : RFC = () => {
     const handleCameCodeChange = (e : React.ChangeEvent<HTMLInputElement>) : CA => {
         setGameCode(e.target.value);
 
-        if(e.target.value.trim().length === 6)
-            return dispatch(GameAction.joinGame({
-                game_code : e.target.value.trim(),
-            }))
+        let userInput = e.target.value;
 
-        return dispatch(GameAction.noOp());
+        // Remove all non alpha numeric characters from, so they
+        // can get the code foo123 and all these work (below). Typing is hard, joining should
+        // be forgiving and easy to sloppy (usual) input.
+
+        // "foo123"
+        // "foo123."
+        // " FOO-123"
+        // "foo 123"
+        // "foo 123 "
+        // " FOO       12     3  "
+        // "  foo 123  "
+        // "  f o o 1 2 3   "
+        // " !! fFGGGo$$o##@@1$#2@@3~~"
+        // " !! fFGGGO$$O##@@1$#2@@3~~ "
+        // " !! fFGGGo$$o##@@1$#2@@3~~  "
+        // "  !! FFGGGo$$o##@@1$#2@@3~~  "
+        // "  !! fFGGGo$$o##@@1$#2@@3~~   "
+
+        // todo: make a utility and unit test this
+        userInput = userInput.replace(/[^a-zA-Z0-9]/g, '').trim().toLowerCase();
+
+        // rapid join before they generally can hit the join button
+        // invalid codes submitted this way do not error out, since they
+        // may be the result of a typo the user is simply fixing, but
+        // the odds of an accidental submission of an invalid code that
+        // reaches a wrong but valid game are essentially zero mathmeticaly.
+        // On mobile especially this is useful to prevent them from having to move their
+        // finger to a new input, and every device works differenty and could potentially
+        // interfere with the join button (cover it up). Apple does this with
+        // 2FA codes on macOS, where entering the final digit auto submits the form
+        // and its pleasantly suprising.
+
+        if(userInput.length !== 6)
+            return dispatch(GameAction.noOp());
+
+        const game_code = e.target.value.trim();
+
+        console.log('Dispatching JoinGame with game_code:', game_code);
+
+        return dispatch(GameAction.joinGame({
+            game_code,
+        }));
     }
 
     const homepageUrl = Env.getValue<string>('NEXT_PUBLIC_BROWSER_WINDOW_LOCATION_ORIGIN');
@@ -75,25 +113,34 @@ export const GameHome : RFC = () => {
                             h={rem(260)}
                             pt={rem(60)}>
                             <Text
-                                fz={rem(40)}
-                                ta='center'
-                                fw={600}>
-                                {'Cards Against'}
-                            </Text>
-                            <Text
                                 fz={rem(60)}
                                 fw={600}
                                 mb='xl'
-                                pb='xl'
                                 lh={1}>
-                                {'Humanity'}
+                                {'CrudeCards'}
+                            </Text>
+                            <Text
+                                fz={rem(32)}
+                                ta='center'
+                                fw={600}>
+                                {'A Party Game for Terrible People'}
+                            </Text>
+                            <Text
+                                fz={rem(24)}
+                                ta='center'
+                                c='#eee'
+                                fw={600}
+                                mb='xl'>
+                                {'Like You'}
                             </Text>
                         </Box>
+                        <br />
                         <Flex justify='center'>
                             <GameButton
                                 onClick={handleStartGame}
-                                text='New' />
+                                text='Go' />
                         </Flex>
+                        <br />
                     </GameCardContainer>,
                     <GameCardContainer
                         key='sdssf'
