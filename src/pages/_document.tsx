@@ -9,7 +9,7 @@ export default function Document() : React.JSX.Element {
         <Html lang='en'>
             <Head>
                 <AppHeadGame />
-                <ColorSchemeScript defaultColorScheme='auto' />
+                <ColorSchemeScript defaultColorScheme='dark' />
             </Head>
             <body
                 style={{

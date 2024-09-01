@@ -58,5 +58,10 @@
             "dist",
             "out"
         ],
+        "workbench.colorCustomizations": {
+            "editor.lineHighlightBackground": "#1073cf2d",
+            "editor.lineHighlightBorder": "#1e54571f",
+            "terminal.background": "#1e1d1d"
+        },
     }
 }

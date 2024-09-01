@@ -1,13 +1,13 @@
 import { selectCurrentPlayer, selectGameState, selectIsDealer, selectTimer } from '../selector/game';
 import { WebSocketEventType } from '../../api/src/constant/websocket-event.enum';
+import { call, delay, select, take, takeEvery } from 'typed-redux-saga';
 import { GameStateDTO } from '../../api/src/game/dtos/game-state.dto';
 import { GameStage } from '../../api/src/constant/game-stage.enum';
-import { call, delay, select, take } from 'typed-redux-saga';
 import { TimerType, CookieType } from '../../api/src/type';
 import { Saga } from '../../type/framework/core/CoreSaga';
-import { createSocketChannel } from './channel';
+import { GameAction } from '../action/game.action';
+import { PayloadAction } from '@reduxjs/toolkit';
 import { Socket, io } from 'socket.io-client';
-import { GameAction } from '../action/game';
 import { takePayload } from '../SagaHelper';
 import { eventChannel } from 'redux-saga';
 import { sagaDispatch } from '..';
@@ -47,7 +47,6 @@ if (socket)
         });
 
         socket.on(WebSocketEventType.UpdatePlayerValidation, (validation: string) => {
-            // debugger;
             console.log('CLIENT GOT: validation', validation);
 
             Cookies.set(CookieType.AuthToken, validation);
@@ -55,13 +54,42 @@ if (socket)
     });
 
 
+// this function creates an event channel from a given socket
+// Setup subscription to incoming update events
+export function createGameUpdateReceiverSagaChannel(socket : Socket) {
+    console.log('createGameUpdateReceiverSagaChannel ');
+
+    // `eventChannel` takes a subscriber function
+    // the subscriber function takes an `emit` argument to put messages onto the channel
+    return eventChannel(emit => {
+
+        socket.on(WebSocketEventType.UpdateGame,
+            (gameState : GameStateDTO) =>
+                emit(gameState),
+        );
+
+        // the subscriber must return an unsubscribe function
+        // this will be invoked when the saga calls `channel.close` method
+        const unsubscribe = () => {
+            socket.off(WebSocketEventType.UpdateGame);
+        }
+
+        return unsubscribe
+    })
+}
+
+// All this does is listen, no sending
 function* sagaStartUpdateListener(): Saga {
     if (!socket)
         return;
 
     console.log('sagaStartUpdateListener started');
 
-    const socketChannel = yield* call(createSocketChannel, socket);
+    // listen and respond only to GameUpdate events pushed from the server
+
+    const channelGameUpdateListener = yield* call(
+        createGameUpdateReceiverSagaChannel, socket);
+
     console.log('Socket channel created');
 
     let previousGameState = yield* select(selectGameState);
@@ -70,14 +98,23 @@ function* sagaStartUpdateListener(): Saga {
     while (true) {
 
         console.log('Waiting for new game state...');
-
-        const newGameState = (yield* take(socketChannel)) as GameStateDTO;
+        const newGameState = (yield* take(channelGameUpdateListener)) as GameStateDTO;
 
         console.log('New game state received:', newGameState);
-
         const newGameStateString = JSON.stringify(newGameState);
 
         yield* sagaDispatch(GameAction.updateGameState(newGameStateString));
+
+        // This can happen when the server is disconnecting a player
+        if(newGameState.new_auth_token) {
+            console.log('New Auth Token Received in Game Update', newGameState.new_auth_token);
+            Cookies.set(CookieType.AuthToken, newGameState.new_auth_token);
+        }
+
+        if(newGameState.game_stage === GameStage.Home) {
+            console.log('Game stage is Home, clearing game code from url');
+            Router.push('/');
+        }
 
         console.log('Game State Updated, checking timers');
 
@@ -86,17 +123,13 @@ function* sagaStartUpdateListener(): Saga {
             continue;
         }
 
-        // On any page but the homepage, put the game code
-        // in the url
-
+        // On any page but the homepage, put the game code in the url
         if(newGameState.game_stage !== GameStage.Home) {
             console.log(`Non homepage stage, updating url with game code $newGameState.game_stage}`);
             Router.push(`/game/${newGameState.game_code}`);
         }
 
-
         console.log(`State changed to ${newGameState.game_stage}, updating timer`);
-
         yield* sagaDispatch(GameAction.updateTimer({
             timerType : null,
             timeLeft  : 0,
@@ -152,34 +185,44 @@ function* sagaStartUpdateListener(): Saga {
 }
 
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-function socketChannelRelay(
-    socket: Socket,
-    messageType: string,
-    messageData: unknown,
-) {
-    const auth_token = Cookies.get(CookieType.AuthToken)
-    const game_code = Router.query['game_code'] || Router.query['gameCode'];
+// eslint-disable-next-line require-yield
+function* onSendWebSocketMessage(action : PayloadAction<Record<string, unknown>>) : Saga {
+    console.log('Received an Action to Send a WebSocket Message', action);
 
-    const message = {
-        ...messageData as Record<string, unknown>,
+    if(!socket) {
+        console.error('No socket available');
+
+        return;
+    }
+
+    // puggyback the auth token onto every websocket request.
+    // Again, this probably should be handled via JWTs of something
+    const auth_token = Cookies.get(CookieType.AuthToken);
+
+    console.log('Auth Token:', auth_token);
+
+    const payload = action.payload as Record<string, unknown>;
+
+    // if there's already a game code in the action, use it. For instance when
+    // a player joins a game, the game code is what they type.
+
+    const game_code =
+        // if game_code was included in the payload, prioritize it over the url
+        payload['game_code']?.toString()
+        || Router.query['gameCode']?.toString()
+        || null; // todo: Use Standard Error String or something
+
+    // todo: add runtimeContext
+    const socketPayload = {
+        ...action.payload as Record<string, unknown>,
         auth_token,
         game_code,
     };
 
-    console.log('Sending WS Message to Server', auth_token, messageType, message, game_code);
+    // Pew pew pew!
+    console.log(socketPayload);
 
-    return eventChannel(emit => {
-        socket.emit(
-            messageType,
-            message,
-            (gameState: GameStateDTO) =>
-                emit(gameState));
-
-        return () => {
-            console.log('Socket channel closed');
-        };
-    });
+    socket.emit(action.type, socketPayload);
 }
 
 // Double check this logic, i think its fallen out of date
@@ -187,102 +230,19 @@ function socketChannelRelay(
 // and just use the relay channel
 
 function* sagaSendWebSocketMessage(): Saga {
+    console.log('Starting Listener for WebSocket Messages');
 
-    const message = yield* takePayload(GameAction.sendWebSocketMessage);
-
-    if (!socket) return;
-
-    const socketChannel = yield* call(
-        socketChannelRelay, socket,
-        message.type, message.data,
-    );
-
-    yield* take(socketChannel);
-
-    socketChannel.close();
-}
-
-function* sagaReconnect(): Saga {
-
-    // Cookies
-
-    // placeholder
-    yield* takePayload(GameAction.dealerPickWinner)
-}
-
-
-function* sagaCreateGame(): Saga {
-    yield* sagaDispatch(GameAction.sendWebSocketMessage({
-        type : WebSocketEventType.CreateGame,
-        data : yield* takePayload(GameAction.createGame),
-    }));
-}
-
-function* sagaDealerPickBlackCard(): Saga {
-    yield* sagaDispatch(GameAction.sendWebSocketMessage({
-        type : WebSocketEventType.DealerPickBlackCard,
-        data : yield* takePayload(GameAction.dealerPickBlackCard),
-    }));
-}
-
-function* sagaStartGame(): Saga {
-    yield* sagaDispatch(GameAction.sendWebSocketMessage({
-        type : WebSocketEventType.StartGame,
-        data : yield* takePayload(GameAction.startGame),
-    }));
-}
-
-function* sagaJoinGame(): Saga {
-    yield* sagaDispatch(GameAction.sendWebSocketMessage({
-        type : WebSocketEventType.JoinGame,
-        data : yield* takePayload(GameAction.joinGame),
-    }));
-}
-
-function* sagaPlayerSelectCard(): Saga {
-    yield* sagaDispatch(GameAction.sendWebSocketMessage({
-        type : WebSocketEventType.PlayerSelectCard,
-        data : yield* takePayload(GameAction.playerSelectCard),
-    }));
-}
-
-function* sagaDealerPickWinner(): Saga {
-    yield* sagaDispatch(GameAction.sendWebSocketMessage({
-        type : WebSocketEventType.DealerPickWinner,
-        data : yield* takePayload(GameAction.dealerPickWinner),
-    }));
-}
-
-function* sagaNextHand(): Saga {
-    yield* sagaDispatch(GameAction.sendWebSocketMessage({
-        type : WebSocketEventType.NextHand,
-        data : yield* takePayload(GameAction.nextHand),
-    }));
-}
-
-function* sagaUpdateUsername(): Saga {
-    yield* sagaDispatch(GameAction.sendWebSocketMessage({
-        type : WebSocketEventType.UpdateUsername,
-        data : yield* takePayload(GameAction.updateUsername),
-    }));
-}
-
-function* sagaExitGame(): Saga {
-    const exitGame = yield* takePayload(GameAction.exitGame)
-
-    Router.push('/');
-
-    yield* sagaDispatch(GameAction.sendWebSocketMessage({
-        type : WebSocketEventType.ExitGame,
-        data : exitGame,
-    }));
-}
-
-function* sagaFeedback(): Saga {
-    yield* sagaDispatch(GameAction.sendWebSocketMessage({
-        type : WebSocketEventType.SubmitFeedback,
-        data : yield* takePayload(GameAction.submitFeedback),
-    }));
+    yield* takeEvery([
+        GameAction.playerSelectCard,
+        GameAction.dealerPickWinner,
+        GameAction.updateUsername,
+        GameAction.submitFeedback,
+        GameAction.createGame,
+        GameAction.startGame,
+        GameAction.leaveGame,
+        GameAction.joinGame,
+        GameAction.nextHand,
+    ], onSendWebSocketMessage);
 }
 
 function* sagaStartTimer(): Saga {
@@ -353,35 +313,13 @@ function* sagaTimerComplete(): Saga {
 export const WebSocks = {
     sagaSendWebSocketMessage,
     sagaStartUpdateListener,
-    sagaDealerPickBlackCard,
-    sagaPlayerSelectCard,
-    sagaDealerPickWinner,
-    sagaUpdateUsername,
     sagaTimerComplete,
     sagaStartTimer,
-    sagaCreateGame,
-    sagaStartGame,
-    sagaReconnect,
-    sagaFeedback,
-    sagaNextHand,
-    sagaJoinGame,
-    sagaExitGame,
 
     *[Symbol.iterator]() {
         yield this.sagaSendWebSocketMessage;
         yield this.sagaStartUpdateListener;
-        yield this.sagaDealerPickBlackCard;
-        yield this.sagaPlayerSelectCard;
-        yield this.sagaDealerPickWinner;
-        yield this.sagaUpdateUsername;
         yield this.sagaTimerComplete;
         yield this.sagaStartTimer;
-        yield this.sagaCreateGame;
-        yield this.sagaStartGame;
-        yield this.sagaReconnect;
-        yield this.sagaFeedback;
-        yield this.sagaNextHand;
-        yield this.sagaJoinGame;
-        yield this.sagaExitGame;
     },
 };

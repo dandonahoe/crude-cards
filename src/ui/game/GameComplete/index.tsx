@@ -1,14 +1,14 @@
 import { selectGameChampion, selectAllPlayerStatus, selectIsPlayerWinner } from '../../../client/selector/game';
 import { Box, Button, Center, Flex, Stack, Text } from '@mantine/core';
+import { GameAction } from '../../../client/action/game.action';
 import { useDispatch, useSelector } from '@app/client/hook';
+import { CA } from '../../../constant/framework/CoreAction';
 import { GameStatusTable } from '../GameStatusTable';
 import { IconArrowRight } from '@tabler/icons-react';
-import { GameAction } from '@app/client/action/game';
 import { useViewportSize } from '@mantine/hooks';
 import classes from './GameComplete.module.css';
 import Confetti from 'react-confetti'
 import { RFC } from '@app/ui/type';
-import { CA } from '../../../constant/framework/CoreAction';
 
 
 export const GameComplete : RFC = () => {
@@ -22,7 +22,7 @@ export const GameComplete : RFC = () => {
     const { height, width } = useViewportSize();
 
     const handleExitGame = () : CA =>
-        dispatch(GameAction.exitGame({}));
+        dispatch(GameAction.leaveGame({}));
 
     return (
         <Flex

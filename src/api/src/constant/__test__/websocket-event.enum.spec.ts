@@ -16,7 +16,7 @@ describe('WebSocketEventType Enum', () => {
     const START_GAME = 'StartGame';
     const NEXT_HAND = 'NextHand';
     const JOIN_GAME = 'JoinGame';
-    const EXIT_GAME = 'ExitGame';
+    const EXIT_GAME = 'LeaveGame';
 
     const VALID_KEYS = [
         'UpdatePlayerValidation',
@@ -31,7 +31,7 @@ describe('WebSocketEventType Enum', () => {
         'StartGame',
         'NextHand',
         'JoinGame',
-        'ExitGame',
+        'LeaveGame',
     ];
 
     it('should have correct values', () => {
@@ -47,7 +47,7 @@ describe('WebSocketEventType Enum', () => {
         expect(WebSocketEventType.StartGame).toBe(START_GAME);
         expect(WebSocketEventType.NextHand).toBe(NEXT_HAND);
         expect(WebSocketEventType.JoinGame).toBe(JOIN_GAME);
-        expect(WebSocketEventType.ExitGame).toBe(EXIT_GAME);
+        expect(WebSocketEventType.LeaveGame).toBe(EXIT_GAME);
     });
 
     it('should contain the correct keys', () => {
@@ -74,7 +74,7 @@ describe('WebSocketEventType Enum', () => {
         expect(WebSocketEventType['StartGame']).toBe(START_GAME);
         expect(WebSocketEventType['NextHand']).toBe(NEXT_HAND);
         expect(WebSocketEventType['JoinGame']).toBe(JOIN_GAME);
-        expect(WebSocketEventType['ExitGame']).toBe(EXIT_GAME);
+        expect(WebSocketEventType['LeaveGame']).toBe(EXIT_GAME);
     });
 
     it('should have a unique value for each key', () => {

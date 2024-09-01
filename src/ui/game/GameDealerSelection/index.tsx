@@ -1,4 +1,4 @@
-import { GameAction } from '../../../client/action/game';
+import { GameAction } from '../../../client/action/game.action';
 import { CA } from '../../../constant/framework/CoreAction';
 import { GameContext } from '../GameContext';
 import { useDispatch } from 'react-redux';

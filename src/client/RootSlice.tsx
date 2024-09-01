@@ -6,7 +6,7 @@ import { GameStage } from '../api/src/constant/game-stage.enum';
 import { PlayerDTO } from '../api/src/game/dtos/player.dto';
 import { CardDTO } from '../api/src/game/dtos/card.dto';
 import { createSlice } from '@reduxjs/toolkit';
-import { GameAction } from './action/game';
+import { GameAction } from './action/game.action';
 
 import _ from 'lodash';
 
@@ -17,7 +17,8 @@ const slice = createSlice({
     name         : ProjectName,
 
     extraReducers : builder => {
-        builder.addCase(GameAction.exitGame, state => {
+
+        builder.addCase(GameAction.resetGameState, state => {
             state.game.gameState = GameStateDTO.Default;
             state.game.popupTypeId = null;
         });
@@ -26,9 +27,18 @@ const slice = createSlice({
             const gameState = JSON.parse(gameStateString) as GameStateDTO;
 
             const {
-                player_list, new_deck_card_list,
+                new_deck_card_list, player_list,
                 ...rootGameState
             } = gameState;
+
+            if(rootGameState.game_stage === GameStage.Home) {
+                state.game.previousHandDealerCardId = null;
+                state.game.previousHandWinnerCardId = null;
+                state.game.gameState = gameState;
+
+                return;
+            }
+
 
             const playerLookup = player_list.reduce((acc, player) => {
 

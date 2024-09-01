@@ -1,5 +1,5 @@
+import { GameAction } from '../../../client/action/game.action';
 import { CA } from '../../../constant/framework/CoreAction';
-import { GameAction } from '@app/client/action/game';
 import { Box, Center, Text } from '@mantine/core';
 import { useDispatch } from '@app/client/hook';
 import { GameButton } from '../GameButton';
@@ -10,21 +10,28 @@ export const GameQuit : RFC = () => {
 
     const dispatch = useDispatch();
 
-    const handleClick = () : CA =>
-        dispatch(GameAction.exitGame({}));
+    const handleClick = () : CA => {
+        dispatch(GameAction.leaveGame({}));
+
+        console.log('Sent Message to Disconnect, Closing Popup Window')
+
+        return dispatch(GameAction.closePopup());
+    }
 
     return (
         <Box pb='xl'>
             <Text
                 ta='center'
                 fz='xl'
+                pb='xl'
+                fw={600}
                 mb='md'>
-                {'You Sure?'}
+                {'Double Checking'}
             </Text>
             <Center>
                 <GameButton
                     onClick={handleClick}
-                    text='Quit' />
+                    text='Exit' />
             </Center>
         </Box>
     );

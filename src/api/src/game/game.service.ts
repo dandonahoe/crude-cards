@@ -11,6 +11,7 @@ import { ZodValidationPipe } from '../pipes/ZodValidation.pipe';
 import { FeedbackService } from '../feedback/feedback.service';
 import { UpdateUsernameDTO } from './dtos/update-username.dto';
 import { SubmitFeedbackDTO } from './dtos/submit-feedback.dto';
+import { PlayerType } from '../constant/player-type.enum';
 import { PlayerService } from '../player/player.service';
 import { ScoreLog } from '../score-log/score-log.entity';
 import { GameStage } from '../constant/game-stage.enum';
@@ -22,19 +23,19 @@ import { CreateGameDTO } from './dtos/create-game.dto';
 import { Server as SocketIOServer } from 'socket.io';
 import { GameStateDTO } from './dtos/game-state.dto';
 import { StartGameDTO } from './dtos/start-game.dto';
+import { LeaveGameDTO } from './dtos/leave-game.dto';
+import { AuthToken, GameExitReason } from '../type';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UtilService } from '../util/util.service';
 import { SockService } from '../sock/sock.service';
 import { CardService } from '../card/card.service';
 import { NextHandDTO } from './dtos/next-hand.dto';
 import { JoinGameDTO } from './dtos/join-game.dto';
-import { ExitGameDTO } from './dtos/exit-game.dto';
 import { Player } from '../player/player.entity';
 import { validate as isUuidValid } from 'uuid';
 import { PlayerDTO } from './dtos/player.dto';
 import { Repository } from 'typeorm';
 import { Game } from './game.entity';
-import { AuthToken } from '../type';
 import { difference } from 'lodash';
 import { Socket } from 'socket.io';
 import { Logger } from 'winston';
@@ -78,9 +79,8 @@ export class GameService {
         const socketRequest = await this.sockService.getRequestInfoFromSocket(socket);
 
         this.log.debug('Socket Request', { socketRequest });
-
-
         this.log.silly('Looking up player info by auth token', { authToken : socketRequest.authToken });
+
         const playerState = await this.getPlayerStateByAuthToken(socketRequest.authToken);
 
         let player : Player | null = null;
@@ -101,25 +101,41 @@ export class GameService {
 
             this.log.debug('Emitting new player auth token', { player });
 
+            // let the server talk to the plaayer by their id. Always active,
+            // but when they join a game it will create another channel in parellel to
+            // communicate with this player in the context of their game as [game_id]_[player_id]
             await socket.join(currentPlayer.id);
 
+            // and push the new token down as the first message received
             return this.emitPlayerAuthToken(server, currentPlayer);
         }
 
         // at this point, we have found an existing player
+
+        // let the server talk to the plaayer by their id. Always active,
         this.log.debug('Joining the player to their socket by their playerId', { playerId : playerState.currentPlayer.id});
+
+        // but when they join a game it will create another channel in parellel to
+        // communicate with this player in the context of their game as [game_id]_[player_id]
         await socket.join(playerState.currentPlayer.id);
 
         this.log.debug('Player socket connected, sending AuthToken', { player });
 
-        // existing player needs a new token, they're wiped on connection
+        // Existing player needs a new token, they're wiped on connection
         // to the server and this pushes a new one to be stored and supplied
         // in followup calls. Should probably migrate to JWT for this.
-        await this.emitPlayerAuthToken(server, playerState.currentPlayer!)
+        // await this.emitPlayerAuthToken(server, playerState.currentPlayer!)
+        // Testing keeping the exiting auth token
+
+        if(!playerState.game) {
+            this.log.debug('No game found for player, skipping join', { playerState });
+
+            return;
+        }
 
         // check auth token
         return this.joinGame(
-            server,
+            server, socket,
             new JoinGameDTO(
                 playerState.currentPlayer.auth_token!,
                 playerState.game!.game_code),
@@ -136,18 +152,6 @@ export class GameService {
      */
     public findPlayerBySocket = async (socket: Socket) : P<Player> =>
         this.playerService.findPlayerBySocket(socket);
-
-
-    /**
-     * Ensures that the game is in a proper state before proceeding with any actions.
-     * This method is used to validate the game state before any player actions are executed.
-     */
-    private ensureProperGameState = async () => {
-        this.log.silly('GameGateway::ensureProperGameState');
-
-        return true;
-    }
-
 
     /**
      * Attempts to find an existing player by auth token.
@@ -167,6 +171,7 @@ export class GameService {
 
         this.log.silly('GameService::findPlayerByAuthToken', debugBundle);
 
+        // Weed out a few fast fails
         if (!authToken) return null;
 
         if(!isUuidValid(authToken)) {
@@ -190,12 +195,112 @@ export class GameService {
     ): P<unknown> => {
         this.log.debug('TODO: ENABLE DISCONNECT ROUTINE.', { socketId : socket.id });
 
-        // const player = await this.playerService.findPlayerBySocket(socket);
-
-        // this.log.debug('Player found by socket, disconnecting...', { player, socketId : socket.id });
-
         return;
-        // return this.playerService.disconnectPlayer(player);
+    }
+
+    /**
+     * Emits the player's authentication token to the player's socket. Good place to bunch edge cases
+     *
+     * @param server - The socket server instance
+     * @param player - The player entity
+     *
+     * @returns The player entity
+     */
+    private ensureValidSessionState = async (
+        existingSession: GameSession | null | undefined,
+        runtimeContext : string,
+    ) : P<GameSession> => {
+        if(!existingSession) {
+            this.log.error('GameService::ensureValidSessionState - Bogus Session', { runtimeContext });
+            throw new WebSockException('GameService::ensureValidSessionState::Bogus Session', { runtimeContext });
+        }
+
+        const debugBundle = { existingSession };
+
+        this.log.silly('GameService::ensureValidSessionState', { debugBundle });
+
+        let session = existingSession;
+
+        const playerCount = existingSession.player_id_list.length;
+
+        // If there arent enough players for the game to continue, end the game
+        // TODO: Drop them into limbo until a quarum is reached and give the
+        // new dealer the option to restart the game. Allows other players to
+        // reconnect. Could happen if internets go out and everyone bounces
+        // for instance. Does not apply in lobby mode since theres too few players
+        // initially on create
+
+        if (session.game_stage === GameStage.Lobby && playerCount === 0) {
+            debugger;
+
+            this.log.info('Game Ended In Lobby Mode Due to No Players', debugBundle);
+
+            // This is encountered when:
+            // Three people in lobby
+            // First Non Host Leaves
+            // Second Non Host Leaves
+            // Host (Last Player) Leaves
+
+            await this.gameSessionService.skipToNextHand(session, 'No Players in Lobby');
+        }
+
+
+        if (session.game_stage !== GameStage.Lobby
+            && session.player_id_list.length <= 3) {
+            // End the game entirely
+            this.log.warn('Game Ended Due to Insufficient Players', debugBundle);
+
+            // Don't award anyone, just end the game. The front end knows
+            // what to do with this message.
+            session = await this.gameSessionService.awardWinnerAndComplete(
+                session, null, 'Insufficient Players, Losers.');
+        }
+
+        // if there's no host... or the host on the game session is no longer in the
+        // player_id_list, they're gone, so replace them
+        if(!session.lobby_host_id || !session.player_id_list.includes(session.lobby_host_id)) {
+            this.log.error('Game Host Missing', { debugBundle, session });
+
+            // Make a random other player the host in the lobby. They will
+            // also be selected as the first dealer when the game starts
+            session = await this.gameSessionService.promoteRandomPlayerToHost(
+                session, `Validating Session State: Game Host Missing, context(${runtimeContext})`);
+
+            // this is mostly to treat it non null easier below
+            if(!session.lobby_host_id) {
+                const errorMessage = 'Game Host Missing Again, Check Logs for Edge Case';
+
+                this.log.error(errorMessage, debugBundle);
+
+                throw new WebSockException(errorMessage, debugBundle);
+            }
+        }
+
+        // The host is not longer an active player, promote someone
+        if (!session.player_id_list.includes(session.lobby_host_id)
+            && session.game_stage === GameStage.Lobby) {
+            this.log.warn('The host is no longer a player', debugBundle);
+
+            // Promote the first player in the list to the host
+            session = await this.gameSessionService.promoteRandomPlayerToHost(
+                session, `Validating Session State: The host is no longer a player, context(${runtimeContext})`);
+        }
+
+        // If there's no dealer, promote a player and tell
+        // everyone they're a loser this hand
+
+        // in other cases, the dealer could leave midgame. In that
+        // case, the current hand is scrubbed and moves to the next
+        // round, which promotes a new player to dealer.
+        if(session.dealer_id === null) {
+            this.log.warn('Dealer is Missing During Session Validation, Ending Hand, Next Dealer Goes', debugBundle);
+
+            // Promote the first player in the list to the dealer
+            session = await this.gameSessionService.promoteRandomPlayerToDealer(
+                session, `Validating Session State: Dealer Missing, context(${runtimeContext})`);
+        }
+
+        return session;
     }
 
     /**
@@ -208,46 +313,59 @@ export class GameService {
     @UsePipes(new ValidationPipe({
         transform : true,
     }))
-    public async exitGame(
+    public async leaveGame(
         server : SocketIOServer,
-        @Body(new ZodValidationPipe(ExitGameDTO.Schema))
-        exitGame: ExitGameDTO,
-    ): P<GameStateDTO> {
-        this.log.silly('GameService::exitGame', { exitGame });
+        @Body(new ZodValidationPipe(LeaveGameDTO.Schema))
+        exitGame: LeaveGameDTO,
+        runtimeContext = '',
+    ): P<unknown> {
+
+        this.log.silly('GameService::exitGame', { exitGame, runtimeContext });
 
         // Fetch player state based on auth token
         const playerState = await this.getPlayerStateByAuthTokenOrFail(exitGame.auth_token!);
 
+        const { currentPlayer : player, game } = playerState;
+
         // Remove the player from the session
-        await this.removePlayerFromSession(playerState);
+        const session = await this.gameSessionService.removePlayerFromSession(
+            player,
+            playerState.session,
+            // added to the exited_player_id_list, removed from the player_id_list
+            // and extra check to ensure not in limbo
+            GameExitReason.LeftByChoice,
+            'ExitGame Service Routine');
 
-        await this.emitGameUpdate(server, playerState.game.game_code);
-
-        // Build and return the game state DTO for the player
-        return this.buildGameStateDTO(playerState.game.game_code!, playerState.currentPlayer.id!);
-    }
-
-
-    /**
-     * Removes a player from the session and handles session cleanup.
-     * @param playerState - The state object containing the current player, game, and session details
-     */
-    private removePlayerFromSession = async (
-        playerState: {
-            currentPlayer: Player,
-            game: Game,
-            session: GameSession
-        },
-    ) => {
-        const { currentPlayer, session } = playerState;
-
-        await this.gameSessionService.removePlayer(currentPlayer, session);
-
-        this.log.info('Player removed from session', {
-            playerId  : currentPlayer.id,
-            sessionId : session.id,
+        this.log.silly('GameService::exitGame - Player removed from session', {
+            game_code : game.game_code, session,
         });
-    };
+
+        // TODO: HERE IS A CHOKE POINT
+        // good place because reconfiguring the game here
+        // will let the full lookup done by emitGameUpdate
+        // to pull the changes. Can do dicy things here, and this
+        // should be called in similar situations and frequently.
+        // but should only do things whent he state has gone bogus
+
+        // to check if the state is valid and reconfigure
+        // First check, if the host is leaving, promote someone.
+        // If the host is leaving and nobody is around, end the game.
+        this.ensureValidSessionState(session, `Leaving Game, Context (${runtimeContext})`);
+
+        // not run routine to patch up games which may be valid or not
+        // THen broadcast whatever the final state is
+        return this.emitGameUpdate(
+            server,
+            game.game_code, // to any players remaining
+            false, // dont include the deck
+            [player.id], // only send reset state actions to players leaving now,
+            // and not include everyone in the exited_player_id_list since they could
+            // have joined another game, but still have the same id.
+            // TODO: Possibly think about combining game_id_player_id to be the channel
+            // to directly communicate with a user. One connection per game, and only
+            // one game is allowed per person, so one still.
+            runtimeContext); // send disconnect success message to client
+    }
 
     /**
      * Constructs the game state DTO for the specified player.
@@ -307,14 +425,13 @@ export class GameService {
 
         const [scoreLog, players] = await Promise.all([
             this.scoreLogService.findScoreLogBySession(session),
-            this.playerService.findPlayersInSession(session),
+            this.playerService.findActivePlayersInSession(session),
         ]);
 
         return {
             currentPlayer, scoreLog, session, players, game,
         };
     };
-
 
     /**
      * Gets as much data about the user, given the authToken
@@ -323,13 +440,13 @@ export class GameService {
      * @returns Objects related to the user with authToken
      */
     public async getPlayerStateByAuthToken(
-        authToken: AuthToken,
+        authToken : AuthToken,
     ): P<{
-        currentPlayer: Player | null,
-        scoreLog: ScoreLog | null,
-        session: GameSession | null,
-        players: Player[] | null,
-        game: Game | null,
+        currentPlayer : Player      | null,
+        scoreLog      : ScoreLog    | null,
+        session       : GameSession | null,
+        players       : Player[]    | null,
+        game          : Game        | null,
     }> {
         this.log.silly('GameService::getPlayerStateByAuthToken', { authToken });
 
@@ -345,7 +462,7 @@ export class GameService {
                 currentPlayer : null, scoreLog : null, session : null, players : null, game : null,
              };
 
-        const session = await this.gameSessionService.findActivePlayerGameSession(currentPlayer);
+        let session = await this.gameSessionService.findActivePlayerGameSession(currentPlayer);
 
         if (!session)
             return {
@@ -353,11 +470,13 @@ export class GameService {
                 currentPlayer,
             };
 
+        session = await this.ensureValidSessionState(session, 'Getting Player Auth State');
+
         const [
             scoreLog, players, game,
         ] = await Promise.all([
             this.scoreLogService.findScoreLogBySession(session),
-            this.playerService.findPlayersInSession(session),
+            this.playerService.findActivePlayersInSession(session),
             this.findGameByGameSession(session),
         ]);
 
@@ -384,10 +503,9 @@ export class GameService {
         @Body(new ZodValidationPipe(SubmitFeedbackDTO.Schema))
         submitFeedback: SubmitFeedbackDTO,
     ): P<Feedback> {
+
         // Log the beginning of the feedback submission process
         this.log.silly('GameService::submitFeedback', { submitFeedback });
-
-        this.ensureProperGameState();
 
         // Retrieve the current player, session, and game based on the auth token
         const {
@@ -419,12 +537,12 @@ export class GameService {
     ): P<GameStateDTO> {
         this.log.silly('GameService::nextHand', { nextHand });
 
-        this.ensureProperGameState();
-
         // Retrieve the player, game, session, and player list using the provided auth token
         const {
             currentPlayer, game, session, players,
         } = await this.getPlayerStateByAuthTokenOrFail(nextHand.auth_token!);
+
+        await this.ensureValidSessionState(session, 'Determining Next Hand');
 
         // Determine the next stage of the game based on round count and player scores
         const newGameStagePromise = this.determineNextGameStage(session, game, players);
@@ -507,7 +625,9 @@ export class GameService {
         if (winningPlayer) {
             this.log.info('GameService::determineNextGameStage - Game Complete due to winning player', { winningPlayer });
 
-            await this.gameSessionService.awardWinnerAndComplete(session, winningPlayer.id!);
+            await this.gameSessionService.awardWinnerAndComplete(
+                session, winningPlayer.id!,
+                `Determining Next Game Stage session(${session.id}) game(${game.id}) winner(${winningPlayer.id})`);
 
             return GameStage.GameComplete;
         }
@@ -597,28 +717,29 @@ export class GameService {
         server : SocketIOServer,
         @Body(new ZodValidationPipe(DealerPickBlackCardDTO.Schema))
         dealerPickBlackCard: DealerPickBlackCardDTO,
-    ): P<GameStateDTO> {
+    ): P<unknown> {
+
         this.log.silly('GameService::dealerPickBlackCard', {
             authToken : dealerPickBlackCard.auth_token,
         });
 
-        this.ensureProperGameState();
-
         // Retrieve the player, game, and session details using the provided auth token
-        const playerStatePromise = this.getPlayerStateByAuthTokenOrFail(dealerPickBlackCard.auth_token!);
+        const playerState = await this.getPlayerStateByAuthTokenOrFail(dealerPickBlackCard.auth_token!);
 
-        // Update the session with the dealer's selected black card
-        const updateSessionPromise = playerStatePromise.then(({ session }) =>
-            this.updateSessionWithDealerPick(session, dealerPickBlackCard.card_id!),
-        );
+        this.log.silly('GameService::dealerPickBlackCard - Player State', {
+            playerState,
+            dealerPickBlackCard,
+        });
 
-        // Await both promises concurrently
-        const [{ currentPlayer, game }] = await Promise.all([playerStatePromise, updateSessionPromise]);
+        await this.updateSessionWithDealerPick(
+            playerState.session,
+            dealerPickBlackCard.card_id!);
 
-        await this.emitGameUpdate(server, game.game_code);
+        const game = await this.gameRepo.findOneByOrFail({
+            id : playerState.session.game_id!,
+        });
 
-        // Return the updated game state for the current player
-        return this.getGameStateAsPlayer(game.game_code, currentPlayer.id);
+        return this.emitGameUpdate(server, game.game_code);
     }
 
 
@@ -656,7 +777,6 @@ export class GameService {
     ): P<GameStateDTO> {
         this.log.silly('GameService::dealerPickWinner - Start', { dealerPickWinner });
 
-        this.ensureProperGameState();
         this.log.debug('Ensured proper game state');
 
         // Retrieve the player (dealer), game, session, and score log using the provided auth token
@@ -664,10 +784,6 @@ export class GameService {
             dealer, players, game, session, scoreLog,
         } = await this.getDealerAndSessionData(dealerPickWinner.auth_token!);
         this.log.debug('Retrieved dealer and session data', { dealer, players, game, session, scoreLog });
-
-        // Validate the score log and the dealer
-        this.validateDealerAndScoreLog(dealer, session, scoreLog);
-        this.log.debug('Validated dealer and score log', { dealer, session, scoreLog });
 
         // Determine the winning player based on the selected card ID
         const winningPlayer = await this.getWinningPlayer(players, dealerPickWinner.card_id!);
@@ -690,7 +806,6 @@ export class GameService {
         return gameState;
     }
 
-
     /**
      * Sends a new auth token to the client
      *
@@ -707,7 +822,6 @@ export class GameService {
                 player.auth_token,
             );
 
-
     /**
      * Broadcasts the game update to all players in the game.
      *
@@ -717,21 +831,45 @@ export class GameService {
      * @returns A promise that resolves when the game update has been broadcast to all players
      */
     private emitGameUpdate = async (
-        server      : SocketIOServer,
-        gameCode    : string | null,
-        includeDeck : boolean = false,
+        server              : SocketIOServer,
+        gameCode            : string | null,
+        includeDeck         : boolean = false,
+        disconnectPlayerIds : string[] = [],
+        runtimeContext      : string = '',
     ) => {
-        this.log.silly('GameService::broadcastGameUpdate', { gameCode, includeDeck });
+        const debugBundle = { gameCode, includeDeck, disconnectPlayerIds, runtimeContext };
 
-        if(!gameCode) throw new WebSockException(`Invalid game code ${gameCode}`);
+        this.log.silly('GameService::broadcastGameUpdate', debugBundle);
+
+        this.log.info('Broadcasting Disconnecting players', debugBundle);
+
+        if(!gameCode)
+            throw new WebSockException(`Invalid game code ${gameCode} runtimeContext(${runtimeContext})`);
 
         // todo: update this to handle people in the disconnected and limbo states
-        const gameStatusList = await this.getAllPlayersGameStatus(gameCode, includeDeck);
+        const gameStatusList = await this.getAllPlayersGameStatus(gameCode, includeDeck,
+            `Emitting Game Update to gameCode(${gameCode}) \n\nruntimeContext(${runtimeContext})` );
 
+        this.log.silly('GameService::broadcastGameUpdate - Disconnecting Players', { gameStatusList });
+
+        const game = await this.gameRepo.findOneByOrFail({ game_code : gameCode });
+
+        // Players who have left just now, tell them to reset their state to default
+        // which will land them on the homepage.
+        await Promise.all(disconnectPlayerIds.map(playerId =>
+            server.to(`${game.id}_${playerId}`).emit(
+                WebSocketEventType.UpdateGame,
+                GameStateDTO.Default)));
+
+        // TODO - CHECK ABOVE - I think its returning people that just left the game
+        // gameStatusList
+
+        // todo: probably check return values here instead of just spray and pray
+        // todo: consider passing context to client to maintain continuity between logs
         return Promise.all(
             gameStatusList.map(gameStatus => server
                 .to(gameStatus.current_player_id!)
-                .emit(WebSocketEventType.UpdateGame, gameStatus)));
+                .emit(WebSocketEventType.UpdateGame, gameStatus))); /// pew pew pew
     }
 
 
@@ -753,20 +891,6 @@ export class GameService {
         return {
             dealer, players, game, session, scoreLog,
         };
-    }
-
-    /**
-     * Validates that the current player is the dealer and that a valid score log is present.
-     *
-     * @param dealer - The current player acting as the dealer
-     * @param session - The current game session
-     * @param scoreLog - The current score log
-     */
-    private validateDealerAndScoreLog = async (
-        dealer: Player, session: GameSession, scoreLog: ScoreLog,
-    ) => {
-        if (dealer.id !== session.dealer_id)
-            throw new WebSockException(`Player ${dealer.id} is not the dealer $${scoreLog.id}`);
     }
 
     /**
@@ -826,9 +950,10 @@ export class GameService {
         winningPlayer: Player,
     ) => {
         if (winningPlayer.score >= game.max_point_count)
-            this.gameSessionService.awardWinnerAndComplete(session, winningPlayer.id!);
+            return this.gameSessionService.awardWinnerAndComplete(
+                session, winningPlayer.id!, 'Progressing Hand or Showing Results');
         else
-            this.gameSessionService.showHandResults(session);
+            return this.gameSessionService.showHandResults(session);
     }
 
     /**
@@ -847,8 +972,6 @@ export class GameService {
         startGame: StartGameDTO,
     ): P<GameStateDTO> {
         this.log.silly('GameService::startGame');
-
-        this.ensureProperGameState();
 
         const {
             currentPlayer, game, session,
@@ -1012,8 +1135,6 @@ export class GameService {
         // Log the beginning of the username update process
         this.log.silly('GameService::updateUsername', { updateUsername });
 
-        this.ensureProperGameState();
-
         // Retrieve the current player and game based on the provided auth token
         const { currentPlayer, game } = await this.getPlayerStateByAuthTokenOrFail(updateUsername.auth_token!);
 
@@ -1049,8 +1170,6 @@ export class GameService {
         this.log.silly('GameService::playerSelectCard', {
             authToken : playerSelectCard.auth_token,
         });
-
-        this.ensureProperGameState();
 
         // Retrieve the player's game state based on the provided auth token
         const playerState = await this.getPlayerStateByAuthTokenOrFail(
@@ -1089,6 +1208,7 @@ export class GameService {
     }))
     public async createGame(
         server : SocketIOServer,
+        socket : Socket,
         @Body(new ZodValidationPipe(CreateGameDTO.Schema))
         createGame: CreateGameDTO,
     ): P<void> {
@@ -1102,12 +1222,14 @@ export class GameService {
         if(!currentPlayer)
             throw new WebSockException(`CreateGame::Invalid Player (${createGame.auth_token})`);
 
-        this.log.silly('GameService::createGame - Current Player', { currentPlayer });
-
-        this.log.silly('Leaving any existing games', { playerId : currentPlayer.id });
+        this.log.debug('GameService::createGame - Current Player', { currentPlayer });
+        this.log.silly('Leaving any existing games', { currentPlayer });
 
         // Ensure the player leaves any open sessions before starting a new game
-        await this.gameSessionService.leaveOpenSession(currentPlayer);
+        await this.gameSessionService.exitActiveGameSession(
+            currentPlayer,
+            GameExitReason.CreatedNewGame,
+            'Creating a new game and logging out of existing sessions');
 
         // Generate a new game entity and persist it in the repository
         const game = await this.gameRepo.save({
@@ -1119,16 +1241,19 @@ export class GameService {
             game_code          : await this.utilService.generateGameCode(4), // Generate a 4-character game code
         });
 
+        this.log.info('Joining Game Specific Channel During Game Creation')
+        socket.join(`${game.id}_${currentPlayer.id}`);
+
         // Initialize a new game session with the current player as the host
         const session = await this.gameSessionService.initSession(currentPlayer, game);
 
         this.log.silly('GameService::createGame - Game Session Created', { session });
 
+        // TODO: Consider using the setGameSession
         // Update the game with the session reference after creation
         await this.gameRepo.update(game.id, { current_session_id : session.id! });
 
         this.log.silly('GameService::createGame - Game Updated With SessionId', { game });
-
         this.log.silly('Emitting Game Update', { gameCode : game.game_code });
 
         this.emitGameUpdate(server, game.game_code);
@@ -1139,29 +1264,56 @@ export class GameService {
     }))
     public async joinGame(
         server : SocketIOServer,
+        socket : Socket,
         @Body(new ZodValidationPipe(JoinGameDTO.Schema))
         joinGame: JoinGameDTO,
-        debugContext ?: string,
+        runtimeContext : string = '',
     ): P<void> {
+        const debugBundle = { joinGame, runtimeContext, socketId : socket.id };
 
-        this.log.silly('GameService::joinGame', { joinGame, debugContext });
+        this.log.silly('GameService::joinGame', debugBundle);
 
         // we're not in the game yet, so look it up by the game
         // code first to get the game and session
         const { session, game } = await this.getGameStateByGameCode(joinGame.game_code!);
 
         // not using the session and game from here since we're no in the game yet
-        const { currentPlayer : player } = await this.getPlayerStateByAuthToken(joinGame.auth_token!);
+        let { currentPlayer : player } = await this.getPlayerStateByAuthToken(joinGame.auth_token!);
 
         if(!player)
             throw new WebSockException(`JoinGame::Invalid Player (${joinGame.auth_token})`);
 
+        if(session.exited_player_id_list.includes(player.id)) {
+            const errorMessage = `Player ${player.username} has already exited the game, no take backsies.`;
+
+            this.log.error(errorMessage, debugBundle);
+
+            throw new WebSockException(errorMessage);
+        }
+
         this.log.silly('GameService::joinGame - Session and Game', { session, game });
+
+        // Update the player to a real player, rather than the unknown
+        // player type everyone gets when first connecting. Further joins
+        // still run this, but it won't update anything
+        player = await this.playerService.updatePlayerType(player, PlayerType.Player);
 
         // that ensures they can join this one (logs them out of existing sessions, validates, etc).
         await this.gameSessionService.setPlayerGameSession(player, session);
 
-        await this.emitGameUpdate(server, game.game_code);
+        // Add a specific channel for this game and player
+        const playerGameChannel = `${game.id}_${player.id}`;
+
+        this.log.info('Joining Player Specific Game Channel', { playerGameChannel });
+
+        socket.join(playerGameChannel);
+
+        await this.emitGameUpdate(
+            server,
+            game.game_code,
+            false,  // no deck
+            [], // no disconnects
+            runtimeContext);
     }
 
     /**
@@ -1307,15 +1459,17 @@ export class GameService {
      * @returns A list of game state DTOs, one for each player, reflecting their specific game view
      */
     public getAllPlayersGameStatus = async (
-        gameCode: string, includeDeck: boolean = false,
+        gameCode: string,
+        includeDeck: boolean = false,
+        runtimeContext: string = '',
     ): P<GameStateDTO[]> => {
 
         this.log.silly('GameService::getAllPlayersGameStatus', {
-            gameCode, includeDeck,
+            gameCode, includeDeck, runtimeContext,
         });
 
         // Retrieve the generic game state which includes player details
-        const gameStateDTO = await this.getGameStateGeneric(gameCode, includeDeck);
+        const gameStateDTO = await this.getGameStateGeneric(gameCode, includeDeck, runtimeContext);
 
         // Map the generic game state to individual game states for each player
         return gameStateDTO.player_list.map(player => ({
@@ -1331,14 +1485,17 @@ export class GameService {
      *
      * @returns - The game state DTO containing relevant game, session, and player data
      */
-    private getGameStateByGameCode = async (gameCode: string) : P<{
+    private getGameStateByGameCode = async (
+        gameCode: string,
+        runtimeContext : string = '',
+    ) : P<{
         scoreLog : ScoreLog | null;
         session  : GameSession;
         players  : Player[];
         game     : Game;
     }> => {
         this.log.silly('GameService::getGameStateByGameCode', {
-            gameCode : gameCode ?? '[null]'});
+            runtimeContext, gameCode : gameCode ?? '[null]' });
 
         // Perform game lookup with cleaned game code
         const cleanedGameCode = gameCode.toLowerCase().trim().replace(' ', '');
@@ -1352,7 +1509,7 @@ export class GameService {
         ] = await Promise.all([
             this.gameSessionService.findActiveGameSession(game),
             this.scoreLogService.findScoreLogBySession(session!),
-            this.playerService.findPlayersInSession(session!),
+            this.playerService.findActivePlayersInSession(session!),
         ]);
 
         this.log.silly('GameService::getGameStateByGameCode - Retrieved data', {
@@ -1375,9 +1532,10 @@ export class GameService {
     private getGameStateGeneric = async (
         gameCode: string,
         includeDeck: boolean = false,
+        runtimeContext : string = '',
     ): P<GameStateDTO> => {
         this.log.silly('GameService::getGameStateGeneric', {
-            gameCode, includeDeck,
+            gameCode, includeDeck, runtimeContext,
         });
 
         // todo: update this to take disconnected and limbo players into account
@@ -1385,7 +1543,7 @@ export class GameService {
         // Retrieve the game state using the provided game code
         const {
             game, session, scoreLog, players,
-        } = await this.getGameStateByGameCode(gameCode);
+        } = await this.getGameStateByGameCode(gameCode, runtimeContext);
 
         // Transform the list of players into DTOs for consistency
         const playerListDTO: PlayerDTO[] = players.map(player => ({
@@ -1414,6 +1572,8 @@ export class GameService {
         const countOfRoundsPlayed = await this.getCountGameRounds(session);
 
         // Build and return the game state DTO
+        // todo: send back runtimeContext as configutable in debug mode
+
         return {
             selected_card_id_list : session.selected_card_id_list,
             dealer_card_id_list   : session.dealer_card_id_list,
@@ -1421,11 +1581,13 @@ export class GameService {
             champion_player_id    : session.champion_player_id,
             current_player_id     : null,
             winner_player_id      : scoreLog?.winner_player_id ?? null,
+            game_end_message      : session.game_end_message,
             max_round_count       : game.max_round_count,
             max_point_count       : game.max_point_count,
             winner_card_id        : scoreLog?.winner_card_id || null,
             dealer_card_id        : session.dealer_card_id,
             host_player_id        : game.host_player_id,
+            new_auth_token        : null,
             error_message         : null,
             round_number          : countOfRoundsPlayed,
             player_list           : playerListDTO,

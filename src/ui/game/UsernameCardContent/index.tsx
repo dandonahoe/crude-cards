@@ -1,6 +1,6 @@
+import { GameAction } from '../../../client/action/game.action';
 import { CA } from '../../../constant/framework/CoreAction';
 import { TextInputDebounced } from '../TextInputDebounced';
-import { GameAction } from '@app/client/action/game';
 import { useDispatch } from '../../../client/hook';
 import { GameContext } from '../GameContext';
 import { Stack, Text } from '@mantine/core';

@@ -1,7 +1,7 @@
 import { selectIsPlayerWinner, selectWinner } from '@app/client/selector/game';
 import { useDispatch, useSelector } from '../../../../client/hook';
+import { GameAction } from '../../../../client/action/game.action';
 import { CA } from '../../../../constant/framework/CoreAction';
-import { GameAction } from '@app/client/action/game';
 import { Stack, Text, Center } from '@mantine/core';
 import classes from '../GameTemplate.module.css';
 import { GameContext } from '../../GameContext';
@@ -13,7 +13,7 @@ import { useContext } from 'react';
 export const GameResultsHeader : RFC = () => {
 
     const isWinner = useSelector(selectIsPlayerWinner);
-    const winner   = useSelector(selectWinner);
+    const winner = useSelector(selectWinner);
 
     const { isDealer } = useContext(GameContext);
 

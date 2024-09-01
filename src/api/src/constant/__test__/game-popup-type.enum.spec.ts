@@ -9,15 +9,15 @@ describe('GamePopupType Enum', () => {
     const SETTINGS = 'Settings';
     const FEEDBACK = 'Feedback';
     const UNKNOWN = 'Unknown';
-    const QUIT = 'Quit';
-    const VALID_KEYS = ['Scoreboard', 'Settings', 'Feedback', 'Unknown', 'Quit'];
+    const LEAVE = 'Leave';
+    const VALID_KEYS = ['Scoreboard', 'Settings', 'Feedback', 'Unknown', 'Leave'];
 
     it('should have correct values', () => {
         expect(GamePopupType.Scoreboard).toBe(SCOREBOARD);
         expect(GamePopupType.Settings).toBe(SETTINGS);
         expect(GamePopupType.Feedback).toBe(FEEDBACK);
         expect(GamePopupType.Unknown).toBe(UNKNOWN);
-        expect(GamePopupType.Quit).toBe(QUIT);
+        expect(GamePopupType.Leave).toBe(LEAVE);
     });
 
     it('should contain the correct keys', () => {
@@ -36,7 +36,7 @@ describe('GamePopupType Enum', () => {
         expect(GamePopupType['Settings']).toBe(SETTINGS);
         expect(GamePopupType['Feedback']).toBe(FEEDBACK);
         expect(GamePopupType['Unknown']).toBe(UNKNOWN);
-        expect(GamePopupType['Quit']).toBe(QUIT);
+        expect(GamePopupType['Leave']).toBe(LEAVE);
     });
 
     it('should have a unique value for each key', () => {
@@ -94,13 +94,13 @@ describe('GamePopupType Enum', () => {
 
         it('should remain immutable when attempting to delete keys', () => {
             expect(() => {
-                delete (GamePopupType as any).Quit;
+                delete (GamePopupType as any).Leave;
             }).toThrow(TypeError);
         });
 
         it('should correctly compare strings to enum values', () => {
-            const quitType = 'Quit';
-            expect(GamePopupType.Quit === quitType).toBe(true);
+            const leaveType = 'Leave';
+            expect(GamePopupType.Leave === leaveType).toBe(true);
         });
     });
 });
