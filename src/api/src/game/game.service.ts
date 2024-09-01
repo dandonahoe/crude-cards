@@ -6,7 +6,7 @@ import { PlayerSelectCardDTO } from './dtos/player-select-card.dto';
 import { DealerPickWinnerDTO } from './dtos/dealer-pick-winner.dto';
 import { GameSession } from '../game-session/game-session.entity';
 import { ScoreLogService } from '../score-log/score-log.service';
-import { WebSockException } from '../framework/WebSockException';
+import { WebSockException } from '../framework/exceptions/WebSockException';
 import { ZodValidationPipe } from '../pipes/ZodValidation.pipe';
 import { FeedbackService } from '../feedback/feedback.service';
 import { UpdateUsernameDTO } from './dtos/update-username.dto';
