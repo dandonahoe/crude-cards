@@ -31,8 +31,8 @@ export class GameExceptionFilter implements ExceptionFilter {
     ) => {
         const executionContext = argumentHost.switchToWs();
 
-        const socket = executionContext.getClient<Socket>();
         const baseDTO = executionContext.getData<AuthDTO>();
+        const socket  = executionContext.getClient<Socket>();
 
         const debugBundle = { socketId : socket.id, exc, baseDTO };
 
@@ -41,45 +41,71 @@ export class GameExceptionFilter implements ExceptionFilter {
             throw WSE.InternalServerError500('No game code provided', { debugBundle });
         }
 
-        // Run the specifi handler in the original types
         if (exc instanceof GameNoPlayersException)
-            return this.onGameNoPlayersException(exc, baseDTO.game_code)
+            return this.onGameNoPlayersException(socket, exc, baseDTO.game_code, debugBundle)
 
         else if (exc instanceof GameNotEnoughPlayersException)
-            return this.onGameNotEnoughPlayersException(exc, baseDTO.game_code)
+            return this.onGameNotEnoughPlayersException(socket, exc, baseDTO.game_code, debugBundle)
 
         else if (exc instanceof GameCompleteException)
-            return this.onGameCompleteException(exc, baseDTO.game_code);
+            return this.onGameCompleteException(socket, exc, baseDTO.game_code, debugBundle);
 
         else if (exc instanceof GameException)
-            return this.onGameException(exc, baseDTO.game_code);
+            return this.onGameException(socket, exc, baseDTO.game_code, debugBundle);
+
+        throw WSE.InternalServerError500('Unhandled GameException', { debugBundle });
     }
 
     private onGameNoPlayersException = async (
-        exception: GameNoPlayersException,
+        socket : Socket,
+        _exception: GameNoPlayersException,
         gameCode: string,
+        debugBundle: Record<string, unknown>,
     ) => {
-        this.log.silly('GameExceptionFilter::onNoPlayersException', { gameCode, exception });
+        this.log.silly('GameExceptionFilter::onNoPlayersException', { debugBundle });
+
+        // dont emit update, nobody is listening
+
+        // still emit game update, but it shouldnt do anything. In the future
+        // we should have observers and other kinds of players and users
+        // so this should be called regardless
+        return this.gameService.emitGameUpdate(
+            socket, gameCode, false, [], 'Handling GameNotEnoughPlayersException context}');
     }
 
     private onGameNotEnoughPlayersException = async (
-        exception: GameNotEnoughPlayersException,
-        gameCode: string,
+        socket      : Socket,
+        _exception  : GameNotEnoughPlayersException,
+        gameCode    : string,
+        debugBundle : Record<string, unknown>,
     ) => {
-        this.log.silly('GameExceptionFilter::onNotEnoughPlayersException', { gameCode });
+        this.log.silly('GameExceptionFilter::onNotEnoughPlayersException', { debugBundle });
+
+        return this.gameService.emitGameUpdate(
+            socket, gameCode, false, [], 'Handling GameNotEnoughPlayersException context}');
     }
 
     private onGameException = async (
-        exception: GameException,
-        gameCode: string,
+        socket      : Socket,
+        _exception  : GameException,
+        gameCode    : string,
+        debugBundle : Record<string, unknown>,
     ) => {
-        this.log.silly('GameExceptionFilter::onException', { gameCode });
+        this.log.silly('GameExceptionFilter::onException', { debugBundle });
+
+        return this.gameService.emitGameUpdate(
+            socket, gameCode, false, [], 'Handling GameException context}');
     }
 
     private onGameCompleteException = async (
-        exception: GameNoPlayersException,
+        socket : Socket,
+        _exception: GameNoPlayersException,
         gameCode: string,
+        debugBundle: Record<string, unknown>,
     ) => {
-        this.log.silly('GameExceptionFilter::onCompleteException', { gameCode });
+        this.log.silly('GameExceptionFilter::onCompleteException', { debugBundle });
+
+        return this.gameService.emitGameUpdate(
+            socket, gameCode, false, [], 'Handling GameNoPlayersException context}');
     }
 }
