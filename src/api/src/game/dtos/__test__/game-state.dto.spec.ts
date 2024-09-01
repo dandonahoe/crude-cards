@@ -1,5 +1,5 @@
-import { GameStateDTO } from '../game-state.dto';
 import { GameStage } from '../../../constant/game-stage.enum';
+import { GameStateDTO } from '../game-state.dto';
 import { PlayerDTO } from '../player.dto';
 import { CardDTO } from '../card.dto';
 
@@ -45,12 +45,14 @@ describe('GameStateDTO', () => {
                 'champion-player',
                 'current-player',
                 'winner-player',
+                'Endgame Message',
                 10,
                 5,
                 'winner-card',
                 'host-player',
                 'dealer-card',
                 'error',
+                'im hungry',
                 2,
                 3,
                 players,
@@ -97,12 +99,14 @@ describe('GameStateDTO', () => {
                 'champion-player',
                 'current-player',
                 'winner-player',
+                'Endgame Message',
                 10,
                 5,
                 'winner-card',
                 'host-player',
                 'dealer-card',
                 'error',
+                'uhhhhh',
                 2,
                 3,
                 [new PlayerDTO()],
@@ -126,8 +130,10 @@ describe('GameStateDTO', () => {
                 null,
                 null,
                 null,
+                null,
                 0,
                 0,
+                null,
                 null,
                 null,
                 null,
@@ -155,8 +161,10 @@ describe('GameStateDTO', () => {
                 null,
                 null,
                 null,
+                null,
                 0,
                 0,
+                null,
                 null,
                 null,
                 null,

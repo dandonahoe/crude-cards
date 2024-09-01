@@ -587,6 +587,7 @@ export class GameSessionService {
             dealer_id             : currentPlayer.id!,
         });
 
+
     /**
      * Promote a random player to the host of the game session
      * This is used when the host leaves the game and a new host needs to be selected
@@ -638,6 +639,55 @@ export class GameSessionService {
     }
 
     /**
+     * Promote a random player to the dealer of the game session if
+     * they are in active game mode. The first dealer is the lobby host
+     * because they are more likely to know what they're doing when
+     * the game starts, helping other people learn as well. Randomly making
+     * someone else dealer would be anxiety inducing even if its simple
+     *
+     * @param session - The session to promote a player to dealer
+     *
+     * @returns - The updated session with the new dealer
+     */
+    public promoteRandomPlayerToDealer = async (
+        session : GameSession,
+        runtimeContext : string,
+    ) : P<GameSession> => {
+        const debugBundle = { session, runtimeContext };
+
+        this.log.silly('GameSessionService::promoteRandomPlayerToDealer', { debugBundle });
+
+        if(session.game_stage === GameStage.Lobby) {
+            const errorMessage = 'Promote a dealer by making them host while in lobby mode.';
+
+            this.log.error(errorMessage, { debugBundle });
+
+            throw new WsException(errorMessage);
+        }
+
+        if(session.player_id_list.length === 0) {
+            const errorMessage = `Cannot promote player to dealer in a game with no players, session(${session.id})`;
+
+            this.log.error(errorMessage, { debugBundle });
+
+            throw new WsException(errorMessage);
+        }
+
+        const newDealer = session.player_id_list[0];
+
+        this.log.silly('Player promoted to dealer', { newDealer, debugBundle });
+
+        await this.gameSessionRepo.update(session.id, {
+            ...session,
+            dealer_id : newDealer,
+        });
+
+        return this.gameSessionRepo.findOneByOrFail({
+            id : session.id,
+        });
+    }
+
+    /**
      * Moves the game to the next stage, where dealer picks from
      * the list of player selected cards
      *
@@ -650,6 +700,15 @@ export class GameSessionService {
             ...session,
             game_stage : GameStage.DealerPickWinner,
         });
+
+    public skipToNextHand = async (session: GameSession) => {
+        this.log.silly('GameSessionService::handleSkipToNextHand', { session });
+
+        console.log('handleSkipToNextHand', session);
+
+        debugger;
+        return;
+    }
 
     /**
      * Player selects a white card for the game, appending it to the list of
@@ -718,13 +777,14 @@ export class GameSessionService {
             current_score_log_id : scoreLog.id,
         });
 
+
     /**
      * Removes a player from a game session, updating one or more fields
      * to handle the manner in which the player exited the game.
      *
-     * @param player - The player to remove from the session
-     * @param session - The session to remove the player from
-     * @param exitReason - The reason the player is being removed
+     * @param player         - The player to remove from the session
+     * @param session        - The session to remove the player from
+     * @param exitReason     - The reason the player is being removed
      * @param runtimeContext - Additional context for debugging
      *
      * @returns - The updated session

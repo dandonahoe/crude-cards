@@ -121,7 +121,7 @@ export class GameService {
 
         this.log.debug('Player socket connected, sending AuthToken', { player });
 
-        // existing player needs a new token, they're wiped on connection
+        // Existing player needs a new token, they're wiped on connection
         // to the server and this pushes a new one to be stored and supplied
         // in followup calls. Should probably migrate to JWT for this.
         // await this.emitPlayerAuthToken(server, playerState.currentPlayer!)
@@ -221,19 +221,33 @@ export class GameService {
 
         let session = existingSession;
 
+        const playerCount = existingSession.player_id_list.length;
+
         // If there arent enough players for the game to continue, end the game
         // TODO: Drop them into limbo until a quarum is reached and give the
         // new dealer the option to restart the game. Allows other players to
         // reconnect. Could happen if internets go out and everyone bounces
-        // for instance.
-        if(session.player_id_list.length <= 3) {
+        // for instance. Does not apply in lobby mode since theres too few players
+        // initially on create
+
+        if (session.game_stage === GameStage.Lobby && playerCount === 0) {
+            debugger;
+
+            this.log.info('Game Ended In Lobby Mode Due to No Players', debugBundle);
+
+            await this.gameSessionService.skipToNextHand(session, 'No Players in Lobby');
+        }
+
+
+        if (session.game_stage !== GameStage.Lobby
+            && session.player_id_list.length <= 3) {
             // End the game entirely
             this.log.warn('Game Ended Due to Insufficient Players', debugBundle);
 
             // Don't award anyone, just end the game. The front end knows
             // what to do with this message.
             session = await this.gameSessionService.awardWinnerAndComplete(
-                session, null, 'Insufficient Players, You\'re All Losers.');
+                session, null, 'Insufficient Players, Losers.');
         }
 
         // if there's no host... or the host on the game session is no longer in the
@@ -241,6 +255,8 @@ export class GameService {
         if(!session.lobby_host_id || !session.player_id_list.includes(session.lobby_host_id)) {
             this.log.error('Game Host Missing', { debugBundle, session });
 
+            // Make a random other player the host in the lobby. They will
+            // also be selected as the first dealer when the game starts
             session = await this.gameSessionService.promoteRandomPlayerToHost(
                 session, `Validating Session State: Game Host Missing, context(${runtimeContext})`);
 
@@ -267,11 +283,15 @@ export class GameService {
         // If there's no dealer, promote a player and tell
         // everyone they're a loser this hand
 
+        // in other cases, the dealer could leave midgame. In that
+        // case, the current hand is scrubbed and moves to the next
+        // round, which promotes a new player to dealer.
         if(session.dealer_id === null) {
             this.log.warn('Dealer is Missing During Session Validation, Ending Hand, Next Dealer Goes', debugBundle);
 
             // Promote the first player in the list to the dealer
-            session = await this.gameSessionService.promoteRandomPlayerToDealer(session);
+            session = await this.gameSessionService.promoteRandomPlayerToDealer(
+                session, `Validating Session State: Dealer Missing, context(${runtimeContext})`);
         }
 
         return session;
@@ -444,7 +464,7 @@ export class GameService {
                 currentPlayer,
             };
 
-        session = await this.ensureValidSessionState(session, 'Dealer Picking Black Card');
+        session = await this.ensureValidSessionState(session, 'Getting Player Auth State');
 
         const [
             scoreLog, players, game,
@@ -477,9 +497,9 @@ export class GameService {
         @Body(new ZodValidationPipe(SubmitFeedbackDTO.Schema))
         submitFeedback: SubmitFeedbackDTO,
     ): P<Feedback> {
+
         // Log the beginning of the feedback submission process
         this.log.silly('GameService::submitFeedback', { submitFeedback });
-
 
         // Retrieve the current player, session, and game based on the auth token
         const {
@@ -1264,7 +1284,6 @@ export class GameService {
 
             throw new WebSockException(errorMessage);
         }
-
 
         this.log.silly('GameService::joinGame - Session and Game', { session, game });
 
