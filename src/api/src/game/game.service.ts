@@ -1,4 +1,4 @@
-import { GameTooFewPlayersException } from '../exceptions/GameNotEnoughPlayers.exception';
+
 import { Body, Inject, Injectable, UsePipes, ValidationPipe } from '@nestjs/common';
 import { GameCompleteException } from '../exceptions/GameComplete.exception';
 import { DealerPickBlackCardDTO } from './dtos/dealer-pick-black-card.dto';
@@ -38,6 +38,7 @@ import { Repository } from 'typeorm';
 import { Game } from './game.entity';
 import { difference } from 'lodash';
 import { Logger } from 'winston';
+import { GameNotEnoughPlayersException } from '../exceptions/GameNotEnoughPlayers.exception';
 
 @Injectable()
 export class GameService {
@@ -238,8 +239,8 @@ export class GameService {
             // do it first
 
             debugger;
-            throw new GameTooFewPlayersException(
-                'No players in lobby, ending game',
+            throw new GameNotEnoughPlayersException(
+                'No players in the game, self destructing.',
                 `Validating Session Context(${runtimeContext})`,
                 debugBundle, this.log);
         }
@@ -252,7 +253,7 @@ export class GameService {
 
             debugger;
 
-            this.log.error('Game Host Missing', { debugBundle, session });
+            this.log.error('The game host is missing or is not an active player', { debugBundle, session });
 
             // Make a random other player the host in the lobby. They will
             // also be selected as the first dealer when the game starts
