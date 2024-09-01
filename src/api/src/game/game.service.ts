@@ -39,6 +39,7 @@ import { Game } from './game.entity';
 import { difference } from 'lodash';
 import { Socket } from 'socket.io';
 import { Logger } from 'winston';
+import { GameCompleteException } from '../exceptions/GameComplete.exception copy';
 
 @Injectable()
 export class GameService {
@@ -199,6 +200,8 @@ export class GameService {
 
     /**
      * Emits the player's authentication token to the player's socket. Good place to bunch edge cases
+     * and to do things to reorganize the game to make it work. Sometimes, it will encounter
+     * unfixable situations, like everyone leaving, and automatically shut down the game
      *
      * @param server - The socket server instance
      * @param player - The player entity
@@ -235,7 +238,7 @@ export class GameService {
 
             this.log.info('Game Ended In Lobby Mode Due to No Players', { debugBundle });
 
-            throw WSE.Unauthorized401('No Players in Lobby', debugBundle);
+            throw new GameCompleteException('No Players in Lobby', 'In the lobby and the player count is zero', debugBundle);
 
             // This is encountered when:
             // Three people in lobby
@@ -974,39 +977,45 @@ export class GameService {
         server : SocketIOServer,
         @Body(new ZodValidationPipe(StartGameDTO.Schema))
         startGame: StartGameDTO,
-    ): P<GameStateDTO> {
+    ): P<unknown> {
         this.log.silly('GameService::startGame');
 
-        const {
-            currentPlayer, game, session,
-        } = await this.getPlayerStateByAuthTokenOrFail(startGame.auth_token!);
+        console.log('startGame', startGame, server);
 
-        // Ensure that the current player is the host
-        this.ensurePlayerIsHost(currentPlayer, game);
+        debugger;
 
-        // Retrieve the game state and relevant data
-        const gameStateGeneric = await this.getGameStateGeneric(game.game_code!, true);
+        throw new GameCompleteException('Game Already Started', 'Game Already Started');
 
-        // Calculate card counts needed for the game
-        const {
-            whiteCardTotalCount, blackCardTotalCount,
-        } = await this.calculateCardCounts(gameStateGeneric);
+        // const {
+        //     currentPlayer, game, session,
+        // } = await this.getPlayerStateByAuthTokenOrFail(startGame.auth_token!);
 
-        // Retrieve the deck of white and black cards for the game
-        const {
-            allWhiteCardIds, allBlackCardIds,
-        } = await this.fetchCardDecks(whiteCardTotalCount, blackCardTotalCount);
+        // // Ensure that the current player is the host
+        // this.ensurePlayerIsHost(currentPlayer, game);
 
-        // Assign cards to players and prepare the session
-        await this.assignCardsToPlayers(gameStateGeneric.player_list, allWhiteCardIds);
+        // // Retrieve the game state and relevant data
+        // const gameStateGeneric = await this.getGameStateGeneric(game.game_code!, true);
 
-        // Set up the game session with the retrieved cards
-        await this.setupGameSession(session, currentPlayer, allBlackCardIds, allWhiteCardIds);
+        // // Calculate card counts needed for the game
+        // const {
+        //     whiteCardTotalCount, blackCardTotalCount,
+        // } = await this.calculateCardCounts(gameStateGeneric);
 
-        await this.emitGameUpdate(server, game.game_code);
+        // // Retrieve the deck of white and black cards for the game
+        // const {
+        //     allWhiteCardIds, allBlackCardIds,
+        // } = await this.fetchCardDecks(whiteCardTotalCount, blackCardTotalCount);
 
-        // Return the updated game state for the current player
-        return this.getGameStateAsPlayer(game.game_code, currentPlayer.id);
+        // // Assign cards to players and prepare the session
+        // await this.assignCardsToPlayers(gameStateGeneric.player_list, allWhiteCardIds);
+
+        // // Set up the game session with the retrieved cards
+        // await this.setupGameSession(session, currentPlayer, allBlackCardIds, allWhiteCardIds);
+
+        // await this.emitGameUpdate(server, game.game_code);
+
+        // // Return the updated game state for the current player
+        // return this.getGameStateAsPlayer(game.game_code, currentPlayer.id);
     }
 
     /**
