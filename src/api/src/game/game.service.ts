@@ -6,7 +6,6 @@ import { PlayerSelectCardDTO } from './dtos/player-select-card.dto';
 import { DealerPickWinnerDTO } from './dtos/dealer-pick-winner.dto';
 import { GameSession } from '../game-session/game-session.entity';
 import { ScoreLogService } from '../score-log/score-log.service';
-import { WebSockException } from '../framework/exceptions/WebSockException';
 import { ZodValidationPipe } from '../pipes/ZodValidation.pipe';
 import { FeedbackService } from '../feedback/feedback.service';
 import { UpdateUsernameDTO } from './dtos/update-username.dto';
@@ -17,6 +16,7 @@ import { ScoreLog } from '../score-log/score-log.entity';
 import { GameStage } from '../constant/game-stage.enum';
 import { CardColor } from '../constant/card-color.enum';
 import { type P } from '../../../type/framework/data/P';
+import { WSE } from '../exceptions/WebSocket.exception';
 import { Feedback } from '../feedback/feedback.entity';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { CreateGameDTO } from './dtos/create-game.dto';
@@ -39,7 +39,6 @@ import { Game } from './game.entity';
 import { difference } from 'lodash';
 import { Socket } from 'socket.io';
 import { Logger } from 'winston';
-
 
 @Injectable()
 export class GameService {
@@ -97,7 +96,7 @@ export class GameService {
             const { currentPlayer } = await this.getPlayerStateByAuthToken(player.auth_token);
 
             if(!currentPlayer)
-                throw new WebSockException(`Player not found after creation, socket(${socketId})`);
+                throw WSE.InternalServerError500(`Player not found after creation, socket(${socketId})`);
 
             this.log.debug('Emitting new player auth token', { player });
 
@@ -212,10 +211,11 @@ export class GameService {
     ) : P<GameSession> => {
         if(!existingSession) {
             this.log.error('GameService::ensureValidSessionState - Bogus Session', { runtimeContext });
-            throw new WebSockException('GameService::ensureValidSessionState::Bogus Session', { runtimeContext });
+
+            throw WSE.BadRequest400('Bogus Session', { runtimeContext });
         }
 
-        const debugBundle = { existingSession };
+        const debugBundle = { existingSession, runtimeContext };
 
         this.log.silly('GameService::ensureValidSessionState', { debugBundle });
 
@@ -233,7 +233,9 @@ export class GameService {
         if (session.game_stage === GameStage.Lobby && playerCount === 0) {
             debugger;
 
-            this.log.info('Game Ended In Lobby Mode Due to No Players', debugBundle);
+            this.log.info('Game Ended In Lobby Mode Due to No Players', { debugBundle });
+
+            throw WSE.Unauthorized401('No Players in Lobby', debugBundle);
 
             // This is encountered when:
             // Three people in lobby
@@ -241,7 +243,7 @@ export class GameService {
             // Second Non Host Leaves
             // Host (Last Player) Leaves
 
-            await this.gameSessionService.skipToNextHand(session, 'No Players in Lobby');
+            // await this.gameSessionService.skipToNextHand(session, 'No Players in Lobby');
         }
 
 
@@ -270,9 +272,9 @@ export class GameService {
             if(!session.lobby_host_id) {
                 const errorMessage = 'Game Host Missing Again, Check Logs for Edge Case';
 
-                this.log.error(errorMessage, debugBundle);
+                this.log.error(errorMessage, { session, debugBundle });
 
-                throw new WebSockException(errorMessage, debugBundle);
+                throw WSE.InternalServerError500(errorMessage, { session, debugBundle });
             }
         }
 
@@ -419,9 +421,9 @@ export class GameService {
 
         const debugInfo = { authToken };
 
-        if (!currentPlayer) throw new WebSockException('Invalid Auth Token, No Player', debugInfo);
-        if (!session) throw new WebSockException(`Invalid Auth Token ${authToken}, No Session`, debugInfo);
-        if (!game) throw new WebSockException('Invalid Auth Token, No Game', debugInfo);
+        if (!currentPlayer) throw  WSE.InternalServerError500('Invalid Auth Token, No Player', debugInfo);
+        if (!session) throw  WSE.InternalServerError500(`Invalid Auth Token ${authToken}, No Session`, debugInfo);
+        if (!game) throw  WSE.InternalServerError500('Invalid Auth Token, No Game', debugInfo);
 
         const [scoreLog, players] = await Promise.all([
             this.scoreLogService.findScoreLogBySession(session),
@@ -844,7 +846,7 @@ export class GameService {
         this.log.info('Broadcasting Disconnecting players', debugBundle);
 
         if(!gameCode)
-            throw new WebSockException(`Invalid game code ${gameCode} runtimeContext(${runtimeContext})`);
+            throw  WSE.InternalServerError500(`Invalid game code ${gameCode} runtimeContext(${runtimeContext})`);
 
         // todo: update this to handle people in the disconnected and limbo states
         const gameStatusList = await this.getAllPlayersGameStatus(gameCode, includeDeck,
@@ -886,7 +888,7 @@ export class GameService {
         } = await this.getPlayerStateByAuthTokenOrFail(authToken);
 
         if (!scoreLog)
-            throw new WebSockException(`No score log found for session ${session.id} and game ${game.id}`);
+            throw WSE.InternalServerError500(`No score log found for session ${session.id} and game ${game.id}`);
 
         return {
             dealer, players, game, session, scoreLog,
@@ -909,7 +911,9 @@ export class GameService {
         );
 
         if (winningPlayerResults.length !== 1)
-            throw new WebSockException('Invalid card ID or multiple players found with the same card');
+            throw WSE.InternalServerError500('Invalid card ID or multiple players found with the same card', {
+                players, selectedCardId,
+            });
 
         return winningPlayerResults[0];
     };
@@ -1014,7 +1018,7 @@ export class GameService {
      */
     private ensurePlayerIsHost = async (currentPlayer: Player, game: Game) => {
         if (currentPlayer.id !== game.host_player_id)
-            throw new WebSockException(`Player ${currentPlayer.id} is not the host. Host is ${game.host_player_id}.`);
+            throw WSE.InternalServerError500(`Player ${currentPlayer.id} is not the host. Host is ${game.host_player_id}.`);
     }
 
     /**
@@ -1220,7 +1224,7 @@ export class GameService {
         const { currentPlayer } = await this.getPlayerStateByAuthToken(createGame.auth_token!);
 
         if(!currentPlayer)
-            throw new WebSockException(`CreateGame::Invalid Player (${createGame.auth_token})`);
+            throw WSE.InternalServerError500(`CreateGame::Invalid Player (${createGame.auth_token})`);
 
         this.log.debug('GameService::createGame - Current Player', { currentPlayer });
         this.log.silly('Leaving any existing games', { currentPlayer });
@@ -1281,14 +1285,14 @@ export class GameService {
         let { currentPlayer : player } = await this.getPlayerStateByAuthToken(joinGame.auth_token!);
 
         if(!player)
-            throw new WebSockException(`JoinGame::Invalid Player (${joinGame.auth_token})`);
+            throw WSE.InternalServerError500(`JoinGame::Invalid Player (${joinGame.auth_token})`);
 
         if(session.exited_player_id_list.includes(player.id)) {
             const errorMessage = `Player ${player.username} has already exited the game, no take backsies.`;
 
             this.log.error(errorMessage, debugBundle);
 
-            throw new WebSockException(errorMessage);
+            throw WSE.InternalServerError500(errorMessage);
         }
 
         this.log.silly('GameService::joinGame - Session and Game', { session, game });
@@ -1326,7 +1330,7 @@ export class GameService {
      * @param includeDeck - Optional flag to include deck details in the game state. Defaults to false.
      *
      * @returns The GameStateDTO representing the current state of the game for the specific player.
-     * @throws WebSockException if any error occurs while retrieving the game state.
+     * @throws WSE. if any error occurs while retrieving the game state.
      */
     public getGameStateAsPlayer = async (
         gameCode: string | null,
@@ -1338,8 +1342,8 @@ export class GameService {
         this.log.silly('GameService::getGameStateAsPlayer - Start', {
             gameCode, playerId, includeDeck });
 
-        if(!playerId) throw new WebSockException('Invalid player ID');
-        if(!gameCode) throw new WebSockException('Invalid game code');
+        if(!playerId) throw WSE.InternalServerError500('Invalid player ID');
+        if(!gameCode) throw WSE.InternalServerError500('Invalid game code');
 
         // Retrieve the game state using helper methods and adjust it to reflect the player's perspective
         const gameState = await this.getGameStateWithPlayerPerspective(
@@ -1420,7 +1424,7 @@ export class GameService {
         if (playersOverMaxPoints.length > 1) {
             this.log.error('Multiple players exceed max points', { playersOverMaxPoints });
 
-            throw new WebSockException('Multiple players over max points');
+            throw WSE.InternalServerError500('Multiple players over max points');
         }
 
         // Return the single player who exceeds the max points
@@ -1618,14 +1622,14 @@ export class GameService {
         if (!dealer_id) {
             this.log.error('No current dealer found in session', session);
 
-            throw new WebSockException('No current dealer found in session');
+            throw WSE.InternalServerError500('No current dealer found in session');
         }
 
         const dealerIndex = player_id_list.indexOf(dealer_id);
 
         if (dealerIndex === -1) {
             this.log.error('Current dealer not found in player list', session);
-            throw new WebSockException('Current dealer not found in player list');
+            throw WSE.InternalServerError500('Current dealer not found in player list');
         }
 
         // Determine the next dealer's index by wrapping around the list
