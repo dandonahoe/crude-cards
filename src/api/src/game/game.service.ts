@@ -98,8 +98,6 @@ export class GameService {
             if(!currentPlayer)
                 throw WSE.InternalServerError500(`Player not found after creation, socket(${socketId})`);
 
-            debugger;
-
             this.log.debug('Emitting new player auth token', { player });
 
             // let the server talk to the plaayer by their id. Always active,
@@ -108,9 +106,9 @@ export class GameService {
             await socket.join(currentPlayer.id);
 
             // and push the new token down as the first message received
-            const hello = await this.emitPlayerAuthToken(server, currentPlayer);
+            const result = await this.emitPlayerAuthToken(server, currentPlayer);
 
-            console.log('Broadcasting new player auth token', { hello });
+            console.log('Broadcasting new player auth token', { result });
 
             return;
         }
@@ -187,6 +185,7 @@ export class GameService {
         existingSession: GameSession | null | undefined,
         runtimeContext : string,
     ) : P<GameSession> => {
+
         if(!existingSession) {
             this.log.error('GameService::ensureValidSessionState - Bogus Session', { runtimeContext });
 
@@ -339,6 +338,17 @@ export class GameService {
         // to pull the changes. Can do dicy things here, and this
         // should be called in similar situations and frequently.
         // but should only do things whent he state has gone bogus
+
+        if(!session) {
+            debugger;
+
+            this.log.warning('GameService::exitGame - Session is Bogus, Cannot Leave Session it Cant Find', {
+                game_code : game.game_code, player, runtimeContext,
+            });
+
+            return;
+        }
+
 
         // to check if the state is valid and reconfigure
         // First check, if the host is leaving, promote someone.
@@ -836,9 +846,7 @@ export class GameService {
     ) => {
         const debugBundle = { gameCode, includeDeck, disconnectPlayerIds, runtimeContext };
 
-        this.log.silly('GameService::broadcastGameUpdate', debugBundle);
-
-        this.log.info('Broadcasting Disconnecting players', debugBundle);
+        this.log.silly('GameService::emitGameUpdate', debugBundle);
 
         if(!gameCode)
             throw WSE.InternalServerError500(`Invalid game code ${gameCode} runtimeContext(${runtimeContext})`);
@@ -847,7 +855,7 @@ export class GameService {
         const gameStatusList = await this.getAllPlayersGameStatus(gameCode, includeDeck,
             `Emitting Game Update to gameCode(${gameCode}) \n\nruntimeContext(${runtimeContext})` );
 
-        this.log.silly('GameService::broadcastGameUpdate - Disconnecting Players', { gameStatusList });
+        this.log.silly('GameService::emitGameUpdate - Disconnecting Players', { gameStatusList });
 
         const game = await this.gameRepo.findOneByOrFail({ game_code : gameCode });
 
@@ -1226,10 +1234,9 @@ export class GameService {
             throw WSE.InternalServerError500(`CreateGame::Invalid Player (${createGame.auth_token})`);
         }
 
-
         this.log.debug('GameService::createGame - Current Player', { currentPlayer });
         this.log.silly('Leaving any existing games', { currentPlayer });
-
+debugger;
         // Ensure the player leaves any open sessions before starting a new game
         await this.gameSessionService.exitActiveGameSession(
             currentPlayer,
