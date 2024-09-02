@@ -6,7 +6,6 @@ export function middleware(_request : NextRequest) {
   return NextResponse.next()
 }
 
-
 export const config = {
     matcher : [
         '/((?!.*\\..*|_next).*)',
