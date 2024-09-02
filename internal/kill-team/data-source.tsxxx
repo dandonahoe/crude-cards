@@ -1,0 +1,25 @@
+import { DataSource } from 'typeorm';
+import { Player } from './entities/Player';
+import { KillTeam } from './entities/KillTeam';
+import { Unit } from './entities/Unit';
+import { Weapon } from './entities/Weapon';
+import { Ability } from './entities/Ability';
+import { Game } from './entities/Game';
+import { GameEvent } from './entities/GameEvent';
+import { Faction } from './entities/Faction';
+import { Mission } from './entities/Mission';
+import { Terrain } from './entities/Terrain';
+import { BattleResult } from './entities/BattleResult';
+import { DeploymentZone } from './entities/DeploymentZone';
+import { WeaponProfile } from './entities/WeaponProfile';
+import { GameLog } from './entities/GameLog';
+
+export const AppDataSource = new DataSource({
+    type     : 'sqlite',
+    database : 'killteam.db',
+    entities : [
+        Player, KillTeam, Unit, Weapon, Ability, Game, GameEvent, Faction, Mission,
+        Terrain, BattleResult, DeploymentZone, WeaponProfile, GameLog,
+    ],
+    synchronize : true,
+});

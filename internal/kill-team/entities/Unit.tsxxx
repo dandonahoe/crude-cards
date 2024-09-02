@@ -1,0 +1,40 @@
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, ManyToMany, JoinTable, OneToMany } from 'typeorm';
+import { KillTeam } from './KillTeam';
+import { Weapon } from './Weapon';
+import { Ability } from './Ability';
+import { GameEvent } from './GameEvent';
+
+@Entity()
+export class Unit {
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @Column({ type : 'varchar', length : 100 })
+  name: string;
+
+  @Column({ type : 'int' })
+  wounds: number;
+
+  @Column({ type : 'int' })
+  movement: number;
+
+  @Column({ type : 'int' })
+  weaponSkill: number;
+
+  @Column({ type : 'int' })
+  ballisticSkill: number;
+
+  @ManyToOne(() => KillTeam, killTeam => killTeam.units)
+  killTeam: KillTeam;
+
+  @ManyToMany(() => Weapon)
+  @JoinTable()
+  weapons: Weapon[];
+
+  @ManyToMany(() => Ability)
+  @JoinTable()
+  abilities: Ability[];
+
+  @OneToMany(() => GameEvent, gameEvent => gameEvent.unit)
+  events: GameEvent[];
+}

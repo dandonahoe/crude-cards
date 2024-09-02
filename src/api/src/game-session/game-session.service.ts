@@ -1,6 +1,8 @@
 import { ArrayContains, IsNull, Not, Repository } from 'typeorm';
 import { ScoreLog } from '../score-log/score-log.entity';
+import { JoinGameReason, GameExitReason } from '../type';
 import { GameStage } from '../constant/game-stage.enum';
+import { WSE } from '../exceptions/WebSocket.exception';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { GameSession } from './game-session.entity';
 import { Injectable, Inject } from '@nestjs/common';
@@ -10,9 +12,6 @@ import { Player } from '../player/player.entity';
 import { WsException } from '@nestjs/websockets';
 import { Game } from '../game/game.entity';
 import { Logger } from 'winston';
-
-import { JoinGameReason, GameExitReason } from '../type';
-
 
 @Injectable()
 export class GameSessionService {
@@ -217,7 +216,9 @@ export class GameSessionService {
      * @returns void
      */
     public setPlayerGameSession = async (
-        player: Player, session: GameSession, runtimeContext: string = '',
+        player: Player,
+        session: GameSession,
+        runtimeContext: string = '',
     ): P<unknown> => {
         this.log.silly('GameSessionService::addPlayerToSession', { player, session, runtimeContext });
 
@@ -260,7 +261,8 @@ export class GameSessionService {
                 return this.joinGameViaNewGameAndPlayer(player, session,
                     'New game and player' + runtimeContext);
 
-            default: throw new WsException(`Invalid Join Game Scenario ${joinGameState} - ` + runtimeContext);
+            default: throw WSE.BadRequest400(
+                `Invalid Join Game Scenario ${joinGameState}`, { runtimeContext })
         }
     }
 

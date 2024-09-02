@@ -1,0 +1,21 @@
+import { Entity, PrimaryGeneratedColumn, Column, ManyToMany } from "typeorm";
+import { Unit } from "./Unit";
+import { Faction } from "./Faction";
+
+@Entity()
+export class Ability {
+    @PrimaryGeneratedColumn()
+    public id: number;
+
+    @Column({ type: "varchar", length: 100 })
+    public name: string;
+
+    @Column({ type: "text" })
+    public description: string;
+
+    @ManyToMany(() => Unit, (unit) => unit.abilities)
+    public units: Unit[];
+
+    @ManyToMany(() => Faction, (faction) => faction.abilities)
+    public factions: Faction[];
+}

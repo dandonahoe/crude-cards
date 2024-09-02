@@ -1,0 +1,23 @@
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { DeploymentZone } from './DeploymentZone';
+
+@Entity()
+export class Mission {
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @Column({ type : 'varchar', length : 100 })
+  name: string;
+
+  @Column({ type : 'text' })
+  description: string;
+
+  @Column({ type : 'text' })
+  victoryConditions: string;
+
+  @Column({ type : 'text' })
+  specialRules: string;
+
+  @OneToMany(() => DeploymentZone, deploymentZone => deploymentZone.mission)
+  deploymentZones: DeploymentZone[];
+}
