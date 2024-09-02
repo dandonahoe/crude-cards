@@ -1,5 +1,42 @@
 # Code Quality Guidelines
 
+# GENAI IGNORE THIS PART
+
+Create a super good code directory parser
+Multiple Passes, Iterative like Radioisity, Diminishing retruns
+
+Pass 1: Analysis
+Dump Entire Codebase into Markdown file.
+
+Reviewer
+
+Repeat, Filter (filter out ones that look good) or End
+Keep filtering reults (files) down until done.
+
+Every pass:
+ Auto Tag Everything in Edited Code
+    Repeat Code Quality (Option to repeat step)
+ pass to ask AI where more documentation is needed
+    Repeat Code Quality (Option to repeat step)
+ pass add documentation to areas
+    Review updated documentation, ensure correct
+pass
+    At this point, we've given a lot more context for gen at to make more
+    important changes
+pass Apply code quality rules
+    Review / Finalize Subset of "Good" Files
+    Repeat Code Quality (Option to repeat step)
+
+Review - fill in necessary
+
+Index
+
+Put code blocks in place, review
+You should be able to put github tags into your code in blocks, then have them auto applied
+
+
+# GENAI START UNIGNORING FROM HERE on
+
 TypeScript, Node.js, NestJS, Jest
 
 - Always include `public`, `private` or `protected` visibility modifier for class properties and methods.
