@@ -1,0 +1,45 @@
+import {
+    Entity,
+    PrimaryGeneratedColumn,
+    Column,
+    ManyToOne,
+    OneToMany,
+} from "typeorm";
+import { Player } from "./Player";
+import { KillTeam } from "./KillTeam";
+import { GameEvent } from "./GameEvent";
+import { BattleResult } from "./BattleResult";
+import { GameLog } from "./GameLog";
+
+@Entity()
+export class Game {
+    @PrimaryGeneratedColumn()
+    public id: number;
+
+    @ManyToOne(() => Player, (player) => player.gamesAsPlayer1)
+    public player1: Player;
+
+    @ManyToOne(() => Player, (player) => player.gamesAsPlayer2)
+    public player2: Player;
+
+    @ManyToOne(() => KillTeam, (killTeam) => killTeam.games)
+    public killTeam1: KillTeam;
+
+    @ManyToOne(() => KillTeam, (killTeam) => killTeam.games)
+    public killTeam2: KillTeam;
+
+    public @Column({ type: "timestamp" })
+    public playedAt: Date;
+
+    public @Column({ type: "int" })
+    public result: number; // 1 = player1 wins, 2 = player2 wins, 0 = draw
+
+    @OneToMany(() => GameEvent, (gameEvent) => gameEvent.game)
+    public events: GameEvent[];
+
+    @OneToMany(() => BattleResult, (battleResult) => battleResult.game)
+    public battleResults: BattleResult[];
+
+    @OneToMany(() => GameLog, (gameLog) => gameLog.game)
+    public logs: GameLog[];
+}

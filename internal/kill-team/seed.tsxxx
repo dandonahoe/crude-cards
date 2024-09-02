@@ -1,0 +1,119 @@
+import { AppDataSource } from './data-source';
+import { Player } from './entities/Player';
+import { Faction } from './entities/Faction';
+import { KillTeam } from './entities/KillTeam';
+import { Unit } from './entities/Unit';
+import { Weapon } from './entities/Weapon';
+import { Ability } from './entities/Ability';
+import { Game } from './entities/Game';
+import seedrandom from 'seedrandom';
+
+const rng = seedrandom('warhammer-seed'); // Seeded RNG for repeatable results
+
+const randomInt = (min: number, max: number): number => {
+  return Math.floor(rng() * (max - min + 1)) + min;
+};
+
+const randomName = (prefix: string): string => {
+  return `${prefix}-${randomInt(1, 1000)}`;
+};
+
+async function createSeedData() {
+  await AppDataSource.initialize();
+
+  // Create Players
+  const player1 = new Player();
+  player1.name = randomName('Player');
+  await AppDataSource.manager.save(player1);
+
+  const player2 = new Player();
+  player2.name = randomName('Player');
+  await AppDataSource.manager.save(player2);
+
+  // Create Factions
+  const faction1 = new Faction();
+  faction1.name = 'Space Marines';
+  faction1.description = 'Elite soldiers of the Imperium.';
+  await AppDataSource.manager.save(faction1);
+
+  const faction2 = new Faction();
+  faction2.name = 'Orks';
+  faction2.description = 'Brutal, warlike aliens.';
+  await AppDataSource.manager.save(faction2);
+
+  // Create Kill Teams
+  const killTeam1 = new KillTeam();
+  killTeam1.name = randomName('KillTeam');
+  killTeam1.player = player1;
+  killTeam1.faction = faction1;
+  await AppDataSource.manager.save(killTeam1);
+
+  const killTeam2 = new KillTeam();
+  killTeam2.name = randomName('KillTeam');
+  killTeam2.player = player2;
+  killTeam2.faction = faction2;
+  await AppDataSource.manager.save(killTeam2);
+
+  // Create Units
+  for (let i = 0; i < 5; i++) {
+    const unit1 = new Unit();
+    unit1.name = randomName('Unit');
+    unit1.wounds = randomInt(1, 10);
+    unit1.movement = randomInt(4, 8);
+    unit1.weaponSkill = randomInt(1, 6);
+    unit1.ballisticSkill = randomInt(1, 6);
+    unit1.killTeam = killTeam1;
+    await AppDataSource.manager.save(unit1);
+
+    const unit2 = new Unit();
+    unit2.name = randomName('Unit');
+    unit2.wounds = randomInt(1, 10);
+    unit2.movement = randomInt(4, 8);
+    unit2.weaponSkill = randomInt(1, 6);
+    unit2.ballisticSkill = randomInt(1, 6);
+    unit2.killTeam = killTeam2;
+    await AppDataSource.manager.save(unit2);
+  }
+
+  // Create Weapons
+  const weapon1 = new Weapon();
+  weapon1.name = 'Bolter';
+  weapon1.range = 24;
+  weapon1.attacks = 2;
+  weapon1.strength = 4;
+  weapon1.armorPenetration = 1;
+  weapon1.damage = 1;
+  await AppDataSource.manager.save(weapon1);
+
+  const weapon2 = new Weapon();
+  weapon2.name = 'Choppa';
+  weapon2.range = 1;
+  weapon2.attacks = 1;
+  weapon2.strength = 4;
+  weapon2.armorPenetration = 0;
+  weapon2.damage = 1;
+  await AppDataSource.manager.save(weapon2);
+
+  // Assign Weapons to Units
+  const units = await AppDataSource.manager.find(Unit);
+  for (const unit of units) {
+    unit.weapons = rng() > 0.5 ? [weapon1] : [weapon2];
+    await AppDataSource.manager.save(unit);
+  }
+
+  // Create a Game
+  const game = new Game();
+  game.player1 = player1;
+  game.player2 = player2;
+  game.killTeam1 = killTeam1;
+  game.killTeam2 = killTeam2;
+  game.playedAt = new Date();
+  game.result = randomInt(0, 2); // 0 = draw, 1 = player1 wins, 2 = player2 wins
+  await AppDataSource.manager.save(game);
+
+  console.log('Seed data created successfully.');
+
+  await AppDataSource.destroy();
+}
+
+createSeedData().catch(error => console.log(error));

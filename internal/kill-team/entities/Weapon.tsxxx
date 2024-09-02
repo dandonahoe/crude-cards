@@ -1,0 +1,33 @@
+import { Entity, PrimaryGeneratedColumn, Column, ManyToMany } from 'typeorm';
+import { Unit } from './Unit';
+import { WeaponProfile } from './WeaponProfile';
+
+@Entity()
+export class Weapon {
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @Column({ type : 'varchar', length : 100 })
+  name: string;
+
+  @Column({ type : 'int' })
+  range: number;
+
+  @Column({ type : 'int' })
+  attacks: number;
+
+  @Column({ type : 'int' })
+  strength: number;
+
+  @Column({ type : 'int' })
+  armorPenetration: number;
+
+  @Column({ type : 'int' })
+  damage: number;
+
+  @ManyToMany(() => Unit, unit => unit.weapons)
+  units: Unit[];
+
+  @ManyToMany(() => WeaponProfile, profile => profile.weapon)
+  profiles: WeaponProfile[];
+}

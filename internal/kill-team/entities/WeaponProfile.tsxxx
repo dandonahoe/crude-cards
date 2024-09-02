@@ -1,0 +1,29 @@
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import { Weapon } from './Weapon';
+
+@Entity()
+export class WeaponProfile {
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @ManyToOne(() => Weapon, weapon => weapon.profiles)
+  weapon: Weapon;
+
+  @Column({ type : 'varchar', length : 100 })
+  profileName: string; // e.g., 'Standard', 'Overcharged'
+
+  @Column({ type : 'int' })
+  range: number;
+
+  @Column({ type : 'int' })
+  attacks: number;
+
+  @Column({ type : 'int' })
+  strength: number;
+
+  @Column({ type : 'int' })
+  armorPenetration: number;
+
+  @Column({ type : 'int' })
+  damage: number;
+}

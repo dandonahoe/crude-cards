@@ -1,0 +1,22 @@
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToOne } from 'typeorm';
+import { Unit } from './Unit';
+import { Player } from './Player';
+import { Faction } from './Faction';
+
+@Entity()
+export class KillTeam {
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @Column({ type : 'varchar', length : 100 })
+  name: string;
+
+  @ManyToOne(() => Player, player => player.killTeams)
+  player: Player;
+
+  @ManyToOne(() => Faction, faction => faction.killTeams)
+  faction: Faction;
+
+  @OneToMany(() => Unit, unit => unit.killTeam)
+  units: Unit[];
+}

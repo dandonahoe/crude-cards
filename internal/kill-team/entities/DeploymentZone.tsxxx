@@ -1,0 +1,29 @@
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import { Mission } from './Mission';
+
+@Entity()
+export class DeploymentZone {
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @ManyToOne(() => Mission, mission => mission.deploymentZones)
+  mission: Mission;
+
+  @Column({ type : 'varchar', length : 100 })
+  name: string;
+
+  @Column({ type : 'text' })
+  description: string;
+
+  @Column({ type : 'int' })
+  startingPointX: number;
+
+  @Column({ type : 'int' })
+  startingPointY: number;
+
+  @Column({ type : 'int' })
+  width: number;
+
+  @Column({ type : 'int' })
+  height: number;
+}
