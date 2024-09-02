@@ -130,7 +130,7 @@ and subject is a single alphanumeric word describing the
 change. Bullet points should also be formatted like titles, ie "feat(subject): description" and
 an indented bulletpoints listing the files involved, with
 "subject" describing the update in one word and not just a file name, then one more line
-giving a detailed description of the change.
+giving a detailed description of the change and what code reviewers and qa should look out for.
 The final line should note if there is anything unusual or noteworthy, such as breaking code.
 Include a title, bullet points, and statistics in the commit message.
 
