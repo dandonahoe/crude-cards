@@ -1,5 +1,5 @@
 import { Inject, Injectable, UseFilters, UseGuards, UseInterceptors } from '@nestjs/common';
-import { WebSocketExceptionFilter } from '../filters/WebSocketException.filter';
+import { GameWebSocketExceptionFilter } from '../filters/GameWebSocketException.filter';
 import { AllowPlayerTypes } from '../decorators/allow-player-types.decorator';
 import { DealerPickBlackCardDTO } from './dtos/dealer-pick-black-card.dto';
 import { WebSocketEventType } from './../constant/websocket-event.enum';
@@ -8,6 +8,7 @@ import { PlayerSelectCardDTO } from './dtos/player-select-card.dto';
 import { DealerPickWinnerDTO } from './dtos/dealer-pick-winner.dto';
 import { GameInterceptor } from '../interceptors/game.interceptor';
 import { ZodValidationPipe } from './../pipes/ZodValidation.pipe';
+import { CatchAllWsFilter } from '../filters/CatchAllWs.filter';
 import { UpdateUsernameDTO } from './dtos/update-username.dto';
 import { SubmitFeedbackDTO } from './dtos/submit-feedback.dto';
 import { Server as SocketIoServer, Socket } from 'socket.io';
@@ -25,14 +26,13 @@ import { GameService } from './game.service';
 import { corsPolicy } from './Cors';
 import { Logger } from 'winston';
 import {
+    SubscribeMessage, MessageBody, WebSocketGateway,
     ConnectedSocket, OnGatewayConnection,
     OnGatewayDisconnect, WebSocketServer,
-    SubscribeMessage, MessageBody,
-    WebSocketGateway,
 } from '@nestjs/websockets';
 
 
-@UseFilters(WebSocketExceptionFilter, GameExceptionFilter)
+@UseFilters(GameWebSocketExceptionFilter, GameExceptionFilter, CatchAllWsFilter)
 @WebSocketGateway({ cors : corsPolicy })
 @UseInterceptors(GameInterceptor)
 @UseGuards(AuthGuard)

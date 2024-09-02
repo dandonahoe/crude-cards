@@ -1,4 +1,4 @@
-
+import { GameNotEnoughPlayersException } from '../exceptions/GameNotEnoughPlayers.exception';
 import { Body, Inject, Injectable, UsePipes, ValidationPipe } from '@nestjs/common';
 import { GameCompleteException } from '../exceptions/GameComplete.exception';
 import { DealerPickBlackCardDTO } from './dtos/dealer-pick-black-card.dto';
@@ -12,7 +12,7 @@ import { ZodValidationPipe } from '../pipes/ZodValidation.pipe';
 import { FeedbackService } from '../feedback/feedback.service';
 import { UpdateUsernameDTO } from './dtos/update-username.dto';
 import { SubmitFeedbackDTO } from './dtos/submit-feedback.dto';
-import { Server as SocketIOServer, Socket } from 'socket.io';
+import { Server as SocketIOServer, Socket, Server } from 'socket.io';
 import { PlayerType } from '../constant/player-type.enum';
 import { PlayerService } from '../player/player.service';
 import { ScoreLog } from '../score-log/score-log.entity';
@@ -32,13 +32,13 @@ import { SockService } from '../sock/sock.service';
 import { CardService } from '../card/card.service';
 import { NextHandDTO } from './dtos/next-hand.dto';
 import { JoinGameDTO } from './dtos/join-game.dto';
+import { UtilService } from '../util/util.service';
 import { Player } from '../player/player.entity';
 import { PlayerDTO } from './dtos/player.dto';
 import { Repository } from 'typeorm';
 import { Game } from './game.entity';
 import { difference } from 'lodash';
 import { Logger } from 'winston';
-import { GameNotEnoughPlayersException } from '../exceptions/GameNotEnoughPlayers.exception';
 
 @Injectable()
 export class GameService {
@@ -56,6 +56,7 @@ export class GameService {
         private readonly playerService      : PlayerService,
         private readonly sockService        : SockService,
         private readonly cardService        : CardService,
+        private readonly utilService        : UtilService,
     ) {
         this.log.silly('GameService::constructor()');
     }
@@ -97,6 +98,8 @@ export class GameService {
             if(!currentPlayer)
                 throw WSE.InternalServerError500(`Player not found after creation, socket(${socketId})`);
 
+            debugger;
+
             this.log.debug('Emitting new player auth token', { player });
 
             // let the server talk to the plaayer by their id. Always active,
@@ -105,7 +108,11 @@ export class GameService {
             await socket.join(currentPlayer.id);
 
             // and push the new token down as the first message received
-            return this.emitPlayerAuthToken(socket, currentPlayer);
+            const hello = await this.emitPlayerAuthToken(server, currentPlayer);
+
+            console.log('Broadcasting new player auth token', { hello });
+
+            return;
         }
 
         // at this point, we have found an existing player
@@ -801,8 +808,8 @@ export class GameService {
      *
      * @returns
      */
-    private emitPlayerAuthToken = async (socket : Socket, player : Player) =>
-        socket
+    private emitPlayerAuthToken = async (server : Server, player : Player) =>
+        server
             .to(player.id!)
             .emit(
                 WebSocketEventType.UpdatePlayerValidation,
@@ -1209,53 +1216,52 @@ export class GameService {
         // Log the beginning of the game creation process
         this.log.silly('GameService::createGame', { createGame });
 
-        debugger;
-        throw new GameCompleteException(
-            'Throwin test Test',
-            'Starting Game Test Exception',
-            { createGame }, this.log);
-
         // Retrieve the current player based on the provided auth token
-        // const { currentPlayer } = await this.getPlayerStateByAuthToken(createGame.auth_token!);
+        const { currentPlayer } = await this.getPlayerStateByAuthToken(createGame.auth_token!);
 
-        // if(!currentPlayer)
-        //     throw WSE.InternalServerError500(`CreateGame::Invalid Player (${createGame.auth_token})`);
 
-        // this.log.debug('GameService::createGame - Current Player', { currentPlayer });
-        // this.log.silly('Leaving any existing games', { currentPlayer });
+        if(!currentPlayer) {
+            debugger;
 
-        // // Ensure the player leaves any open sessions before starting a new game
-        // await this.gameSessionService.exitActiveGameSession(
-        //     currentPlayer,
-        //     GameExitReason.CreatedNewGame,
-        //     'Creating a new game and logging out of existing sessions');
+            throw WSE.InternalServerError500(`CreateGame::Invalid Player (${createGame.auth_token})`);
+        }
 
-        // // Generate a new game entity and persist it in the repository
-        // const game = await this.gameRepo.save({
-        //     current_session_id : null, // No session initially, as it will be created later
-        //     max_point_count    : 3,
-        //     max_round_count    : 7,
-        //     host_player_id     : currentPlayer.id,
-        //     created_by         : currentPlayer.id,
-        //     game_code          : await this.utilService.generateGameCode(4), // Generate a 4-character game code
-        // });
 
-        // this.log.info('Joining Game Specific Channel During Game Creation')
-        // socket.join(`${game.id}_${currentPlayer.id}`);
+        this.log.debug('GameService::createGame - Current Player', { currentPlayer });
+        this.log.silly('Leaving any existing games', { currentPlayer });
 
-        // // Initialize a new game session with the current player as the host
-        // const session = await this.gameSessionService.initSession(currentPlayer, game);
+        // Ensure the player leaves any open sessions before starting a new game
+        await this.gameSessionService.exitActiveGameSession(
+            currentPlayer,
+            GameExitReason.CreatedNewGame,
+            'Creating a new game and logging out of existing sessions');
 
-        // this.log.silly('GameService::createGame - Game Session Created', { session });
+        // Generate a new game entity and persist it in the repository
+        const game = await this.gameRepo.save({
+            current_session_id : null, // No session initially, as it will be created later
+            max_point_count    : 3,
+            max_round_count    : 7,
+            host_player_id     : currentPlayer.id,
+            created_by         : currentPlayer.id,
+            game_code          : await this.utilService.generateGameCode(4), // Generate a 4-character game code
+        });
 
-        // // TODO: Consider using the setGameSession
-        // // Update the game with the session reference after creation
-        // await this.gameRepo.update(game.id, { current_session_id : session.id! });
+        this.log.info('Joining Game Specific Channel During Game Creation')
+        socket.join(`${game.id}_${currentPlayer.id}`);
 
-        // this.log.silly('GameService::createGame - Game Updated With SessionId', { game });
-        // this.log.silly('Emitting Game Update', { gameCode : game.game_code });
+        // Initialize a new game session with the current player as the host
+        const session = await this.gameSessionService.initSession(currentPlayer, game);
 
-        // this.emitGameUpdate(socket, game.game_code);
+        this.log.silly('GameService::createGame - Game Session Created', { session });
+
+        // TODO: Consider using the setGameSession
+        // Update the game with the session reference after creation
+        await this.gameRepo.update(game.id, { current_session_id : session.id! });
+
+        this.log.silly('GameService::createGame - Game Updated With SessionId', { game });
+        this.log.silly('Emitting Game Update', { gameCode : game.game_code });
+
+        this.emitGameUpdate(socket, game.game_code);
     }
 
     @UsePipes(new ValidationPipe({

@@ -24,8 +24,6 @@ export class WebSocketException extends WsException {
     ) {
         super(message);
 
-        debugger;
-
         this.debugBundle = debugBundle;
         this.httpStatus  = httpStatus;
         this.message     = message;
@@ -67,6 +65,8 @@ export class WebSocketException extends WsException {
         message : string = 'InternalServerError500',
         debugBundle : Record<string, unknown> = {},
     ) {
+        debugger;
+
         return new WebSocketException(HttpStatus.INTERNAL_SERVER_ERROR, message, debugBundle);
     }
 

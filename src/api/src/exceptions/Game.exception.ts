@@ -16,7 +16,7 @@ export class GameException extends WsException {
         if(debugBundle   ) this.debugBundle    = debugBundle;
         if(message       ) this.message        = message;
 
-        this.stack = Error().stack;
+        this.stack = new Error().stack;
 
         Object.setPrototypeOf(this, GameException.prototype);
     }
