@@ -12,7 +12,6 @@ import { ZodValidationPipe } from '../pipes/ZodValidation.pipe';
 import { FeedbackService } from '../feedback/feedback.service';
 import { UpdateUsernameDTO } from './dtos/update-username.dto';
 import { SubmitFeedbackDTO } from './dtos/submit-feedback.dto';
-import { Server as SocketIOServer, Socket, Server } from 'socket.io';
 import { PlayerType } from '../constant/player-type.enum';
 import { PlayerService } from '../player/player.service';
 import { ScoreLog } from '../score-log/score-log.entity';
@@ -35,13 +34,17 @@ import { JoinGameDTO } from './dtos/join-game.dto';
 import { UtilService } from '../util/util.service';
 import { Player } from '../player/player.entity';
 import { PlayerDTO } from './dtos/player.dto';
+import { Socket, Server } from 'socket.io';
 import { Repository } from 'typeorm';
 import { Game } from './game.entity';
 import { difference } from 'lodash';
 import { Logger } from 'winston';
 
+
 @Injectable()
 export class GameService {
+
+    private myFunTestSocketIoServerRenameMe : Server;
 
     public constructor(
         @InjectRepository(Game)
@@ -61,6 +64,10 @@ export class GameService {
         this.log.silly('GameService::constructor()');
     }
 
+    public getServerTest123 = async () : P<Server> => {
+        return this.myFunTestSocketIoServerRenameMe;
+    }
+
     /**
      * Connects a player via socket, handles reconnection if the auth token is valid,
      * or creates a new player if no valid auth token is found.
@@ -69,7 +76,11 @@ export class GameService {
      *
      * @returns The connected player entity
      */
-    public connectPlayer = async (server : SocketIOServer, socket: Socket): P<unknown> => {
+    public connectPlayer = async (
+        server : Server, socket: Socket,
+    ): P<unknown> => {
+        this.myFunTestSocketIoServerRenameMe = server;
+
         const socketId = socket.id;
 
         this.log.silly('GameService::connectPlayer', { socketId });
@@ -138,7 +149,7 @@ export class GameService {
 
         // check auth token
         return this.joinGame(
-            socket,
+            server, socket,
             new JoinGameDTO(
                 playerState.currentPlayer.auth_token!,
                 playerState.game!.game_code),
@@ -164,11 +175,15 @@ export class GameService {
     * @returns The disconnected player and the associated game session details (if any)
     */
     public disconnectPlayer = async (
-        socket : Socket,
+        socket: Socket,
     ): P<unknown> => {
         this.log.debug('TODO: ENABLE DISCONNECT ROUTINE.', { socketId : socket.id });
 
         return;
+    }
+
+    public getSocketServer = async () : P<Server> => {
+        return this.myFunTestSocketIoServerRenameMe;
     }
 
     /**
@@ -285,6 +300,7 @@ export class GameService {
         // round, which promotes a new player to dealer.
         if(session.game_stage !== GameStage.Lobby
             && (session.dealer_id === null || !session.player_id_list.includes(session.dealer_id))) {
+
             this.log.warn('Dealer is invalid or no longer an active player, promote someone', debugBundle);
 
             // Promote the first player in the list to the dealer
@@ -306,13 +322,15 @@ export class GameService {
         transform : true,
     }))
     public async leaveGame(
-        socket : Socket,
+        server : Server, socket : Socket,
         @Body(new ZodValidationPipe(LeaveGameDTO.Schema))
         exitGame: LeaveGameDTO,
         runtimeContext = '',
     ): P<unknown> {
+        this.myFunTestSocketIoServerRenameMe = server;
 
-        this.log.silly('GameService::exitGame', { exitGame, runtimeContext });
+        this.log.silly('GameService::exitGame', {
+            exitGame, runtimeContext, socketId : socket.id });
 
         // Fetch player state based on auth token
         const playerState = await this.getPlayerStateByAuthTokenOrFail(exitGame.auth_token!);
@@ -358,7 +376,7 @@ export class GameService {
         // not run routine to patch up games which may be valid or not
         // THen broadcast whatever the final state is
         return this.emitGameUpdate(
-            socket,
+            server,
             game.game_code, // to any players remaining
             false, // dont include the deck
             [player.id], // only send reset state actions to players leaving now,
@@ -371,25 +389,12 @@ export class GameService {
     }
 
     /**
-     * Constructs the game state DTO for the specified player.
+     * Handles the process of updating a player's username.
      *
-     * @param gameCode - The game code for the session
-     * @param playerId - The ID of the current player
+     * @param updateUsername - The DTO containing the new username and the player's auth token
      *
-     * @returns The constructed GameStateDTO for the player
+     * @returns The updated player entity
      */
-    private buildGameStateDTO = async (
-        gameCode: string,
-        playerId: string,
-    ): P<GameStateDTO> => {
-        this.log.silly('GameService::buildGameStateDTO', {
-            gameCode, playerId,
-        });
-
-        return this.getGameStateAsPlayer(gameCode, playerId);
-    }
-
-    // public async updateUsername()
     public findGameByGameSession = async (
         gameSession: GameSession,
     ): P<Game | null> => {
@@ -534,11 +539,14 @@ export class GameService {
         transform : true,
     }))
     public async nextHand(
-        socket : Socket,
+        server : Server, socket : Socket,
         @Body(new ZodValidationPipe(NextHandDTO.Schema))
         nextHand: NextHandDTO,
     ): P<GameStateDTO> {
-        this.log.silly('GameService::nextHand', { nextHand });
+
+        this.myFunTestSocketIoServerRenameMe = server;
+
+        this.log.silly('GameService::nextHand', {  nextHand, socketId : socket.id });
 
         // Retrieve the player, game, session, and player list using the provided auth token
         const {
@@ -576,7 +584,7 @@ export class GameService {
             newGameStage,   newDealerId,
             newScoreLog,    session);
 
-        await this.emitGameUpdate(socket, game.game_code);
+        await this.emitGameUpdate(server, game.game_code);
 
         // Return the updated game state for the current player
         return this.getGameStateAsPlayer(game.game_code, currentPlayer.id);
@@ -717,14 +725,16 @@ export class GameService {
         transform : true,
     }))
     public async dealerPickBlackCard(
-        socket : Socket,
-
+        server : Server, socket : Socket,
         @Body(new ZodValidationPipe(DealerPickBlackCardDTO.Schema))
         dealerPickBlackCard: DealerPickBlackCardDTO,
     ): P<unknown> {
 
+        this.myFunTestSocketIoServerRenameMe = server;
+
         this.log.silly('GameService::dealerPickBlackCard', {
             authToken : dealerPickBlackCard.auth_token,
+            socketId  : socket.id,
         });
 
         // Retrieve the player, game, and session details using the provided auth token
@@ -743,7 +753,7 @@ export class GameService {
             id : playerState.session.game_id!,
         });
 
-        return this.emitGameUpdate(socket, game.game_code);
+        return this.emitGameUpdate(server, game.game_code);
     }
 
 
@@ -775,11 +785,15 @@ export class GameService {
         transform : true,
     }))
     public async dealerPickWinner(
-        socket : Socket,
+        server : Server, socket : Socket,
         @Body(new ZodValidationPipe(DealerPickWinnerDTO.Schema))
         dealerPickWinner: DealerPickWinnerDTO,
     ): P<GameStateDTO> {
-        this.log.silly('GameService::dealerPickWinner - Start', { dealerPickWinner });
+
+        this.myFunTestSocketIoServerRenameMe = server;
+
+        this.log.silly('GameService::dealerPickWinner - Start', {
+            dealerPickWinner, socketId : socket.id });
 
         this.log.debug('Ensured proper game state');
 
@@ -787,7 +801,9 @@ export class GameService {
         const {
             dealer, players, game, session, scoreLog,
         } = await this.getDealerAndSessionData(dealerPickWinner.auth_token!);
-        this.log.debug('Retrieved dealer and session data', { dealer, players, game, session, scoreLog });
+
+        this.log.debug('Retrieved dealer and session data', {
+            dealer, players, game, session, scoreLog });
 
         // Determine the winning player based on the selected card ID
         const winningPlayer = await this.getWinningPlayer(players, dealerPickWinner.card_id!);
@@ -805,7 +821,7 @@ export class GameService {
         const gameState = await this.getGameStateAsPlayer(game.game_code, dealer.id!);
         this.log.silly('GameService::dealerPickWinner - End', gameState);
 
-        await this.emitGameUpdate(socket, gameState.game_code);
+        await this.emitGameUpdate(server, gameState.game_code);
 
         return gameState;
     }
@@ -838,12 +854,14 @@ export class GameService {
      * @returns An array of promises for emitting the game update to each player
      */
     public emitGameUpdate = async (
-        socket              : Socket,
+        server              : Server,
         gameCode            : string | null,
         includeDeck         : boolean = false,
         disconnectPlayerIds : string[] = [],
         runtimeContext      : string = '',
     ) => {
+        this.myFunTestSocketIoServerRenameMe = server;
+
         const debugBundle = { gameCode, includeDeck, disconnectPlayerIds, runtimeContext };
 
         this.log.silly('GameService::emitGameUpdate', debugBundle);
@@ -862,7 +880,7 @@ export class GameService {
         // Players who have left just now, tell them to reset their state to default
         // which will land them on the homepage.
         await Promise.all(disconnectPlayerIds.map(playerId =>
-            socket
+            server
                 .to(`${game.id}_${playerId}`)
                 .emit(
                     WebSocketEventType.UpdateGame,
@@ -870,10 +888,13 @@ export class GameService {
 
         // todo: probably check return values here instead of just spray and pray
         // todo: consider passing context to client to maintain continuity between logs
+        // Also this is each player has two channels, one to their exact player.id and and
+        // another to the game their in via [game.id]_[player.id]. Testing to see if we can
+        // narrow it to one channel per player or if thats even needed
         return Promise.all(
             gameStatusList.map(gameStatus =>
-                socket
-                .to(gameStatus.current_player_id!)
+                server
+                .to(`${game.id}_${gameStatus.current_player_id}`) // old way: gameStatus.current_player_id!)
                 .emit(
                     WebSocketEventType.UpdateGame,
                     gameStatus))); /// pew pew pew
@@ -976,10 +997,12 @@ export class GameService {
         transform : true,
     }))
     public async startGame(
-        socket : Socket,
+        server : Server, socket : Socket,
         @Body(new ZodValidationPipe(StartGameDTO.Schema))
         startGame: StartGameDTO,
     ): P<unknown> {
+        this.myFunTestSocketIoServerRenameMe = server;
+
         this.log.silly('GameService::startGame');
 
         console.log('startGame', { startGame, socketId : socket.id });
@@ -1010,7 +1033,7 @@ export class GameService {
         // Set up the game session with the retrieved cards
         await this.setupGameSession(session, currentPlayer, allBlackCardIds, allWhiteCardIds);
 
-        return this.emitGameUpdate(socket, game.game_code);
+        return this.emitGameUpdate(server, game.game_code);
     }
 
     /**
@@ -1136,12 +1159,16 @@ export class GameService {
         transform : true,
     }))
     public async updateUsername(
-        socket : Socket,
+        server : Server, socket : Socket,
         @Body(new ZodValidationPipe(UpdateUsernameDTO.Schema))
         updateUsername: UpdateUsernameDTO,
     ): P<GameStateDTO> {
+
+        this.myFunTestSocketIoServerRenameMe = server;
+
         // Log the beginning of the username update process
-        this.log.silly('GameService::updateUsername', { updateUsername });
+        this.log.silly('GameService::updateUsername', {
+            updateUsername, socketId : socket.id });
 
         // Retrieve the current player and game based on the provided auth token
         const { currentPlayer, game } = await this.getPlayerStateByAuthTokenOrFail(updateUsername.auth_token!);
@@ -1149,7 +1176,7 @@ export class GameService {
         // Update the player's username using the player service
         await this.playerService.updateUsername(currentPlayer, updateUsername.username);
 
-        await this.emitGameUpdate(socket, game.game_code);
+        await this.emitGameUpdate(server, game.game_code);
 
         // Return the updated game state for the current player
         return this.getGameStateAsPlayer(game.game_code, currentPlayer.id);
@@ -1169,15 +1196,16 @@ export class GameService {
         transform : true,
     }))
     public async playerSelectCard(
-        socket : Socket,
+        server : Server, socket : Socket,
         @Body(new ZodValidationPipe(PlayerSelectCardDTO.Schema))
         playerSelectCard: PlayerSelectCardDTO,
 
     ): P<GameStateDTO> {
-        // Log the beginning of the playerSelectCard process
+
+        this.myFunTestSocketIoServerRenameMe = server;
+
         this.log.silly('GameService::playerSelectCard', {
-            authToken : playerSelectCard.auth_token,
-        });
+            authToken : playerSelectCard.auth_token, socketId : socket.id });
 
         // Retrieve the player's game state based on the provided auth token
         const playerState = await this.getPlayerStateByAuthTokenOrFail(
@@ -1196,7 +1224,7 @@ export class GameService {
             await this.gameSessionService.gotoDealerPickWinnerStage(session);
 
 
-        await this.emitGameUpdate(socket, game.game_code);
+        await this.emitGameUpdate(server, game.game_code);
 
         // Return the updated game state for the current player
         return this.getGameStateAsPlayer(game.game_code, currentPlayer.id);
@@ -1215,11 +1243,12 @@ export class GameService {
         transform : true,
     }))
     public async createGame(
-        socket : Socket,
-
+        server : Server, socket : Socket,
         @Body(new ZodValidationPipe(CreateGameDTO.Schema))
         createGame: CreateGameDTO,
     ): P<void> {
+
+        this.myFunTestSocketIoServerRenameMe = server;
 
         // Log the beginning of the game creation process
         this.log.silly('GameService::createGame', { createGame });
@@ -1268,19 +1297,21 @@ debugger;
         this.log.silly('GameService::createGame - Game Updated With SessionId', { game });
         this.log.silly('Emitting Game Update', { gameCode : game.game_code });
 
-        this.emitGameUpdate(socket, game.game_code);
+        this.emitGameUpdate(server, game.game_code);
     }
 
     @UsePipes(new ValidationPipe({
         transform : true,
     }))
     public async joinGame(
-        socket : Socket,
-
+        server : Server, socket : Socket,
         @Body(new ZodValidationPipe(JoinGameDTO.Schema))
         joinGame: JoinGameDTO,
         runtimeContext : string = '',
     ): P<void> {
+
+        this.myFunTestSocketIoServerRenameMe = server;
+
         const debugBundle = { joinGame, runtimeContext, socketId : socket.id };
 
         this.log.silly('GameService::joinGame', debugBundle);
@@ -1321,7 +1352,7 @@ debugger;
         socket.join(playerGameChannel);
 
         await this.emitGameUpdate(
-            socket,
+            server,
             game.game_code,
             false,  // no deck
             [], // no disconnects

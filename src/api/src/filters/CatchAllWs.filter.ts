@@ -4,6 +4,7 @@ import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { P } from '../../../type/framework/data/P';
 import { Socket } from 'socket.io';
 import { Logger } from 'winston';
+import { GameService } from '../game/game.service';
 
 
 /**
@@ -16,6 +17,9 @@ export class CatchAllWsFilter extends BaseWsExceptionFilter {
     public constructor(
         @Inject(WINSTON_MODULE_PROVIDER)
         private readonly log: Logger,
+
+        @Inject()
+        private readonly gameService : GameService,
     ) {
         super();
 
@@ -31,6 +35,8 @@ export class CatchAllWsFilter extends BaseWsExceptionFilter {
     public override catch = async (
         exception: unknown, host: ArgumentsHost,
     ) : P => {
+
+        console.log('CatchAllWsFilter::catch');
 
         const context = host.switchToWs()
 

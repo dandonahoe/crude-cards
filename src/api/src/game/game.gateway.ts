@@ -11,7 +11,6 @@ import { ZodValidationPipe } from './../pipes/ZodValidation.pipe';
 import { CatchAllWsFilter } from '../filters/CatchAllWs.filter';
 import { UpdateUsernameDTO } from './dtos/update-username.dto';
 import { SubmitFeedbackDTO } from './dtos/submit-feedback.dto';
-import { Server as SocketIoServer, Socket } from 'socket.io';
 import { PlayerType } from '../constant/player-type.enum';
 import { type P } from '../../../type/framework/data/P';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
@@ -23,6 +22,7 @@ import { JoinGameDTO } from './dtos/join-game.dto';
 import { NextHandDTO } from './dtos/next-hand.dto';
 import { AuthGuard } from '../guards/auth.guard';
 import { GameService } from './game.service';
+import { Server, Socket } from 'socket.io';
 import { corsPolicy } from './Cors';
 import { Logger } from 'winston';
 import {
@@ -40,7 +40,8 @@ import {
 export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     @WebSocketServer()
-    private server: SocketIoServer;
+    private server: Server;
+
 
     public constructor(
         @Inject(WINSTON_MODULE_PROVIDER)
@@ -48,6 +49,10 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
         private readonly gameService: GameService,
     ) { }
+
+    public getSocketServer(): Server {
+        return this.server;
+    }
 
     public handleConnection = async (socket: Socket): P<unknown> => {
         this.log.silly('GameGateway::handleConnection', { socketId : socket.id });
@@ -72,7 +77,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     ) : P<unknown>{
         this.log.info('GameGateway::createGame', { createGame });
 
-        return this.gameService.createGame(socket, createGame);
+        return this.gameService.createGame(this.server, socket, createGame);
     }
 
     @SubscribeMessage(WebSocketEventType.StartGame)
@@ -85,7 +90,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     ): P<unknown> {
         this.log.silly('GameGateway::startGame', { startGame });
 
-        return this.gameService.startGame(socket, startGame);
+        return this.gameService.startGame(this.server, socket, startGame);
     }
 
     @SubscribeMessage(WebSocketEventType.JoinGame)
@@ -99,7 +104,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     ) : P<unknown> {
         this.log.silly('GameGateway::joinGame', { joinGame });
 
-        return this.gameService.joinGame(socket, joinGame, 'Joining via WebSocketEventType.JoinGame');
+        return this.gameService.joinGame(this.server, socket, joinGame, 'Joining via WebSocketEventType.JoinGame');
     }
 
     @SubscribeMessage(WebSocketEventType.LeaveGame)
@@ -113,7 +118,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     ) : P<unknown> {
         this.log.silly('GameGateway::leaveGame', { leaveGame });
 
-        return this.gameService.leaveGame(socket, leaveGame);
+        return this.gameService.leaveGame(this.server, socket, leaveGame);
     }
 
     @SubscribeMessage(WebSocketEventType.PlayerSelectCard)
@@ -127,7 +132,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     ) : P<unknown> {
         this.log.silly('GameGateway::playerSelectCard', { playerSelectCard });
 
-        return this.gameService.playerSelectCard(socket, playerSelectCard);
+        return this.gameService.playerSelectCard(this.server, socket, playerSelectCard);
     }
 
     @SubscribeMessage(WebSocketEventType.SubmitFeedback)
@@ -152,7 +157,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     ): P<unknown> {
         this.log.silly('GameGateway::updateUsername', { updateUsername });
 
-        return this.gameService.updateUsername(socket, updateUsername);
+        return this.gameService.updateUsername(this.server, socket, updateUsername);
     }
 
     @SubscribeMessage(WebSocketEventType.DealerPickBlackCard)
@@ -166,7 +171,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     ): P<unknown> {
         this.log.silly('GameGateway::dealerPickBlackCard', { dealerPickBlackCard });
 
-        return this.gameService.dealerPickBlackCard(socket, dealerPickBlackCard);
+        return this.gameService.dealerPickBlackCard(this.server, socket, dealerPickBlackCard);
     }
 
     @SubscribeMessage(WebSocketEventType.DealerPickWinner)
@@ -180,7 +185,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     ): P<GameStateDTO> {
         this.log.silly('GameGateway::dealerPickWinner', { dealerPickWinner });
 
-        return this.gameService.dealerPickWinner(socket, dealerPickWinner);
+        return this.gameService.dealerPickWinner(this.server, socket, dealerPickWinner);
     }
 
     @SubscribeMessage(WebSocketEventType.NextHand)
@@ -194,6 +199,6 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     ): P<GameStateDTO> {
         this.log.silly('GameGateway::nextHand', { nextHand });
 
-        return this.gameService.nextHand(socket, nextHand);
+        return this.gameService.nextHand(this.server, socket, nextHand);
     }
 }

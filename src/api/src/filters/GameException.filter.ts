@@ -8,7 +8,7 @@ import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { GameService } from '../game/game.service';
 import { BaseExceptionFilter } from '@nestjs/core';
 import { AuthDTO } from '../game/dtos/auth.dto';
-import { Socket } from 'socket.io';
+import { Server, Socket } from 'socket.io';
 import { Logger } from 'winston';
 
 
@@ -33,7 +33,7 @@ export class GameExceptionFilter extends BaseExceptionFilter {
         private readonly log: Logger,
 
         @Inject()
-        private readonly gameService: GameService,
+        private readonly gameService : GameService,
     ) {
         super();
         this.log.silly('GameExceptionFilter::constructor');
@@ -49,10 +49,15 @@ export class GameExceptionFilter extends BaseExceptionFilter {
         gameExc: GameException,
         argumentHost: ArgumentsHost,
     ): Promise<void> {
+        console.log('GameException::catch');
+
         const executionContext = argumentHost.switchToWs();
 
         const baseDTO = executionContext.getData<AuthDTO>();
         const socket  = executionContext.getClient<Socket>();
+
+        debugger;
+        const server = await this.gameService.getSocketServer();
 
         const debugBundle = { socketId : socket.id, exc : gameExc, baseDTO };
 
@@ -63,16 +68,16 @@ export class GameExceptionFilter extends BaseExceptionFilter {
         }
 
         if (gameExc instanceof GameNoPlayersException)
-            await this.handleGameNoPlayersException(socket, gameExc, baseDTO.game_code, debugBundle);
+            await this.handleGameNoPlayersException(server, gameExc, baseDTO.game_code, debugBundle);
 
         else if (gameExc instanceof GameNotEnoughPlayersException)
-            await this.handleGameNotEnoughPlayersException(socket, gameExc, baseDTO.game_code, debugBundle);
+            await this.handleGameNotEnoughPlayersException(server, gameExc, baseDTO.game_code, debugBundle);
 
         else if (gameExc instanceof GameCompleteException)
-            await this.handleGameCompleteException(socket, gameExc, baseDTO.game_code, debugBundle);
+            await this.handleGameCompleteException(server, gameExc, baseDTO.game_code, debugBundle);
 
         else
-            await this.handleGenericGameException(socket, gameExc, baseDTO.game_code, debugBundle);
+            await this.handleGenericGameException(server, gameExc, baseDTO.game_code, debugBundle);
 
         throw WSE.InternalServerError500('Unhandled GameException Exception', { debugBundle });
     }
@@ -86,7 +91,7 @@ export class GameExceptionFilter extends BaseExceptionFilter {
      * @param debugBundle - Additional debug information.
      */
     private async handleGameNoPlayersException(
-        socket      : Socket,
+        server      : Server,
         _exception  : GameNoPlayersException,
         gameCode    : string,
         debugBundle : Record<string, unknown>,
@@ -96,7 +101,7 @@ export class GameExceptionFilter extends BaseExceptionFilter {
 
         // Still emit game update for future observer and player types.
         await this.gameService.emitGameUpdate(
-            socket, gameCode, false, [], 'Handling GameNoPlayersException context',
+            server, gameCode, false, [], 'Handling GameNoPlayersException context',
         );
     }
 
@@ -109,7 +114,7 @@ export class GameExceptionFilter extends BaseExceptionFilter {
      * @param debugBundle  - Additional debug information.
      */
     private async handleGameNotEnoughPlayersException(
-        socket: Socket,
+        server: Server,
         _exception: GameNotEnoughPlayersException,
         gameCode: string,
         debugBundle: Record<string, unknown>,
@@ -117,7 +122,7 @@ export class GameExceptionFilter extends BaseExceptionFilter {
         this.log.silly('GameExceptionFilter::handleGameNotEnoughPlayersException', { debugBundle });
 
         await this.gameService.emitGameUpdate(
-            socket, gameCode, false, [], 'Handling GameNotEnoughPlayersException context',
+            server, gameCode, false, [], 'Handling GameNotEnoughPlayersException context',
         );
     }
 
@@ -130,7 +135,7 @@ export class GameExceptionFilter extends BaseExceptionFilter {
      * @param debugBundle  - Additional debug information.
      */
     private async handleGameCompleteException(
-        socket: Socket,
+        server: Server,
         _exception: GameCompleteException,
         gameCode: string,
         debugBundle: Record<string, unknown>,
@@ -138,20 +143,20 @@ export class GameExceptionFilter extends BaseExceptionFilter {
         this.log.silly('GameExceptionFilter::handleGameCompleteException', { debugBundle });
 
         await this.gameService.emitGameUpdate(
-            socket, gameCode, false, [], 'Handling GameCompleteException context',
+            server, gameCode, false, [], 'Handling GameCompleteException context',
         );
     }
 
     /**
      * Handles generic game exceptions not specifically handled by other methods.
      *
-     * @param socket       - The WebSocket client.
+     * @param server       - The WebSocket client.
      * @param _exception   - The specific exception thrown.
      * @param gameCode     - The code of the game affected.
      * @param debugBundle  - Additional debug information.
      */
     private async handleGenericGameException(
-        socket: Socket,
+        server: Server,
         _exception: GameException,
         gameCode: string,
         debugBundle: Record<string, unknown>,
@@ -159,7 +164,7 @@ export class GameExceptionFilter extends BaseExceptionFilter {
         this.log.silly('GameExceptionFilter::handleGenericGameException', { debugBundle });
 
         await this.gameService.emitGameUpdate(
-            socket, gameCode, false, [], 'Handling GameException context',
+            server, gameCode, false, [], 'Handling GameException context',
         );
     }
 }
