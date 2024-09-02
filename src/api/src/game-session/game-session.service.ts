@@ -282,7 +282,6 @@ export class GameSessionService {
         session: GameSession,
         runtimeContext: string = '',
     ): P<unknown> => {
-        debugger;
 
         const debugBundle = { player, session, runtimeContext };
 
@@ -710,7 +709,6 @@ export class GameSessionService {
 
         console.log('handleSkipToNextHand', debugBundle);
 
-        debugger;
 
         return;
     }
@@ -805,12 +803,11 @@ export class GameSessionService {
         // Log the initial state of the removal process for debugging purposes
         this.log.silly('GameSessionService::removePlayer', { debugBundle });
 
-        debugger;
 
         // Determine additional updates based on the exit reason
         switch (exitReason) {
             case GameExitReason.Disconnected:
-                debugger;
+
 
                 // Append the player's ID to the disconnected player list
                 await this.gameSessionRepo.update(session.id, {
@@ -821,7 +818,7 @@ export class GameSessionService {
                     break;
 
             case GameExitReason.Booted:
-                debugger;
+
 
                 // Append the player's ID to the disconnected player list
                 await this.gameSessionRepo.update(session.id, {

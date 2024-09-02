@@ -56,7 +56,6 @@ export class GameExceptionFilter extends BaseExceptionFilter {
         const baseDTO = executionContext.getData<AuthDTO>();
         const socket  = executionContext.getClient<Socket>();
 
-        debugger;
         const server = await this.gameService.getSocketServer();
 
         const debugBundle = { socketId : socket.id, exc : gameExc, baseDTO };

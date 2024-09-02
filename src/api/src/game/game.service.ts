@@ -225,7 +225,6 @@ export class GameService {
         if (session.game_stage === GameStage.Lobby && playerCount === 0) {
             this.log.info('Game Ended In Lobby Mode Due to No Players', { debugBundle });
 
-            debugger;
             throw new GameCompleteException(
                 'No players in lobby, ending game', runtimeContext,
                 debugBundle, this.log);
@@ -239,7 +238,6 @@ export class GameService {
                 this.log.info('Not enough players to continue, sending remaining players to limbo',
                     debugBundle,
                 );
-            debugger;
             throw new GameCompleteException(
                 'No players in lobby, ending game',
                 `Validating Session Context(${runtimeContext})`,
@@ -259,7 +257,6 @@ export class GameService {
             // todo: routine to put people into limbo, verify thats the way to
             // do it first
 
-            debugger;
             throw new GameNotEnoughPlayersException(
                 'No players in the game, self destructing.',
                 `Validating Session Context(${runtimeContext})`,
@@ -272,7 +269,6 @@ export class GameService {
         if (session.game_stage === GameStage.Lobby
             && ( !session.lobby_host_id || !session.player_id_list.includes(session.lobby_host_id!))) {
 
-            debugger;
 
             this.log.error('The game host is missing or is not an active player', { debugBundle, session });
 
@@ -358,7 +354,6 @@ export class GameService {
         // but should only do things whent he state has gone bogus
 
         if(!session) {
-            debugger;
 
             this.log.warning('GameService::exitGame - Session is Bogus, Cannot Leave Session it Cant Find', {
                 game_code : game.game_code, player, runtimeContext,
@@ -1033,7 +1028,7 @@ export class GameService {
         // Set up the game session with the retrieved cards
         await this.setupGameSession(session, currentPlayer, allBlackCardIds, allWhiteCardIds);
 
-        return this.emitGameUpdate(server, game.game_code);
+        return this.emitGameUpdate(server, game.game_code, true, [], 'Starting Game - Dealing Cards');
     }
 
     /**
@@ -1257,15 +1252,13 @@ export class GameService {
         const { currentPlayer } = await this.getPlayerStateByAuthToken(createGame.auth_token!);
 
 
-        if(!currentPlayer) {
-            debugger;
+        if(!currentPlayer)
 
             throw WSE.InternalServerError500(`CreateGame::Invalid Player (${createGame.auth_token})`);
-        }
+
 
         this.log.debug('GameService::createGame - Current Player', { currentPlayer });
-        this.log.silly('Leaving any existing games', { currentPlayer });
-debugger;
+        this.log.silly('Leaving any existing games', { currentPlayer })
         // Ensure the player leaves any open sessions before starting a new game
         await this.gameSessionService.exitActiveGameSession(
             currentPlayer,
