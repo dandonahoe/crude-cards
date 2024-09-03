@@ -785,42 +785,55 @@ export class GameService {
         dealerPickWinner: DealerPickWinnerDTO,
     ): P<unknown> {
 
+        const debugBundle : Record<string, unknown> = {
+            dealerPickWinner, socketId : socket.id,
+        };
+
         this.myFunTestSocketIoServerRenameMe = server;
 
-        this.log.silly('GameService::dealerPickWinner - Start', {
-            dealerPickWinner, socketId : socket.id });
+        this.log.silly('GameService::dealerPickWinner - Start', { debugBundle });
 
         this.log.debug('Ensured proper game state');
-
-        debugger;
 
         // Retrieve the player (dealer), game, session, and score log using the provided auth token
         const {
             dealer, players, game, session, scoreLog,
         } = await this.getDealerAndSessionData(dealerPickWinner.auth_token!);
 
-        debugger;
-        // Does this explode??
-        this.log.debug('Retrieved dealer and session data', {
-            dealer, players, game, session, scoreLog });
 
-        debugger;
+        debugBundle.scoreLogId = scoreLog.id;
+        debugBundle.sessionId  = session.id;
+        debugBundle.dealerId   = dealer.id;
+        debugBundle.gameId     = game.id;
+
+        // Does this explode??
+        this.log.debug('Retrieved dealer and session data', { debugBundle });
 
         // Determine the winning player based on the selected card ID
         const winningPlayer = await this.getWinningPlayer(players, dealerPickWinner.card_id!);
-        this.log.debug('Determined winning player', { winningPlayer, cardId : dealerPickWinner.card_id });
+
+        const winningPlayerId = winningPlayer.id;
+
+        this.log.debug('Determined winning player', { winningPlayerId, debugBundle });
 
         // Update the score log and player's score in parallel
-        await this.updateScoreAndPlayer(scoreLog, session, dealer, dealerPickWinner.card_id!, winningPlayer);
-        this.log.debug('Updated score and player', { scoreLog, session, dealer, cardId : dealerPickWinner.card_id, winningPlayer });
+        this.log.debug('Updated score and player', {
+            debugBundle, cardId : dealerPickWinner.card_id, winningPlayerId });
+        await this.updateScoreAndPlayer(
+            scoreLog, session, dealer,
+            dealerPickWinner.card_id!,
+            winningPlayer);
 
         // Check if the game is complete and progress to the next stage accordingly
         await this.progressGameOrShowHandResults(game, session, winningPlayer);
-        this.log.debug('Progressed game or showed hand results', { game, session, winningPlayer });
+
+        this.log.debug('Progressed game or showed hand results', { debugBundle, winningPlayerId });
 
         // Return the updated game state for the dealer
         const gameState = await this.getGameStateAsPlayer(game.game_code, dealer.id!);
-        this.log.silly('GameService::dealerPickWinner - End', gameState);
+
+        this.log.silly('GameService::dealerPickWinner - End', {
+            gameState, debugBundle, winningPlayerId });
 
         return this.emitGameUpdate(server, gameState.game_code);
     }
@@ -954,14 +967,16 @@ export class GameService {
      * @param winningPlayer  - The player identified as the winner
      */
     private updateScoreAndPlayer = async (
-        scoreLog: ScoreLog,
-        session: GameSession,
-        dealer: Player,
-        selectedCardId: string,
-        winningPlayer: Player,
+        scoreLog       : ScoreLog,
+        session        : GameSession,
+        dealer         : Player,
+        selectedCardId : string,
+        winningPlayer  : Player,
     ) =>
-        await Promise.all([
-            this.scoreLogService.updateScore(scoreLog, session, winningPlayer, selectedCardId, dealer),
+        Promise.all([
+            this.scoreLogService.updateScore(
+                scoreLog, session, winningPlayer, selectedCardId, dealer),
+
             this.playerService.incrementPlayerScore(winningPlayer),
         ]);
 

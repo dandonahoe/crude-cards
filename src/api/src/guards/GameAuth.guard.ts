@@ -70,8 +70,6 @@ export class GameAuthGuard implements CanActivate {
         const wsData    = context.switchToWs().getData();
 
         if (!wsSocket || !wsSocket.id) {
-            debugger;
-
             this.log.warn('AuthGuard: Invalid WebSocket client or missing socket ID');
             throw new Error('Invalid WebSocket client or missing socket ID');
         }
