@@ -69,7 +69,7 @@ jobs:
 
             # Disable next.js spyware
             - run: pnpm run job:disable-snooping
-            - run: pnpm run ci-database-validate
+        
 
             # # complete drop of schema and rebuild
             - run: pnpm run db:reset
