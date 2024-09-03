@@ -91,7 +91,7 @@ export const GameHome : RFC = () => {
             justify='center'
             align='center'
             h='100vh'
-            mt='lg'
+            mt={rem(60)}
             ta='center'>
             <Button
                 tabIndex={0}
@@ -110,11 +110,11 @@ export const GameHome : RFC = () => {
                         key='sdf'
                         color={CardColor.White}>
                         <Box
-                            h={rem(260)}
-                            pt={rem(60)}>
+                            pt='xl'
+                            mb='xl'>
                             <Text
                                 fz={rem(60)}
-                                fw={600}
+                                fw={800}
                                 mb='xl'
                                 lh={1}>
                                 {'CrudeCards'}
@@ -125,22 +125,16 @@ export const GameHome : RFC = () => {
                                 fw={600}>
                                 {'A Party Game for Terrible People'}
                             </Text>
-                            <Text
-                                fz={rem(24)}
-                                ta='center'
-                                c='#eee'
-                                fw={600}
-                                mb='xl'>
-                                {'Like You'}
-                            </Text>
                         </Box>
-                        <br />
-                        <Flex justify='center'>
+
+                        <Flex
+                            justify='center'
+                            mb='xl'>
                             <GameButton
                                 onClick={handleStartGame}
                                 text='Go' />
                         </Flex>
-                        <br />
+
                     </GameCardContainer>,
                     <GameCardContainer
                         key='sdssf'

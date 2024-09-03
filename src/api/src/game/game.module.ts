@@ -1,4 +1,4 @@
-import { WebSocketExceptionFilter } from '../filters/WebSocketException.filter';
+import { GameWebSocketExceptionFilter } from '../filters/GameWebSocketException.filter';
 import { GameSessionModule } from '../game-session/game-session.module';
 import { GameExceptionFilter } from '../filters/GameException.filter';
 import { ScoreLogModule } from '../score-log/score-log.module';
@@ -24,7 +24,7 @@ import { Logger } from 'winston';
     ],
 
     providers : [
-        WebSocketExceptionFilter,
+        GameWebSocketExceptionFilter,
         GameExceptionFilter,
         UtilService,
         SockService,

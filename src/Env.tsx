@@ -10,6 +10,9 @@ const toStringOrExplode = (value : unknown, context : string = '') : string => {
     throw new Error(`Invalid string value: ${value} context (${context})`);
 }
 
+// create dedicated function to get value from environment variables
+
+
 const getValue = <T = string,>(name : string) : T => {
 
     let value : T | null = null;
@@ -28,6 +31,7 @@ const getValue = <T = string,>(name : string) : T => {
         case 'NEXT_PUBLIC_GOOGLE_ANALYTICS_ID'            : return toStringOrExplode(process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID,            'NEXT_PUBLIC_GOOGLE_ANALYTICS_ID'           )as unknown as T;
         case 'NEXT_PUBLIC_APP_ID'                         : return toStringOrExplode(process.env.NEXT_PUBLIC_APP_ID,                         'NEXT_PUBLIC_APP_ID'                        )as unknown as T;
 
+
         case 'NEXT_PUBLIC_NEXT_COUNTDOWN_TIMER_DURATION_SECONDS' : return toStringOrExplode(process.env.NEXT_PUBLIC_NEXT_COUNTDOWN_TIMER_DURATION_SECONDS, 'NEXT_PUBLIC_NEXT_COUNTDOWN_TIMER_DURATION_SECONDS')as unknown as T;
 
         case 'NEXT_GOOGLE_GEMINI_API_KEY' : return toStringOrExplode(process.env.NEXT_GOOGLE_GEMINI_API_KEY, 'NEXT_GOOGLE_GEMINI_API_KEY') as unknown as T;
@@ -36,7 +40,8 @@ const getValue = <T = string,>(name : string) : T => {
         case 'NEXT_PUSHER_APP_ID'         : return toStringOrExplode(process.env.NEXT_PUSHER_APP_ID,         'NEXT_PUSHER_APP_ID'        ) as unknown as T;
         case 'NEXT_PUSHER_SECRET'         : return toStringOrExplode(process.env.NEXT_PUSHER_SECRET,         'NEXT_PUSHER_SECRET'        ) as unknown as T;
 
-        case 'NEXT_PUBLIC_WEB_SOCKET_HOST_ORIGIN' : return toStringOrExplode(process.env.NEXT_PUBLIC_WEB_SOCKET_HOST_ORIGIN,   'NEXT_PUBLIC_WEB_SOCKET_HOST_ORIGIN') as T;
+        case 'NEXT_PUBLIC_IS_DEBUG_OVERLAY_VISIBLE' : return toStringOrExplode(process.env.NEXT_PUBLIC_IS_DEBUG_OVERLAY_VISIBLE, 'NEXT_PUBLIC_IS_DEBUG_OVERLAY_VISIBLE')as unknown as T;
+        case 'NEXT_PUBLIC_WEB_SOCKET_HOST_ORIGIN'   : return toStringOrExplode(process.env.NEXT_PUBLIC_WEB_SOCKET_HOST_ORIGIN,   'NEXT_PUBLIC_WEB_SOCKET_HOST_ORIGIN' ) as T;
 
 
         default: value = process.env[name] as T;
@@ -50,30 +55,27 @@ const getValue = <T = string,>(name : string) : T => {
     return value as T;
 };
 
-const getSubdomain = () : string | null => {
+const getNumber = (name : string) : number =>
+    parseInt(getValue(name));
+
+const getBoolean = (name : string) : boolean =>
+    getValue(name) === 'true';
+
+const getArray = (name : string) : string[] =>
+    getValue(name).split(',');
+
+const getObject = (name : string) : Record<string, unknown> =>
+    JSON.parse(getValue(name));
+
+export const getSubdomain = () : string | null => {
     const parts = window.location.hostname.split('.');
 
     if (parts.length > 2)
         return parts[0].toLowerCase().trim();
     else
         return null;
-};
+}
 
-const getUrlSection = (index : number, pageUrl : string) : string => {
-    try {
-        const url = new URL(pageUrl);
-        const pathParts = url.pathname.split('/');
-
-        return pathParts[index] || '';
-    } catch (e) {
-        console.error(`Failed to parse URL: ${pageUrl}`, e);
-
-        return '';
-    }
-};
-
-const getBasePageName = () : string =>
-    getUrlSection(1, window.location.href);
 
 const getHttpProtocol =  () : 'http' | 'https' =>
     process.env.NODE_ENV === 'production' ? 'https' : 'http';
@@ -87,14 +89,17 @@ const isBuilding    = () : boolean => process.env.IS_BUILDING ? true : false;
 
 
 export const Env = {
-    getBasePageName,
     getHttpProtocol,
     isDevelopment,
     isProduction,
     getSubdomain,
     isBuilding,
+    getBoolean,
+    getNumber,
+    getObject,
     getValue,
     isClient,
     isServer,
+    getArray,
     isTest,
 };

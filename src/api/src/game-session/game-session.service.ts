@@ -28,15 +28,15 @@ export class GameSessionService {
      * Whatever game session the player is in, remove them from it
      *
      * @param currentPlayer - The player to remove from the session
-     * @param session - The session to remove the player from
-     * @param exitReason - The reason the player is being removed
+     * @param session       - The session to remove the player from
+     * @param exitReason    - The reason the player is being removed
      *
      * @returns - The updated session with the player in the exited list
      */
     public exitActiveGameSession = async (
-        currentPlayer: Player,
-        exitReason: GameExitReason,
-        runtimeContext: string = '') => {
+        currentPlayer  : Player,
+        exitReason     : GameExitReason,
+        runtimeContext : string = '') => {
 
         const prefix = 'GameSessionService::leaveOpenSession';
 
@@ -282,7 +282,6 @@ export class GameSessionService {
         session: GameSession,
         runtimeContext: string = '',
     ): P<unknown> => {
-        debugger;
 
         const debugBundle = { player, session, runtimeContext };
 
@@ -710,7 +709,6 @@ export class GameSessionService {
 
         console.log('handleSkipToNextHand', debugBundle);
 
-        debugger;
 
         return;
     }
@@ -795,20 +793,21 @@ export class GameSessionService {
      * @returns - The updated session
      */
     public removePlayerFromSession = async (
-        player: Player,
-        session: GameSession,
-        exitReason: GameExitReason,
-        runtimeContext: string = '',
-    ) => {
+        player         : Player,
+        session        : GameSession,
+        exitReason     : GameExitReason,
+        runtimeContext : string = '',
+    ) : P<GameSession | null> => {
         const debugBundle = { player, session, exitReason, runtimeContext };
 
         // Log the initial state of the removal process for debugging purposes
         this.log.silly('GameSessionService::removePlayer', { debugBundle });
 
+
         // Determine additional updates based on the exit reason
         switch (exitReason) {
             case GameExitReason.Disconnected:
-                debugger;
+
 
                 // Append the player's ID to the disconnected player list
                 await this.gameSessionRepo.update(session.id, {
@@ -819,7 +818,7 @@ export class GameSessionService {
                     break;
 
             case GameExitReason.Booted:
-                debugger;
+
 
                 // Append the player's ID to the disconnected player list
                 await this.gameSessionRepo.update(session.id, {
@@ -844,9 +843,7 @@ export class GameSessionService {
         }
 
         // return the updated session
-        return this.gameSessionRepo.findOneByOrFail({
-            id : session.id,
-        });
+        return null;
     }
 
 
