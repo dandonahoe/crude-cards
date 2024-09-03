@@ -191,8 +191,6 @@ function* onSendWebSocketMessage(
 ) : Saga {
     console.log('Received an Action to Send a WebSocket Message', action);
 
-    // debugger;
-
     if(!socket) {
         console.error('No socket available');
 

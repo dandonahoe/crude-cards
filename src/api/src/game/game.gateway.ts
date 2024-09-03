@@ -12,15 +12,14 @@ import { CatchAllWsFilter } from '../filters/CatchAllWs.filter';
 import { UpdateUsernameDTO } from './dtos/update-username.dto';
 import { SubmitFeedbackDTO } from './dtos/submit-feedback.dto';
 import { PlayerType } from '../constant/player-type.enum';
+import { GameAuthGuard } from '../guards/GameAuth.guard';
 import { type P } from '../../../type/framework/data/P';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { CreateGameDTO } from './dtos/create-game.dto';
-import { GameStateDTO } from './dtos/game-state.dto';
 import { StartGameDTO } from './dtos/start-game.dto';
 import { LeaveGameDTO } from './dtos/leave-game.dto';
 import { JoinGameDTO } from './dtos/join-game.dto';
 import { NextHandDTO } from './dtos/next-hand.dto';
-import { AuthGuard } from '../guards/auth.guard';
 import { GameService } from './game.service';
 import { Server, Socket } from 'socket.io';
 import { corsPolicy } from './Cors';
@@ -35,7 +34,7 @@ import {
 @UseFilters(GameWebSocketExceptionFilter, GameExceptionFilter, CatchAllWsFilter)
 @WebSocketGateway({ cors : corsPolicy })
 @UseInterceptors(GameInterceptor)
-@UseGuards(AuthGuard)
+@UseGuards(GameAuthGuard)
 @Injectable()
 export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
@@ -182,7 +181,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
         @MessageBody(new ZodValidationPipe(DealerPickWinnerDTO.Schema))
         dealerPickWinner: DealerPickWinnerDTO,
-    ): P<GameStateDTO> {
+    ): P<unknown> {
         this.log.silly('GameGateway::dealerPickWinner', { dealerPickWinner });
 
         return this.gameService.dealerPickWinner(this.server, socket, dealerPickWinner);
@@ -196,7 +195,7 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
         @MessageBody(new ZodValidationPipe(NextHandDTO.Schema))
         nextHand: NextHandDTO,
-    ): P<GameStateDTO> {
+    ): P<unknown> {
         this.log.silly('GameGateway::nextHand', { nextHand });
 
         return this.gameService.nextHand(this.server, socket, nextHand);

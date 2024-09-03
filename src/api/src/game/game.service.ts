@@ -783,7 +783,7 @@ export class GameService {
         server : Server, socket : Socket,
         @Body(new ZodValidationPipe(DealerPickWinnerDTO.Schema))
         dealerPickWinner: DealerPickWinnerDTO,
-    ): P<GameStateDTO> {
+    ): P<unknown> {
 
         this.myFunTestSocketIoServerRenameMe = server;
 
@@ -799,8 +799,12 @@ export class GameService {
             dealer, players, game, session, scoreLog,
         } = await this.getDealerAndSessionData(dealerPickWinner.auth_token!);
 
+        debugger;
+        // Does this explode??
         this.log.debug('Retrieved dealer and session data', {
             dealer, players, game, session, scoreLog });
+
+        debugger;
 
         // Determine the winning player based on the selected card ID
         const winningPlayer = await this.getWinningPlayer(players, dealerPickWinner.card_id!);
@@ -818,9 +822,7 @@ export class GameService {
         const gameState = await this.getGameStateAsPlayer(game.game_code, dealer.id!);
         this.log.silly('GameService::dealerPickWinner - End', gameState);
 
-        await this.emitGameUpdate(server, gameState.game_code);
-
-        return gameState;
+        return this.emitGameUpdate(server, gameState.game_code);
     }
 
     /**
