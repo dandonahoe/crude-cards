@@ -11,8 +11,8 @@ export const GameButton : RFC<Props> = ({
 }) => {
     const { isPhone  } = useContext(App);
 
-    const buttonSize = isPhone ? 90 : 180;
-    const fontSize   = isPhone ? 'sm' : 'xl';
+    const buttonSize = isPhone ? 180 : 180;
+    const fontSize   = isPhone ? 'xl' : 'xl';
 
     return (
         <Button

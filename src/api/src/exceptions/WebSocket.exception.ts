@@ -24,8 +24,6 @@ export class WebSocketException extends WsException {
     ) {
         super(message);
 
-        debugger;
-
         this.debugBundle = debugBundle;
         this.httpStatus  = httpStatus;
         this.message     = message;
