@@ -792,6 +792,8 @@ export class GameService {
 
         this.log.debug('Ensured proper game state');
 
+        debugger;
+
         // Retrieve the player (dealer), game, session, and score log using the provided auth token
         const {
             dealer, players, game, session, scoreLog,

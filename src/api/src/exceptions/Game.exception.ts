@@ -8,7 +8,7 @@ export class GameException extends WsException {
         public override readonly message : string,
         public readonly runtimeContext   : string,
         public readonly debugBundle      : Record<string, unknown> = {},
-        public readonly logger           : Logger,
+        public readonly log              : Logger,
     ) {
         super(message);
 

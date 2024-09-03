@@ -186,8 +186,12 @@ function* sagaStartUpdateListener(): Saga {
 
 
 // eslint-disable-next-line require-yield
-function* onSendWebSocketMessage(action : PayloadAction<Record<string, unknown>>) : Saga {
+function* onSendWebSocketMessage(
+    action : PayloadAction<Record<string, unknown>>,
+) : Saga {
     console.log('Received an Action to Send a WebSocket Message', action);
+
+    // debugger;
 
     if(!socket) {
         console.error('No socket available');
@@ -233,6 +237,7 @@ function* sagaSendWebSocketMessage(): Saga {
     console.log('Starting Listener for WebSocket Messages');
 
     yield* takeEvery([
+        GameAction.dealerPickBlackCard,
         GameAction.playerSelectCard,
         GameAction.dealerPickWinner,
         GameAction.updateUsername,
