@@ -61,6 +61,8 @@ jobs:
                 echo WEB_SOCKET_CORS_ALLOWED_ORIGIN                    = "${{ vars.WEB_SOCKET_CORS_ALLOWED_ORIGIN                    }}" >> .env
                 echo GCP_LOGGER_PROJECT_ID                             = "${{ vars.GCP_LOGGER_PROJECT_ID                             }}" >> .env
                 echo LOGGING_LEVEL                                     = "${{ vars.LOGGING_LEVEL                                     }}" >> .env
+                echo NEXT_PUBLIC_IS_DEBUG_OVERLAY_VISIBLE              = "${{ vars.NEXT_PUBLIC_IS_DEBUG_OVERLAY_VISIBLE              }}" >> .env
+
 
             - run: node -v
             - run: pwd
