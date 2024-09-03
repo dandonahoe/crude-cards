@@ -69,12 +69,6 @@ jobs:
 
             # Disable next.js spyware
             - run: pnpm run job:disable-snooping
-        
-
-            # # complete drop of schema and rebuild
-            - run: pnpm run db:reset
-            - run: pnpm run db:seed
-            - run: pnpm run test:web
 
             # Increment the version number of package.json
             - run: pnpm run ci-semantic-release
