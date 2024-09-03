@@ -13,6 +13,9 @@ Reviewer
 Repeat, Filter (filter out ones that look good) or End
 Keep filtering reults (files) down until done.
 
+For each pass, determine which of the filters to appply in which order.
+May only want to apply certain ones to hone down
+
 Every pass:
  Auto Tag Everything in Edited Code
     Repeat Code Quality (Option to repeat step)
@@ -26,6 +29,10 @@ pass
 pass Apply code quality rules
     Review / Finalize Subset of "Good" Files
     Repeat Code Quality (Option to repeat step)
+
+Add additional TSDocs to all places it applies, and add comments to all non-trivial lines of code, ie "const a = 1;" is trivial
+
+
 
 Review - fill in necessary
 
@@ -62,3 +69,4 @@ TypeScript, Node.js, NestJS, Jest
 - Use thorough defensive error checking
 - Validate all inputs
 - Rethrow any caught errors so the central Exception handler can treat them unifiormly
+

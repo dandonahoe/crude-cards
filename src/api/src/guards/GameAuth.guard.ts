@@ -1,3 +1,10 @@
+import { CanActivate, ExecutionContext, Injectable, Inject } from '@nestjs/common';
+import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
+import { P } from '../../../type/framework/data/P';
+import { Socket } from 'socket.io';
+import { Logger } from 'winston';
+
+
 /**
  * AuthGuard for WebSocket Connections
  *
@@ -12,18 +19,11 @@
  */
 
 
-import { CanActivate, ExecutionContext, Injectable, Inject } from '@nestjs/common';
-import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
-import { P } from '../../../type/framework/data/P';
-import { Socket } from 'socket.io';
-import { Logger } from 'winston';
-
-
 /**
  * Guard to handle WebSocket authentication and connection validation.
  */
 @Injectable()
-export class AuthGuard implements CanActivate {
+export class GameAuthGuard implements CanActivate {
 
     /**
      * Constructor for AuthGuard.
@@ -43,24 +43,18 @@ export class AuthGuard implements CanActivate {
         this.log.silly('AuthGuard: Entering canActivate');
 
         if (context.getType() !== 'ws') {
-            this.log.warn('AuthGuard: Incorrect context type, expected "ws"');
+            this.log.warn('AuthGuard: Expected WebSocket context, but received different type', { });
 
             return false;
         }
 
-        try {
-            const { wsPattern, wsSocket, wsData } = await this.extractWebSocketContext(context);
+        const { wsPattern, wsSocket, wsData } = await this.extractWebSocketContext(context);
 
-            this.log.info('AuthGuard: Connection Details', {
-                wsPattern, wsData, socketId : wsSocket.id,
-            });
+        this.log.info('AuthGuard: Connection Details', {
+            wsPattern, wsData, socketId : wsSocket.id,
+        });
 
-            return this.validateConnection(wsSocket);
-        } catch (error) {
-            this.log.error('AuthGuard: Error during WebSocket authentication', { error });
-
-            throw error;
-        }
+        return this.validateConnection(wsSocket);
     }
 
     /**
@@ -68,9 +62,9 @@ export class AuthGuard implements CanActivate {
      * @param context - The execution context of the WebSocket connection.
      * @returns Extracted WebSocket pattern, socket, and data.
      */
-    private extractWebSocketContext = async (context: ExecutionContext): P<{
+    private extractWebSocketContext = (context: ExecutionContext): {
         wsPattern: string, wsSocket: Socket, wsData: string
-    }> => {
+    } => {
         const wsPattern = context.switchToWs().getPattern();
         const wsSocket  = context.switchToWs().getClient();
         const wsData    = context.switchToWs().getData();
