@@ -1,5 +1,5 @@
 module.exports = {
-    repositoryUrl: "https://github.com/ConstructWorks/cards.git",
+    repositoryUrl: "https://github.com/dandonahoe/crude-cards.git",
     branches: [
         { name: "dev" },
         { name: "main" }
