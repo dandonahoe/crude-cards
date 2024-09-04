@@ -51,7 +51,7 @@ jobs:
               name: Authenticate to Google Cloud
               uses: google-github-actions/auth@v1
               with:
-                  credentials_json: "${{ secrets.SERVICEACCOUNT_DEV }}"
+                  credentials_json: "${{ secrets.SERVICEACCOUNT }}"
 
             - uses: benjlevesque/short-sha@v3.0
               id: short-sha
@@ -68,7 +68,7 @@ jobs:
               with:
                   registry: us-west1-docker.pkg.dev
                   username: _json_key
-                  password: ${{ secrets.SERVICEACCOUNT_DEV }}
+                  password: ${{ secrets.SERVICEACCOUNT }}
 
               # Push image to ar
             - name: docker push
