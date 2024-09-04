@@ -57,5 +57,5 @@ jobs:
               with:
                   project_id: constructworks-dev-01
                   region: us-west1
-                  service: constructworks-ui-cloud-run
+                  service: crude-cards-ui
                   image: ${{ env.REGISTRY }}:${{ env.SHA }}
