@@ -139,7 +139,7 @@ ${combinedPrompt}`,
 
     // fully sanitize this to allow simple characters which will not trip up a git commit message
     const sanitizedCommitMessage = finalCommitMessage.replaceAll('`', '').trim();
-    console.log(`\n\n\n-------------------------------\n\n\n\nFinal commit message:\n${sanitizedCommitMessage}`);
+    console.log(`\n\n\n-------------------------------\n\n\n\nFinal commit message:\n\n`);
 
     // Commit the staged changes with the generated commit message
     execCommand(`git commit -F - <<EOF
