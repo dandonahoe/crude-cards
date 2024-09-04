@@ -11,7 +11,7 @@ jobs:
         environment: Development
         env:
             CI_REGISTRY: us-west1-docker.pkg.dev
-            REGISTRY: us-west1-docker.pkg.dev/constructworks-dev-01/constructworks-dev-api/constructworksapi
+            REGISTRY: us-west1-docker.pkg.dev/constructworks-dev-01/crude-cards/crude-cards-api
 
         steps:
             # Get last updates
