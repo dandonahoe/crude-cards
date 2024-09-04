@@ -63,7 +63,6 @@ jobs:
                 echo LOGGING_LEVEL                                     = "${{ vars.LOGGING_LEVEL                                     }}" >> .env
                 echo NEXT_PUBLIC_IS_DEBUG_OVERLAY_VISIBLE              = "${{ vars.NEXT_PUBLIC_IS_DEBUG_OVERLAY_VISIBLE              }}" >> .env
 
-
             - run: node -v
             - run: pwd
             - run: pnpm install

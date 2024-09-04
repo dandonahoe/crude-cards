@@ -9,6 +9,8 @@ artifact
 
 internal/log/**/*
 
+storybook-static
+
 src/api/internal/*.sql
 src/api/internal/*.sql
 src/api/logging/**/*
