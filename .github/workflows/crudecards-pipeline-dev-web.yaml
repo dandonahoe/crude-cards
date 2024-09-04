@@ -1,7 +1,7 @@
 name: CrudeCards - Pipeline - Dev - Web
 on:
     push:
-        branches: [staging/crude-cards]
+        branches: [dev]
     workflow_dispatch:
 
 jobs:
