@@ -10,7 +10,19 @@ jobs:
         environment: Development
         env:
             CI_REGISTRY: us-west1-docker.pkg.dev
-            REGISTRY: us-west1-docker.pkg.dev/constructworks-dev-01/crude-cards/crude-cards-web
+            # REGISTRY: us-west1-docker.pkg.dev/constructworks-dev-01/crude-cards/crude-cards-web
+
+            # GCP Project ID
+            PROJECT_ID: constructworks-dev-01
+
+            # Repository name within the GCP project
+            REPOSITORY_NAME: crude-cards
+
+            # Specific image name within the repository
+            SERVICE_NAME: crude-cards-web-service
+
+            # Region where the Cloud Run service is deployed
+            REGION: us-west1
 
         # trunk-ignore(checkov/CKV2_GHA_1)
         permissions:
@@ -86,6 +98,10 @@ jobs:
               id: short-sha
               with:
                   length: 6
+
+            # Construct the REGISTRY variable
+            - name: Set REGISTRY variable
+              run: echo "REGISTRY=${{ env.CI_REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY_NAME }}/${{ env.SERVICE_NAME }}" >> $GITHUB_ENV
 
               # build and tag image docker
             - name: docker build

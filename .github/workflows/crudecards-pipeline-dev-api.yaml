@@ -10,8 +10,20 @@ jobs:
         runs-on: ubuntu-latest
         environment: Development
         env:
+            # Domain of the Docker registry (hosted on GCP)
             CI_REGISTRY: us-west1-docker.pkg.dev
-            REGISTRY: us-west1-docker.pkg.dev/constructworks-dev-01/crude-cards/crude-cards-api
+
+            # GCP Project ID
+            PROJECT_ID: constructworks-dev-01
+
+            # Repository name within the GCP project
+            REPOSITORY_NAME: crude-cards
+
+            # Specific image name within the repository
+            SERVICE_NAME: crude-cards-api-service
+
+            # Region where the Cloud Run service is deployed
+            REGION: us-west1
 
         steps:
             # Get last updates
@@ -58,27 +70,31 @@ jobs:
               with:
                   length: 6
 
-              # build and tag image docker
-            - name: docker build
-              run: docker build -f DockerfileAPI -t ${{ env.REGISTRY }}:${{ env.SHA }} -t ${{ env.REGISTRY }}:latest .
+            # Construct the REGISTRY variable
+            - name: Set REGISTRY variable
+              run: echo "REGISTRY=${{ env.CI_REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY_NAME }}/${{ env.SERVICE_NAME }}" >> $GITHUB_ENV
 
-              # Authenticate to Artifact registry
+            # Build and tag Docker image
+            - name: docker build
+              run: docker build -f DockerfileAPI -t ${{ env.REGISTRY }}:${{ steps.short-sha.outputs.sha }} -t ${{ env.REGISTRY }}:latest .
+
+            # Authenticate to Artifact Registry
             - name: Login to GAR
               uses: docker/login-action@v3
               with:
-                  registry: us-west1-docker.pkg.dev
+                  registry: ${{ env.CI_REGISTRY }}
                   username: _json_key
                   password: ${{ secrets.SERVICEACCOUNT }}
 
-              # Push image to ar
+            # Push image to Artifact Registry
             - name: docker push
               run: docker push ${{ env.REGISTRY }} --all-tags
 
-              #Deploy revision to Cloud run
+            # Deploy revision to Cloud Run
             - id: deploy
               uses: google-github-actions/deploy-cloudrun@v2
               with:
-                  project_id: constructworks-dev-01
-                  region: us-west1
-                  service: crude-cards-api
-                  image: ${{ env.REGISTRY }}:${{ env.SHA }}
+                  project_id: ${{ env.PROJECT_ID }}
+                  region: ${{ env.REGION }}
+                  service: ${{ env.SERVICE_NAME }}
+                  image: ${{ env.REGISTRY }}:${{ steps.short-sha.outputs.sha }}
