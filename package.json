@@ -27,6 +27,7 @@
         "build:storybook": "IS_BUILDING=true storybook build --output-dir storybook-static",
         "ci-semantic-release": "semantic-release",
         "cmsg": "GPG_TTY=$(tty) ts-node internal/script/ai-commit.ts",
+        "build:docker": "ts-node internal/script/docker.ts",
         "job:pull-dev-env": "GPG_TTY=$(tty) ts-node internal/script/pull-env.ts",
         "dep:circular": "DATE=$(date +%Y-%m-%d-%S) && madge --image ./internal/log/$DATE-circular.svg --extensions ts,tsx,js --ts-config ./tsconfig.json src/api --circular",
         "dep:full": "DATE=$(date +%Y-%m-%d-%S) && madge --image ./internal/log/$DATE-full.svg --extensions ts,tsx,js --ts-config ./tsconfig.json src/api",
