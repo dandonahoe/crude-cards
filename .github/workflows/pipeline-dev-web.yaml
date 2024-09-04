@@ -109,5 +109,5 @@ jobs:
               with:
                   project_id: constructworks-dev-01
                   region: us-west1
-                  service: constructworks
+                  service: crude-cards-web
                   image: ${{ env.REGISTRY }}:${{ env.SHA }}
