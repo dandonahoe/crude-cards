@@ -1,3 +1,11 @@
+## [1.0.2](https://github.com/dandonahoe/crude-cards/compare/v1.0.1...v1.0.2) (2024-09-04)
+
+
+### Features
+
+* **workspace:** update VSCode settings ([6b6d4ec](https://github.com/dandonahoe/crude-cards/commit/6b6d4ecef11d4f839f9ffd60a38a3dc41019458e))
+* **workspace:** update workspace configuration ([d7752d3](https://github.com/dandonahoe/crude-cards/commit/d7752d3c75b6931d220f8b655df8edc22096b9d0))
+
 ## [1.0.1](https://github.com/dandonahoe/crude-cards/compare/v1.0.0...v1.0.1) (2024-09-04)
 
 
