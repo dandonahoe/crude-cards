@@ -1,3 +1,10 @@
+## [1.0.4](https://github.com/dandonahoe/crude-cards/compare/v1.0.3...v1.0.4) (2024-09-04)
+
+
+### Features
+
+* **pipeline:** update CI/CD workflow for CrudeCards dev ([3c84299](https://github.com/dandonahoe/crude-cards/commit/3c84299687edb63d31ca4d6cc88519c96d6d7bec))
+
 ## [1.0.3](https://github.com/dandonahoe/crude-cards/compare/v1.0.2...v1.0.3) (2024-09-04)
 
 
