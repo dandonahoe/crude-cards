@@ -7,6 +7,7 @@ import { ScoreLog } from './score-log.entity';
 import { Repository } from 'typeorm';
 import { Logger } from 'winston';
 
+
 @Injectable()
 export class ScoreLogService {
 

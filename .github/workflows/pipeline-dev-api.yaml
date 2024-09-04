@@ -1,0 +1,135 @@
+# trunk-ignore-all(checkov/CKV2_GHA_1)
+name: Pipeline - Dev - API
+on:
+    push:
+        branches: [dev]
+    workflow_dispatch:
+
+jobs:
+    deploy-cloud-run:
+        runs-on: ubuntu-latest
+        environment: Development
+        env:
+            CI_REGISTRY: us-west1-docker.pkg.dev
+            REGISTRY: us-west1-docker.pkg.dev/constructworks-dev-01/constructworks-dev-api/constructworksapi
+
+        steps:
+            # Get last updates
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            # Write to complete env file
+            - name: env file
+              run: |-
+                  echo AI_AWS_BUCKET_NAME                        = attorney-ai                                                               >> .env
+                  echo AI_AWS_BUCKET_PREFIX_TEXTRACT             = textract-output                                                           >> .env
+                  echo AI_AWS_BUCKET_REGION                      = us-east-1                                                                 >> .env
+                  echo AI_AWS_TEXTRACT_NOTIFICATION_ROLE         = arn:aws:iam::938413686327:role/attorney-ai-textract-role                  >> .env
+                  echo AI_AWS_TEXTRACT_SNS_TOPIC                 = arn:aws:sns:us-east-1:938413686327:attorney-ai-textract.fifo              >> .env
+                  echo CLERK_TRUST_HOST                          = true #Variable mysterioso                                                 >> .env
+                  echo CLIO_ACCESS_TOKEN_URI                     = https://app.clio.com/oauth/token                                          >> .env
+                  echo CLIO_AUTHORIZATION_URI                    = https://app.clio.com/oauth/authorize                                      >> .env
+                  echo CLIO_REDIRECT_URI                         = https://dev.construct.works/api/auth/clio-callback                        >> .env
+                  echo CLOUDMAILIN_API_KEY                       = todo2                                                                     >> .env
+                  echo CLOUDMAILIN_FROM_ADDRESS                  = dan@construct.works                                                       >> .env
+                  echo CLOUDMAILIN_USERNAME                      = todo1                                                                     >> .env
+                  echo DATABASE_SEED_LARGE_LIMIT                 = 5                                                                         >> .env
+                  echo DATABASE_SEED_MEDIUM_LIMIT                = 3                                                                         >> .env
+                  echo DATABASE_SEED_MIN_LIMIT                   = 2                                                                         >> .env
+                  echo DATABASE_SEED_MULTIPLIER                  = 3                                                                         >> .env
+                  echo DATABASE_SEED_SMALL_LIMIT                 = 3                                                                         >> .env
+                  echo GCP_ALLOYDB_CLUSTER_ID                    = constructworks-cluster                                                    >> .env
+                  echo GOOGLE_CLOUD_ENDPOINT                     = https://us-documentai.googleapis.com/v1/projects/477277068638/locations/us/processors/591d22af08823400 >> .env
+                  echo GOOGLE_CLOUD_LOCATION                     = us                                                                        >> .env
+                  echo GOOGLE_CLOUD_PROCESSOR_ID                 = 591d22af08823400                                                          >> .env
+                  echo GOOGLE_CLOUD_PROJECT_ID                   = 477277068638                                                              >> .env
+                  echo NEW_RELIC_APP_NAME                        = Kraken                                                                    >> .env
+                  echo NEXT_PUBLIC_APP_ID                        = AttorneyAI                                                                >> .env
+                  echo NEXT_PUBLIC_BROWSER_WINDOW_LOCATION_ORIGIN= https://dev.construct.works                                               >> .env
+                  echo NEXT_PUBLIC_CLERK_SIGN_IN_URL             = /                                                                         >> .env
+                  echo NEXT_PUBLIC_ENV_CLERK_DOMAIN              = ci.construct.works                                                        >> .env
+                  echo NEXT_PUBLIC_ENV_CLERK_IS_SATELLITE        = false                                                                     >> .env
+                  echo NEXT_PUBLIC_ENV_CLERK_SIGN_IN_URL         = /                                                                         >> .env
+                  echo NEXT_PUBLIC_PUSHER_CLUSTER                = mt1                                                                       >> .env
+                  echo NEXT_PUSHER_APP_ID                        = 1740842                                                                   >> .env
+                  echo AI_AWS_ACCESS_KEY_ID                      = "${{ secrets.AI_AWS_ACCESS_KEY_ID           }}"                           >> .env
+                  echo AI_AWS_SECRET_ACCESS_KEY                  = "${{ secrets.AI_AWS_SECRET_ACCESS_KEY       }}"                           >> .env
+                  echo GH_TOKEN                                  = "${{ secrets.GH_TOKEN                       }}"                           >> .env
+                  echo STRIPE_SECRET_KEY                         = "${{ secrets.STRIPE_SECRET_KEY              }}"                           >> .env
+                  echo STRIPE_LOCAL_WEBHOOK_SECRET               = "${{ secrets.STRIPE_LOCAL_WEBHOOK_SECRET    }}"                           >> .env
+                  echo PEOPLEDATALABS_API_KEY                    = "${{ secrets.PEOPLEDATALABS_API_KEY         }}"                           >> .env
+                  echo NEW_RELIC_API_KEY_ID                      = "${{ secrets.NEW_RELIC_API_KEY_ID           }}"                           >> .env
+                  echo CLERK_SECRET_KEY                          = "${{ secrets.CLERK_SECRET_KEY               }}"                           >> .env
+                  echo OPENAI_API_KEY                            = "${{ secrets.OPENAI_API_KEY                 }}"                           >> .env
+                  echo DEEPGRAM_API_SECRET_KEY                   = "${{ secrets.DEEPGRAM_API_SECRET_KEY        }}"                           >> .env
+                  echo DANGER_GITHUB_API_TOKEN                   = "${{ secrets.DANGER_GITHUB_API_TOKEN        }}"                           >> .env
+                  echo CLIO_CLIENT_SECRET                        = "${{ secrets.CLIO_CLIENT_SECRET             }}"                           >> .env
+                  echo CLIO_CLIENT_ID                            = "${{ secrets.CLIO_CLIENT_ID                 }}"                           >> .env
+                  echo NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY         = "${{ vars.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}"                           >> .env
+                  echo NEW_RELIC_LICENSE_KEY                     = "${{ vars.NEW_RELIC_LICENSE_KEY             }}"                           >> .env
+                  echo NEW_RELIC_API_SOMETHING                   = "${{ vars.NEW_RELIC_API_SOMETHING           }}"                           >> .env
+                  echo NEXT_PUBLIC_GOOGLE_ANALYTICS_ID           = "${{ vars.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID   }}"                           >> .env
+                  echo STRIPE_PRICE_ID_MONTH                     = "${{ vars.STRIPE_PRICE_ID_MONTH             }}"                           >> .env
+                  echo NEXT_PUBLIC_PUSHER_KEY                    = "${{ vars.NEXT_PUBLIC_PUSHER_KEY            }}"                           >> .env
+                  echo STRIPE_PRICE_ID_YEAR                      = "${{ vars.STRIPE_PRICE_ID_YEAR              }}"                           >> .env
+                  echo NEXT_PUSHER_SECRET                        = "${{ secrets.NEXT_PUSHER_SECRET             }}"                           >> .env
+                  echo NEXT_GOOGLE_GEMINI_API_KEY                = "${{ vars.NEXT_GOOGLE_GEMINI_API_KEY        }}"                           >> .env
+                  echo DATABASE_CONNECTION_STRING                = "${{ secrets.DB_STRING_CONN                 }}"                           >> .env
+                  echo DATABASE_CONNECTION_STRING                = "${{ secrets.DATABASE_CONNECTION_STRING     }}"                           >> .env
+                  echo GCP_ALLOYDB_PASSWORD                      = "${{ secrets.GCP_ALLOYDB_PASSWORD           }}"                           >> .env
+                  echo DEEPGRAM_API_KEY                          = "${{ secrets.DEEPGRAM_API_KEY               }}"                           >> .env
+
+                  echo INSTANCE_CONNECTION_NAME                  = "${{ vars.INSTANCE_CONNECTION_NAME          }}"                           >> .env
+                  echo BACKEND_DATABASE_HOST                     = "${{ vars.BACKEND_DATABASE_HOST             }}"                           >> .env
+                  echo BACKEND_DATABASE_USER                     = "${{ vars.BACKEND_DATABASE_USER             }}"                           >> .env
+                  echo BACKEND_DATABASE_PASS                     = "${{ secrets.BACKEND_DATABASE_PASS          }}"                           >> .env
+                  echo BACKEND_DATABASE_NAME                     = "${{ vars.BACKEND_DATABASE_NAME             }}"                           >> .env
+                  echo BACKEND_DATABASE_PORT                     = "${{ vars.BACKEND_DATABASE_PORT             }}"                           >> .env
+
+                  echo BACKEND_PORT = "${{ vars.BACKEND_PORT }}" >> .env
+
+                  echo WEB_SOCKET_CORS_ALLOWED_ORIGIN     = "${{ vars.WEB_SOCKET_CORS_ALLOWED_ORIGIN     }}" >> .env
+                  echo NEXT_PUBLIC_WEB_SOCKET_HOST_ORIGIN = "${{ vars.NEXT_PUBLIC_WEB_SOCKET_HOST_ORIGIN }}" >> .env
+
+                  echo OCO_OPENAI_API_KEY                                = "${{ secrets.OCO_OPENAI_API_KEY                             }}" >> .env
+                  echo AI_COMMIT_ADD_EMOJI                               = "${{ vars.AI_COMMIT_ADD_EMOJI                               }}" >> .env
+                  echo NEXT_PUBLIC_NEXT_COUNTDOWN_TIMER_DURATION_SECONDS = "${{ vars.NEXT_PUBLIC_NEXT_COUNTDOWN_TIMER_DURATION_SECONDS }}" >> .env
+                  echo GCP_LOGGER_PROJECT_ID                             = "${{ vars.GCP_LOGGER_PROJECT_ID                             }}" >> .env
+                  echo LOGGING_LEVEL                                     = "${{ vars.LOGGING_LEVEL                                     }}" >> .env
+
+            # Authenticate on GCP using service account
+            - id: Auth
+              name: Authenticate to Google Cloud
+              uses: google-github-actions/auth@v1
+              with:
+                  credentials_json: "${{ secrets.SERVICEACCOUNT_DEV }}"
+
+            - uses: benjlevesque/short-sha@v3.0
+              id: short-sha
+              with:
+                  length: 6
+
+              # build and tag image docker
+            - name: docker build
+              run: docker build -f DockerfileAPI -t ${{ env.REGISTRY }}:${{ env.SHA }} -t ${{ env.REGISTRY }}:latest .
+
+              # Authenticate to Artifact registry
+            - name: Login to GAR
+              uses: docker/login-action@v3
+              with:
+                  registry: us-west1-docker.pkg.dev
+                  username: _json_key
+                  password: ${{ secrets.SERVICEACCOUNT_DEV }}
+
+              # Push image to ar
+            - name: docker push
+              run: docker push ${{ env.REGISTRY }} --all-tags
+
+              #Deploy revision to Cloud run
+            - id: deploy
+              uses: google-github-actions/deploy-cloudrun@v2
+              with:
+                  project_id: constructworks-dev-01
+                  region: us-west1
+                  service: constructworks-api-cloud-run
+                  image: ${{ env.REGISTRY }}:${{ env.SHA }}
