@@ -96,18 +96,18 @@ async function main() {
 
     // Generate summaries for each file in parallel using Promise.all
     const summaryPromises = fileSummaries.map(summary =>
-        createCompletion(`Summarize the file diff in a commit. Provide a few statistics at the end ${summary}`),
+        createCompletion(`Summarize the file diff in a commit. Provide a few statistics at the end ${summary.slice(0, 50)}`),
     );
     const fileSummariesResponses = await Promise.all(summaryPromises);
 
     console.log('Received all file summaries from OpenAI:');
     fileSummariesResponses.forEach((response, index) => {
-        console.log(`Summary ${index + 1}:\n${response}`);
+        console.log(`Summary ${index + 1}:\n${response.slice(0, 50)}`);
     });
 
     // Combine the individual file summaries into a single prompt for the final completion
     const combinedPrompt = fileSummariesResponses.join('\n\n');
-    console.log(`Combined prompt for final commit message:\n${combinedPrompt}`);
+    console.log(`Combined prompt for final commit message:\n${combinedPrompt.slice(0, 50)}...`);
 
     // Generate the final commit message based on the combined summary
     const finalCommitMessage = await createCompletion(
@@ -139,14 +139,14 @@ ${combinedPrompt}`,
 
     // fully sanitize this to allow simple characters which will not trip up a git commit message
     const sanitizedCommitMessage = finalCommitMessage.replaceAll('`', '').trim();
-    console.log(`\n\n\n-------------------------------\nFinal commit message:\n${sanitizedCommitMessage}`);
+    console.log(`\n\n\n-------------------------------\n\n\n\nFinal commit message:\n${sanitizedCommitMessage}`);
 
     // Commit the staged changes with the generated commit message
     execCommand(`git commit -F - <<EOF
 ${sanitizedCommitMessage}
 EOF`);
 
-    console.log('\n\n-------------------------------\nChanges committed successfully with the generated commit message.');
+    console.log('\n\\n\n\n\n-------------------------------\nChanges committed successfully with the generated commit message.');
 }
 
 // Run the main function
