@@ -1,3 +1,12 @@
+## [1.0.3](https://github.com/dandonahoe/crude-cards/compare/v1.0.2...v1.0.3) (2024-09-04)
+
+
+### Features
+
+* **commit:** summary ([8238622](https://github.com/dandonahoe/crude-cards/commit/8238622d2cf964c5478886c06639078fb15eeeba))
+* **pipeline:** update GitHub Actions workflow ([54c68dc](https://github.com/dandonahoe/crude-cards/commit/54c68dc0c32756e2591eefe4bcf586a9728f3f51))
+* **commit:** update ([b413759](https://github.com/dandonahoe/crude-cards/commit/b413759b6c218e34117948c052d95b83289f578f))
+
 ## [1.0.2](https://github.com/dandonahoe/crude-cards/compare/v1.0.1...v1.0.2) (2024-09-04)
 
 
