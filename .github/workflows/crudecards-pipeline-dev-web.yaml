@@ -1,8 +1,7 @@
-# trunk-ignore-all(checkov/CKV2_GHA_1)
-name: Pipeline - Dev - API
+name: CrudeCards - Pipeline - Dev - Web
 on:
     push:
-        branches: [dev]
+        branches: [staging/crude-cards]
     workflow_dispatch:
 
 jobs:
@@ -11,12 +10,30 @@ jobs:
         environment: Development
         env:
             CI_REGISTRY: us-west1-docker.pkg.dev
-            REGISTRY: us-west1-docker.pkg.dev/constructworks-dev-01/constructworks-dev-api/constructworksapi
+            REGISTRY: us-west1-docker.pkg.dev/constructworks-dev-01/dev/constructworks
+
+        # trunk-ignore(checkov/CKV2_GHA_1)
+        permissions:
+            contents: write # Allows the job to write back to the repository, necessary for actions like pushing commits or tags
+            id-token: write
 
         steps:
             # Get last updates
             - name: Checkout
               uses: actions/checkout@v4
+
+            # Install pnpm
+            - name: Install pnpm
+              run: npm install -g pnpm
+
+            # Set up   Node.js 20
+            - name: Setup Node.js v20
+              uses: actions/setup-node@v3
+              with:
+                  node-version-file: .nvmrc
+                  check-latest: true
+                  node-version: "20"
+                  cache: pnpm
 
             # Write to complete env file
             - name: env file
@@ -46,13 +63,25 @@ jobs:
                   echo LOGGING_LEVEL                                     = "${{ vars.LOGGING_LEVEL                                     }}" >> .env
                   echo NEXT_PUBLIC_IS_DEBUG_OVERLAY_VISIBLE              = "${{ vars.NEXT_PUBLIC_IS_DEBUG_OVERLAY_VISIBLE              }}" >> .env
 
+            - run: node -v
+            - run: pwd
+            - run: pnpm install
+            - run: pnpm --prefix src/api install
+
+            # Disable next.js spyware
+            - run: pnpm run job:disable-snooping
+
+            # Increment the version number of package.json
+            - run: pnpm run ci-semantic-release
+
             # Authenticate on GCP using service account
             - id: Auth
               name: Authenticate to Google Cloud
               uses: google-github-actions/auth@v1
               with:
-                  credentials_json: "${{ secrets.SERVICEACCOUNT_DEV }}"
+                  credentials_json: "${{ secrets.SERVICEACCOUNT }}"
 
+            # Get short commit hash for tagging
             - uses: benjlevesque/short-sha@v3.0
               id: short-sha
               with:
@@ -60,7 +89,7 @@ jobs:
 
               # build and tag image docker
             - name: docker build
-              run: docker build -f DockerfileAPI -t ${{ env.REGISTRY }}:${{ env.SHA }} -t ${{ env.REGISTRY }}:latest .
+              run: docker build -f DockerfileWeb -t ${{ env.REGISTRY }}:${{ env.SHA }} -t ${{ env.REGISTRY }}:latest .
 
               # Authenticate to Artifact registry
             - name: Login to GAR
@@ -68,11 +97,11 @@ jobs:
               with:
                   registry: us-west1-docker.pkg.dev
                   username: _json_key
-                  password: ${{ secrets.SERVICEACCOUNT_DEV }}
+                  password: ${{ secrets.SERVICEACCOUNT }}
 
               # Push image to ar
             - name: docker push
-              run: docker push ${{ env.REGISTRY }} --all-tags
+              run: docker push  ${{ env.REGISTRY }} --all-tags
 
               #Deploy revision to Cloud run
             - id: deploy
@@ -80,5 +109,5 @@ jobs:
               with:
                   project_id: constructworks-dev-01
                   region: us-west1
-                  service: crude-cards-api
+                  service: crude-cards-web
                   image: ${{ env.REGISTRY }}:${{ env.SHA }}

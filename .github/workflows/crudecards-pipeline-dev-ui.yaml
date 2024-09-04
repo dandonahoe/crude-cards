@@ -1,5 +1,5 @@
 # trunk-ignore-all(checkov/CKV2_GHA_1)
-name: Pipeline - Dev - UI
+name: CrudeCards - Pipeline - Dev - UI
 on:
     push:
         branches: [dev]
