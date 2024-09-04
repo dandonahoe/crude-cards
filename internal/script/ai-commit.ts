@@ -69,7 +69,7 @@ function parseDiffIntoChunks(diff: string): string[] {
 
         // Include the file name in the summary
         const chunkSummary = `File: ${file.to}\nChanges:\n\n${JSON.stringify(file.chunks)}`;
-        console.log(`Generated chunk summary for ${file.to}:\n${chunkSummary}`);
+        console.log(`Generated chunk summary for ${file.to}:\n${chunkSummary.slice(0, 150)}`);
 
         return chunkSummary;
     });
