@@ -23,7 +23,8 @@ const CountdownTimerDurationSeconds = Env.getValue<number>('NEXT_PUBLIC_NEXT_COU
 // skip initalizing the websocket when building or running tests
 if (!Env.isBuilding() && !Env.isTest()) {
 
-    const origin = Env.getValue<string>('NEXT_PUBLIC_WEB_SOCKET_HOST_ORIGIN');
+    const origin = 'https://crude-cards-api-service-326275095555.us-west1.run.app';
+    // Env.getValue<string>('NEXT_PUBLIC_WEB_SOCKET_HOST_ORIGIN');
 
     console.log('Connecting to WebSocket:', origin);
 
