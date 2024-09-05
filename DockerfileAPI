@@ -6,15 +6,15 @@ WORKDIR /app
 
 COPY . .
 
-RUN npm install -g pnpm && pnpm install --frozen-lockfile && pnpm install --prefix=src/api --frozen-lockfile
+RUN npm install -g pnpm
 
-# RUN pnpm install --frozen-lockfile
+RUN pnpm install --frozen-lockfile
 
-# WORKDIR /app/src/api
+WORKDIR /app/src/api
 
-# RUN pnpm install --prefix=src/api --frozen-lockfile
+RUN pnpm install --frozen-lockfile
 
-# WORKDIR /app
+WORKDIR /app
 
 # Use the official Node.js 20 image as the base for the runtime stage
 FROM node:20-alpine
@@ -35,4 +35,4 @@ ENV PORT=8080
 
 # todo - run multiple apps here?
 # Command to run the application
-CMD ["pnpm", "run", "start:backend"]
+CMD ["pnpm", "start:backend"]
