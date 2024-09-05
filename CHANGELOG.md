@@ -1,3 +1,10 @@
+## [1.0.7](https://github.com/dandonahoe/crude-cards/compare/v1.0.6...v1.0.7) (2024-09-05)
+
+
+### Features
+
+* **api:** update Dockerfile ([875bc99](https://github.com/dandonahoe/crude-cards/commit/875bc999f8e11e232617c855fc764735c789c16b))
+
 ## [1.0.6](https://github.com/dandonahoe/crude-cards/compare/v1.0.5...v1.0.6) (2024-09-05)
 
 
