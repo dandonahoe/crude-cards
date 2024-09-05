@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-escape */
 
 import { RFC } from '@app/ui/type';
 
@@ -187,6 +188,7 @@ export const AppHeadGame : RFC = () =>
     </>
 
 /* eslint-enable max-len */
+/* eslint-enable no-useless-escape */
 
 // eslint-disable-next-line import/no-default-export
 export default AppHeadGame;
