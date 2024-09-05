@@ -1,3 +1,4 @@
+import 'newrelic';
 import { CustomPageProps } from '../type/framework/template/CustomPageProps';
 import { Notifications } from '@mantine/notifications';
 import { AppProvider } from '@app/client/AppProvider';
