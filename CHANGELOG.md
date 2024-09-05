@@ -1,3 +1,11 @@
+## [1.0.6](https://github.com/dandonahoe/crude-cards/compare/v1.0.5...v1.0.6) (2024-09-05)
+
+
+### Features
+
+* **lockfile:** update dependencies ([68804fa](https://github.com/dandonahoe/crude-cards/commit/68804fa0007dc85f6d05b8450d1fd0fc6b5b43d7))
+* **ci:** update ([c0e667d](https://github.com/dandonahoe/crude-cards/commit/c0e667d148b0e6f2f5b5bf326b32d00ad817236b))
+
 ## [1.0.5](https://github.com/dandonahoe/crude-cards/compare/v1.0.4...v1.0.5) (2024-09-04)
 
 
