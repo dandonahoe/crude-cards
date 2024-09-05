@@ -1,3 +1,10 @@
+## [1.0.16](https://github.com/dandonahoe/crude-cards/compare/v1.0.15...v1.0.16) (2024-09-05)
+
+
+### Features
+
+* **AppContent:** update functionalities and styling ([5ecd2ef](https://github.com/dandonahoe/crude-cards/commit/5ecd2ef508921729f1c95e03cb4185758b547431))
+
 ## [1.0.15](https://github.com/dandonahoe/crude-cards/compare/v1.0.14...v1.0.15) (2024-09-05)
 
 
