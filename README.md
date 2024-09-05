@@ -181,6 +181,11 @@ Regular maintenance tasks and best practices for keeping the app up-to-date.
 
 </table>
 
+## 🚀 Browser
+
+<img width="478" alt="Screenshot 2024-09-04 at 8 20 19 PM" src="https://github.com/user-attachments/assets/f4730f29-1e31-41dd-b656-ede5040b5548">
+
+
 ## 🚀 Tech Stack
 
 The tech stack is carefully chosen to showcase modern full-stack development practices. Here's a breakdown:
