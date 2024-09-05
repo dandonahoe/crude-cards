@@ -1,3 +1,10 @@
+## [1.0.12](https://github.com/dandonahoe/crude-cards/compare/v1.0.11...v1.0.12) (2024-09-05)
+
+
+### Features
+
+* **WebSocks:** update WebSocket handling ([0ad40fd](https://github.com/dandonahoe/crude-cards/commit/0ad40fdff18aa28fdee4c7d2fe38a374b48700fb))
+
 ## [1.0.11](https://github.com/dandonahoe/crude-cards/compare/v1.0.10...v1.0.11) (2024-09-05)
 
 
