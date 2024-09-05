@@ -123,7 +123,7 @@ export const GameHome : RFC = () => {
                                 fz={rem(32)}
                                 ta='center'
                                 fw={600}>
-                                {'A Party Game for Terrible People'}
+                                {'A Party Game for Terrible People.'}
                             </Text>
                         </Box>
 
