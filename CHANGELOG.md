@@ -1,3 +1,10 @@
+## [1.0.11](https://github.com/dandonahoe/crude-cards/compare/v1.0.10...v1.0.11) (2024-09-05)
+
+
+### Features
+
+* **database:** update connection method ([5f10968](https://github.com/dandonahoe/crude-cards/commit/5f109681145ba87c4fa8b59674b9f6682d092271))
+
 ## [1.0.10](https://github.com/dandonahoe/crude-cards/compare/v1.0.9...v1.0.10) (2024-09-05)
 
 
