@@ -1,3 +1,10 @@
+## [1.0.15](https://github.com/dandonahoe/crude-cards/compare/v1.0.14...v1.0.15) (2024-09-05)
+
+
+### Features
+
+* **update:** summary of recent changes ([68fa886](https://github.com/dandonahoe/crude-cards/commit/68fa886114e96471b838af07438b6c8d56927ec9))
+
 ## [1.0.14](https://github.com/dandonahoe/crude-cards/compare/v1.0.13...v1.0.14) (2024-09-05)
 
 
