@@ -1,3 +1,10 @@
+## [1.0.13](https://github.com/dandonahoe/crude-cards/compare/v1.0.12...v1.0.13) (2024-09-05)
+
+
+### Features
+
+* **gamehome:** index updates ([5c544ff](https://github.com/dandonahoe/crude-cards/commit/5c544ffcddb3e943b512e63bc95448de9a86ca3f))
+
 ## [1.0.12](https://github.com/dandonahoe/crude-cards/compare/v1.0.11...v1.0.12) (2024-09-05)
 
 
