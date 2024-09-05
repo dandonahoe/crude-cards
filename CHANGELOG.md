@@ -1,3 +1,10 @@
+## [1.0.10](https://github.com/dandonahoe/crude-cards/compare/v1.0.9...v1.0.10) (2024-09-05)
+
+
+### Features
+
+* **api:** update data-source.ts ([816eaf8](https://github.com/dandonahoe/crude-cards/commit/816eaf8f3caa02f5411c41a205368c7ba79ac670))
+
 ## [1.0.9](https://github.com/dandonahoe/crude-cards/compare/v1.0.8...v1.0.9) (2024-09-05)
 
 
