@@ -795,6 +795,8 @@ export class GameService {
 
         this.log.debug('Ensured proper game state');
 
+        debugger;
+
         // Retrieve the player (dealer), game, session, and score log using the provided auth token
         const {
             dealer, players, game, session, scoreLog,
@@ -808,6 +810,8 @@ export class GameService {
 
         // Does this explode??
         this.log.debug('Retrieved dealer and session data', { debugBundle });
+
+        debugger;
 
         // Determine the winning player based on the selected card ID
         const winningPlayer = await this.getWinningPlayer(players, dealerPickWinner.card_id!);
