@@ -795,13 +795,15 @@ export class GameService {
 
         this.log.debug('Ensured proper game state');
 
-        debugger;
+        if(!dealerPickWinner.card_id)
+            // debugger;
+
+            throw WSE.BadRequest400('Invalid Card ID', debugBundle);
 
         // Retrieve the player (dealer), game, session, and score log using the provided auth token
         const {
             dealer, players, game, session, scoreLog,
         } = await this.getDealerAndSessionData(dealerPickWinner.auth_token!);
-
 
         debugBundle.scoreLogId = scoreLog.id;
         debugBundle.sessionId  = session.id;
@@ -810,8 +812,6 @@ export class GameService {
 
         // Does this explode??
         this.log.debug('Retrieved dealer and session data', { debugBundle });
-
-        debugger;
 
         // Determine the winning player based on the selected card ID
         const winningPlayer = await this.getWinningPlayer(players, dealerPickWinner.card_id!);
@@ -823,9 +823,12 @@ export class GameService {
         // Update the score log and player's score in parallel
         this.log.debug('Updated score and player', {
             debugBundle, cardId : dealerPickWinner.card_id, winningPlayerId });
+
+            // debugger;
+
         await this.updateScoreAndPlayer(
             scoreLog, session, dealer,
-            dealerPickWinner.card_id!,
+            dealerPickWinner.card_id,
             winningPlayer);
 
         // Check if the game is complete and progress to the next stage accordingly
@@ -976,13 +979,15 @@ export class GameService {
         dealer         : Player,
         selectedCardId : string,
         winningPlayer  : Player,
-    ) =>
-        Promise.all([
-            this.scoreLogService.updateScore(
-                scoreLog, session, winningPlayer, selectedCardId, dealer),
+    ) => {
+        // debugger;
+        await this.scoreLogService.updateScore(
+                scoreLog, session, winningPlayer, selectedCardId, dealer);
 
-            this.playerService.incrementPlayerScore(winningPlayer),
-        ]);
+        // debugger;
+
+        return this.playerService.incrementPlayerScore(winningPlayer)
+    };
 
     /**
      * Checks if the game is complete based on the winning player's score and either awards the winner
@@ -1632,6 +1637,9 @@ export class GameService {
 
         // Build and return the game state DTO
         // todo: send back runtimeContext as configutable in debug mode
+
+        // debugger;
+        // foofindme
 
         return {
             selected_card_id_list : session.selected_card_id_list,

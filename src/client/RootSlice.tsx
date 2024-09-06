@@ -69,8 +69,8 @@ const slice = createSlice({
             if(gameState.game_stage === GameStage.GameResults) {
                 console.log('updateGameState::Results Screen', gameState);
 
-                debugger;
-
+                // foofindme
+                console.log('updateGameState::Results Screen', gameState);
                 state.game.previousHandDealerCardId = gameState.dealer_card_id;
                 state.game.previousHandWinnerCardId = gameState.winner_card_id;
             } else {
@@ -78,6 +78,7 @@ const slice = createSlice({
             }
 
             state.game.playerLookup  = playerLookup;
+
             state.game.gameState = {
                 ...rootGameState,
                 new_deck_card_list : null,

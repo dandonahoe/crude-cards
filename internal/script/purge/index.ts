@@ -28,12 +28,12 @@ async function truncateTables() {
 
         // Execute truncation queries in parallel using Promise.all
         await Promise.all(
-            tablesToTruncate.map(async tableName => {
-                const query = `TRUNCATE TABLE ${tableName} CASCADE;`;
-                await client.query(query);
-                console.log(`Table ${tableName} truncated.`);
-            }),
+            tablesToTruncate.map(async tableName =>
+                client.query(`TRUNCATE TABLE ${tableName} CASCADE;`),
+            ),
         );
+
+        console.log('Tables truncated successfully');
 
     } catch (error) {
         console.error('Error truncating tables:', error);
