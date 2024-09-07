@@ -1,9 +1,19 @@
-import { promises as fs } from 'fs';
-import * as path from 'path';
 import { minimatch } from 'minimatch';
+import { promises as fs } from 'fs';
+import * as dotenv from 'dotenv';
+import * as path from 'path';
+
+// Load environment variables from .env file
+dotenv.config();
+
+
+if(!process.env.CODEBASE_DIR) {
+    console.error('Please provide the CODEBASE_DIR environment variable');
+    process.exit(1);
+}
 
 const outputFilePath = path.join(__dirname, './code/Codebase.md');
-const srcDir = path.join(__dirname, '../../src/api/src');
+const srcDir = path.join(__dirname, process.env.CODEBASE_DIR);
 
 const excludePaths = [
     'internal/script/code/Codebase.md',
