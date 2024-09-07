@@ -1,3 +1,10 @@
+## [1.0.20](https://github.com/dandonahoe/crude-cards/compare/v1.0.19...v1.0.20) (2024-09-07)
+
+
+### Features
+
+* **game:** update game service ([185b4e1](https://github.com/dandonahoe/crude-cards/commit/185b4e113fc392b695d780e9fbd9d5b49740a6f5))
+
 ## [1.0.19](https://github.com/dandonahoe/crude-cards/compare/v1.0.18...v1.0.19) (2024-09-07)
 
 
