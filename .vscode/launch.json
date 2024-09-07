@@ -27,7 +27,6 @@
             ],
             "program": "${workspaceFolder}/src/api/src/main.ts",
             "console": "integratedTerminal",
-            // "cwd": "${workspaceFolder}/src/api",
             "runtimeExecutable": "pnpm",
             "runtimeArgs": [
                 "--prefix",

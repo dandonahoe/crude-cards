@@ -608,35 +608,50 @@ export class GameService {
         const gameRoundCountPromise = this.getCountGameRounds(session);
 
         // Check if any player has reached or exceeded the maximum points
-        const winningPlayerPromise = this.getPlayerOverMaxPoints(
+        const winningPlayerMaxPointsPromise = this.getPlayerOverMaxPoints(
             players, game.max_point_count);
 
         // Await both promises concurrently
-        const [gameRoundCount, winningPlayer] = await Promise.all([
-            gameRoundCountPromise, winningPlayerPromise,
+        const [gameRoundCount, winningPlayerMaxPoints] = await Promise.all([
+            gameRoundCountPromise, winningPlayerMaxPointsPromise,
         ]);
 
-        this.log.silly('GameService::determineNextGameStage', {
-            gameRoundCount, winningPlayer,
-        });
+        this.log.silly('determineNextGameStage', { gameRoundCount, winningPlayerMaxPoints });
 
-        // If the round count has reached or exceeded the maximum, the game is complete
-        if (gameRoundCount >= game.max_round_count) {
-            this.log.info('GameService::determineNextGameStage - Game Complete due to max rounds reached', { gameRoundCount });
+        // If a winning player is found, mark the game as complete and award the winner
+        if (winningPlayerMaxPoints) {
+            this.log.info('Game Complete due to winning player', { winningPlayerMaxPoints });
+
+            await this.gameSessionService.awardWinnerAndComplete(
+                session, winningPlayerMaxPoints.id!,
+                `Determining Next Game Stage session(${session.id})game(${game.id}) winner(${winningPlayerMaxPoints.id})`);
 
             return GameStage.GameComplete;
         }
 
-        // If a winning player is found, mark the game as complete and award the winner
-        if (winningPlayer) {
-            this.log.info('GameService::determineNextGameStage - Game Complete due to winning player', { winningPlayer });
+        // If the round count has reached or exceeded the maximum, the game is complete. Pick a random winner
+        // if there's a tie
+        // TODO: Support multiple winners or ties
+        if (gameRoundCount >= game.max_round_count) {
+            this.log.info('determineNextGameStage - Game Complete due to max rounds reached', { gameRoundCount });
 
+            const playersWithHighestScore = await this.playerService.getPlayersInFirstPlace(session);
+
+            this.log.info('Players with highest score', { playersWithHighestScore });
+
+            if(playersWithHighestScore.length === 0)
+                throw WSE.InternalServerError500('Everyone is a loser. No winners found. Impossible.');
+
+            const winningPlayer = playersWithHighestScore[0];
+
+            // winningPlayer =
             await this.gameSessionService.awardWinnerAndComplete(
                 session, winningPlayer.id!,
                 `Determining Next Game Stage session(${session.id}) game(${game.id}) winner(${winningPlayer.id})`);
 
             return GameStage.GameComplete;
         }
+
 
         // Default to the DealerPickBlackCard stage for the next round
         this.log.info('GameService::determineNextGameStage - Proceeding to DealerPickBlackCard stage');
@@ -795,11 +810,15 @@ export class GameService {
 
         this.log.debug('Ensured proper game state');
 
+        if(!dealerPickWinner.card_id)
+            // debugger;
+
+            throw WSE.BadRequest400('Invalid Card ID', debugBundle);
+
         // Retrieve the player (dealer), game, session, and score log using the provided auth token
         const {
             dealer, players, game, session, scoreLog,
         } = await this.getDealerAndSessionData(dealerPickWinner.auth_token!);
-
 
         debugBundle.scoreLogId = scoreLog.id;
         debugBundle.sessionId  = session.id;
@@ -819,9 +838,12 @@ export class GameService {
         // Update the score log and player's score in parallel
         this.log.debug('Updated score and player', {
             debugBundle, cardId : dealerPickWinner.card_id, winningPlayerId });
+
+            // debugger;
+
         await this.updateScoreAndPlayer(
             scoreLog, session, dealer,
-            dealerPickWinner.card_id!,
+            dealerPickWinner.card_id,
             winningPlayer);
 
         // Check if the game is complete and progress to the next stage accordingly
@@ -972,13 +994,15 @@ export class GameService {
         dealer         : Player,
         selectedCardId : string,
         winningPlayer  : Player,
-    ) =>
-        Promise.all([
-            this.scoreLogService.updateScore(
-                scoreLog, session, winningPlayer, selectedCardId, dealer),
+    ) => {
+        // debugger;
+        await this.scoreLogService.updateScore(
+                scoreLog, session, winningPlayer, selectedCardId, dealer);
 
-            this.playerService.incrementPlayerScore(winningPlayer),
-        ]);
+        // debugger;
+
+        return this.playerService.incrementPlayerScore(winningPlayer)
+    };
 
     /**
      * Checks if the game is complete based on the winning player's score and either awards the winner
@@ -1270,11 +1294,8 @@ export class GameService {
         // Retrieve the current player based on the provided auth token
         const { currentPlayer } = await this.getPlayerStateByAuthToken(createGame.auth_token!);
 
-
         if(!currentPlayer)
-
             throw WSE.InternalServerError500(`CreateGame::Invalid Player (${createGame.auth_token})`);
-
 
         this.log.debug('GameService::createGame - Current Player', { currentPlayer });
         this.log.silly('Leaving any existing games', { currentPlayer })
@@ -1628,6 +1649,9 @@ export class GameService {
 
         // Build and return the game state DTO
         // todo: send back runtimeContext as configutable in debug mode
+
+        // debugger;
+        // foofindme
 
         return {
             selected_card_id_list : session.selected_card_id_list,

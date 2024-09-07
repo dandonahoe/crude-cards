@@ -24,6 +24,8 @@ export const GameComplete : RFC = () => {
     const handleExitGame = () : CA =>
         dispatch(GameAction.leaveGame({}));
 
+    console.log('GameComplete', { allPlayerStatus, gameChampion, isWinner });
+
     return (
         <Flex
             justify='center'
@@ -41,7 +43,7 @@ export const GameComplete : RFC = () => {
                     c='#fff'
                     pt='xl'
                     ta='center'>
-                    {'CHAMP!'}
+                    {'CHAMP'}
                 </Text>
                 <Text
                     fw={600}

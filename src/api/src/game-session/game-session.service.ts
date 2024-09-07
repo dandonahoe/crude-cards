@@ -34,9 +34,9 @@ export class GameSessionService {
      * @returns - The updated session with the player in the exited list
      */
     public exitActiveGameSession = async (
-        currentPlayer  : Player,
-        exitReason     : GameExitReason,
-        runtimeContext : string = '') => {
+        currentPlayer: Player,
+        exitReason: GameExitReason,
+        runtimeContext: string = '') => {
 
         const prefix = 'GameSessionService::leaveOpenSession';
 
@@ -159,7 +159,7 @@ export class GameSessionService {
         // ACTION: Add their player_id to the limbo_player_id_list
         // and emit the updated session to all players in the session.
         // Once the current hand ends, they will be dealt in. Later
-        // on, it will have "Admit / Ignore / Ban" etc options to
+        // on, it will have 'Admit / Ignore / Ban' etc options to
         // allow players to optionally let players in limbo into the game [idea].
         if (!player_id_list.includes(playerId)
             && session.game_stage !== GameStage.Lobby)
@@ -378,7 +378,7 @@ export class GameSessionService {
     // ACTION: Add their player_id to the limbo_player_id_list
     // and emit the updated session to all players in the session.
     // Once the current hand ends, they will be dealt in. Later
-    // on, it will have "Admit / Ignore / Ban" etc options to
+    // on, it will have 'Admit / Ignore / Ban' etc options to
     // allow players to optionally let players in limbo into the game [idea].
     private joinGameViaPlayerJoinsMidGame = async (
         player: Player,
@@ -524,8 +524,8 @@ export class GameSessionService {
      * @returns - The new game session
      */
     public initSession = async (
-        currentPlayer : Player,
-        game          : Game,
+        currentPlayer: Player,
+        game: Game,
     ) => {
         this.log.silly('GameSessionService::initSession', {
             currentPlayer, game,
@@ -603,12 +603,12 @@ export class GameSessionService {
     public promoteRandomPlayerToHost = async (
         session: GameSession,
         runtimeContext: string,
-    ) : P<GameSession> => {
+    ): P<GameSession> => {
         const debugBundle = { session, runtimeContext };
 
         this.log.silly('GameSessionService::promotePlayerToHost', { debugBundle });
 
-        if(session.game_stage !== GameStage.Lobby) {
+        if (session.game_stage !== GameStage.Lobby) {
             this.log.error('Cannot promote player to host in a non-lobby game', { debugBundle });
 
             throw new WsException('Cannot promote player to host in a non-lobby game');
@@ -616,7 +616,7 @@ export class GameSessionService {
 
         // if there are no other players, kill the game. There could be people
         // in limbo waiting forever if all the players leave the lobby
-        if(session.player_id_list.length === 0) {
+        if (session.player_id_list.length === 0) {
             this.log.error('Cannot promote player to host in a game with no players', { debugBundle });
 
             throw new WsException(`Cannot promote player to host in a game with no players, session(${session.id})`);
@@ -651,14 +651,14 @@ export class GameSessionService {
      * @returns - The updated session with the new dealer
      */
     public promoteRandomPlayerToDealer = async (
-        session : GameSession,
-        runtimeContext : string,
-    ) : P<GameSession> => {
+        session: GameSession,
+        runtimeContext: string,
+    ): P<GameSession> => {
         const debugBundle = { session, runtimeContext };
 
         this.log.silly('GameSessionService::promoteRandomPlayerToDealer', { debugBundle });
 
-        if(session.game_stage === GameStage.Lobby) {
+        if (session.game_stage === GameStage.Lobby) {
             const errorMessage = 'Promote a dealer by making them host while in lobby mode.';
 
             this.log.error(errorMessage, { debugBundle });
@@ -666,7 +666,7 @@ export class GameSessionService {
             throw new WsException(errorMessage);
         }
 
-        if(session.player_id_list.length === 0) {
+        if (session.player_id_list.length === 0) {
             const errorMessage = `Cannot promote player to dealer in a game with no players, session(${session.id})`;
 
             this.log.error(errorMessage, { debugBundle });
@@ -702,7 +702,7 @@ export class GameSessionService {
             game_stage : GameStage.DealerPickWinner,
         });
 
-    public skipToNextHand = async (session: GameSession, runtimeContext : string) => {
+    public skipToNextHand = async (session: GameSession, runtimeContext: string) => {
         const debugBundle = { session, runtimeContext };
 
         this.log.silly('GameSessionService::handleSkipToNextHand', { debugBundle });
@@ -793,11 +793,11 @@ export class GameSessionService {
      * @returns - The updated session
      */
     public removePlayerFromSession = async (
-        player         : Player,
-        session        : GameSession,
-        exitReason     : GameExitReason,
-        runtimeContext : string = '',
-    ) : P<GameSession | null> => {
+        player: Player,
+        session: GameSession,
+        exitReason: GameExitReason,
+        runtimeContext: string = '',
+    ): P<GameSession | null> => {
         const debugBundle = { player, session, exitReason, runtimeContext };
 
         // Log the initial state of the removal process for debugging purposes
@@ -814,8 +814,9 @@ export class GameSessionService {
                     ...session,
                     exited_player_id_list : () => `array_append(exited_player_id_list, '${player.id}')`,
                     limbo_player_id_list  : () => `array_remove(limbo_player_id_list,  '${player.id}')`,
-                    player_id_list        : () => `array_remove(player_id_list,        '${player.id}')` });
-                    break;
+                    player_id_list        : () => `array_remove(player_id_list,        '${player.id}')`,
+                });
+                break;
 
             case GameExitReason.Booted:
 
@@ -838,8 +839,8 @@ export class GameSessionService {
                     exited_player_id_list : () => `array_append(exited_player_id_list, '${player.id}')`,
                     limbo_player_id_list  : () => `array_remove(limbo_player_id_list,  '${player.id}')`,
                     player_id_list        : () => `array_remove(player_id_list,        '${player.id}')`,
-            });
-            break;
+                });
+                break;
         }
 
         // return the updated session
@@ -858,7 +859,7 @@ export class GameSessionService {
     public awardWinnerAndComplete = async (
         session: GameSession,
         winnerId: string | null,
-        gameEndMessage : string) =>
+        gameEndMessage: string) =>
         this.gameSessionRepo.save({
             ...session,
             champion_player_id : winnerId,

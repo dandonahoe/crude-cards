@@ -46,7 +46,7 @@ export const GameResultsHeader : RFC = () => {
                     mt='xl'
                     fw={600}
                     ta='center'>
-                    {'Waiting on Dealer'}
+                    {'Waiting on Dealer [GameResultsHeader]'}
                 </Text>
             }
             {isDealer &&

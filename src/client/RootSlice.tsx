@@ -39,7 +39,6 @@ const slice = createSlice({
                 return;
             }
 
-
             const playerLookup = player_list.reduce((acc, player) => {
 
                 acc[player.id!] = player;
@@ -50,7 +49,9 @@ const slice = createSlice({
             let newCardDeck : {[key : string] : CardDTO} | null = null;
 
             // Create a lookup table by card id for the new deck
-            if(new_deck_card_list)
+            if(new_deck_card_list) {
+                console.log('Update includes the deck adding it to the state', new_deck_card_list);
+
                 newCardDeck = new_deck_card_list.reduce((acc, cardDTO) => {
                     acc[cardDTO.id!] = {
                         id    : cardDTO.id!,
@@ -60,21 +61,32 @@ const slice = createSlice({
 
                     return acc;
                 }, {} as {[key : string] : CardDTO});
+            }
 
             // this lets the players stay on the results screen
             // while the session is being updated by the dealer
             // of the upcoming round
             if(gameState.game_stage === GameStage.GameResults) {
+                console.log('updateGameState::Results Screen', gameState);
+
+                // foofindme
+                console.log('updateGameState::Results Screen', gameState);
                 state.game.previousHandDealerCardId = gameState.dealer_card_id;
                 state.game.previousHandWinnerCardId = gameState.winner_card_id;
+            } else {
+                console.log('updateGameState::Not on GameResults stage');
             }
 
             state.game.playerLookup  = playerLookup;
+
             state.game.gameState = {
                 ...rootGameState,
                 new_deck_card_list : null,
             };
 
+            // keep it separate from the main game update since
+            // it the update generally returns a null deck and
+            // it would disappear if we just set it in the main update
             if(newCardDeck)
                 state.game.cardDeck = newCardDeck;
         });

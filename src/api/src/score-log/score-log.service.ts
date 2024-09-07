@@ -64,6 +64,9 @@ export class ScoreLogService {
             where : {
                 game_session_id : session.id,
             },
+            order : {
+                created_at : 'DESC',
+            },
         });
 
     /**
@@ -83,11 +86,12 @@ export class ScoreLogService {
         winnerCardId : string,
         dealer       : Player,
     ) =>
-        this.scoreLogRepo.update(scoreLog.id, {
+        this.scoreLogRepo.save({
+            ...scoreLog,
             player_selected_cards : session.selected_card_id_list,
             winner_player_id      : winnerPlayer.id,
             judge_player_id       : dealer.id!,
-            winner_card_id        : winnerCardId!,
+            winner_card_id        : winnerCardId,
         });
 
     /**
