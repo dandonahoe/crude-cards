@@ -1,3 +1,10 @@
+## [1.0.18](https://github.com/dandonahoe/crude-cards/compare/v1.0.17...v1.0.18) (2024-09-07)
+
+
+### Features
+
+* **gameheader:** update GameTemplateHeader component ([fb6e782](https://github.com/dandonahoe/crude-cards/commit/fb6e7825d5fce3e87fef0865c6626784e135c6df))
+
 ## [1.0.17](https://github.com/dandonahoe/crude-cards/compare/v1.0.16...v1.0.17) (2024-09-07)
 
 
