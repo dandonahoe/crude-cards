@@ -9,6 +9,7 @@
 
 import { GameSession } from '../game-session/game-session.entity';
 import { PlayerType } from '../constant/player-type.enum';
+import { WSE } from '../exceptions/WebSocket.exception';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -21,7 +22,6 @@ import { v4 as uuidv4 } from 'uuid';
 import { Socket } from 'socket.io';
 import { v4 as uuid } from 'uuid';
 import { Logger } from 'winston';
-
 
 // @ai-lint-begin @ruleset/custom-name @ruleset/require-name @rule/import-line-length-descending
 
@@ -62,9 +62,35 @@ export class PlayerService {
             auth_token      : uuid(),
         });
 
+    /**
+     * Finds the leader or players tied for the lead in a session
+     * @param session - The game session
+     *
+     * @returns A promise that resolves to an array of player entities
+     */
+    public getPlayersInFirstPlace = async (
+        session: GameSession,
+    ) => {
+        debugger;
+
+        const playersRanked = await this.playerRepo.find({
+            where : {
+                id : In(session.player_id_list),
+            }, order : {
+                score : 'DESC',
+            },
+        });
+
+        // loop through all the top players until a second player
+        // player is found, and return all the first place players
+        return playersRanked.filter((player, index) =>
+            index === 0 || player.score === playersRanked[0].score,
+        );
+    };
+
     public updatePlayerType = async (
-        player : Player, playerType : PlayerType,
-    ) : P<Player> =>
+        player: Player, playerType: PlayerType,
+    ): P<Player> =>
         this.playerRepo.save({
             ...player,
             user_type : playerType,
@@ -137,7 +163,7 @@ export class PlayerService {
      */
     public findActivePlayersInSession = async ({
         limbo_player_id_list, player_id_list,
-    } : GameSession) : P<Player[]> =>
+    }: GameSession): P<Player[]> =>
         this.playerRepo.find({
             where : [{
                 id : In([
@@ -159,7 +185,7 @@ export class PlayerService {
      */
     public updatePlayerSocketId = async (
         existingPlayer: Player, socket: Socket,
-    ) : P<Player> =>
+    ): P<Player> =>
         this.playerRepo.save({
             ...existingPlayer,
             socket_id       : socket.id,
@@ -172,7 +198,7 @@ export class PlayerService {
      * @param socket - The socket instance.
      * @returns A promise that resolves to the newly created player entity.
      */
-    public createPlayer = async (socketId : SocketID): P<Player> =>
+    public createPlayer = async (socketId: SocketID): P<Player> =>
         this.playerRepo.save({
             card_id_list : [],
             auth_token   : uuid(),
@@ -187,7 +213,7 @@ export class PlayerService {
      * @param socket - The socket instance.
      * @returns A promise that resolves to the updated player entity.
      */
-    public disconnectPlayer = async (player : Player): P<Player> => {
+    public disconnectPlayer = async (player: Player): P<Player> => {
 
         this.log.silly('Disconnecting player', { player });
 
@@ -209,7 +235,7 @@ export class PlayerService {
     ): P<Player> => {
         const authTokenPlayer = await this.getPlayerByAuthToken(authToken);
 
-        if(authTokenPlayer) return authTokenPlayer;
+        if (authTokenPlayer) return authTokenPlayer;
 
         const errorMessage = `getPlayerByAuthTokenOrFail::Player not found ${authToken}`;
 
@@ -223,7 +249,7 @@ export class PlayerService {
      * @param authToken - The authentication token.
      * @returns A promise that resolves to the player entity.
      */
-    public async getPlayerByAuthToken (
+    public async getPlayerByAuthToken(
         authToken: AuthToken,
     ): P<Player | null> {
         return this.playerRepo.findOneBy({
