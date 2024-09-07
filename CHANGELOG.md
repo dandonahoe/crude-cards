@@ -1,3 +1,11 @@
+## [1.0.19](https://github.com/dandonahoe/crude-cards/compare/v1.0.18...v1.0.19) (2024-09-07)
+
+
+### Features
+
+* **codebase:** enhance and streamline script ([8e30530](https://github.com/dandonahoe/crude-cards/commit/8e305309fbfc40dc82da8dabed48059ca5daad16))
+* **gameTemplate:** update ([aa0e02e](https://github.com/dandonahoe/crude-cards/commit/aa0e02e2d057aeb84005936e2ebb1c10dd02e872))
+
 ## [1.0.18](https://github.com/dandonahoe/crude-cards/compare/v1.0.17...v1.0.18) (2024-09-07)
 
 
