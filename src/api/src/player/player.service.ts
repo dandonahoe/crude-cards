@@ -47,6 +47,13 @@ export class PlayerService {
             socket_id : socket.id,
         });
 
+    public getPlayerById = async (playerId: string): P<Player> =>
+        this.playerRepo.findOneOrFail({
+            where : {
+                id : playerId,
+            },
+        });
+
     /**
      *
      * @param player -
@@ -70,8 +77,6 @@ export class PlayerService {
     public getPlayersInFirstPlace = async (
         session: GameSession,
     ) => {
-        debugger;
-
         const playersRanked = await this.playerRepo.find({
             where : {
                 id : In(session.player_id_list),
@@ -153,6 +158,31 @@ export class PlayerService {
             })
             .where("id = :id", { id : playerId })
             .execute();
+
+    /**
+     * Removes any matching white cards from a player's list of cards.
+     *
+     * @param playerId - The ID of the player.
+     * @param whiteCardIds - The list of white card IDs to remove.
+     *
+     * @returns A promise that resolves when the update is complete.
+     */
+    public removeAnyMatchinWhiteCards = async (
+        playerId     : string,
+        whiteCardIds : string[],
+    ) : P<Player> =>{
+
+        const player = await this.playerRepo.findOneByOrFail({
+            id : playerId,
+        });
+
+        const cardIdList = player.card_id_list.filter(cardId => !whiteCardIds.includes(cardId));
+
+        return this.playerRepo.save({
+            ...player,
+            card_id_list : cardIdList,
+        });
+    };
 
     /**
      * Finds all players in a given game session.

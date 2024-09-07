@@ -557,26 +557,26 @@ export class GameSessionService {
     /**
      * Setup a new game session
      *
-     * @param session - The session to setup
-     * @param currentPlayer - The player to setup the session for
-     * @param currentScoreLog - The current score log for the game
+     * @param session          - The session to setup
+     * @param currentPlayer    - The player to setup the session for
+     * @param currentScoreLog  - The current score log for the game
      * @param dealerCardIdList - The list of dealer cards to use
      * @param usedWhiteCardIds - The list of used white cards
-     * @param allBlackCardIds - The list of all black cards
-     * @param allWhiteCardIds - The list of all white cards
+     * @param allBlackCardIds  - The list of all black cards
+     * @param allWhiteCardIds  - The list of all white cards
      *
      * @returns - The session update object, not the session itself
      */
     public setupNewGameSession = async (
-        session: GameSession,
-        currentPlayer: Player,
-        currentScoreLog: ScoreLog,
-        dealerCardIdList: string[],
-        usedWhiteCardIds: string[],
-        allBlackCardIds: string[],
-        allWhiteCardIds: string[],
+        session          : GameSession,
+        currentPlayer    : Player,
+        currentScoreLog  : ScoreLog,
+        dealerCardIdList : string[],
+        usedWhiteCardIds : string[],
+        allBlackCardIds  : string[],
+        allWhiteCardIds  : string[],
     ) =>
-        this.gameSessionRepo.update(session.id!, {
+        this.gameSessionRepo.update(session.id, {
             selected_card_id_list : [],
             current_score_log_id  : currentScoreLog.id,
             dealer_card_id_list   : dealerCardIdList,
@@ -585,7 +585,7 @@ export class GameSessionService {
             black_cards           : allBlackCardIds,
             white_cards           : allWhiteCardIds,
             game_stage            : GameStage.DealerPickBlackCard,
-            dealer_id             : currentPlayer.id!,
+            dealer_id             : currentPlayer.id,
         });
 
 
@@ -709,7 +709,6 @@ export class GameSessionService {
 
         console.log('handleSkipToNextHand', debugBundle);
 
-
         return;
     }
 
@@ -780,7 +779,6 @@ export class GameSessionService {
             current_score_log_id : scoreLog.id,
         });
 
-
     /**
      * Removes a player from a game session, updating one or more fields
      * to handle the manner in which the player exited the game.
@@ -793,16 +791,15 @@ export class GameSessionService {
      * @returns - The updated session
      */
     public removePlayerFromSession = async (
-        player: Player,
-        session: GameSession,
-        exitReason: GameExitReason,
-        runtimeContext: string = '',
+        player         : Player,
+        session        : GameSession,
+        exitReason     : GameExitReason,
+        runtimeContext : string = '',
     ): P<GameSession | null> => {
         const debugBundle = { player, session, exitReason, runtimeContext };
 
         // Log the initial state of the removal process for debugging purposes
         this.log.silly('GameSessionService::removePlayer', { debugBundle });
-
 
         // Determine additional updates based on the exit reason
         switch (exitReason) {
@@ -851,15 +848,15 @@ export class GameSessionService {
     /**
      * Award the winner of the game and mark the game as complete
      *
-     * @param session - The session to award the winner of
+     * @param session  - The session to award the winner of
      * @param winnerId - The ID of the player who won the game
      *
      * @returns - The updated session
      */
     public awardWinnerAndComplete = async (
-        session: GameSession,
-        winnerId: string | null,
-        gameEndMessage: string) =>
+        session        : GameSession,
+        winnerId       : string | null,
+        gameEndMessage : string) =>
         this.gameSessionRepo.save({
             ...session,
             champion_player_id : winnerId,
@@ -882,8 +879,9 @@ export class GameSessionService {
      * @returns - The updated session
      */
     public nextHand = async (
-        newDealerCards: string[], newWhiteCards: string[], newGameStage: GameStage,
-        newDealerId: string, newScoreLog: ScoreLog, session: GameSession,
+        newDealerCards : string[],  newWhiteCards : string[],
+        newGameStage   : GameStage, newDealerId   : string,
+        newScoreLog    : ScoreLog,  session       : GameSession,
     ) =>
         this.gameSessionRepo.update(session.id, {
             selected_card_id_list : [],

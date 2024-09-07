@@ -39,7 +39,12 @@ import { Repository } from 'typeorm';
 import { Game } from './game.entity';
 import { difference } from 'lodash';
 import { Logger } from 'winston';
+import { Card } from '../card/card.entity';
 
+interface GameDeck {
+    blackCards : Card[]
+    whiteCards : Card[]
+}
 
 @Injectable()
 export class GameService {
@@ -539,8 +544,6 @@ export class GameService {
         nextHand: NextHandDTO,
     ): P<GameStateDTO> {
 
-        debugger;
-
         this.myFunTestSocketIoServerRenameMe = server;
 
         this.log.silly('GameService::nextHand', {  nextHand, socketId : socket.id });
@@ -559,9 +562,9 @@ export class GameService {
         const newDealerId = await this.selectNextDealerId(session);
 
         // Deal new cards to the dealer and players (parallelized where possible)
-        const { newDealerCards, newWhiteCards } = await this.dealCardsToPlayers(session);
+        const [ newDealerCards, newWhiteCards ] = await this.dealCardsToPlayers(session);
 
-        debugger;
+        // something here is stuffinf the session.used_white_cards with all the white card
 
         // Create or update the score log for the session
         const newScoreLog = await this.scoreLogService.relateToSession(session);
@@ -683,38 +686,41 @@ export class GameService {
         const newDealerCardIds = remainingBlackCardIds.slice(0, 10);
         this.log.debug('New Dealer Card IDs:', { newDealerCardIds });
 
-        // Prepare an array of promises for new white card assignments
-        const newWhiteCardPromises = session.player_id_list.map(
-            (playerId, index) => {
-                // Skip the dealer when assigning white cards
-                if (this.isPlayerDealer(playerId, session)) {
-                    this.log.debug(`Skipping dealer player`, { playerId });
+        const newWhiteCardIds: string[] = [];
 
-                    return null;
-                }
+        for (let index = 0; index < session.player_id_list.length; index++) {
+            const playerId = session.player_id_list[index];
 
-                const newWhiteCardId = remainingWhiteCardIds[index];
-                this.log.debug(`Assigning White Card ID: ${newWhiteCardId} to player`, { playerId });
+            // Skip the dealer when assigning white cards
+            if (this.isPlayerDealer(playerId, session)) {
+                this.log.debug(`Skipping dealer player`, { playerId });
+                continue;
+            }
 
-                // Return the promise for adding the white card to the player
-                return this.playerService.addWhiteCardToPlayer(
-                    playerId, newWhiteCardId,
-                ).then(() => {
-                    this.log.debug(`Successfully assigned White Card ID: ${newWhiteCardId} to Player ID: ${playerId}`);
+            const newWhiteCardId = remainingWhiteCardIds[index];
+            this.log.debug(`Assigning White Card ID: ${newWhiteCardId} to player`, { playerId });
 
-                    return newWhiteCardId;
-                }).catch(error => {
-                    this.log.error(`Error assigning White Card ID: ${newWhiteCardId} to Player ID: ${playerId}`, error);
-                    throw error;
-                });
-            });
+            try {
+                await this.playerService.addWhiteCardToPlayer(playerId, newWhiteCardId);
 
-        // Resolve all asynchronous operations in parallel and filter out null values (for dealer)
-        const newWhiteCardIds = (
-            await Promise.all(newWhiteCardPromises)
-        ).filter(Boolean) as string[];
+                const playerBefore = await this.playerService.getPlayerById(playerId);
+                console.log('Player Before', playerBefore.card_id_list);
+
+                // Take out the cards just played
+                await this.playerService.removeAnyMatchinWhiteCards(playerId, session.selected_card_id_list);
+
+                const playerAfter = await this.playerService.getPlayerById(playerId);
+                console.log('Player After', playerAfter.card_id_list);
+
+                this.log.debug(`Successfully assigned White Card ID: ${newWhiteCardId} to Player ID: ${playerId}`);
+                newWhiteCardIds.push(newWhiteCardId);
+            } catch (error) {
+                this.log.error(`Error assigning White Card ID: ${newWhiteCardId} to Player ID: ${playerId}`, error);
+                throw error;
+            }
+        }
+
         this.log.debug('New White Card IDs:', { newWhiteCardIds });
-
         this.log.silly('GameService::dealCardsToPlayers - End');
 
         return [newDealerCardIds, newWhiteCardIds];
@@ -809,8 +815,6 @@ export class GameService {
         this.log.debug('Ensured proper game state');
 
         if(!dealerPickWinner.card_id)
-            // debugger;
-
             throw WSE.BadRequest400('Invalid Card ID', debugBundle);
 
         // Retrieve the player (dealer), game, session, and score log using the provided auth token
@@ -826,6 +830,8 @@ export class GameService {
         // Does this explode??
         this.log.debug('Retrieved dealer and session data', { debugBundle });
 
+        debugger;
+
         // Determine the winning player based on the selected card ID
         const winningPlayer = await this.getWinningPlayer(players, dealerPickWinner.card_id!);
 
@@ -836,8 +842,6 @@ export class GameService {
         // Update the score log and player's score in parallel
         this.log.debug('Updated score and player', {
             debugBundle, cardId : dealerPickWinner.card_id, winningPlayerId });
-
-            // debugger;
 
         await this.updateScoreAndPlayer(
             scoreLog, session, dealer,
@@ -967,6 +971,7 @@ export class GameService {
         const winningPlayerResults = players.filter(player =>
             player.card_id_list.includes(selectedCardId),
         );
+        debugger;
 
         if (winningPlayerResults.length !== 1)
             throw WSE.InternalServerError500('Invalid card ID or multiple players found with the same card', {
@@ -1050,8 +1055,6 @@ export class GameService {
         // Retrieve the game state and relevant data
         const gameStateGeneric = await this.getGameStateGeneric(game.game_code!, true);
 
-        debugger;
-
         // Calculate card counts needed for the game. The max number of cards that
         // could be used in a game with the game rules setß
         const {
@@ -1059,15 +1062,13 @@ export class GameService {
         } = await this.calculateCardCounts(gameStateGeneric);
 
         // Retrieve the deck of white and black cards for the game
-        const {
-            allWhiteCardIds, allBlackCardIds,
-        } = await this.fetchCardDecks(whiteCardTotalCount, blackCardTotalCount);
+        const gameDeck = await this.fetchCardDeck(whiteCardTotalCount, blackCardTotalCount);
 
         // Assign cards to players and prepare the session
-        await this.assignCardsToPlayers(gameStateGeneric.player_list, allWhiteCardIds);
+        await this.assignCardsToPlayers(gameStateGeneric.player_list, gameDeck);
 
         // Set up the game session with the retrieved cards
-        await this.setupGameSession(session, currentPlayer, allBlackCardIds, allWhiteCardIds);
+        await this.setupGameSession(session, currentPlayer, gameDeck);
 
         return this.emitGameUpdate(server, game.game_code, true, [], 'Starting Game - Dealing Cards');
     }
@@ -1113,21 +1114,18 @@ export class GameService {
      *
      * @returns An object containing arrays of white and black card IDs
      */
-    private fetchCardDecks = async (
-        whiteCardTotalCount: number, blackCardTotalCount: number,
-    ): P<{
-        deckWhiteCardIds: string[],
-        deckBlackCardIds: string[]
-    }> => {
+    private fetchCardDeck = async (
+        whiteCardTotalCount: number,
+        blackCardTotalCount: number,
+    ): P<GameDeck> => {
 
-        const [deckWhiteCards, deckBlackCards] = await Promise.all([
+        const [whiteCards, blackCards] = await Promise.all([
             this.cardService.selectRandomCards(CardColor.White, whiteCardTotalCount),
             this.cardService.selectRandomCards(CardColor.Black, blackCardTotalCount),
         ]);
 
         return {
-            deckWhiteCardIds : deckWhiteCards.map(card => card.id),
-            deckBlackCardIds : deckBlackCards.map(card => card.id),
+            whiteCards, blackCards,
         };
     }
 
@@ -1139,15 +1137,16 @@ export class GameService {
      * @param session - The current game session entity
      */
     private assignCardsToPlayers = async (
-        playerList: PlayerDTO[], allWhiteCardIds: string[],
+        playerList: PlayerDTO[], gameDeck : GameDeck,
     ) => {
         const usedWhiteCardIds: string[] = [];
 
         const updatePromises = playerList.map((player, index) => {
-            const playerWhiteCardIds = allWhiteCardIds.slice(
+
+            const playerWhiteCardIds = gameDeck.whiteCards.slice(
                 index * 7,
                 (index + 1) * 7 ,
-            );
+            ).map(card => card.id);
 
             usedWhiteCardIds.push(...playerWhiteCardIds);
 
@@ -1166,20 +1165,31 @@ export class GameService {
      * @param allWhiteCardIds - The list of white card IDs for the game
      */
     private setupGameSession = async (
-        session: GameSession,
-        currentPlayer: Player,
-        allBlackCardIds: string[],
-        allWhiteCardIds: string[],
+        session       : GameSession,
+        currentPlayer : Player,
+        gameDeck      : GameDeck,
     ) => {
+
+        const allWhiteCardIds = gameDeck.whiteCards.map(card => card.id);
+        const allBlackCardIds = gameDeck.blackCards.map(card => card.id);
+
         const dealerCardIdList = allBlackCardIds.slice(0, 10);
         const currentScoreLog = await this.scoreLogService.createNewScoreLog(session);
 
+        //  session          : GameSession,
+        // currentPlayer    : Player,
+        // currentScoreLog  : ScoreLog,
+        // dealerCardIdList : string[],
+
+        // usedWhiteCardIds : string[],
+        // allBlackCardIds  : string[],
+        // allWhiteCardIds  : string[],
         await this.gameSessionService.setupNewGameSession(
             session,
             currentPlayer,
             currentScoreLog,
             dealerCardIdList,
-            allWhiteCardIds.slice(0, allWhiteCardIds.length),
+            [],
             allBlackCardIds,
             allWhiteCardIds,
         );
@@ -1650,8 +1660,6 @@ export class GameService {
 
         // Build and return the game state DTO
         // todo: send back runtimeContext as configutable in debug mode
-
-        // debugger;
         // foofindme
 
         return {

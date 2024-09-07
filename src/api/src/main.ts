@@ -26,10 +26,12 @@ export const bootstrap = async (): Promise<void> => {
     const port = configService.get<number>('BACKEND_PORT');
 
     // Throw an error if the port is not set in the configuration
-    if (!port) throw new Error('PORT not set');
+    if (!port)
+        throw new Error('PORT not set');
 
     // Throw an error if the WebSocket CORS allowed origin is not set in the configuration
-    if (!origin) throw new Error('WEB_SOCKET_CORS_ALLOWED_ORIGIN not set');
+    if (!origin)
+        throw new Error('WEB_SOCKET_CORS_ALLOWED_ORIGIN not set');
 
     // Enable CORS with specific settings
     app.enableCors({
