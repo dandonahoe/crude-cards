@@ -539,6 +539,8 @@ export class GameService {
         nextHand: NextHandDTO,
     ): P<GameStateDTO> {
 
+        debugger;
+
         this.myFunTestSocketIoServerRenameMe = server;
 
         this.log.silly('GameService::nextHand', {  nextHand, socketId : socket.id });
@@ -551,23 +553,19 @@ export class GameService {
         await this.ensureValidSessionState(session, 'Determining Next Hand');
 
         // Determine the next stage of the game based on round count and player scores
-        const newGameStagePromise = this.determineNextGameStage(session, game, players);
+        const newGameStage = await this.determineNextGameStage(session, game, players);
 
         // Select the next dealer for the upcoming round
-        const newDealerIdPromise = this.selectNextDealerId(session);
+        const newDealerId = await this.selectNextDealerId(session);
 
         // Deal new cards to the dealer and players (parallelized where possible)
-        const dealCardsPromise = this.dealCardsToPlayers(session);
+        const { newDealerCards, newWhiteCards } = await this.dealCardsToPlayers(session);
+
+        debugger;
 
         // Create or update the score log for the session
-        const newScoreLogPromise = this.scoreLogService.relateToSession(session);
+        const newScoreLog = await this.scoreLogService.relateToSession(session);
 
-        // Await all promises concurrently
-        const [
-            newGameStage, newDealerId, [newDealerCards, newWhiteCards], newScoreLog,
-        ] = await Promise.all([
-            newGameStagePromise, newDealerIdPromise, dealCardsPromise, newScoreLogPromise,
-        ]);
 
         this.log.silly('GameService::nextHand', {
             newGameStage, newDealerId, newDealerCards, newWhiteCards, newScoreLog,
@@ -995,11 +993,8 @@ export class GameService {
         selectedCardId : string,
         winningPlayer  : Player,
     ) => {
-        // debugger;
         await this.scoreLogService.updateScore(
                 scoreLog, session, winningPlayer, selectedCardId, dealer);
-
-        // debugger;
 
         return this.playerService.incrementPlayerScore(winningPlayer)
     };
@@ -1055,7 +1050,10 @@ export class GameService {
         // Retrieve the game state and relevant data
         const gameStateGeneric = await this.getGameStateGeneric(game.game_code!, true);
 
-        // Calculate card counts needed for the game
+        debugger;
+
+        // Calculate card counts needed for the game. The max number of cards that
+        // could be used in a game with the game rules setß
         const {
             whiteCardTotalCount, blackCardTotalCount,
         } = await this.calculateCardCounts(gameStateGeneric);
@@ -1101,8 +1099,8 @@ export class GameService {
         const maxRoundCount = gameStateGeneric.max_round_count;
         const playerCount = gameStateGeneric.player_list.length;
 
-        const whiteCardTotalCount = (playerCount * 10) + (maxRoundCount * (playerCount - 1)); // minus dealer
-        const blackCardTotalCount = maxRoundCount * 10; // Each round a dealer gets 10 fresh cards
+        const whiteCardTotalCount = (playerCount * 7) + (maxRoundCount * (playerCount - 1)); // minus dealer
+        const blackCardTotalCount = maxRoundCount * 7; // Each round a dealer gets 10 fresh cards
 
         return { whiteCardTotalCount, blackCardTotalCount };
     }
@@ -1117,16 +1115,19 @@ export class GameService {
      */
     private fetchCardDecks = async (
         whiteCardTotalCount: number, blackCardTotalCount: number,
-    ): P<{ allWhiteCardIds: string[], allBlackCardIds: string[] }> => {
+    ): P<{
+        deckWhiteCardIds: string[],
+        deckBlackCardIds: string[]
+    }> => {
 
-        const [allWhiteCards, allBlackCards] = await Promise.all([
+        const [deckWhiteCards, deckBlackCards] = await Promise.all([
             this.cardService.selectRandomCards(CardColor.White, whiteCardTotalCount),
             this.cardService.selectRandomCards(CardColor.Black, blackCardTotalCount),
         ]);
 
         return {
-            allWhiteCardIds : allWhiteCards.map(card => card.id),
-            allBlackCardIds : allBlackCards.map(card => card.id),
+            deckWhiteCardIds : deckWhiteCards.map(card => card.id),
+            deckBlackCardIds : deckBlackCards.map(card => card.id),
         };
     }
 
@@ -1144,8 +1145,8 @@ export class GameService {
 
         const updatePromises = playerList.map((player, index) => {
             const playerWhiteCardIds = allWhiteCardIds.slice(
-                index * 10,
-                (index + 1) * 10,
+                index * 7,
+                (index + 1) * 7 ,
             );
 
             usedWhiteCardIds.push(...playerWhiteCardIds);
@@ -1690,21 +1691,21 @@ export class GameService {
      */
     private selectNextDealerId = async (session: GameSession) => {
 
-        this.log.silly('GameService::selectNextDealer', session);
+        this.log.silly('GameService::selectNextDealer', { session });
 
         const { player_id_list, dealer_id } = session;
 
         if (!dealer_id) {
-            this.log.error('No current dealer found in session', session);
+            this.log.error('No current dealer found in session', { session });
 
-            throw WSE.InternalServerError500('No current dealer found in session');
+            throw WSE.InternalServerError500(`No current dealer found in session (${session.id})`);
         }
 
         const dealerIndex = player_id_list.indexOf(dealer_id);
 
         if (dealerIndex === -1) {
-            this.log.error('Current dealer not found in player list', session);
-            throw WSE.InternalServerError500('Current dealer not found in player list');
+            this.log.error('Current dealer not found in player list', { session });
+            throw WSE.InternalServerError500(`Current dealer not found in player list (${session.id})`);
         }
 
         // Determine the next dealer's index by wrapping around the list
