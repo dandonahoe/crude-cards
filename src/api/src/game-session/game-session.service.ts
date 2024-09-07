@@ -1,4 +1,4 @@
-import { ArrayContains, In, IsNull, Not, Repository } from 'typeorm';
+import { ArrayContains, IsNull, Not, Repository } from 'typeorm';
 import { ScoreLog } from '../score-log/score-log.entity';
 import { JoinGameReason, GameExitReason } from '../type';
 import { GameStage } from '../constant/game-stage.enum';

@@ -9,7 +9,6 @@
 
 import { GameSession } from '../game-session/game-session.entity';
 import { PlayerType } from '../constant/player-type.enum';
-import { WSE } from '../exceptions/WebSocket.exception';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
