@@ -620,8 +620,6 @@ export class GameService {
 
         // If a winning player is found, mark the game as complete and award the winner
         if (winningPlayerMaxPoints) {
-            debugger;
-
             this.log.info('Game Complete due to winning player', { winningPlayerMaxPoints });
 
             await this.gameSessionService.awardWinnerAndComplete(
@@ -637,16 +635,14 @@ export class GameService {
         if (gameRoundCount >= game.max_round_count) {
             this.log.info('determineNextGameStage - Game Complete due to max rounds reached', { gameRoundCount });
 
-            debugger;
-
-            const playersWithHighestScore = await this.gameSessionService.getPlayersWithHighestScore(session)
+            const playersWithHighestScore = await this.playerService.getPlayersInFirstPlace(session);
 
             this.log.info('Players with highest score', { playersWithHighestScore });
 
             if(playersWithHighestScore.length === 0)
-                throw WSE.InternalServerError500('Everyone is a loser. No winners found.');
+                throw WSE.InternalServerError500('Everyone is a loser. No winners found. Impossible.');
 
-            debugger;
+            const winningPlayer = playersWithHighestScore[0];
 
             // winningPlayer =
             await this.gameSessionService.awardWinnerAndComplete(
@@ -1298,11 +1294,8 @@ export class GameService {
         // Retrieve the current player based on the provided auth token
         const { currentPlayer } = await this.getPlayerStateByAuthToken(createGame.auth_token!);
 
-
         if(!currentPlayer)
-
             throw WSE.InternalServerError500(`CreateGame::Invalid Player (${createGame.auth_token})`);
-
 
         this.log.debug('GameService::createGame - Current Player', { currentPlayer });
         this.log.silly('Leaving any existing games', { currentPlayer })
