@@ -13,7 +13,7 @@ export const DealerPickWinner : RFC = () => {
         return (
             <GameBanner
                 color='#fff'
-                subtitle='Waiting on Dealer [header]'
+                subtitle='Waiting on Dealer'
                 text='Judging' />
         );
 
