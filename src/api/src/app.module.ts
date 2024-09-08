@@ -1,7 +1,7 @@
 import { RequestLogMiddleware } from './middleware/RequestLog.middleware';
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { GameInterceptor } from './interceptors/game.interceptor';
-import { DevtoolsModule } from '@nestjs/devtools-integration';
+// import { DevtoolsModule } from '@nestjs/devtools-integration';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { createDataSourceOptions } from './data-source';
 import { GameGateway } from './game/game.gateway';
@@ -27,9 +27,9 @@ import * as path from 'path';
             envFilePath : path.resolve(__dirname, '../../../.env'),
             isGlobal    : true,
         }),
-        DevtoolsModule.register({
-            http : process.env.NODE_ENV !== 'production',
-        }),
+        // DevtoolsModule.register({
+        //     http : process.env.NODE_ENV !== 'production',
+        // }),
     ],
     providers : [
         Logger, {

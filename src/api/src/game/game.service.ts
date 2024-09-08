@@ -1042,16 +1042,6 @@ export class GameService {
 
         console.log('startGame', { startGame, socketId : socket.id });
 
-        debugger;
-
-        const completion = await this.openAIService.completeText('I am the very model of a modern _______.');
-
-        debugger;
-
-        console.log('completion', completion);
-
-        debugger;
-
         const {
             currentPlayer, game, session,
         } = await this.getPlayerStateByAuthTokenOrFail(startGame.auth_token!);
@@ -1305,6 +1295,16 @@ export class GameService {
     ): P<void> {
 
         this.myFunTestSocketIoServerRenameMe = server;
+
+        debugger;
+
+        const completion = await this.openAIService.completeText('I am the very model of a modern _______.');
+
+        debugger;
+
+        console.log('completion', completion);
+
+        debugger;
 
         // Log the beginning of the game creation process
         this.log.silly('GameService::createGame', { createGame });
