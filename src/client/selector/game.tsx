@@ -61,6 +61,11 @@ export const selectCurrentPlayer = createSelector(
     },
 );
 
+export const selectSessionEndMessage = createSelector(
+    selectGameState,
+    gameState => gameState.game_end_message ?? '[NO MESSAGE]',
+);
+
 export const selectWinner = createSelector(
     selectGameState, selectPlayerLookup,
     (gameState, playerLookup) => {

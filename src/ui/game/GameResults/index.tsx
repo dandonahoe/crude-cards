@@ -1,3 +1,4 @@
+import { selectSessionEndMessage } from '../../../client/selector/game';
 import { CardColor } from '../../../api/src/constant/card-color.enum';
 import { GameCardContainer } from '../GameCardContainer';
 import { GameStatusTable } from '../GameStatusTable';
@@ -8,18 +9,21 @@ import { useSelector } from '@app/client/hook';
 import { GameCard } from '../GameCard';
 import Confetti from 'react-confetti'
 import { RFC } from '@app/ui/type';
+
 import {
     selectPreviousHandDealerCard, selectPreviousHandWinnerCard,
-    selectAllPlayerStatus,selectIsPlayerWinner,
+    selectAllPlayerStatus, selectIsPlayerWinner,
 } from '../../../client/selector/game';
 
 
-export const GameResults : RFC = () => {
+export const GameResults: RFC = () => {
 
     const previousHandDealerCard = useSelector(selectPreviousHandDealerCard);
     const previousHandWinnerCard = useSelector(selectPreviousHandWinnerCard);
-    const allPlayerStatus        = useSelector(selectAllPlayerStatus       );
-    const isWinner               = useSelector(selectIsPlayerWinner        );
+    const sessionEndMessage = useSelector(selectSessionEndMessage);
+    const allPlayerStatus = useSelector(selectAllPlayerStatus);
+    const isWinner = useSelector(selectIsPlayerWinner);
+
 
     const { height, width } = useViewportSize();
 
@@ -30,7 +34,7 @@ export const GameResults : RFC = () => {
             {isWinner &&
                 <Confetti
                     width={width}
-                    height={height}/>
+                    height={height} />
             }
             <GameDeckLayout
                 color={CardColor.Black}
@@ -41,6 +45,13 @@ export const GameResults : RFC = () => {
                     <GameCard
                         key='two'
                         card={previousHandWinnerCard} />,
+                    <GameCard
+                        key='asdf'
+                        card={{
+                            id    : 'asdfwef',
+                            color : CardColor.Black,
+                            text  : sessionEndMessage,
+                        }} />,
                     <Box
                         mt='xl'
                         key='three'>
