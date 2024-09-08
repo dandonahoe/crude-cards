@@ -10,7 +10,6 @@ export class OpenAIService {
 
     private openAI: OpenAI;
 
-
     public constructor(
         @Inject(WINSTON_MODULE_PROVIDER)
         private readonly log: Logger,
@@ -30,8 +29,8 @@ export class OpenAIService {
                 role    : 'user',
                 content : prompt,
             }],
-            max_tokens  : 150,
-            temperature : 0.7,
+            max_tokens  : 70,
+            temperature : 1,
         };
 
         const chatCompletion = await this.openAI.chat.completions.create(params);

@@ -821,6 +821,9 @@ export class GameService {
             dealer, players, game, session, scoreLog,
         } = await this.getDealerAndSessionData(dealerPickWinner.auth_token!);
 
+        const sessionEndMessage = await this.generateSessionEndMessage(session.dealer_card_id, dealerPickWinner.card_id);
+
+
         debugBundle.scoreLogId = scoreLog.id;
         debugBundle.sessionId = session.id;
         debugBundle.dealerId = dealer.id;
@@ -848,6 +851,8 @@ export class GameService {
             dealerPickWinner.card_id,
             winningPlayer);
 
+        session.game_end_message = sessionEndMessage;
+
         // Check if the game is complete and progress to the next stage accordingly
         await this.progressGameOrShowHandResults(game, session, winningPlayer);
 
@@ -861,6 +866,32 @@ export class GameService {
         });
 
         return this.emitGameUpdate(server, gameState.game_code);
+    }
+
+    private generateSessionEndMessage = async (
+        blackCardId : string | null,
+        whiteCardId : string | null) : P<string> => {
+
+        if(!blackCardId || !whiteCardId)
+            throw WSE.InternalServerError500('Invalid Card ID', { blackCardId, whiteCardId });
+
+        const [blackCard, whiteCard] = await Promise.all([
+            this.cardService.getCardById(blackCardId),
+            this.cardService.getCardById(whiteCardId),
+        ]);
+
+        if(!blackCard || !whiteCard)
+            throw WSE.InternalServerError500('Invalid Card ID', { blackCard, whiteCard });
+
+        const completionPrompt =
+`These are the winning white and black cards in this hand of Cards Against Humanity.
+Write an amusing sentence or two using the result, worded differently than the cards themselves.
+Rude, obscene and suggestive sentences are encouraged.
+
+Black Card: ${blackCard.text}
+White Card: ${whiteCard.text}`;
+
+        return this.openAIService.completeText(completionPrompt);
     }
 
     /**
@@ -1018,12 +1049,40 @@ export class GameService {
         session: GameSession,
         winningPlayer: Player,
     ) => {
-        if (winningPlayer.score >= game.max_point_count)
+        if (winningPlayer.score >= game.max_point_count) {
+
+            debugger;
+
+            const combos = await this.getAllWinningCardCombos(game);
+
+            debugger;
+
             return this.gameSessionService.awardWinnerAndComplete(
                 session, winningPlayer.id!, 'Progressing Hand or Showing Results');
-        else
-            return this.gameSessionService.showHandResults(session);
+        }
+
+        return this.gameSessionService.showHandResults(session);
     }
+
+    public getAllWinningCardCombos = async (game: Game): Promise<{
+        blackCardId : string | null;
+        whiteCardId : string | null;
+    }[]> => {
+debugger;
+        // get a list of all the session ids for this game
+        const gameSessions = await this.gameSessionService.findSessionsByGame(game);
+
+        const logLookupPromises = gameSessions.map(gameSessions =>
+            this.scoreLogService.findLogBySessionIdOrFail(gameSessions.id));
+
+        const scoreLogResults = await Promise.all(logLookupPromises);
+
+        return scoreLogResults.map((scoreLog, index) => ({
+            blackCardId : gameSessions[index].dealer_card_id,
+            whiteCardId : scoreLog?.winner_card_id,
+        }));
+    }
+
 
     /**
      * Starts the game by assigning cards to players,
@@ -1299,99 +1358,51 @@ export class GameService {
         @Body(new ZodValidationPipe(CreateGameDTO.Schema))
         createGame: CreateGameDTO,
     ): P<void> {
-
         this.myFunTestSocketIoServerRenameMe = server;
 
-        debugger;
+        // Log the beginning of the game creation process
+        this.log.silly('GameService::createGame', { createGame });
 
+        // Retrieve the current player based on the provided auth token
+        const { currentPlayer } = await this.getPlayerStateByAuthToken(createGame.auth_token!);
 
-        const [whiteCards, blackCards] = await Promise.all([
-    this.cardService.selectRandomCards(CardColor.White, 5),
-    this.cardService.selectRandomCards(CardColor.Black, 5),
-]);
+        if(!currentPlayer)
+            throw WSE.InternalServerError500(`CreateGame::Invalid Player (${createGame.auth_token})`);
 
-const completionPromises = [];
+        this.log.debug('GameService::createGame - Current Player', { currentPlayer });
+        this.log.silly('Leaving any existing games', { currentPlayer })
+        // Ensure the player leaves any open sessions before starting a new game
+        await this.gameSessionService.exitActiveGameSession(
+            currentPlayer,
+            GameExitReason.CreatedNewGame,
+            'Creating a new game and logging out of existing sessions');
 
-for (let i = 0; i < 5; i++) {
-    const whiteCard = whiteCards[i];
-    const blackCard = blackCards[i];
+        // Generate a new game entity and persist it in the repository
+        const game = await this.gameRepo.save({
+            current_session_id : null, // No session initially, as it will be created later
+            max_point_count    : 3,
+            max_round_count    : 7,
+            host_player_id     : currentPlayer.id,
+            created_by         : currentPlayer.id,
+            game_code          : await this.utilService.generateGameCode(4), // Generate a 4-character game code
+        });
 
-    const completionPrompt = `These are the winning white and black cards in this hand of Cards Against Humanity.
-Write an amusing sentence or two using the result, worded differently than the cards themselves.
-Rude, obscene and suggestive sentences are encouraged.
-Black Card: ${blackCard.text}
-White Card: ${whiteCard.text}`;
+        this.log.info('Joining Game Specific Channel During Game Creation')
+        socket.join(`${game.id}_${currentPlayer.id}`);
 
-    completionPromises.push(
-        this.openAIService.completeText(completionPrompt).then(completionResult => ({
-            blackCard,
-            whiteCard,
-            completionResult,
-        })),
-    );
-}
+        // Initialize a new game session with the current player as the host
+        const session = await this.gameSessionService.initSession(currentPlayer, game);
 
-const completionResults = await Promise.all(completionPromises);
+        this.log.silly('GameService::createGame - Game Session Created', { session });
 
-completionResults.forEach(({ blackCard, whiteCard, completionResult }) => {
-    console.log('Dealer:', blackCard.text);
-    console.log('Player:', whiteCard.text);
-    console.log('   Completion: ', completionResult);
-    console.log('\n');
-});
+        // TODO: Consider using the setGameSession
+        // Update the game with the session reference after creation
+        await this.gameRepo.update(game.id, { current_session_id : session.id! });
 
+        this.log.silly('GameService::createGame - Game Updated With SessionId', { game });
+        this.log.silly('Emitting Game Update', { gameCode : game.game_code });
 
-        // const completion = await this.openAIService.
-        return;
-        // debugger;
-
-        // console.log('completion', completion);
-
-        // debugger;
-
-        // // Log the beginning of the game creation process
-        // this.log.silly('GameService::createGame', { createGame });
-
-        // // Retrieve the current player based on the provided auth token
-        // const { currentPlayer } = await this.getPlayerStateByAuthToken(createGame.auth_token!);
-
-        // if(!currentPlayer)
-        //     throw WSE.InternalServerError500(`CreateGame::Invalid Player (${createGame.auth_token})`);
-
-        // this.log.debug('GameService::createGame - Current Player', { currentPlayer });
-        // this.log.silly('Leaving any existing games', { currentPlayer })
-        // // Ensure the player leaves any open sessions before starting a new game
-        // await this.gameSessionService.exitActiveGameSession(
-        //     currentPlayer,
-        //     GameExitReason.CreatedNewGame,
-        //     'Creating a new game and logging out of existing sessions');
-
-        // // Generate a new game entity and persist it in the repository
-        // const game = await this.gameRepo.save({
-        //     current_session_id : null, // No session initially, as it will be created later
-        //     max_point_count    : 3,
-        //     max_round_count    : 7,
-        //     host_player_id     : currentPlayer.id,
-        //     created_by         : currentPlayer.id,
-        //     game_code          : await this.utilService.generateGameCode(4), // Generate a 4-character game code
-        // });
-
-        // this.log.info('Joining Game Specific Channel During Game Creation')
-        // socket.join(`${game.id}_${currentPlayer.id}`);
-
-        // // Initialize a new game session with the current player as the host
-        // const session = await this.gameSessionService.initSession(currentPlayer, game);
-
-        // this.log.silly('GameService::createGame - Game Session Created', { session });
-
-        // // TODO: Consider using the setGameSession
-        // // Update the game with the session reference after creation
-        // await this.gameRepo.update(game.id, { current_session_id : session.id! });
-
-        // this.log.silly('GameService::createGame - Game Updated With SessionId', { game });
-        // this.log.silly('Emitting Game Update', { gameCode : game.game_code });
-
-        // this.emitGameUpdate(server, game.game_code);
+        this.emitGameUpdate(server, game.game_code);
     }
 
     @UsePipes(new ValidationPipe({

@@ -27,6 +27,20 @@ export class ScoreLogService {
         this.log.silly('ScoreLogService instantiated');
     }
 
+    public findLogBySessionId = async (sessionId: string) =>
+        this.scoreLogRepo.findOne({
+            where : {
+                game_session_id : sessionId,
+            },
+        });
+
+    public findLogBySessionIdOrFail = async (sessionId: string) =>
+        this.scoreLogRepo.findOneOrFail({
+            where : {
+                game_session_id : sessionId,
+            },
+        });
+
     /**
      * Counts the number of game rounds in a session.
      *

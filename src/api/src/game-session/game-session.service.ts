@@ -24,6 +24,13 @@ export class GameSessionService {
         private readonly gameSessionRepo: Repository<GameSession>,
     ) { }
 
+    public findSessionsByGame = async (game: Game) =>
+        this.gameSessionRepo.find({
+            where : {
+                game_id : game.id,
+            },
+        });
+
     /**
      * Whatever game session the player is in, remove them from it
      *
