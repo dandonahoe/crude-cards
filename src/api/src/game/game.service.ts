@@ -1304,19 +1304,42 @@ export class GameService {
 
         debugger;
 
-        const whiteCard = (await this.cardService.selectRandomCards(CardColor.White, 1))[0];
-        const blackCard = (await this.cardService.selectRandomCards(CardColor.Black, 1))[0];
 
-        const completionPrompt = `These are the winning white and black cards in this hand of Cards Against Humanity.
-Write an amusing sentence using the result.
+        const [whiteCards, blackCards] = await Promise.all([
+    this.cardService.selectRandomCards(CardColor.White, 5),
+    this.cardService.selectRandomCards(CardColor.Black, 5),
+]);
+
+const completionPromises = [];
+
+for (let i = 0; i < 5; i++) {
+    const whiteCard = whiteCards[i];
+    const blackCard = blackCards[i];
+
+    const completionPrompt = `These are the winning white and black cards in this hand of Cards Against Humanity.
+Write an amusing sentence or two using the result, worded differently than the cards themselves.
+Rude, obscene and suggestive sentences are encouraged.
 Black Card: ${blackCard.text}
 White Card: ${whiteCard.text}`;
 
-        debugger;
+    completionPromises.push(
+        this.openAIService.completeText(completionPrompt).then(completionResult => ({
+            blackCard,
+            whiteCard,
+            completionResult,
+        })),
+    );
+}
 
-        const completionResult = await this.openAIService.completeText(completionPrompt);
+const completionResults = await Promise.all(completionPromises);
 
-        console.log('completionResult', completionResult);
+completionResults.forEach(({ blackCard, whiteCard, completionResult }) => {
+    console.log('Dealer:', blackCard.text);
+    console.log('Player:', whiteCard.text);
+    console.log('   Completion: ', completionResult);
+    console.log('\n');
+});
+
 
         // const completion = await this.openAIService.
         return;
