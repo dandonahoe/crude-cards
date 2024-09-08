@@ -1,3 +1,10 @@
+## [1.0.21](https://github.com/dandonahoe/crude-cards/compare/v1.0.20...v1.0.21) (2024-09-08)
+
+
+### Features
+
+* **update:** code layout refactor ([#89](https://github.com/dandonahoe/crude-cards/issues/89)) ([fd62dbc](https://github.com/dandonahoe/crude-cards/commit/fd62dbc0883c747a9760d34604027e8dea720d51))
+
 ## [1.0.20](https://github.com/dandonahoe/crude-cards/compare/v1.0.19...v1.0.20) (2024-09-07)
 
 
