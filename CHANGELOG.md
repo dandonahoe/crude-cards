@@ -1,3 +1,16 @@
+## [1.0.22](https://github.com/dandonahoe/crude-cards/compare/v1.0.21...v1.0.22) (2024-09-08)
+
+
+### Features
+
+* **game:** add and update game service ([af85ef0](https://github.com/dandonahoe/crude-cards/commit/af85ef0a38f5973a9ae3b54fa67fa390649fe406))
+* **update:** Summary of changes ([9204bc1](https://github.com/dandonahoe/crude-cards/commit/9204bc1506b8663158e81902981ad5771636f646))
+* **api:** update game and middleware services ([be328b1](https://github.com/dandonahoe/crude-cards/commit/be328b18b16f92d35fd2037104a518abf5f888f4))
+* **game:** update game service functionality ([92ad618](https://github.com/dandonahoe/crude-cards/commit/92ad618c1095aaef7f33d4cec87c22e2f3915926))
+* **game:** Update game service with new functionalities and fixes ([4734fbd](https://github.com/dandonahoe/crude-cards/commit/4734fbdee5157c1fde438509064c61562989200c))
+* **game:** update game service ([7b9fbef](https://github.com/dandonahoe/crude-cards/commit/7b9fbeff1d8e8e2395969aa1a24416a15b5bffa3))
+* **service:** update ([2a5ba77](https://github.com/dandonahoe/crude-cards/commit/2a5ba77983c3d6f2e564ef7e6a6e0fe6dc169607))
+
 ## [1.0.21](https://github.com/dandonahoe/crude-cards/compare/v1.0.20...v1.0.21) (2024-09-08)
 
 
