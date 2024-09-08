@@ -1,3 +1,11 @@
+## [1.0.24](https://github.com/dandonahoe/crude-cards/compare/v1.0.23...v1.0.24) (2024-09-08)
+
+
+### Features
+
+* **dependencies:** updated dependencies in pnpm-lock.yaml ([a987ef1](https://github.com/dandonahoe/crude-cards/commit/a987ef1f5cd07927c65744a8aa63ef0a24ff7acf))
+* **dependencies:** update ([fc06943](https://github.com/dandonahoe/crude-cards/commit/fc069432f178db80e2ed36a2c9770fd39385dfa2))
+
 ## [1.0.23](https://github.com/dandonahoe/crude-cards/compare/v1.0.22...v1.0.23) (2024-09-08)
 
 
