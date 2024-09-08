@@ -10,10 +10,14 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
 import { LogModule } from './log/Log.module';
 import { Logger } from 'winston';
 import * as path from 'path';
+import { DevtoolsModule } from '@nestjs/devtools-integration';
 
 
 @Module({
     imports : [
+        DevtoolsModule.register({
+            http : process.env.NODE_ENV !== 'production',
+        }),
         LogModule,
         ConfigModule.forRoot({
             envFilePath : path.resolve(__dirname, '../../../.env'),

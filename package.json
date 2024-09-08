@@ -129,6 +129,7 @@
         "@faker-js/faker": "9.0.0",
         "@html-eslint/eslint-plugin": "0.26.0",
         "@html-eslint/parser": "0.26.0",
+        "@nestjs/devtools-integration": "0.1.6",
         "@next/eslint-plugin-next": "14.2.8",
         "@octokit/rest": "21.0.2",
         "@redux-devtools/extension": "3.3.0",
