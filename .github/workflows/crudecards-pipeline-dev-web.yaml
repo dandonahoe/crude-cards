@@ -54,6 +54,7 @@ jobs:
                   echo GH_TOKEN                                          = "${{ secrets.GH_TOKEN                                       }}" >> .env
                   echo BACKEND_DATABASE_PASS                             = "${{ secrets.BACKEND_DATABASE_PASS                          }}" >> .env
                   echo OCO_OPENAI_API_KEY                                = "${{ secrets.OCO_OPENAI_API_KEY                             }}" >> .env
+                  echo OPENAI_API_KEY                                    = "${{ secrets.OPENAI_API_KEY                                 }}" >> .env
 
                   #  Front End Visible
                   echo NEXT_PUBLIC_APP_ID                                = "${{ vars.NEXT_PUBLIC_APP_ID                                }}" >> .env
