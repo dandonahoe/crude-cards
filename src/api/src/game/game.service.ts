@@ -832,8 +832,6 @@ export class GameService {
         // Does this explode??
         this.log.debug('Retrieved dealer and session data', { debugBundle });
 
-        debugger;
-
         // Determine the winning player based on the selected card ID
         const winningPlayer = await this.getWinningPlayer(players, dealerPickWinner.card_id!);
 
@@ -1003,7 +1001,6 @@ White Card: ${whiteCard.text}`;
         const winningPlayerResults = players.filter(player =>
             player.card_id_list.includes(selectedCardId),
         );
-        debugger;
 
         if (winningPlayerResults.length !== 1)
             throw WSE.InternalServerError500('Invalid card ID or multiple players found with the same card', {
@@ -1050,12 +1047,9 @@ White Card: ${whiteCard.text}`;
         winningPlayer: Player,
     ) => {
         if (winningPlayer.score >= game.max_point_count) {
-
-            debugger;
-
             const combos = await this.getAllWinningCardCombos(game);
 
-            debugger;
+            this.log.info('Game Complete due to winning player', { combos });
 
             return this.gameSessionService.awardWinnerAndComplete(
                 session, winningPlayer.id!, 'Progressing Hand or Showing Results');
@@ -1064,11 +1058,19 @@ White Card: ${whiteCard.text}`;
         return this.gameSessionService.showHandResults(session);
     }
 
+    /**
+     * Retrieves the winning card combos for the game.
+     * This method retrieves the black and white card IDs for each winning player in the game.
+     * The results are returned as an array of objects containing the black and white card IDs.
+     *
+     * @param game - The current game entity
+     *
+     * @returns An array of objects containing the black and white card IDs for each winning player
+     */
     public getAllWinningCardCombos = async (game: Game): Promise<{
         blackCardId : string | null;
         whiteCardId : string | null;
     }[]> => {
-debugger;
         // get a list of all the session ids for this game
         const gameSessions = await this.gameSessionService.findSessionsByGame(game);
 
