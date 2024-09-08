@@ -12,6 +12,7 @@ import { ZodValidationPipe } from '../pipes/ZodValidation.pipe';
 import { FeedbackService } from '../feedback/feedback.service';
 import { UpdateUsernameDTO } from './dtos/update-username.dto';
 import { SubmitFeedbackDTO } from './dtos/submit-feedback.dto';
+import { AuthToken, GameDeck, GameExitReason } from '../type';
 import { PlayerType } from '../constant/player-type.enum';
 import { PlayerService } from '../player/player.service';
 import { ScoreLog } from '../score-log/score-log.entity';
@@ -25,7 +26,6 @@ import { CreateGameDTO } from './dtos/create-game.dto';
 import { GameStateDTO } from './dtos/game-state.dto';
 import { StartGameDTO } from './dtos/start-game.dto';
 import { LeaveGameDTO } from './dtos/leave-game.dto';
-import { AuthToken, GameExitReason } from '../type';
 import { InjectRepository } from '@nestjs/typeorm';
 import { SockService } from '../sock/sock.service';
 import { CardService } from '../card/card.service';
@@ -39,12 +39,8 @@ import { Repository } from 'typeorm';
 import { Game } from './game.entity';
 import { difference } from 'lodash';
 import { Logger } from 'winston';
-import { Card } from '../card/card.entity';
+import { OpenAIService } from '../openai/openai.service';
 
-interface GameDeck {
-    blackCards : Card[]
-    whiteCards : Card[]
-}
 
 @Injectable()
 export class GameService {
@@ -62,6 +58,7 @@ export class GameService {
         private readonly feedbackService    : FeedbackService,
         private readonly scoreLogService    : ScoreLogService,
         private readonly playerService      : PlayerService,
+        private readonly openAIService      : OpenAIService,
         private readonly sockService        : SockService,
         private readonly cardService        : CardService,
         private readonly utilService        : UtilService,
@@ -1045,6 +1042,16 @@ export class GameService {
 
         console.log('startGame', { startGame, socketId : socket.id });
 
+        debugger;
+
+        const completion = await this.openAIService.completeText('I am the very model of a modern _______.');
+
+        debugger;
+
+        console.log('completion', completion);
+
+        debugger;
+
         const {
             currentPlayer, game, session,
         } = await this.getPlayerStateByAuthTokenOrFail(startGame.auth_token!);
@@ -1476,7 +1483,6 @@ export class GameService {
         ...gameStateGeneric,
         current_player_id : playerId,
     });
-
 
     /**
      * Determines if any player has exceeded the maximum point count.
