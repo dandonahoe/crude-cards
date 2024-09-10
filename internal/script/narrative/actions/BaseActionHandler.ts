@@ -9,13 +9,11 @@ export abstract class BaseActionHandler {
     public abstract name: string;
     public abstract description: string;
     public shortName: string;
-    public isRequired: boolean;
 
     // Optional parameter schema, can be used to validate inputs or prompt the user
     public paramsSchema?: { [key: string]: any };
 
-    public constructor() {
-    }
+    public constructor() {}
 
     // This method must be implemented by all actions
     public abstract execute(neo4jService: Neo4jService, params?: ActionParams): Promise<void>;

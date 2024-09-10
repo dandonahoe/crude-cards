@@ -40,10 +40,8 @@ export class ActionRegistry {
                         // Only register actions that are not already registered
                         if (!ActionRegistry.actions[actionInstance.id])
                             ActionRegistry.registerAction(actionInstance);
-
                     }
                 });
             }
-
     }
 }

@@ -6,8 +6,6 @@ export class ContinueAdventureAction extends BaseActionHandler {
     public name = 'Continue Describing Adventure';
     public description = 'Continue describing the universe of the adventure';
 
-    public override isRequired = true; // Exit action is required and can't be deleted
-
     // Define any required parameters for starting an adventure (e.g., character name, difficulty level)
     public override paramsSchema = {
         // TBD
@@ -18,7 +16,5 @@ export class ContinueAdventureAction extends BaseActionHandler {
     public async execute(neo4jService: Neo4jService, params: ActionParams = {}): Promise<void> {
 
         console.log('params:', params);
-
-
     }
 }

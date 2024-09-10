@@ -18,6 +18,15 @@ export class Neo4jService {
         return result.records.map(record => record.get('n').properties);
     }
 
+    // Query all persons specifically (shortcut for 'Person' entities)
+    public async queryAllPersons() {
+        const result = await this.session.run(
+            `MATCH (p:Person) RETURN p`,
+        );
+
+        return result.records.map(record => record.get('p').properties);
+    }
+
     // Query all miscellaneous entities (not of predefined types)
     public async queryAllMiscEntities() {
         const result = await this.session.run(

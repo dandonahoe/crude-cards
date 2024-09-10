@@ -6,16 +6,13 @@ export class ListDatabaseAction extends BaseActionHandler {
     public name = 'List Database';
     public description = 'List all entities and relationships in the database';
 
-    public override isRequired = true;
-
     public constructor() {
         super();
     }
 
     public async execute(neo4jService: Neo4jService, params?: ActionParams): Promise<void> {
-        console.log('Listing all entities and relationships in the database...');
+        console.log('Listing all entities and relationships in the database...', params);
 
-        console.log('Fetching entities and relationships from the database...', params);
         // Fetch places
         const places = await neo4jService.queryAllEntities('Place');
         console.log('Places:');
