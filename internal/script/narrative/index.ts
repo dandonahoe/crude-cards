@@ -4,6 +4,7 @@ import { GameLoop } from './gameLoop';
 import { Config } from './config';
 
 (async () => {
+
     const uri = Config.ensure('NEO4J_ENDPOINT');
     const password = Config.ensure('NEO4J_PASSWORD');
     const username = 'neo4j';
@@ -14,7 +15,12 @@ import { Config } from './config';
         // Load all action handlers dynamically
         await ActionRegistry.loadActions();
 
-        console.log('Connection to Neo4j established');
+        // Register static actions, including the new GenerateAction
+        // ActionRegistry.registerAction(new DeleteDatabaseAction());
+        // ActionRegistry.registerAction(new ListDatabaseAction());
+        // ActionRegistry.registerAction(new CreateEntityAction());
+        // ActionRegistry.registerAction(new StartAdventureAction());
+        // ActionRegistry.registerAction(new GenerateAction()); // Register the new action
 
         const gameLoop = new GameLoop(neo4jService);
         await gameLoop.start();

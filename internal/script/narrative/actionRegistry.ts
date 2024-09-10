@@ -32,6 +32,7 @@ export class ActionRegistry {
 
         for (const file of files)
             if (file.endsWith('.ts') || file.endsWith('.js')) {
+
                 // Dynamically import each file
                 const actionModule = await import(path.join(actionsDir, file));
 
@@ -44,6 +45,5 @@ export class ActionRegistry {
                     }
                 });
             }
-
     }
 }
