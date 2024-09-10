@@ -1,7 +1,7 @@
-import { MenuAction, ActionResult } from './actionTypes';
-import { selectMenuAction } from './menuService';
+// /Users/dan/code/crude-cards/internal/script/narrative/gameLoop.ts
+
 import { Neo4jService } from './neo4jService';
-import { GeoUtils } from './geoUtils';
+import { MenuManager } from './menuManager';
 
 export class GameLoop {
     private neo4jService: Neo4jService;
@@ -14,63 +14,16 @@ export class GameLoop {
 
     public async start() {
         while (this.isGameActive) {
-            const choice = await selectMenuAction();
-            let result: ActionResult;
+            const selectedAction = await MenuManager.promptMenuChoice();
+            const handler = MenuManager.getHandler(selectedAction);
 
-            switch (choice) {
-                case MenuAction.DeleteDatabase: {
-                    await this.neo4jService.deleteDatabase();
-                    result = { success : true, message : 'Database deleted successfully.' };
-                } break;
-
-                case MenuAction.ListDatabase: {
-                    const persons = await this.neo4jService.queryAllPersons();
-                    if (persons.length > 0) {
-                        console.log('Current Persons in the Database:');
-                        persons.forEach(person => {
-                            console.log(`- ${person.name} (${person.alignment})`);
-                        });
-                        result = { success : true, message : 'Listed all persons in the database.' };
-                    } else {
-                        result = { success : true, message : 'No persons found in the database.' };
-                    }
-                } break;
-
-                case MenuAction.ContinueGame: {
-                } break;
-
-                case MenuAction.CreateRandomPerson: {
-
-                    const name = `Person_${new Date().toISOString()}`;
-
-                    const alignment = 'Evil';
-                    const createdAt = new Date().toISOString();
-                    const { latitude, longitude } = GeoUtils.getRandomCoordinates();
-                    const location = await GeoUtils.getLocationDetails(latitude, longitude);
-
-                    const nodeProperties = await this.neo4jService.createPersonNode(
-                        name, alignment, createdAt, latitude, longitude, location);
-
-                    console.log('Person node created:', nodeProperties);
-                    result = { success : true, message : 'Game continued and node created.' };
-                } break;
+            if (handler)
+                await handler(this.neo4jService);
 
 
-                case MenuAction.Exit: {
-                    this.isGameActive = false;
-                    result = { success : true, message : 'Exiting the game.' };
-                } break;
+            if (selectedAction === 'exit')
+                this.isGameActive = false;
 
-
-                default: {
-                    result = { success : false, message : 'Invalid choice' };
-                }
-
-            }
-
-            console.log(result.message);
-
-            if (!this.isGameActive) break;
         }
     }
 
