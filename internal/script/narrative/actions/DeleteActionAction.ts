@@ -5,6 +5,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 
 export class DeleteActionAction extends BaseActionHandler {
+
     public id = 'deleteAction';
     public name = 'Delete Action';
     public description = 'Deletes an existing action file and unregisters it from the registry.';
