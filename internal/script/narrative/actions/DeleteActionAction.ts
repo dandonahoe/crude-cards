@@ -21,13 +21,17 @@ export class DeleteActionAction extends BaseActionHandler {
     public override paramsSchema = {};
 
     public async execute(_: any, params: ActionParams = {}): Promise<void> {
-        console.log('Deleting an action...', params);
-        // Get all non-required actions
-        const deletableActions = Object.values(ActionRegistry.actions)
-            .filter(action => !action.isRequired)
-            .map(action => ({ name : `${action.name} (${action.id})`, value : action.id }));
 
-        if (deletableActions.length === 0) {
+        console.log('Deleting an action...', params);
+
+        // Get all actions and disable the ones that are required
+        const deletableActions = Object.values(ActionRegistry.actions).map(action => ({
+            name     : `${action.name} (${action.id})`,
+            value    : action.id,
+            disabled : action.isRequired ? 'Required' : undefined, // Disable required actions
+        }));
+
+        if (deletableActions.filter(action => !action.disabled).length === 0) {
             console.log('No actions available for deletion.');
 
             return;
