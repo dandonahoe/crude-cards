@@ -15,15 +15,17 @@ export class GameLoop {
     public async start() {
         while (this.isGameActive) {
             const selectedAction = await MenuManager.promptMenuChoice();
-            const handler = MenuManager.getHandler(selectedAction);
 
-            if (handler)
-                await handler(this.neo4jService);
+            if (selectedAction) {
+                const params = await MenuManager.promptForParams(selectedAction);
 
+                // Call the action's execute method
+                await selectedAction.execute(this.neo4jService, params);
 
-            if (selectedAction === 'exit')
-                this.isGameActive = false;
+                if (selectedAction.id === 'exit')
+                    this.isGameActive = false;
 
+            }
         }
     }
 

@@ -1,39 +1,37 @@
 // /Users/dan/code/crude-cards/internal/script/narrative/menuManager.ts
 
 import inquirer from 'inquirer';
-import { MenuActionHandler } from './actionHandlers';
-
-interface MenuChoice {
-    name: string;
-    value: string;
-}
+import { ActionRegistry } from './actionRegistry';
+import { BaseActionHandler } from './BaseActionHandler';
 
 export class MenuManager {
-    private static menuChoices: MenuChoice[] = [];
-    private static actionHandlers: Record<string, MenuActionHandler> = {};
+    // Prompt the user with dynamic menu choices
+    public static async promptMenuChoice(): Promise<BaseActionHandler | undefined> {
+        const actions = ActionRegistry.getAllActions();
 
-    // Register a new menu action
-    public static registerMenuAction(actionId: string, displayName: string, handler: MenuActionHandler) {
-        MenuManager.menuChoices.push({ name : displayName, value : actionId });
-        MenuManager.actionHandlers[actionId] = handler;
-    }
+        const choices = actions.map(action => ({
+            name  : action.name,
+            value : action.id,
+        }));
 
-    // Prompt the user with dynamic menu
-    public static async promptMenuChoice(): Promise<string> {
         const answers = await inquirer.prompt([
             {
                 type    : 'list',
                 name    : 'action',
                 message : 'Choose an action:',
-                choices : MenuManager.menuChoices,
+                choices,
             },
         ]);
 
-        return answers.action;
+        const selectedAction = ActionRegistry.getAction(answers.action);
+
+        return selectedAction;
     }
 
-    // Get the handler for a chosen action
-    public static getHandler(actionId: string): MenuActionHandler | undefined {
-        return MenuManager.actionHandlers[actionId];
+    // Prompt for parameters if needed
+    public static async promptForParams(_action : BaseActionHandler): Promise<any> {
+        // Example: If we want to add parameters to actions, we can prompt for them here
+        // For simplicity, we are not using parameters in this example
+        return {};
     }
 }
