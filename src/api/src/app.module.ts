@@ -10,6 +10,7 @@ import { GameModule } from './game/game.module';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { LogModule } from './log/Log.module';
 import { Logger } from 'winston';
+import { EntityModule } from './entity/entity.module';
 import * as path from 'path';
 
 
@@ -27,6 +28,7 @@ import * as path from 'path';
             envFilePath : path.resolve(__dirname, '../../../.env'),
             isGlobal    : true,
         }),
+        EntityModule,
         // DevtoolsModule.register({
         //     http : process.env.NODE_ENV !== 'production',
         // }),
