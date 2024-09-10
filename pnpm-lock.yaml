@@ -74,6 +74,9 @@ importers:
       '@tiptap/starter-kit':
         specifier: 2.6.6
         version: 2.6.6
+      '@types/gremlin':
+        specifier: 3.6.7
+        version: 3.6.7
       '@types/react-copy-to-clipboard':
         specifier: 5.0.7
         version: 5.0.7
@@ -360,6 +363,9 @@ importers:
       exec:
         specifier: 0.2.1
         version: 0.2.1
+      gremlin:
+        specifier: 3.7.2
+        version: 3.7.2
       http-server:
         specifier: 14.1.1
         version: 14.1.1
@@ -375,6 +381,9 @@ importers:
       minimatch:
         specifier: 10.0.1
         version: 10.0.1
+      neo4j-driver:
+        specifier: 5.24.1
+        version: 5.24.1
       open:
         specifier: 10.1.0
         version: 10.1.0
@@ -2570,6 +2579,9 @@ packages:
   '@types/graceful-fs@4.1.9':
     resolution: {integrity: sha512-olP3sd1qOEe5dXTSaFvQG+02VdRXcdytWLAZsAq1PecU8uqQAhkrnbli7DagjtXKW/Bl7YJbUsa8MPcuc8LHEQ==}
 
+  '@types/gremlin@3.6.7':
+    resolution: {integrity: sha512-qbzClMUhVb2+6XOtAwUnNtVmDeBsvAYXyoQYIvQcv9pQkk7z+Fct0o59rYCyLf4R47Xlg7U+6lvUkP3Ec/XRdg==}
+
   '@types/hast@3.0.4':
     resolution: {integrity: sha512-WPs+bbQw5aCj+x6laNGWLH3wviHtoCv/P3+otBhbOhJgG8qtpdAMlTCxLtsTWA7LH1Oh/bFCHsBn0TPS5m30EQ==}
 
@@ -4670,6 +4682,9 @@ packages:
   eventemitter3@4.0.7:
     resolution: {integrity: sha512-8guHBZCwKnFhYdHr2ysuRWErTwhoN2X8XELRlrRwpmfeY2jjuUN4taQMsULKUVo1K4DvZl+0pgfyoysHxvmvEw==}
 
+  eventemitter3@5.0.1:
+    resolution: {integrity: sha512-GWkBvjiSZK87ELrYOSESUYeVIc9mvLLf/nXalMOS5dYrgZq9o5OVkbZAVM06CVxYsCwH9BDZFPlQTlPA1j4ahA==}
+
   events@3.3.0:
     resolution: {integrity: sha512-mQw+2fkQbALzQ7V0MY0IqdnXNOeTtP4r0lN9z7AAawCXgqea7bDii20AYrIBrFd/Hx0M2Ocz6S111CaFkUcb0Q==}
     engines: {node: '>=0.8.x'}
@@ -5060,6 +5075,10 @@ packages:
 
   graphemer@1.4.0:
     resolution: {integrity: sha512-EtKwoO6kxCL9WO5xipiHTZlSzBm7WLT627TqC/uVRd0HKmq8NXyebnNYxDoBi7wt8eTWrUrKXCOVaFq9x1kgag==}
+
+  gremlin@3.7.2:
+    resolution: {integrity: sha512-8vPDhouXUm4A5vRuiDaTbj+1D0kaR2lTMJjTMi3HfXD0vlHX30FNYlyJVfU57+ugvUHBEUUuO+xYCqgxYle9ig==}
+    engines: {node: '>=18'}
 
   handlebars@4.7.8:
     resolution: {integrity: sha512-vafaFqs8MZkRrSX7sFVUdo3ap/eNiLnb4IakshzvP56X5Nr1iGKAIqdX6tMlm6HcNRIkr6AxO5jFEoJzzpT8aQ==}
@@ -6384,6 +6403,15 @@ packages:
 
   neo-async@2.6.2:
     resolution: {integrity: sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==}
+
+  neo4j-driver-bolt-connection@5.24.1:
+    resolution: {integrity: sha512-5xS93jPqpeTh5+62r6fizxQdOMGMpUcuNKTOP4Pn0OPVMM0IMlemJhSUEQf7k1yJmsZNn6InKRBAmPjZm5+2dw==}
+
+  neo4j-driver-core@5.24.1:
+    resolution: {integrity: sha512-nPPAXnEypaE4HloM2x8GggF5YT7e+LpcEuyYt7ELuax25/SH7ZtdkemnH0voAVfqBwQXSWP9CFpPFznDOU6T5A==}
+
+  neo4j-driver@5.24.1:
+    resolution: {integrity: sha512-ziTNnesM24liI/fPpykLQtO7Hu4Mq5QxiePwPBSZtmylwzJWs/apLg3RiTioyXAZytKbdmldyUwmJSBnxbjLCw==}
 
   nerf-dart@1.0.0:
     resolution: {integrity: sha512-EZSPZB70jiVsivaBLYDCyntd5eH8NTSMOn3rB+HxwdmKThGELLdYv8qVIMWvZEFy9w8ZZpW9h9OB32l1rGtj7g==}
@@ -11614,6 +11642,8 @@ snapshots:
     dependencies:
       '@types/node': 22.5.4
 
+  '@types/gremlin@3.6.7': {}
+
   '@types/hast@3.0.4':
     dependencies:
       '@types/unist': 3.0.3
@@ -14197,6 +14227,8 @@ snapshots:
 
   eventemitter3@4.0.7: {}
 
+  eventemitter3@5.0.1: {}
+
   events@3.3.0: {}
 
   evp_bytestokey@1.0.3:
@@ -14694,6 +14726,17 @@ snapshots:
   graceful-readlink@1.0.1: {}
 
   graphemer@1.4.0: {}
+
+  gremlin@3.7.2:
+    dependencies:
+      buffer: 6.0.3
+      eventemitter3: 5.0.1
+      readable-stream: 4.5.2
+      uuid: 9.0.1
+      ws: 8.18.0
+    transitivePeerDependencies:
+      - bufferutil
+      - utf-8-validate
 
   handlebars@4.7.8:
     dependencies:
@@ -16364,6 +16407,20 @@ snapshots:
   negotiator@0.6.3: {}
 
   neo-async@2.6.2: {}
+
+  neo4j-driver-bolt-connection@5.24.1:
+    dependencies:
+      buffer: 6.0.3
+      neo4j-driver-core: 5.24.1
+      string_decoder: 1.3.0
+
+  neo4j-driver-core@5.24.1: {}
+
+  neo4j-driver@5.24.1:
+    dependencies:
+      neo4j-driver-bolt-connection: 5.24.1
+      neo4j-driver-core: 5.24.1
+      rxjs: 7.8.1
 
   nerf-dart@1.0.0: {}
 
