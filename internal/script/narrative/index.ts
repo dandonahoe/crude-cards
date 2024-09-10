@@ -1,96 +1,80 @@
 import * as dotenv from 'dotenv';
-import neo4j from 'neo4j-driver';
+import neo4j, { Driver, Session } from 'neo4j-driver';
 import { geocode } from 'opencage-api-client';
+import inquirer from 'inquirer';
 
 dotenv.config();
 
-if (!process.env.NEO4J_PASSWORD) {
-    console.error('Please provide the password for the Neo4j database using the environment variable NEO4J_PASSWORD');
-    process.exit(1);
-}
+class Config {
+    public static get(key: string): string | undefined {
+        return process.env[key];
+    }
 
-if (!process.env.NEO4J_ENDPOINT) {
-    console.error('Please provide the endpoint for the Neo4j database using the environment variable NEO4J_ENDPOINT');
-    process.exit(1);
-}
-
-if (!process.env.OPENCAGE_API_KEY) {
-    console.error('Please provide the OpenCage API key using the environment variable OPENCAGE_API_KEY');
-    process.exit(1);
-}
-
-// Function to generate random latitude and longitude within the continental US
-function getRandomCoordinates() {
-    const minLat = 24.396308;
-    const maxLat = 49.384358;
-    const minLon = -125.0;
-    const maxLon = -66.93457;
-
-    const latitude = Math.random() * (maxLat - minLat) + minLat;
-    const longitude = Math.random() * (maxLon - minLon) + minLon;
-
-    return { latitude, longitude };
-}
-
-// Function to get location details from OpenCage Geocoder
-async function getLocationDetails(latitude: number, longitude: number) {
-    try {
-        const apiKey = process.env.OPENCAGE_API_KEY;
-        const response = await geocode({
-            q   : `${latitude},${longitude}`,
-            key : apiKey,
-        });
-
-        if (response.results.length > 0) {
-            const result = response.results[0];
-            const components = result.components;
-
-            return {
-                planet    : components.planet || '',
-                continent : components.continent || '',
-                country   : components.country || '',
-                region    : components.state || components.province || components.region || '',
-                formatted : result.formatted,
-            };
-        } else {
-            throw new Error('No results found');
+    public static ensure(key: string): string {
+        const value = this.get(key);
+        if (!value) {
+            console.error(`Please provide the ${key} using the environment variable ${key}`);
+            process.exit(1);
         }
-    } catch (error) {
-        console.error('Error fetching location details:', error);
 
-        return null;
+        return value;
     }
 }
 
-(async (uri: string, password: string) => {
-    const username = 'neo4j';
-    let driver;
-    let session;
+class GeoUtils {
+    public static getRandomCoordinates() {
+        const minLat = -90.0;
+        const maxLat = 90.0;
+        const minLon = -180.0;
+        const maxLon = 180.0;
 
-    try {
-        driver = neo4j.driver(`neo4j://${uri}`, neo4j.auth.basic(username, password));
-        session = driver.session();
+        const latitude = Math.random() * (maxLat - minLat) + minLat;
+        const longitude = Math.random() * (maxLon - minLon) + minLon;
 
-        console.log('Connection established');
+        return { latitude, longitude };
+    }
 
-        // delete whole graph completely as if totally new
-        // await session.run('MATCH (n) DETACH DELETE n'); console.log('Graph deleted');
+    public static async getLocationDetails(latitude: number, longitude: number) {
+        try {
+            const apiKey = Config.ensure('OPENCAGE_API_KEY');
+            const response = await geocode({
+                q   : `${latitude},${longitude}`,
+                key : apiKey,
+            });
 
-        const name = `Person_${new Date().toISOString()}`;
-        const alignment = 'Evil';
-        const createdAt = new Date().toISOString();
-        const { latitude, longitude } = getRandomCoordinates();
+            if (response.results.length > 0) {
+                const result = response.results[0];
+                const components = result.components;
 
-        // Get location details
-        const location = await getLocationDetails(latitude, longitude);
+                return {
+                    planet    : components.planet || '',
+                    continent : components.continent || '',
+                    country   : components.country || '',
+                    region    : components.state || components.province || components.region || '',
+                    formatted : result.formatted,
+                };
+            } else {
+                throw new Error('No results found');
+            }
+        } catch (error) {
+            console.error('Error fetching location details:', error);
 
-        if (location)
-            console.log(`Location: ${location.formatted}`);
-         else
-            console.log('Location details could not be fetched.');
+            return null;
+        }
+    }
+}
 
+class Neo4jService {
+    private driver: Driver;
+    private session: Session;
 
-        const result = await session.run(
+    public constructor(uri: string, username: string, password: string) {
+        this.driver = neo4j.driver(`neo4j://${uri}`, neo4j.auth.basic(username, password));
+        this.session = this.driver.session();
+    }
+
+    public async createPersonNode(name: string, alignment: string, createdAt: string, latitude: number, longitude: number, location: any) {
+        const result = await this.session.run(
             `CREATE (
                 p:Person {
                     name      : $name,
@@ -98,6 +82,7 @@ async function getLocationDetails(latitude: number, longitude: number) {
                     createdAt : $createdAt,
                     latitude  : $latitude,
                     longitude : $longitude,
+                    planet    : $planet,
                     continent : $continent,
                     country   : $country,
                     region    : $region
@@ -115,13 +100,11 @@ async function getLocationDetails(latitude: number, longitude: number) {
             },
         );
 
-        const singleRecord = result.records[0];
-        const node = singleRecord.get(0);
+        return result.records[0].get(0).properties;
+    }
 
-        console.log('Node created:', node.properties);
-
-        // Query the database for all Person nodes and calculate the distance from the newly created node
-        const queryResult = await session.run(
+    public async queryAllPersonsAndDistances(name: string, latitude: number, longitude: number) {
+        const queryResult = await this.session.run(
             `MATCH (p:Person)
              WHERE p.name <> $name
              RETURN p, point({latitude: p.latitude, longitude: p.longitude}) AS location,
@@ -142,26 +125,96 @@ async function getLocationDetails(latitude: number, longitude: number) {
             },
         );
 
-        console.log('All Person nodes and their distances from the newly created node:');
-        queryResult.records.forEach(record => {
-            const personNode = record.get('p');
-            const distanceInMeters = record.get('distance');
-            const distanceInMiles = distanceInMeters * 0.000621371;
+        return queryResult.records.map(record => ({
+            personNode       : record.get('p').properties,
+            distanceInMeters : record.get('distance'),
+            distanceInMiles  : record.get('distance') * 0.000621371,
+        }));
+    }
 
-            console.log(personNode.properties.name, `Distance: ${distanceInMeters} meters (${distanceInMiles.toFixed(2)} miles)`);
-        });
+    public async close() {
+        await this.session.close();
+        await this.driver.close();
+    }
+}
 
+async function selectMenuChoice(): Promise<string> {
+    const choices = [
+        { name : 'Create a new Person node', value : 'create' },
+        { name : 'Query all Persons and distances', value : 'query' },
+        { name : 'Exit', value : 'exit' },
+    ];
+
+    const answers = await inquirer.prompt([
+        {
+            type    : 'list',
+            name    : 'action',
+            message : 'What would you like to do?',
+            choices,
+        },
+    ]);
+
+    return answers.action;
+}
+
+(async () => {
+    const uri = Config.ensure('NEO4J_ENDPOINT');
+    const password = Config.ensure('NEO4J_PASSWORD');
+    const username = 'neo4j';
+
+    const neo4jService = new Neo4jService(uri, username, password);
+
+    try {
+        console.log('Connection established');
+
+        let isGameActive = true;
+
+        while (isGameActive) {
+            const choice = await selectMenuChoice();
+
+            switch (choice) {
+                case 'create': {
+                    const name = `Person_${new Date().toISOString()}`;
+                    const alignment = 'Evil';
+                    const createdAt = new Date().toISOString();
+                    const { latitude, longitude } = GeoUtils.getRandomCoordinates();
+
+                    const location = await GeoUtils.getLocationDetails(latitude, longitude);
+
+                    if (location)
+                        console.log(`Location: ${location.formatted}`);
+                    else
+                        console.log('Location details could not be fetched.');
+
+
+                    const nodeProperties = await neo4jService.createPersonNode(name, alignment, createdAt, latitude, longitude, location);
+                    console.log('Node created:', nodeProperties);
+                } break;
+
+                case 'query': {
+                    const personsAndDistances = await neo4jService.queryAllPersonsAndDistances('', 0, 0); // Adjust parameters as needed
+
+                    console.log('All Person nodes and their distances:');
+
+                    personsAndDistances.forEach(({ personNode, distanceInMeters, distanceInMiles }) => {
+                        console.log(personNode.name, `Distance: ${distanceInMeters} meters (${distanceInMiles.toFixed(2)} miles)`);
+                    });
+                } break;
+
+                case 'exit':
+                    isGameActive = false;
+                    break;
+
+                default:
+                    console.log('Invalid choice');
+            }
+        }
     } catch (err) {
         console.error(`Connection error\n${err}\nCause:`, err);
         process.exit(1);
     } finally {
-        if (session)
-            await session.close();
-
-        if (driver)
-            await driver.close();
-
+        await neo4jService.close();
         console.log('Session and driver closed');
         process.exit(0);
     }
-})(process.env.NEO4J_ENDPOINT, process.env.NEO4J_PASSWORD);
+})();
