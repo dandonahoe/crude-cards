@@ -3,7 +3,7 @@ export enum MenuAction {
     DeleteDatabase      = 'DeleteDatabase',
     ListDatabase        = 'ListDatabase',
     CreateEntity        = 'CreateEntity',
-    StartAdventure      = 'StartAdventure', // New action
+    ContinueAdventure      = 'ContinueAdventure', // New action
     Exit                = 'Exit',
 }
 
