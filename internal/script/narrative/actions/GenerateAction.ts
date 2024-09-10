@@ -1,9 +1,10 @@
-import { loadNewAction } from '../dynamicActionLoader'; // Helper for loading the action
-import { BaseActionHandler, ActionParams } from './BaseActionHandler';
 import { sanitizeActionName, writeNewActionFile } from '../dynamicActionManager';
+import { BaseActionHandler, ActionParams } from './BaseActionHandler';
+import { loadNewAction } from '../dynamicActionLoader';
 import { Neo4jService } from '../neo4jService';
 
 export class GenerateAction extends BaseActionHandler {
+
     public id = 'generateAction';
     public name = 'Generate New Action';
     public description = 'Generates a new action file based on user input.';

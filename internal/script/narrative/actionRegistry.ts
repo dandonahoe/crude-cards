@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 export class ActionRegistry {
-    private static actions: Record<string, BaseActionHandler> = {};
+    public static actions: Record<string, BaseActionHandler> = {};
 
     // Register an action
     public static registerAction(action: BaseActionHandler) {
