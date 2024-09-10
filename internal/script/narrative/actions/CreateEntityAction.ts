@@ -1,6 +1,6 @@
-import { ActionParams, BaseActionHandler } from "./BaseActionHandler";
-import { GeoUtils } from "../geoUtils";
-import { Neo4jService } from "../neo4jService";
+import { ActionParams, BaseActionHandler } from './BaseActionHandler';
+import { GeoUtils } from '../geoUtils';
+import { Neo4jService } from '../neo4jService';
 
 export class CreateEntityAction extends BaseActionHandler {
     public id = 'createEntity';
