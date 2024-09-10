@@ -1,3 +1,5 @@
+// /Users/dan/code/crude-cards/internal/script/narrative/geoUtils.ts
+
 import { geocode } from 'opencage-api-client';
 import { Config } from './config';
 

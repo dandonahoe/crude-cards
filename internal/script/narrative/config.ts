@@ -1,3 +1,5 @@
+// /Users/dan/code/crude-cards/internal/script/narrative/config.ts
+
 import * as dotenv from 'dotenv';
 
 dotenv.config();

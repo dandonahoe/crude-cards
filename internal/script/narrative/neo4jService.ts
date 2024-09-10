@@ -1,3 +1,5 @@
+// /Users/dan/code/crude-cards/internal/script/narrative/neo4jService.ts
+
 import neo4j, { Driver, Session } from 'neo4j-driver';
 
 export class Neo4jService {
@@ -15,15 +17,15 @@ export class Neo4jService {
         const result = await this.session.run(
             `CREATE (
                 p:Person {
-                    name      : $name,
-                    alignment : $alignment,
-                    createdAt : $createdAt,
-                    latitude  : $latitude,
-                    longitude : $longitude,
-                    planet    : $planet,
-                    continent : $continent,
-                    country   : $country,
-                    region    : $region
+                    name: $name,
+                    alignment: $alignment,
+                    createdAt: $createdAt,
+                    latitude: $latitude,
+                    longitude: $longitude,
+                    planet: $planet,
+                    continent: $continent,
+                    country: $country,
+                    region: $region
                 }) RETURN p`,
             {
                 name,
@@ -41,33 +43,14 @@ export class Neo4jService {
         return result.records[0].get(0).properties;
     }
 
-    public async queryAllPersonsAndDistances(name: string, latitude: number, longitude: number) {
-        const queryResult = await this.session.run(
-            `MATCH (p:Person)
-             WHERE p.name <> $name
-             RETURN p, point({latitude: p.latitude, longitude: p.longitude}) AS location,
-             point.distance(
-                point({
-                    latitude: p.latitude,
-                    longitude: p.longitude
-                }),
-                point({
-                    latitude: $latitude,
-                    longitude: $longitude
-                }
-            )) AS distance`,
-            {
-                name,
-                latitude,
-                longitude,
-            },
-        );
+    public async queryAllPersons() {
+        const result = await this.session.run(`MATCH (p:Person) RETURN p`);
 
-        return queryResult.records.map(record => ({
-            personNode       : record.get('p').properties,
-            distanceInMeters : record.get('distance'),
-            distanceInMiles  : record.get('distance') * 0.000621371,
-        }));
+        return result.records.map(record => record.get('p').properties);
+    }
+
+    public async deleteDatabase() {
+        await this.session.run(`MATCH (n) DETACH DELETE n`);
     }
 
     public async close() {
