@@ -3,29 +3,52 @@ import { sanitizeActionName } from '../dynamicActionManager';
 import { ActionRegistry } from '../actionRegistry';
 import * as path from 'path';
 import * as fs from 'fs';
+import inquirer from 'inquirer';
 
 export class DeleteActionAction extends BaseActionHandler {
 
     public id = 'deleteAction';
     public name = 'Delete Action';
-    public description = 'Deletes an existing action file and unregisters it from the registry.';
+    public description = 'Moves an existing action file to the deleted-actions directory and unregisters it from the registry.';
+
+    public override isRequired = true; // Exit action is required and can't be deleted
+
+    public constructor() {
+        super(); // Provide the alphanumeric short name
+    }
 
     // Define the required parameter schema
-    public override paramsSchema = {
-        actionName : { required : true },
-    };
+    public override paramsSchema = {};
 
     public async execute(_: any, params: ActionParams = {}): Promise<void> {
-        const { actionName } = params;
 
-        if (!actionName) {
-            console.error('Action name is required.');
+        console.log('Action Params!', params);
+
+        // Get all non-required actions
+        const deletableActions = Object.values(ActionRegistry.actions)
+            .filter(action => !action.isRequired)
+            .map(action => ({ name : `${action.name} (${action.id})`, value : action.id }));
+
+        if (deletableActions.length === 0) {
+            console.log('No actions available for deletion.');
 
             return;
         }
 
-        const sanitizedActionName = sanitizeActionName(actionName);
+        // Prompt the user for an action to delete
+        const { actionToDelete } = await inquirer.prompt([
+            {
+                type    : 'list',
+                name    : 'actionToDelete',
+                message : 'Choose an action to delete:',
+                choices : deletableActions,
+            },
+        ]);
+
+        const sanitizedActionName = sanitizeActionName(actionToDelete);
         const actionPath = path.join(__dirname, 'actions', `${sanitizedActionName}.ts`);
+        const deletedActionsDir = path.join(__dirname, '..', 'deleted-actions');
+        const deletedActionPath = path.join(deletedActionsDir, `${sanitizedActionName}.ts`);
 
         // Check if the action exists in the registry
         const action = ActionRegistry.getAction(sanitizedActionName);
@@ -35,20 +58,20 @@ export class DeleteActionAction extends BaseActionHandler {
             return;
         }
 
+        // Move the action file to the deleted-actions directory
+        if (!fs.existsSync(deletedActionsDir))
+            fs.mkdirSync(deletedActionsDir);
+
+
+        try {
+            fs.renameSync(actionPath, deletedActionPath);
+            console.log(`Action "${sanitizedActionName}" has been moved to "${deletedActionsDir}".`);
+        } catch (err) {
+            console.error('Error moving action file:', err);
+        }
+
         // Unregister the action
         delete ActionRegistry.actions[sanitizedActionName];
-
-        // Delete the action file
-        try {
-            if (fs.existsSync(actionPath)) {
-                fs.unlinkSync(actionPath);
-                console.log(`Action "${sanitizedActionName}" has been deleted and unregistered.`);
-            } else {
-                console.error(`Action file "${actionPath}" not found.`);
-            }
-        } catch (err) {
-            console.error('Error deleting action file:', err);
-        }
+        console.log(`Action "${sanitizedActionName}" has been unregistered.`);
     }
 }
-

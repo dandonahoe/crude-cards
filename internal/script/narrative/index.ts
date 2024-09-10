@@ -17,7 +17,7 @@ import { Config } from './config';
 
         const gameLoop = new GameLoop(neo4jService);
 
-        // gl/hf
+        // Start the game loop
         await gameLoop.start();
     } catch (err) {
         console.error(`Connection error\n${err}\nCause:`, err);

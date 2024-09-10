@@ -7,6 +7,8 @@ export class CreateEntityAction extends BaseActionHandler {
     public name = 'Create Entity';
     public description = 'Create a new entity node and continue the game';
 
+    public override isRequired = true; // Exit action is required and can't be deleted
+
     // Define required parameters
     public override paramsSchema = {
         name      : { required : true },

@@ -6,6 +6,8 @@ export class StartAdventureAction extends BaseActionHandler {
     public name = 'Start Adventure';
     public description = 'Start a new adventure session';
 
+    public override isRequired = true; // Exit action is required and can't be deleted
+
     // Define any required parameters for starting an adventure (e.g., character name, difficulty level)
     public override paramsSchema = {
         adventureName : { required : true },

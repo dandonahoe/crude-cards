@@ -8,8 +8,9 @@ export class MenuManager {
         const actions = ActionRegistry.getAllActions();
 
         const choices = actions.map(action => ({
-            name  : action.name,
-            value : action.id,
+            name     : `${action.name} (${action.id})`,
+            value    : action.id,
+            disabled : action.isRequired ? 'Required' : undefined, // Disable required actions for deletion
         }));
 
         const answers = await inquirer.prompt([
@@ -21,9 +22,7 @@ export class MenuManager {
             },
         ]);
 
-        const selectedAction = ActionRegistry.getAction(answers.action);
-
-        return selectedAction;
+        return ActionRegistry.getAction(answers.action);
     }
 
     // Prompt for parameters based on the action's schema
@@ -42,11 +41,9 @@ export class MenuManager {
                 },
             }));
 
-            // Use the inferred type for the prompt call
             return await inquirer.prompt(questions as any);
         }
 
-        // If no parameters are required, return an empty object
         return {};
     }
 }

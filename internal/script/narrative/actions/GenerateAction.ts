@@ -9,6 +9,8 @@ export class GenerateAction extends BaseActionHandler {
     public name = 'Generate New Action';
     public description = 'Generates a new action file based on user input.';
 
+    public override isRequired = true; // Exit action is required and can't be deleted
+    
     // Define the required parameter schema
     public override paramsSchema = {
         actionName : { required : true },
