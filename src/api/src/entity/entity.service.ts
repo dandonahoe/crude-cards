@@ -11,9 +11,13 @@ export class EntityService {
     return 'This action adds a new entity';
   }
 
-  public findAll() {
+  public debugTest = () => {
+    debugger;
+  }
 
-    return `Test method `;
+  // running localhost:8080/entity to test
+  public findAll() {
+    return this.debugTest();
   }
 
   public findOne(id: number) {
