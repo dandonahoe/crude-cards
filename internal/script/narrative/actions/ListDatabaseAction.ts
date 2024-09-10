@@ -1,5 +1,5 @@
 import { BaseActionHandler, ActionParams } from "./BaseActionHandler";
-import { Neo4jService } from "./neo4jService";
+import { Neo4jService } from "../neo4jService";
 
 // List Database Action
 export class ListDatabaseAction extends BaseActionHandler {

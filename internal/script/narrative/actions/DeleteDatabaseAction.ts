@@ -1,8 +1,9 @@
 import { BaseActionHandler, ActionParams } from "./BaseActionHandler";
-import { Neo4jService } from "./neo4jService";
+import { Neo4jService } from "../neo4jService";
 
 // Delete Database Action
 export class DeleteDatabaseAction extends BaseActionHandler {
+
     public id = 'deleteDatabase';
     public name = 'Delete Database';
     public description = 'Delete all nodes and relationships in the Neo4j database';

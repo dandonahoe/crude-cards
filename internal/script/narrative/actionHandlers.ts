@@ -1,5 +1,3 @@
-// /Users/dan/code/crude-cards/internal/script/narrative/actionHandlers.ts
-
 import { Neo4jService } from './neo4jService';
 
 export type MenuActionHandler = (neo4jService: Neo4jService) => Promise<void>;

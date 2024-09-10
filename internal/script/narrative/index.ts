@@ -1,6 +1,7 @@
-import { DeleteDatabaseAction } from './DeleteDatabaseAction';
-import { ContinueGameAction } from './ContinueGameAction';
-import { ListDatabaseAction } from './ListDatabaseAction';
+import { DeleteDatabaseAction } from './actions/DeleteDatabaseAction';
+import { CreateEntityAction } from './actions/CreateEntityAction';
+import { ListDatabaseAction } from './actions/ListDatabaseAction';
+import { StartAdventureAction } from './actions/StartAdventureAction'; // New import
 import { ActionRegistry } from './actionRegistry';
 import { Neo4jService } from './neo4jService';
 import { ExitAction } from './ExitAction';
@@ -9,7 +10,7 @@ import { Config } from './config';
 
 (async () => {
 
-    const uri      = Config.ensure('NEO4J_ENDPOINT');
+    const uri = Config.ensure('NEO4J_ENDPOINT');
     const password = Config.ensure('NEO4J_PASSWORD');
     const username = 'neo4j';
 
@@ -18,7 +19,8 @@ import { Config } from './config';
     // Register actions dynamically
     ActionRegistry.registerAction(new DeleteDatabaseAction());
     ActionRegistry.registerAction(new ListDatabaseAction());
-    ActionRegistry.registerAction(new ContinueGameAction());
+    ActionRegistry.registerAction(new CreateEntityAction());
+    ActionRegistry.registerAction(new StartAdventureAction()); // Register the new action
     ActionRegistry.registerAction(new ExitAction());
 
     const gameLoop = new GameLoop(neo4jService);
@@ -31,9 +33,7 @@ import { Config } from './config';
         console.error(`Connection error\n${err}\nCause:`, err);
         process.exit(1);
      } finally {
-        // Ensure Neo4j service is closed
         await gameLoop.end();
         process.exit(0);
     }
 })();
-        // Ensure Neo4j service is closed

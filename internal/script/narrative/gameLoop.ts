@@ -1,5 +1,3 @@
-// /Users/dan/code/crude-cards/internal/script/narrative/gameLoop.ts
-
 import { Neo4jService } from './neo4jService';
 import { MenuManager } from './menuManager';
 
@@ -19,9 +17,10 @@ export class GameLoop {
             if (selectedAction) {
                 const params = await MenuManager.promptForParams(selectedAction);
 
-                // Call the action's execute method
+                // Call the action's execute method with any required params
                 await selectedAction.execute(this.neo4jService, params);
 
+                // If the selected action is exit, end the game loop
                 if (selectedAction.id === 'exit')
                     this.isGameActive = false;
 

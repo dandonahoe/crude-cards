@@ -1,11 +1,10 @@
-// /Users/dan/code/crude-cards/internal/script/narrative/actionTypes.ts
-
 export enum MenuAction {
-    DeleteDatabase = 'deleteDatabase',
-    ListDatabase = 'listDatabase',
-    ContinueGame = 'continueGame',
-    CreateRandomPerson = 'createRandomPerson',
-    Exit = 'exit',
+    ContinueDescription = 'ContinueDescription',
+    DeleteDatabase      = 'DeleteDatabase',
+    ListDatabase        = 'ListDatabase',
+    CreateEntity        = 'CreateEntity',
+    StartAdventure      = 'StartAdventure', // New action
+    Exit                = 'Exit',
 }
 
 export interface ActionResult {

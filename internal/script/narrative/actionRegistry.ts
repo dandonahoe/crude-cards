@@ -1,6 +1,4 @@
-// /Users/dan/code/crude-cards/internal/script/narrative/actionRegistry.ts
-
-import { BaseActionHandler } from './BaseActionHandler';
+import { BaseActionHandler } from './actions/BaseActionHandler';
 
 export class ActionRegistry {
     private static actions: Record<string, BaseActionHandler> = {};

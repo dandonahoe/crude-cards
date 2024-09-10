@@ -1,8 +1,6 @@
-// /Users/dan/code/crude-cards/internal/script/narrative/menuManager.ts
-
 import inquirer from 'inquirer';
+import { BaseActionHandler } from './actions/BaseActionHandler';
 import { ActionRegistry } from './actionRegistry';
-import { BaseActionHandler } from './BaseActionHandler';
 
 export class MenuManager {
     // Prompt the user with dynamic menu choices
@@ -28,10 +26,27 @@ export class MenuManager {
         return selectedAction;
     }
 
-    // Prompt for parameters if needed
-    public static async promptForParams(_action : BaseActionHandler): Promise<any> {
-        // Example: If we want to add parameters to actions, we can prompt for them here
-        // For simplicity, we are not using parameters in this example
+    // Prompt for parameters based on the action's schema
+    public static async promptForParams(action: BaseActionHandler): Promise<any> {
+        if (action.paramsSchema) {
+            // Explicitly define the type for the questions array
+            const questions = Object.keys(action.paramsSchema).map(param => ({
+                type     : 'input',
+                name     : param,
+                message  : `Enter value for ${param}:`,
+                validate : (input: any) => {
+                    if (action.paramsSchema![param].required && !input)
+                        return `${param} is required`;
+
+                    return true;
+                },
+            }));
+
+            // Use the inferred type for the prompt call
+            return await inquirer.prompt(questions as any);
+        }
+
+        // If no parameters are required, return an empty object
         return {};
     }
 }

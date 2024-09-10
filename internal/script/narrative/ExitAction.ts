@@ -1,4 +1,4 @@
-import { BaseActionHandler } from "./BaseActionHandler";
+import { BaseActionHandler } from "./actions/BaseActionHandler";
 
 // Exit Action
 export class ExitAction extends BaseActionHandler {
