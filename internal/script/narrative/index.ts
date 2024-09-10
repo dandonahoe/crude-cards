@@ -17,12 +17,8 @@ if (!process.env.NEO4J_ENDPOINT) {
     const username = 'neo4j';
 
     try {
-        debugger;
-
         const driver = neo4j.driver(`neo4j://${uri}`, neo4j.auth.basic(username, password));
 
-        // Verify connection
-        // await driver.verifyConnectivity();
         console.log('Connection established');
 
         const session = driver.session();
@@ -32,10 +28,11 @@ if (!process.env.NEO4J_ENDPOINT) {
 
         // Insert a node with label "Person" and properties "name" and "timestamp"
         const result = await session.run(
-            'CREATE (p:Person {name: $name, timestamp: $timestamp}) RETURN p',
+            'CREATE (p:Person {name: $name, alignment : $alignment, timestamp: $timestamp}) RETURN p',
             {
                 name,
                 timestamp : new Date().toISOString(),
+                alignment : 'Evil',
             },
         );
 
@@ -44,6 +41,20 @@ if (!process.env.NEO4J_ENDPOINT) {
         const node = singleRecord.get(0);
 
         console.log('Node created:', node.properties);
+
+        debugger;
+
+        // Query the database for all Person nodes
+        const queryResult = await session.run(
+            'MATCH (p:Person) RETURN p',
+        );
+
+        // Log all Person nodes
+        console.log('All Person nodes:');
+        queryResult.records.forEach(record => {
+            const personNode = record.get('p');
+            console.log(personNode.properties);
+        });
 
         // Close the session
         await session.close();
