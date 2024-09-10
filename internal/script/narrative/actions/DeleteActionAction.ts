@@ -11,7 +11,7 @@ export class DeleteActionAction extends BaseActionHandler {
     public name = 'Delete Action';
     public description = 'Moves an existing action file to the deleted-actions directory and unregisters it from the registry.';
 
-    public override isRequired = true; // Exit action is required and can't be deleted
+    public override isRequired = true; // Prevent this action from being deleted
 
     public constructor() {
         super(); // Provide the alphanumeric short name
@@ -21,9 +21,7 @@ export class DeleteActionAction extends BaseActionHandler {
     public override paramsSchema = {};
 
     public async execute(_: any, params: ActionParams = {}): Promise<void> {
-
-        console.log('Action Params!', params);
-
+        console.log('Deleting an action...', params);
         // Get all non-required actions
         const deletableActions = Object.values(ActionRegistry.actions)
             .filter(action => !action.isRequired)
@@ -61,7 +59,6 @@ export class DeleteActionAction extends BaseActionHandler {
         // Move the action file to the deleted-actions directory
         if (!fs.existsSync(deletedActionsDir))
             fs.mkdirSync(deletedActionsDir);
-
 
         try {
             fs.renameSync(actionPath, deletedActionPath);

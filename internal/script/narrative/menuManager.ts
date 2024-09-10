@@ -8,9 +8,8 @@ export class MenuManager {
         const actions = ActionRegistry.getAllActions();
 
         const choices = actions.map(action => ({
-            name     : `${action.name} (${action.id})`,
-            value    : action.id,
-            disabled : action.isRequired ? 'Required' : undefined, // Disable required actions for deletion
+            name  : `${action.name} (${action.id})`,
+            value : action.id,
         }));
 
         const answers = await inquirer.prompt([
