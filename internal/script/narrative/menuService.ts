@@ -8,6 +8,8 @@ export async function selectMenuAction(): Promise<MenuAction> {
         { name : 'Delete Database', value : MenuAction.DeleteDatabase },
         { name : 'List Database', value : MenuAction.ListDatabase },
         { name : 'Continue Game', value : MenuAction.ContinueGame },
+        { name : 'Create Random Person', value : MenuAction.CreateRandomPerson },
+
         { name : 'Exit', value : MenuAction.Exit },
     ];
 

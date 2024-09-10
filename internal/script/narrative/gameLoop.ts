@@ -37,6 +37,9 @@ export class GameLoop {
                 } break;
 
                 case MenuAction.ContinueGame: {
+                } break;
+
+                case MenuAction.CreateRandomPerson: {
 
                     const name = `Person_${new Date().toISOString()}`;
 

@@ -4,6 +4,7 @@ export enum MenuAction {
     DeleteDatabase = 'deleteDatabase',
     ListDatabase = 'listDatabase',
     ContinueGame = 'continueGame',
+    CreateRandomPerson = 'createRandomPerson',
     Exit = 'exit',
 }
 
