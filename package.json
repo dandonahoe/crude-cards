@@ -38,6 +38,7 @@
         "dev:clerk": "open https://dashboard.clerk.com/apps/app_2LWoPByqissTzZoa4vlEXY6ppk5/instances/ins_2NCz4PyWwDorAJ5HUUnWqN1F0ui",
         "dev:kill": "kill-port 3000",
         "dev:reset": "ts-node internal/script/reset.ts",
+        "dev:narrative": "ts-node internal/script/narrative",
         "job:codebase": "ts-node internal/script/codebase.ts",
         "job:disable-snooping": "next telemetry disable",
         "job:docs": "typedoc",
