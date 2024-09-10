@@ -197,6 +197,7 @@
         "neo4j-driver": "5.24.1",
         "open": "10.1.0",
         "openai": "4.58.1",
+        "opencage-api-client": "1.0.7",
         "parse-diff": "0.11.1",
         "pg": "8.12.0",
         "postcss-preset-mantine": "1.17.0",

@@ -390,6 +390,9 @@ importers:
       openai:
         specifier: 4.58.1
         version: 4.58.1(zod@3.23.8)
+      opencage-api-client:
+        specifier: 1.0.7
+        version: 1.0.7
       parse-diff:
         specifier: 0.11.1
         version: 0.11.1
@@ -3893,6 +3896,9 @@ packages:
   cross-fetch@3.1.8:
     resolution: {integrity: sha512-cvA+JwZoU0Xq+h6WkMvAUqPEYy92Obet6UdKLfW60qn99ftItKjB5T+BkyWOFWe2pUyfQ+IJHmpOTznqk1M6Kg==}
 
+  cross-fetch@4.0.0:
+    resolution: {integrity: sha512-e4a5N8lVvuLgAWgnCrLr2PP0YyDOTHa9H/Rj54dirp61qXnNq46m82bRhNqIA5VccJtWBvPTFRV3TtvHUKPB1g==}
+
   cross-spawn@7.0.3:
     resolution: {integrity: sha512-iRDPJKUPVEND7dHPO8rkbOnPpyDygcDFtWjpeWNCgy8WP2rXcxXL8TskReQl6OrB2G7+UJrags1q15Fudc7G6w==}
     engines: {node: '>= 8'}
@@ -6661,6 +6667,9 @@ packages:
     peerDependenciesMeta:
       zod:
         optional: true
+
+  opencage-api-client@1.0.7:
+    resolution: {integrity: sha512-Or6hD2Ke65BIM3BXW4yVNFnn/mH/53/4whIPEZBS4elrFkvTNxs8LBLtDmk4SgAQI9NJpmK84Xc0TRMYvcub4g==}
 
   opener@1.5.2:
     resolution: {integrity: sha512-ur5UIdyw5Y7yEj9wLzhqXiy6GZ3Mwx0yGI+5sMn2r0N0v3cKJvUmFH5yPP+WXh9e0xfyzyJX95D8l088DNFj7A==}
@@ -13185,6 +13194,12 @@ snapshots:
     transitivePeerDependencies:
       - encoding
 
+  cross-fetch@4.0.0:
+    dependencies:
+      node-fetch: 2.7.0
+    transitivePeerDependencies:
+      - encoding
+
   cross-spawn@7.0.3:
     dependencies:
       path-key: 3.1.1
@@ -16634,6 +16649,13 @@ snapshots:
       qs: 6.13.0
     optionalDependencies:
       zod: 3.23.8
+    transitivePeerDependencies:
+      - encoding
+
+  opencage-api-client@1.0.7:
+    dependencies:
+      cross-fetch: 4.0.0
+      dotenv: 16.4.5
     transitivePeerDependencies:
       - encoding
 
