@@ -1,9 +1,11 @@
 import { ActionRegistry } from './actionRegistry';
+import { OpenAIService } from './OpenAIService';
 import { Neo4jService } from './neo4jService';
 import { GameLoop } from './gameLoop';
 import { Config } from './config';
 
 (async () => {
+    OpenAIService.initialize();
 
     const uri      = Config.ensure('NEO4J_ENDPOINT');
     const password = Config.ensure('NEO4J_PASSWORD');
