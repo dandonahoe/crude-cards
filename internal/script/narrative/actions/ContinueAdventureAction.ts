@@ -8,12 +8,15 @@ import { Neo4jService } from '../neo4jService';
 
 
 export class ContinueAdventureAction extends BaseActionHandler {
-    public id = 'ContinueAdventure';
-    public name = 'Continue Describing Adventure';
     public description = 'Generate, refine, and display adventure entities and relationships.';
+    public name        = 'Continue Describing Adventure';
+    public id          = 'ContinueAdventure';
 
     // Main execute function to handle the loop of refinement and display of entities
-    public async execute(neo4jService: Neo4jService, _params: ActionParams = {}): Promise<void> {
+    public execute = async (
+        neo4jService: Neo4jService, _params: ActionParams = {},
+    ): Promise<void> =>{
+
         let continueLoop = true;
         let objectDescription = await promptInitialDescription(); // Get initial input from the user
 
@@ -21,6 +24,7 @@ export class ContinueAdventureAction extends BaseActionHandler {
             // Generate the detailed description from OpenAI
             console.log('Generating detailed description...');
             const detailedDescription: string = await generateDescription(objectDescription);
+
             console.log(`Detailed Description: ${detailedDescription}`);
 
             // Extract entities and relationships as JSON
@@ -36,50 +40,45 @@ export class ContinueAdventureAction extends BaseActionHandler {
 
             if (refinementOption === RefinementOption.Refine) {
                 const userFeedback: string = await getUserFeedback();
+
                 objectDescription = `User Feedback: ${userFeedback}`;
             } else if (refinementOption === RefinementOption.Accept) {
                 console.log('Description accepted.');
+
                 // Store the entities and relationships in Neo4j
                 await this.storeEntitiesAndRelations(neo4jService, entities, relations);
+
                 continueLoop = false;
             } else if (refinementOption === RefinementOption.Reject) {
                 console.log('Description rejected. Restarting the description process...');
+
                 objectDescription = await promptInitialDescription(); // Reset description
             }
         }
     }
 
     // Store the accepted entities and relationships in Neo4j
-    private async storeEntitiesAndRelations(
-        neo4jService: Neo4jService,
-        entities: AIResponseEntity[],
-        relations: AIResponseRelation[],
-    ): Promise<void> {
-        debugger;
+    private storeEntitiesAndRelations = async (
+        neo4jService : Neo4jService,
+        entities     : AIResponseEntity[],
+        relations    : AIResponseRelation[],
+    ): Promise<void> => {
 
         // Store entities in the database
         for (const entity of entities)
             switch (entity.type) {
-                case 'Person':
-                    await neo4jService.createPersonNode(entity.name, 'neutral', new Date().toISOString(), 'human', 'undefined');
-                    break;
-                case 'Place':
-                    await neo4jService.createPlaceNode(entity.name, 'unknown', { latitude : 0, longitude : 0 });
-                    break;
-                case 'Thing':
-                    await neo4jService.createThingNode(entity.name, 'object', entity.description);
-                    break;
-                case 'Event':
-                    await neo4jService.createEventNode(entity.name, 'unknown event', new Date().toISOString());
-                    break;
-                default:
-                    console.warn(`Unknown entity type: ${entity.type}`);
+                // eslint-disable-next-line max-len
+                case 'Person': return await neo4jService.createPersonNode(entity.name, 'neutral', new Date().toISOString(), 'human', 'undefined');
+                case 'Place' : return await neo4jService.createPlaceNode( entity.name, 'unknown', { latitude : 0, longitude : 0 });
+                case 'Thing' : return await neo4jService.createThingNode( entity.name, 'object', entity.description);
+                case 'Event' : return await neo4jService.createEventNode( entity.name, 'unknown event', new Date().toISOString());
+
+                default: console.warn(`Unknown entity type: ${entity.type}`);
             }
 
-
         // Store relationships in the database
+        // Create a generic relationship between two nodes
         for (const relation of relations)
-            // Create a generic relationship between two nodes
             await neo4jService.createRelationship(relation.from, 'Generic', relation.to, 'Generic', relation.relationship);
 
         console.log('Entities and relationships stored in Neo4j successfully.');
