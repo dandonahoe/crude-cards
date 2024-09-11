@@ -1,6 +1,7 @@
 import neo4j, { Driver, Session } from 'neo4j-driver';
 
 export class Neo4jService {
+
     private driver: Driver;
     private session: Session;
 
