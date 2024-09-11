@@ -244,14 +244,10 @@ function* sagaSendWebSocketMessage(): Saga {
         GameAction.leaveGame,
         GameAction.joinGame,
         GameAction.nextHand,
+        GameAction.log,
     ], onSendWebSocketMessage);
 }
 
-function* sagaLog(): Saga {
-    const log = yield* takePayload(GameAction.log);
-
-    console.log('Log:', log);
-}
 
 function* sagaStartTimer(): Saga {
 
@@ -323,13 +319,11 @@ export const WebSocks = {
     sagaStartUpdateListener,
     sagaTimerComplete,
     sagaStartTimer,
-    sagaLog,
 
     *[Symbol.iterator]() {
         yield this.sagaSendWebSocketMessage;
         yield this.sagaStartUpdateListener;
         yield this.sagaTimerComplete;
         yield this.sagaStartTimer;
-        yield this.sagaLog;
     },
 };

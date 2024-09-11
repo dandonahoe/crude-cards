@@ -22,21 +22,6 @@ export interface WebSocketMessage {
     data : unknown;
 }
 
-    // UpdatePlayerValidation = 'UpdatePlayerValidation',
-    // DealerPickBlackCard    = 'DealerPickBlackCard',
-    // DealerPickWinner       = 'DealerPickWinner',
-    // PlayerSelectCard       = 'PlayerSelectCard',
-    // MenuItemClicked        = 'MenuItemClicked',
-    // UpdateUsername         = 'UpdateUsername',
-    // SubmitFeedback         = 'SubmitFeedback',
-    // UpdateGame             = 'UpdateGame',
-    // CreateGame             = 'CreateGame',
-    // StartGame              = 'StartGame',
-    // NextHand               = 'NextHand',
-    // JoinGame               = 'JoinGame',
-    // LeaveGame              = 'LeaveGame',
-
-
 export const GameAction = {
     sendWebSocketMessage : action<WebSocketMessage      >('SendWebSocketMessage'                       ),
     dealerPickBlackCard  : action<DealerPickBlackCardDTO>(WebSocketEventType.DealerPickBlackCard, false), // No Prefix to Match Server
@@ -57,5 +42,5 @@ export const GameAction = {
     nextHand             : action<NextHandDTO           >(WebSocketEventType.NextHand,            false), // No Prefix to Match Server
     joinGame             : action<JoinGameDTO           >(WebSocketEventType.JoinGame,            false), // No Prefix to Match Server
     noOp                 : action<void                  >('NoOp'                                       ),
-    log                  : action<LogDTO                >('Log'                                        ),
+    log                  : action<LogDTO                >(WebSocketEventType.Log,                 false), // No Prefix to Match Server
 };
