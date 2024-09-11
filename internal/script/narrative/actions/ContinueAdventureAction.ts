@@ -3,12 +3,13 @@ import { OpenAIService } from '../OpenAIService';
 import { Neo4jService } from '../neo4jService';
 import inquirer from 'inquirer';
 
+
 export class ContinueAdventureAction extends BaseActionHandler {
     public id = 'ContinueAdventure';
     public name = 'Continue Describing Adventure';
-    public description = 'Generate and continue describing the adventure.';
+    public description = 'Generate, refine, and display adventure entities and relationships.';
 
-    // Helper function for refinement
+    // Helper function to ask for refinement, accept, or reject
     private async askForRefinement(): Promise<string> {
         const { refinementOption } = await inquirer.prompt([{
             type    : 'list',
@@ -24,27 +25,24 @@ export class ContinueAdventureAction extends BaseActionHandler {
         return refinementOption;
     }
 
-    // Helper function to get user feedback or modifications
+    // Helper function to get user feedback
     private async getUserFeedback(): Promise<string> {
         const { userFeedback } = await inquirer.prompt([{
             type    : 'input',
             name    : 'userFeedback',
-            message : 'Provide additional commentary or refinement for the description:',
+            message : 'Provide feedback or refinement for the description:',
         }]);
 
         return userFeedback;
     }
 
-    // Main execute function with loop for refinement
-    public async execute(neo4jService: Neo4jService, params: ActionParams = {}): Promise<void> {
-        console.log('Continuing the adventure...', params);
-
-        // Reset the conversation for a new session
+    // Main execute function to handle the loop of refinement and display of entities
+    public async execute(neo4jService: Neo4jService, _params: ActionParams = {}): Promise<void> {
+        // Reset the conversation for each session
         OpenAIService.resetConversation();
 
         let continueLoop = true;
         let objectDescription = '';
-        let detailedDescription = '';
 
         // Step 1: Initial input to start the adventure
         const { initialDescription } = await inquirer.prompt([{
@@ -53,50 +51,46 @@ export class ContinueAdventureAction extends BaseActionHandler {
             message : 'Describe an object, entity, or concept (e.g., a bucket, a horse):',
         }]);
 
-
         objectDescription = initialDescription;
 
-        // Loop to refine, accept, or reject the description
+        // Loop for refining, viewing entities, and repeating
         while (continueLoop) {
-
-            // Step 2: AI generates detailed description
-            console.log('Generating detailed description...', objectDescription);
-
-            detailedDescription = await OpenAIService.completeText(objectDescription);
-
+            // Step 2: Generate the detailed description from OpenAI
+            console.log('Generating detailed description...');
+            const detailedDescription = await OpenAIService.completeText(objectDescription);
             console.log(`Detailed Description: ${detailedDescription}`);
 
-            // Step 3: Ask for refinement advice
+            // Step 3: Extract entities and relationships as JSON
+            const extractedData = await OpenAIService.extractEntitiesFromJson(detailedDescription);
+
+            extractedData.entities.forEach(entity => {
+                console.log(`Entity: ${entity.type} - ${entity.name} - ${entity.description}`);
+            });
+
+            // Step 4: Display the extracted entities and relationships
+            extractedData.relations.forEach(relation => {
+                console.log(`Relation: ${relation.relationship} - ${relation.from} - ${relation.to}`);
+            });
+
+            // Step 5: Ask the user for refinement or acceptance
             const refinementOption = await this.askForRefinement();
 
             if (refinementOption === 'refine') {
-                // Step 4: User provides feedback or refines
                 const userFeedback = await this.getUserFeedback();
-
-                // Combine the original description and the user feedback for refinement
-                objectDescription = `User Feedback to consider in response: ${userFeedback}`;
-
+                objectDescription = `User Feedback: ${userFeedback}`;
             } else if (refinementOption === 'accept') {
                 console.log('Description accepted.');
-
-                continueLoop = false; // Exit loop, accept the result
-
+                continueLoop = false;
             } else if (refinementOption === 'reject') {
                 console.log('Description rejected. Restarting the description process...');
-
-                // Restarting the description process
                 const { newDescription } = await inquirer.prompt([{
                     type    : 'input',
                     name    : 'newDescription',
                     message : 'Please enter a new description:',
                 }]);
-
                 objectDescription = newDescription;
-                OpenAIService.resetConversation();  // Reset the conversation if rejected
+                OpenAIService.resetConversation(); // Reset conversation if rejected
             }
         }
-
-        console.log('Finalized Description:', detailedDescription);
-        console.log('Conversation Log:', OpenAIService.getConversationLog().join('\n'));
     }
 }
