@@ -8,9 +8,12 @@ export class Config {
     }
 
     public static ensure(key: string): string {
+
         const value = this.get(key);
+
         if (!value) {
             console.error(`Please provide the ${key} using the environment variable.`);
+
             process.exit(1);
         }
 
