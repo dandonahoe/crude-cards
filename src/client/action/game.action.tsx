@@ -12,6 +12,7 @@ import { StartGameDTO } from '../../api/src/game/dtos/start-game.dto';
 import { LeaveGameDTO } from '../../api/src/game/dtos/leave-game.dto';
 import { NextHandDTO } from '../../api/src/game/dtos/next-hand.dto';
 import { JoinGameDTO } from '../../api/src/game/dtos/join-game.dto';
+import { LogDTO } from '../../api/src/game/dtos/log.dto';
 import { action } from '../SharedAction';
 
 
@@ -37,23 +38,24 @@ export interface WebSocketMessage {
 
 
 export const GameAction = {
-    sendWebSocketMessage : action<WebSocketMessage      >('SendWebSocketMessage'),
+    sendWebSocketMessage : action<WebSocketMessage      >('SendWebSocketMessage'                       ),
     dealerPickBlackCard  : action<DealerPickBlackCardDTO>(WebSocketEventType.DealerPickBlackCard, false), // No Prefix to Match Server
     dealerPickWinner     : action<DealerPickWinnerDTO   >(WebSocketEventType.DealerPickWinner,    false), // No Prefix to Match Server
     playerSelectCard     : action<PlayerSelectCardDTO   >(WebSocketEventType.PlayerSelectCard,    false), // No Prefix to Match Server
     menuItemClicked      : action<MenuItemClickedDTO    >(WebSocketEventType.MenuItemClicked,     false), // No Prefix to Match Server
+    updateGameState      : action<string                >('UpdateGameState'                            ),
     submitFeedback       : action<SubmitFeedbackDTO     >(WebSocketEventType.SubmitFeedback,      false), // No Prefix to Match Server
     updateUsername       : action<UpdateUsernameDTO     >(WebSocketEventType.UpdateUsername,      false), // No Prefix to Match Server
+    resetGameState       : action<void                  >('ResetGameState'                             ),
+    timerComplete        : action<TimerCompleteDTO      >('TimerComplete'                              ),
+    updateTimer          : action<UpdateTimerDTO        >('UpdateTimer'                                ),
+    closePopup           : action<void                  >('ClosePopup'                                 ),
     createGame           : action<CreateGameDTO         >(WebSocketEventType.CreateGame,          false), // No Prefix to Match Server
     updateGame           : action<void                  >(WebSocketEventType.UpdateGame,          false), // No Prefix to Match Server
     startGame            : action<StartGameDTO          >(WebSocketEventType.StartGame,           false), // No Prefix to Match Server
     leaveGame            : action<LeaveGameDTO          >(WebSocketEventType.LeaveGame,           false), // No Prefix to Match Server
     nextHand             : action<NextHandDTO           >(WebSocketEventType.NextHand,            false), // No Prefix to Match Server
     joinGame             : action<JoinGameDTO           >(WebSocketEventType.JoinGame,            false), // No Prefix to Match Server
-    updateGameState      : action<string                >('UpdateGameState'                     ),
-    resetGameState       : action<void                  >('ResetGameState'                      ),
-    timerComplete        : action<TimerCompleteDTO      >('TimerComplete'                       ),
-    updateTimer          : action<UpdateTimerDTO        >('UpdateTimer'                         ),
-    closePopup           : action<void                  >('ClosePopup'                          ),
-    noOp                 : action<void                  >('NoOp'                                ),
+    noOp                 : action<void                  >('NoOp'                                       ),
+    log                  : action<LogDTO                >('Log'                                        ),
 };
