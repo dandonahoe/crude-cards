@@ -10,10 +10,18 @@ export class OpenAIService {
     }
 
     public static async completeText(prompt: string): Promise<string> {
+
         const params: OpenAI.Chat.ChatCompletionCreateParams = {
-            model       : 'gpt-4o',
-            messages    : [{ role : 'user', content : prompt }],
-            max_tokens  : 70,
+            model    : 'gpt-4o',
+            messages : [{
+                role    : 'system',
+                content : `You help expand on and describe a
+D&D like world. You will listen to the users
+feedback and expand on it in a loop like this.`,
+            }, {
+                role    : 'user',
+                content : prompt,
+            }],
             temperature : 1,
         };
 
