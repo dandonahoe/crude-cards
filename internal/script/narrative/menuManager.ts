@@ -1,6 +1,6 @@
-import inquirer from 'inquirer';
 import { BaseActionHandler } from './actions/BaseActionHandler';
 import { ActionRegistry } from './actionRegistry';
+import inquirer from 'inquirer';
 
 export class MenuManager {
     public static async promptMenuChoice(): Promise<BaseActionHandler | undefined> {

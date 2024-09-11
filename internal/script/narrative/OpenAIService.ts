@@ -1,5 +1,5 @@
+import { Config } from './config';
 import OpenAI from 'openai';
-import { Config } from './config';  // Handles environment variables
 
 export class OpenAIService {
     private static openAI: OpenAI;
