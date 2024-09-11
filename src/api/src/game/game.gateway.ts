@@ -114,7 +114,8 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     ) : P<unknown> {
         this.log.silly('GameGateway::joinGame', { joinGame });
 
-        return this.gameService.joinGame(this.server, socket, joinGame, 'Joining via WebSocketEventType.JoinGame');
+        return this.gameService.joinGame(
+            this.server, socket, joinGame, 'Joining via WebSocketEventType.JoinGame');
     }
 
     @SubscribeMessage(WebSocketEventType.LeaveGame)
