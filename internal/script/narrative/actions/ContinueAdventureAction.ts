@@ -1,7 +1,7 @@
 import { BaseActionHandler, ActionParams } from "./BaseActionHandler";
+import { OpenAIService } from "../OpenAIService";
 import { Neo4jService } from "../neo4jService";
 import inquirer from 'inquirer';
-import { OpenAIService } from "../OpenAIService";
 
 export class ContinueAdventureAction extends BaseActionHandler {
     public id = 'ContinueAdventure';
@@ -46,11 +46,14 @@ export class ContinueAdventureAction extends BaseActionHandler {
 
     // Store the extracted entities and relationships in Neo4j
     private async storeInNeo4j(neo4jService: Neo4jService, entities: any[], relationships: any[]) {
+
+        debugger;
         for (const entity of entities)
             await neo4jService.createThingNode(entity.name, 'Entity', entity.description);
 
+        for (const relationship of relationships) {
+            debugger;
 
-        for (const relationship of relationships)
             await neo4jService.createRelationship(
                 relationship.from,          // Name of the first node
                 relationship.fromLabel,     // Label of the first node
@@ -58,8 +61,7 @@ export class ContinueAdventureAction extends BaseActionHandler {
                 relationship.toLabel,       // Label of the second node
                 relationship.relationshipType, // Type of relationship
             );
-
-
+        }
     }
 
     // The main execute function
