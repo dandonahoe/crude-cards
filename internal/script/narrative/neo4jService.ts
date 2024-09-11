@@ -90,9 +90,84 @@ export class Neo4jService {
         return this.createRelationship(eventName, 'Event', causingEventName, 'Event', 'CAUSED_BY');
     }
 
+    // Get Neo4j version
+    public async getDatabaseVersion() {
+        const result = await this.session.run(
+            'CALL dbms.components() YIELD name, versions, edition RETURN name, versions[0] as version, edition',
+        );
+
+        return result.records[0].get('version');
+    }
+
+    // Get total number of nodes
+    public async getTotalNodeCount() {
+        const result = await this.session.run('MATCH (n) RETURN count(n) AS nodeCount');
+
+        return result.records[0].get('nodeCount').low;
+    }
+
+    // Get total number of relationships
+    public async getTotalRelationshipCount() {
+        const result = await this.session.run('MATCH ()-[r]->() RETURN count(r) AS relationshipCount');
+
+        return result.records[0].get('relationshipCount').low;
+    }
+
+    // Get node counts by label
+    public async getNodeCountsByLabel() {
+        const result = await this.session.run('MATCH (n) RETURN labels(n)[0] AS label, count(n) AS count');
+        const countsByLabel: Record<string, number> = {};
+        result.records.forEach(record => {
+            countsByLabel[record.get('label')] = record.get('count').low;
+        });
+
+        return countsByLabel;
+    }
+
+    // Get relationship counts by type
+    public async getRelationshipCountsByType() {
+        const result = await this.session.run(
+            'MATCH ()-[r]->() RETURN type(r) AS type, count(r) AS count');
+
+        const countsByType: Record<string, number> = {};
+
+        result.records.forEach(record => {
+            countsByType[record.get('type')] = record.get('count').low;
+        });
+
+        return countsByType;
+    }
+
+    // Get unique node labels
+    public async getUniqueLabels() {
+        const result = await this.session.run('MATCH (n) RETURN DISTINCT labels(n)[0] AS label');
+
+        return result.records.map(record => record.get('label'));
+    }
+
+    // Get unique relationship types
+    public async getUniqueRelationshipTypes() {
+        const result = await this.session.run('MATCH ()-[r]->() RETURN DISTINCT type(r) AS type');
+
+        return result.records.map(record => record.get('type'));
+    }
+
     // Delete all nodes and relationships in the database
     public async deleteDatabase() {
-        await this.session.run(`MATCH (n) DETACH DELETE n`);
+        await this.session.run('MATCH (n) DETACH DELETE n');
+    }
+
+    public getNeo4jVersion = () => {
+         return this.session.run(
+            'CALL dbms.components() YIELD name, versions, edition RETURN name, versions[0] as version, edition')
+    }
+
+    public getTotalNodesCount = () => {
+        return this.session.run('MATCH (n) RETURN count(n) AS nodeCount')
+    }
+
+    public getTotalRelationshipsCount = () => {
+        return this.session.run('MATCH ()-[r]->() RETURN count(r) AS relationshipCount')
     }
 
     public async close() {
