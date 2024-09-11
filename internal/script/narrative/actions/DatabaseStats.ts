@@ -11,12 +11,6 @@ export class DatabaseStats extends BaseActionHandler {
 
         console.log('Gathering database statistics...', params);
 
-        // Step 1: Fetch basic stats
-        const version = await neo4jService.getNeo4jVersion();
-
-        console.log('Neo4j database:', version.summary.database);
-        console.log('Neo4j server:', version.summary.server);
-
         // Step 2: Fetch node and relationship counts by type
         const nodeCountsByLabel = await neo4jService.getNodeCountsByLabel();
         const relationshipCountsByType = await neo4jService.getRelationshipCountsByType();

@@ -7,7 +7,7 @@ export class BrowseDatabase extends BaseActionHandler {
     public name = 'BrowseDatabase';
     public description = 'A dynamically generated action.';
 
-    public async execute(neo4jService: Neo4jService, params: ActionParams = {}): Promise<void> {
+    public async execute(neo4jService: Neo4jService, _params: ActionParams = {}): Promise<void> {
         console.log('Action Name:', 'BrowseDatabase');
     }
 }
