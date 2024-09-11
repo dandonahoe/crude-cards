@@ -83,13 +83,14 @@ export const GameHome : RFC = () => {
     const homepageUrl = Env.getValue<string>('NEXT_PUBLIC_BROWSER_WINDOW_LOCATION_ORIGIN');
 
     const handleResize = () : void => {
-        dispatch(GameAction.log({
+        dispatch(GameAction.logRelay({
             message : 'User clicked the resize button',
             payload : {
                 hello : 'world',
             },
         }));
-        window.open(homepageUrl, 'CrudeCards', 'width=550,height=800');
+
+        window.open(homepageUrl, 'CrudeCards', 'width=550,height=850');
     };
 
     return (

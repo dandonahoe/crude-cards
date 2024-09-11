@@ -12,7 +12,7 @@ import { StartGameDTO } from '../../api/src/game/dtos/start-game.dto';
 import { LeaveGameDTO } from '../../api/src/game/dtos/leave-game.dto';
 import { NextHandDTO } from '../../api/src/game/dtos/next-hand.dto';
 import { JoinGameDTO } from '../../api/src/game/dtos/join-game.dto';
-import { LogDTO } from '../../api/src/game/dtos/log.dto';
+import { LogRelayDTO } from '../../api/src/game/dtos/log-relay.dto';
 import { action } from '../SharedAction';
 
 
@@ -42,5 +42,5 @@ export const GameAction = {
     nextHand             : action<NextHandDTO           >(WebSocketEventType.NextHand,            false), // No Prefix to Match Server
     joinGame             : action<JoinGameDTO           >(WebSocketEventType.JoinGame,            false), // No Prefix to Match Server
     noOp                 : action<void                  >('NoOp'                                       ),
-    log                  : action<LogDTO                >(WebSocketEventType.Log,                 false), // No Prefix to Match Server
+    logRelay             : action<LogRelayDTO           >(WebSocketEventType.LogRelay,            false), // No Prefix to Match Server
 };
