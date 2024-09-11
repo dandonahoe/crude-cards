@@ -1,35 +1,24 @@
 import OpenAI from 'openai';
-import { Config } from './config';  // Assuming your config file handles environment variables
+import { Config } from './config';  // Handles environment variables
 
 export class OpenAIService {
     private static openAI: OpenAI;
 
-    public constructor() {
-
-    }
-    public static initialize() {
-
+    public static initialize(): void {
         const apiKey = Config.ensure('OPENAI_API_KEY');
-        OpenAIService.openAI = new OpenAI({
-            apiKey, // Replace with your OpenAI API key
-        });
+        OpenAIService.openAI = new OpenAI({ apiKey });
     }
 
-    public static completeText = async (prompt: string): Promise<string> => {
+    public static async completeText(prompt: string): Promise<string> {
         const params: OpenAI.Chat.ChatCompletionCreateParams = {
-            model    : 'gpt-4o',
-            messages : [{
-                role    : 'user',
-                content : prompt,
-            }],
+            model       : 'gpt-4o',
+            messages    : [{ role : 'user', content : prompt }],
             max_tokens  : 70,
             temperature : 1,
         };
 
         const chatCompletion = await OpenAIService.openAI.chat.completions.create(params);
 
-        const result = chatCompletion.choices[0].message.content!.trim();
-
-        return result;
+        return chatCompletion.choices[0].message.content!.trim();
     }
 }

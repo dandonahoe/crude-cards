@@ -7,7 +7,6 @@ export async function loadNewAction(actionName: string) {
 
     try {
         const actionModule = await import(actionPath);
-
         Object.values(actionModule).forEach((exported: unknown) => {
             if (typeof exported === 'function' && exported.prototype instanceof BaseActionHandler) {
                 const actionInstance = new (exported as { new (): BaseActionHandler })();

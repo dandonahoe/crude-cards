@@ -1,5 +1,5 @@
-import { Neo4jService } from './neo4jService';
-import { MenuManager } from './menuManager';
+import { MenuManager } from "./menuManager";
+import { Neo4jService } from "./neo4jService";
 
 
 export class GameLoop {
@@ -14,24 +14,19 @@ export class GameLoop {
     public async start() {
         while (this.isGameActive) {
             const selectedAction = await MenuManager.promptMenuChoice();
-
             if (selectedAction) {
                 const params = await MenuManager.promptForParams(selectedAction);
-
-                // Call the action's execute method with any required params
                 await selectedAction.execute(this.neo4jService, params);
 
-                // If the selected action is exit, end the game loop
                 if (selectedAction.id === 'exit')
                     this.isGameActive = false;
-
             }
         }
     }
 
     public async end() {
         await this.neo4jService.close();
-        console.log('Session and driver closed');
+
+        console.log('Session and driver closed.');
     }
 }
-

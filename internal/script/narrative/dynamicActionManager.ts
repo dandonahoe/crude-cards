@@ -3,14 +3,12 @@ import * as path from 'path';
 
 // Utility function to sanitize action names
 export function sanitizeActionName(actionName: string): string {
-    return actionName.replace(/[^a-zA-Z0-9]/g, ''); // Remove any non-alphanumeric characters
+    return actionName.replace(/[^a-zA-Z0-9]/g, ''); // Remove non-alphanumeric characters
 }
 
 // Function to write a new action file
 export function writeNewActionFile(actionName: string) {
-    // Sanitize the action name for class and file naming
     const sanitizedActionName = sanitizeActionName(actionName);
-
     const actionTemplate = `
 import { BaseActionHandler, ActionParams } from './BaseActionHandler';
 import { Neo4jService } from '../neo4jService';
@@ -26,9 +24,7 @@ export class ${sanitizedActionName} extends BaseActionHandler {
 }
 `;
 
-    // Use sanitized action name for the file name
     const actionPath = path.join(__dirname, 'actions', `${sanitizedActionName}.ts`);
-
     fs.writeFileSync(actionPath, actionTemplate, 'utf8');
     console.log(`Action "${sanitizedActionName}" has been written to ${actionPath}`);
 }
