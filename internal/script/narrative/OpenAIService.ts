@@ -2,25 +2,25 @@ import { Config } from './config';
 import OpenAI from 'openai';
 
 // Message type definition for the conversation log
-type Message = {
+export type Message = {
     role: 'user' | 'assistant' | 'system';
     content: string;
 };
 
 // Entity and Relationship definitions from OpenAI's JSON response
-interface AIResponseEntity {
+export interface AIResponseEntity {
     type: 'Person' | 'Place' | 'Thing' | 'Event';
     name: string;
     description: string;
 }
 
-interface AIResponseRelation {
+export interface AIResponseRelation {
     from: string;
     to: string;
     relationship: string;
 }
 
-interface AIResponse {
+export interface AIResponse {
     entities: AIResponseEntity[];
     relations: AIResponseRelation[];
 }
