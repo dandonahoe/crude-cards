@@ -7,6 +7,7 @@ export enum GameTextType {
     Title    = 'Title',
     Small    = 'Small',
     Neon     = 'Neon',
+    Card     = 'Card',
 }
 
 // props with children

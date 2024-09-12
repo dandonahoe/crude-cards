@@ -3,6 +3,7 @@ import classes from './GameText.module.css';
 import { PropsWithChildren } from 'react';
 import { Text } from '@mantine/core';
 import { RFC } from '@app/ui/type';
+import { CardColor } from '../../../api/src/constant/card-color.enum';
 
 
 export const GameText : RFC<Props> = ({
@@ -55,6 +56,17 @@ export const GameTextSubtitle : RFC<PropsWithChildren> = ({ children }) =>
         {children}
     </GameText>
 
+export const GameTextCard : RFC<PropsWithChildren> = ({ children }) =>
+    <GameText type={GameTextType.Card}>
+        <div
+            dangerouslySetInnerHTML={{
+                __html : children ?? '[MISSING TEXT]',
+            }}
+            style={{
+                color : CardColor.White,
+            }} />
+    </GameText>
+
 export const GameTextTitle : RFC<PropsWithChildren> = ({ children }) =>
     <GameText type={GameTextType.Title}>
         {children}
@@ -74,3 +86,4 @@ export const GameTextNeon : RFC<PropsWithChildren> = ({ children }) =>
     <GameText type={GameTextType.Neon}>
         {children}
     </GameText>
+

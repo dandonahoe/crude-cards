@@ -1,8 +1,9 @@
-import { getBackgroundColor, getCardBorder, getCardTextColor } from './Logic';
 import { CardColor } from '../../../api/src/constant/card-color.enum';
+import { getBackgroundColor, getCardBorder } from './Logic';
 import classes from './GameCard.module.css';
+import { GameTextCard } from '../GameText';
 import { useHover } from '@mantine/hooks';
-import { Box, rem } from '@mantine/core';
+import { Box } from '@mantine/core';
 import { RFC } from '@app/ui/type';
 import { Props } from './type';
 
@@ -17,14 +18,12 @@ export const GameCard: RFC<Props> = ({
     const { color, text } = card;
 
     const handleSelectBlackCard = () => {
-        if (onClick)
-            onClick(card);
+        if (onClick) onClick(card);
     }
 
     const colorNum = color === CardColor.Black ? 64 : 0;
-    const alpha = color === CardColor.Black ? 0.6 : 0.2;
+    const alpha    = color === CardColor.Black ? 0.6 : 0.2;
 
-    /* eslint-disable key-spacing */
 
     return (
         <Box
@@ -33,19 +32,15 @@ export const GameCard: RFC<Props> = ({
             ref={refHover}
             p='xl'
             style={{
-                backgroundColor: getBackgroundColor(color!, isHovered && onClick !== undefined),
-                boxShadow: `4px 4px 20px 14px  rgba(${colorNum}, ${colorNum}, ${colorNum}, ${alpha})`,
-                maxWidth: rem(400),
-                border: getCardBorder(color!),
+                backgroundColor : getBackgroundColor(color!, isHovered && onClick !== undefined),
+                boxShadow       : `4px 4px 20px 14px  rgba(${colorNum}, ${colorNum}, ${colorNum}, ${alpha})`,
+                border          : getCardBorder(color!),
             }}>
-            <div
-                dangerouslySetInnerHTML={{ __html : text ?? '[MISSING TEXT]' }}
-                style={{
-                    color : getCardTextColor(color!),
-                    fontWeight : 600,
-                }} />
+            <GameTextCard>
+                {text}
+            </GameTextCard>
         </Box>
     );
 
-    /* eslint-enable key-spacing */
+
 }

@@ -272,8 +272,7 @@ export const getBackgroundColor = (
 export const getCardBorder = (color : CardColor) : string =>
     `4px solid ${color === CardColor.White ? CardColor.Black : CardColor.White}`
 
-export const getCardTextColor = (color : CardColor) : CardColor =>
-    color === CardColor.White ? CardColor.Black : CardColor.White;
+
 
 ```
 
