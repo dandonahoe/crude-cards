@@ -9,6 +9,8 @@ import { IconArrowRight } from '@tabler/icons-react';
 import { useViewportSize } from '@mantine/hooks';
 import Confetti from 'react-confetti'
 import { RFC } from '@app/ui/type';
+import { CardColor } from '../../../api/src/constant/card-color.enum';
+import { GameBoxCentered } from '../GameBox/index';
 
 
 export const GameComplete : RFC = () => {
@@ -32,14 +34,14 @@ export const GameComplete : RFC = () => {
                     width={width}
                     height={height}/>
             }
-            <Stack c='#fff'>
-                <GameTextBanner>
+            <Stack>
+                <GameTextBanner color={CardColor.White}>
                     {'CHAMP'}
                 </GameTextBanner>
                 <GameTextNeon>
                     {gameChampion?.username}
                 </GameTextNeon>
-                <Center mb='xl'>
+                <GameBoxCentered>
                     <Button
                         onClick={handleExitGame}
                         variant='subtle'
@@ -48,7 +50,7 @@ export const GameComplete : RFC = () => {
                         {'Home'}
                         <IconArrowRight size={50} />
                     </Button>
-                </Center>
+                </GameBoxCentered>
                 <GameTextSmall>
                     {'Scoreboard'}
                 </GameTextSmall>

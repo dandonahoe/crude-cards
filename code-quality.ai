@@ -70,3 +70,9 @@ TypeScript, Node.js, NestJS, Jest
 - Validate all inputs
 - Rethrow any caught errors so the central Exception handler can treat them unifiormly
 
+
+
+- Tacti -
+Upload a codebase MD file
+"Given the MD file, list ALL files with any instance of a Box component, and print out the Box + props and remove the children. I want to see all boxes in a common spot."
+

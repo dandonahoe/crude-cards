@@ -1,6 +1,7 @@
 import { CardColor } from '../../../api/src/constant/card-color.enum';
 import { CardDTO } from '../../../api/src/game/dtos/card.dto';
-import { Box, CloseButton, Flex } from '@mantine/core';
+import { GameBox, GameBoxCentered } from '../GameBox';
+import { CloseButton } from '@mantine/core';
 import { GameBanner } from '../GameBanner';
 import { GameButton } from '../GameButton';
 import { GameCard } from '../GameCard';
@@ -13,28 +14,24 @@ export const GameDealerConfirm : RFC = () => {
     }
 
     return (
-        <Box>
+        <GameBox>
             <CloseButton />
             <GameBanner
-                subtitle='You are Dealer'
-                text='Deal this?'
-                color='#000' />
+                subtitle='You Are Dealer'
+                color={CardColor.Black}
+                text='Deal this?' />
             <GameCard
                 card={{
                     ...CardDTO.Default,
                     color : CardColor.Black,
                     text  : 'Deal',
                 }} />
-            <Flex
-                justify='center'
-                align='center'
-                mt='xl'
-                mb='lg'>
+            <GameBoxCentered size='lg'>
                 <GameButton
                     onClick={handleConfirm}
                     text='Yep' />
-            </Flex>
-        </Box>
+            </GameBoxCentered>
+        </GameBox>
     );
 }
 

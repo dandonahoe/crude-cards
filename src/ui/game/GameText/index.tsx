@@ -1,13 +1,17 @@
-import { GameTextType, Props } from './type';
+import { CardColor } from '../../../api/src/constant/card-color.enum';
 import classes from './GameText.module.css';
 import { PropsWithChildren } from 'react';
 import { Text } from '@mantine/core';
 import { RFC } from '@app/ui/type';
-import { CardColor } from '../../../api/src/constant/card-color.enum';
+import {
+    GameTextSubtitleProps, Props, GameTextType,
+    GameTextBannerProps, GameTextCardProps,
+    GameTextSmallProps, GameTextTitleProps,
+} from './type';
 
 
 export const GameText : RFC<Props> = ({
-    children, type,
+    children, type, color = CardColor.White,
 }) => {
     if(!children) return null;
 
@@ -15,6 +19,7 @@ export const GameText : RFC<Props> = ({
         case GameTextType.Subtitle:
             return (
                 <Text
+                    c={color}
                     className={classes.gameSubtitle}
                     fz='lg'>
                     {children}
@@ -24,6 +29,7 @@ export const GameText : RFC<Props> = ({
         case GameTextType.Title:
             return (
                 <Text
+                    c={color}
                     className={classes.gameTitle}
                     fz='xl'>
                     {children}
@@ -33,6 +39,7 @@ export const GameText : RFC<Props> = ({
         case GameTextType.Small:
             return (
                 <Text
+                    c={color}
                     className={classes.gameSmall}
                     fz='sm'>
                     {children}
@@ -51,13 +58,17 @@ export const GameText : RFC<Props> = ({
     }
 }
 
-export const GameTextSubtitle : RFC<PropsWithChildren> = ({ children }) =>
-    <GameText type={GameTextType.Subtitle}>
+export const GameTextSubtitle : RFC<GameTextSubtitleProps> = ({ children, color }) =>
+    <GameText
+        type={GameTextType.Subtitle}
+        color={color}>
         {children}
     </GameText>
 
-export const GameTextCard : RFC<PropsWithChildren> = ({ children }) =>
-    <GameText type={GameTextType.Card}>
+export const GameTextCard : RFC<GameTextCardProps> = ({ children, color }) =>
+    <GameText
+        type={GameTextType.Card}
+        color={color}>
         <div
             dangerouslySetInnerHTML={{
                 __html : children ?? '[MISSING TEXT]',
@@ -67,18 +78,24 @@ export const GameTextCard : RFC<PropsWithChildren> = ({ children }) =>
             }} />
     </GameText>
 
-export const GameTextTitle : RFC<PropsWithChildren> = ({ children }) =>
-    <GameText type={GameTextType.Title}>
+export const GameTextTitle : RFC<GameTextTitleProps> = ({ children, color }) =>
+    <GameText
+        type={GameTextType.Title}
+        color={color}>
         {children}
     </GameText>
 
-export const GameTextSmall : RFC<PropsWithChildren> = ({ children }) =>
-    <GameText type={GameTextType.Small}>
+export const GameTextSmall : RFC<GameTextSmallProps> = ({ children, color }) =>
+    <GameText
+        type={GameTextType.Small}
+        color={color}>
         {children}
     </GameText>
 
-export const GameTextBanner : RFC<PropsWithChildren> = ({ children }) =>
-    <GameText type={GameTextType.Banner}>
+export const GameTextBanner : RFC<GameTextBannerProps> = ({ children, color }) =>
+    <GameText
+        type={GameTextType.Banner}
+        color={color}>
         {children}
     </GameText>
 

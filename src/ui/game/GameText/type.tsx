@@ -1,3 +1,4 @@
+import { CardColor } from '../../../api/src/constant/card-color.enum';
 import { PropsWithChildren } from 'react';
 
 
@@ -12,5 +13,14 @@ export enum GameTextType {
 
 // props with children
 export type Props = PropsWithChildren<{
-    type : GameTextType;
+    type   : GameTextType;
+    color? : CardColor;
 }>;
+
+type GameTextCustomProps = Omit<Props, 'type'>;
+
+export type GameTextSubtitleProps = GameTextCustomProps;
+export type GameTextBannerProps   = GameTextCustomProps;
+export type GameTextTitleProps    = GameTextCustomProps;
+export type GameTextSmallProps    = GameTextCustomProps;
+export type GameTextCardProps     = GameTextCustomProps;

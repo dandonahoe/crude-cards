@@ -13,7 +13,7 @@ export const GameCard: RFC<Props> = ({
 }) => {
     const { hovered: isHovered, ref: refHover } = useHover();
 
-    if (!card) return '[NULL CARD]';
+    if (!card) return '[CARD ERROR]';
 
     const { color, text } = card;
 
@@ -23,7 +23,6 @@ export const GameCard: RFC<Props> = ({
 
     const colorNum = color === CardColor.Black ? 64 : 0;
     const alpha    = color === CardColor.Black ? 0.6 : 0.2;
-
 
     return (
         <Box
