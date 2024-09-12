@@ -7,44 +7,45 @@ import * as path from 'path';
 dotenv.config();
 
 interface ScanConfig {
-    fileTypesToScan: string[];
-    outputFilePath: string;
-    excludePaths: string[];
-    outputDir: string;
-    srcDir: string;
-    outputHeader?: string;
-    outputDescription?: string;
+    outputDescription? : string;
+    fileTypesToScan    : string[];
+    outputFilePath     : string;
+    outputHeader?      : string;
+    excludePaths       : string[];
+    outputDir          : string;
+    srcDir             : string;
 }
 
 const scanJobList: ScanConfig[] = [
     {
+        outputDescription : 'This document contains all the frontend codebase for the Crude Cards game.',
         fileTypesToScan   : ['.ts', '.tsx'],
         outputFilePath    : path.join(__dirname, './output/codebase-crude-cards-frontend.md'),
         excludePaths      : [],
+        outputHeader      : '## Frontend Codebase\n\n',
         outputDir         : path.join(__dirname, './output'),
         srcDir            : path.join(__dirname, '../../../src/ui/game'),
-        outputHeader      : '## Frontend Codebase\n\n',
-        outputDescription : 'This document contains all the frontend codebase for the Crude Cards game.',
     },
     {
+        outputDescription : 'This document contains all the backend codebase for the Crude Cards game.',
         fileTypesToScan   : ['.ts', '.tsx'],
         outputFilePath    : path.join(__dirname, './output/codebase-crude-cards-backend.md'),
         excludePaths      : [],
+        outputHeader      : '## Backend Codebase\n\n',
         outputDir         : path.join(__dirname, './output'),
         srcDir            : path.join(__dirname, '../../../src/api/src'),
-        outputHeader      : '## Backend Codebase\n\n',
-        outputDescription : 'This document contains all the backend codebase for the Crude Cards game.',
     },
     {
+        outputDescription : 'This document contains the codebase for the Attorney AI project.',
         fileTypesToScan   : ['.ts', '.tsx'],
         outputFilePath    : path.join(__dirname, './output/codebase-attorney-ai.md'),
-        outputDir         : path.join(__dirname, './output'),
-        srcDir            : path.join(__dirname, '../../../src'),
         excludePaths      : [path.join(__dirname, '../../../src/api')],
         outputHeader      : '## Attorney AI Codebase\n\n',
-        outputDescription : 'This document contains the codebase for the Attorney AI project.',
+        outputDir         : path.join(__dirname, './output'),
+        srcDir            : path.join(__dirname, '../../../src'),
     },
 ];
+
 
 // Function to check if a file path should be excluded
 const isExcluded = (filePath: string, excludePaths: string[]): boolean =>
@@ -53,8 +54,10 @@ const isExcluded = (filePath: string, excludePaths: string[]): boolean =>
 // Function to recursively get all files of specified types in a directory
 const getAllFiles = async (dir: string, exts: string[], excludePaths: string[]): Promise<string[]> => {
     const dirents = await fs.readdir(dir, { withFileTypes : true });
+
     const files = await Promise.all(dirents.map(async dirent => {
         const res = path.resolve(dir, dirent.name);
+
         if (isExcluded(res, excludePaths)) return [];
 
         if (dirent.isDirectory()) {
@@ -108,18 +111,29 @@ const generateFinalContent = (header: string = '', description: string = '', con
 // Main function to execute the scan jobs
 const executeJob = async (job: ScanConfig): Promise<void> => {
     await ensureOutputDir(job.outputDir);
-    const matchedFiles = await getAllFiles(job.srcDir, job.fileTypesToScan, job.excludePaths);
+
+    const matchedFiles    = await getAllFiles(job.srcDir, job.fileTypesToScan, job.excludePaths);
     const combinedContent = await readAndCombineFiles(matchedFiles);
+
     const finalContent = generateFinalContent(job.outputHeader, job.outputDescription, combinedContent);
+
     await writeToFile(job.outputFilePath, finalContent);
 };
 
 // Main execution entry point
 const main = async (): Promise<void> => {
     try {
-        await Promise.all(scanJobList.map(executeJob));
+        const results = await Promise.allSettled(scanJobList.map(executeJob));
+
+        results.forEach((result, index) => {
+            if (result.status === 'rejected')
+                console.error(`Error during job ${index + 1}:`, result.reason);
+             else
+                console.log(`Job ${index + 1} completed successfully.`);
+
+        });
     } catch (error) {
-        console.error('Error during file scanning and combining:', error);
+        console.error('Unexpected error during file scanning and combining:', error);
     }
 };
 
