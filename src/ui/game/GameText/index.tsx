@@ -40,13 +40,7 @@ export const GameText : RFC<Props> = ({
 
         case GameTextType.Banner:
             return (
-                <Text
-                    ta='center'
-                    fw={600}
-                    c='#fff'
-                    mt='xl'
-                    fz='lg'
-                    pt='xl'>
+                <Text className={classes.bannerText}>
                     {children}
                 </Text>
             );
@@ -65,7 +59,6 @@ export const GameTextTitle : RFC<PropsWithChildren> = ({ children }) =>
     <GameText type={GameTextType.Title}>
         {children}
     </GameText>
-
 
 export const GameTextSmall : RFC<PropsWithChildren> = ({ children }) =>
     <GameText type={GameTextType.Small}>
