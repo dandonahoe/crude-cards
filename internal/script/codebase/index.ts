@@ -44,6 +44,15 @@ const scanJobList: ScanConfig[] = [
         outputDir         : path.join(__dirname, './output'),
         srcDir            : path.join(__dirname, '../../../src'),
     },
+    {
+        outputDescription : 'Experimental integration of Genertive AI and neo4js',
+        fileTypesToScan   : ['.ts'],
+        outputFilePath    : path.join(__dirname, './output/codebase-narrative.md'),
+        excludePaths      : [path.join(__dirname, '../narrative')],
+        outputHeader      : '## Generative AI and neo4js Experiment\n\n',
+        outputDir         : path.join(__dirname, './output'),
+        srcDir            : path.join(__dirname, '../../../src'),
+    },
 ];
 
 
