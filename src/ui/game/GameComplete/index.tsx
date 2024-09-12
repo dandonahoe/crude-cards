@@ -9,6 +9,7 @@ import { useViewportSize } from '@mantine/hooks';
 import classes from './GameComplete.module.css';
 import Confetti from 'react-confetti'
 import { RFC } from '@app/ui/type';
+import { GameTextSmall } from '../GameText';
 
 
 export const GameComplete : RFC = () => {
@@ -36,20 +37,10 @@ export const GameComplete : RFC = () => {
                     height={height}/>
             }
             <Stack c='#fff'>
-                <Text
-                    mt='xl'
-                    fz='lg'
-                    fw={600}
-                    c='#fff'
-                    pt='xl'
-                    ta='center'>
+                <GameTextBanner>
                     {'CHAMP'}
-                </Text>
-                <Text
-                    fw={600}
-                    className={classes.neonText}
-                    ta='center'
-                    fz='lg'>
+                </GameTextBanner>
+                <Text className={classes.neonText}>
                     {gameChampion?.username}
                 </Text>
                 <Center mb='xl'>
@@ -62,13 +53,10 @@ export const GameComplete : RFC = () => {
                         <IconArrowRight size={50} />
                     </Button>
                 </Center>
-                <Text
-                    fz='sm'
-                    fw={600}
-                    ta='center'>
+                <GameTextSmall>
                     {'Scoreboard'}
-                </Text>
-                <Box >
+                </GameTextSmall>
+                <Box>
                     <GameStatusTable
                         playerStatusList={allPlayerStatus!}
                         shouldShowScore={true}

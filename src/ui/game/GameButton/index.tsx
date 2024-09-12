@@ -4,6 +4,7 @@ import { App } from '../../AppContext';
 import { RFC } from '@app/ui/type';
 import { useContext } from 'react';
 import { Props } from './type';
+import { GameTextTitle } from '../GameText';
 
 
 export const GameButton : RFC<Props> = ({
@@ -11,24 +12,19 @@ export const GameButton : RFC<Props> = ({
 }) => {
     const { isPhone  } = useContext(App);
 
-    const buttonSize = isPhone ? 180 : 180;
-    const fontSize   = isPhone ? 'xl' : 'xl';
 
     return (
         <Button
             style={{
-                width  : buttonSize,
-                height : buttonSize,
+                width  : 180,
+                height : 180,
             }}
             aria-label={`Button ${text}`}
             className={classes.gameButton}
             onClick={onClick}>
-            <Text
-                fz={fontSize}
-                fw={800}
-                lh={0.5}>
+            <GameTextTitle>
                 {text}
-            </Text>
+            </GameTextTitle>
         </Button>
     );
 }

@@ -1,12 +1,12 @@
 import { GameTextType, Props } from './type';
 import classes from './GameText.module.css';
+import { PropsWithChildren } from 'react';
 import { Text } from '@mantine/core';
 import { RFC } from '@app/ui/type';
-import { PropsWithChildren } from 'react';
 
 
 export const GameText : RFC<Props> = ({
-    children, type, ...remainingProps
+    children, type,
 }) => {
     if(!children) return null;
 
@@ -15,7 +15,6 @@ export const GameText : RFC<Props> = ({
             return (
                 <Text
                     className={classes.gameSubtitle}
-                    {...remainingProps}
                     fz='lg'>
                     {children}
                 </Text>
@@ -25,8 +24,29 @@ export const GameText : RFC<Props> = ({
             return (
                 <Text
                     className={classes.gameTitle}
-                    {...remainingProps}
                     fz='xl'>
+                    {children}
+                </Text>
+            );
+
+        case GameTextType.Small:
+            return (
+                <Text
+                    className={classes.gameSmall}
+                    fz='sm'>
+                    {children}
+                </Text>
+            );
+
+        case GameTextType.Banner:
+            return (
+                <Text
+                    ta='center'
+                    fw={600}
+                    c='#fff'
+                    mt='xl'
+                    fz='lg'
+                    pt='xl'>
                     {children}
                 </Text>
             );
@@ -36,16 +56,23 @@ export const GameText : RFC<Props> = ({
     }
 }
 
-export const GameTextSubtitle : RFC<PropsWithChildren> = ({
-    children,
-}) =>
+export const GameTextSubtitle : RFC<PropsWithChildren> = ({ children }) =>
     <GameText type={GameTextType.Subtitle}>
         {children}
     </GameText>
 
-export const GameTextTitle : RFC<PropsWithChildren> = ({
-    children,
-}) =>
+export const GameTextTitle : RFC<PropsWithChildren> = ({ children }) =>
     <GameText type={GameTextType.Title}>
+        {children}
+    </GameText>
+
+
+export const GameTextSmall : RFC<PropsWithChildren> = ({ children }) =>
+    <GameText type={GameTextType.Small}>
+        {children}
+    </GameText>
+
+export const GameTextBanner : RFC<PropsWithChildren> = ({ children }) =>
+    <GameText type={GameTextType.Banner}>
         {children}
     </GameText>
