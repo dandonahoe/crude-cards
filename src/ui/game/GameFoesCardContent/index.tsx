@@ -7,6 +7,7 @@ import { GameFoe } from '../GameFoe';
 import { RFC } from '@app/ui/type';
 import { useContext } from 'react';
 import { Props } from './type';
+import { GameText } from '../GameText';
 
 
 export const GameFoesCardContent : RFC<Props> = ({
@@ -39,32 +40,22 @@ export const GameFoesCardContent : RFC<Props> = ({
                         key='one'
                         color={CardColor.White}>
                         <>
-                            <Text
-                                size='md'
-                                fw={600}
-                                mt='xl'
-                                mb='md'>
+                            <GameText>
                                 {'Other Players'}
-                            </Text>
+                            </GameText>
                             {foes.length < 2 &&
-                                <Text
-                                    fz='xs'
-                                    mb='xl'>
+                                <GameText size='sm'>
                                     {'Minimum 3 Players 123'}
-                                </Text>
+                                </GameText>
                             }
                         </>
                     </GameCardContainer>,
                     <GameCardContainer
                         key='two'
                         color={CardColor.White}>
-                        <Text
-                            size='md'
-                            fw={600}
-                            mt='xl'
-                            mb='md'>
+                        <GameText>
                             {'Other Players'}
-                        </Text>
+                        </GameText>
                     </GameCardContainer>,
                 ]} />
 

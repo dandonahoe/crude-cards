@@ -1,34 +1,28 @@
-import { selectGameChampion, selectAllPlayerStatus, selectIsPlayerWinner } from '../../../client/selector/game';
 import { GameTextBanner, GameTextNeon, GameTextSmall } from '../GameText';
-import { Box, Button, Center, Flex, Stack } from '@mantine/core';
+import { CardColor } from '../../../api/src/constant/card-color.enum';
+import { selectGameComplete } from '../../../client/selector/game';
 import { GameAction } from '../../../client/action/game.action';
 import { useDispatch, useSelector } from '@app/client/hook';
 import { CA } from '../../../constant/framework/CoreAction';
+import { GameBox, GameBoxCentered } from '../GameBox';
 import { GameStatusTable } from '../GameStatusTable';
 import { IconArrowRight } from '@tabler/icons-react';
 import { useViewportSize } from '@mantine/hooks';
+import { Button, Stack } from '@mantine/core';
 import Confetti from 'react-confetti'
 import { RFC } from '@app/ui/type';
-import { CardColor } from '../../../api/src/constant/card-color.enum';
-import { GameBoxCentered } from '../GameBox/index';
 
 
 export const GameComplete : RFC = () => {
 
     const dispatch = useDispatch();
-
-    const allPlayerStatus = useSelector(selectAllPlayerStatus);
-    const gameChampion    = useSelector(selectGameChampion);
-    const isWinner        = useSelector(selectIsPlayerWinner);
-
-    const { height, width } = useViewportSize();
-
     const handleExitGame = () : CA => dispatch(GameAction.leaveGame({}));
 
+    const { allPlayerStatus, gameChampion, isWinner } = useSelector(selectGameComplete);
+    const { height, width } = useViewportSize();
+
     return (
-        <Flex
-            justify='center'
-            align='center'>
+        <GameBoxCentered>
             {isWinner &&
                 <Confetti
                     width={width}
@@ -54,14 +48,14 @@ export const GameComplete : RFC = () => {
                 <GameTextSmall>
                     {'Scoreboard'}
                 </GameTextSmall>
-                <Box>
+                <GameBox size='sm'>
                     <GameStatusTable
                         playerStatusList={allPlayerStatus!}
                         shouldShowScore={true}
                         shouldShowDone={false} />
-                </Box>
+                </GameBox>
             </Stack>
-        </Flex>
+        </GameBoxCentered>
     );
 }
 

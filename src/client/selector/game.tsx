@@ -210,6 +210,15 @@ export const selectPlayerCards = createSelector(
     },
 );
 
+export const selectGameComplete = createSelector(
+    selectAllPlayerStatus, selectGameChampion, selectIsPlayerWinner,
+    (allPlayerStatus, gameChampion, isWinner) => ({
+        allPlayerStatus,
+        gameChampion,
+        isWinner,
+    }),
+);
+
 export const selectSelectedCards = createSelector(
     selectGameState, selectCardDeck,
     (gameState, cardDeck) => gameState.selected_card_id_list.map(

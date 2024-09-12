@@ -6,21 +6,36 @@ import { RFC } from '@app/ui/type';
 import {
     GameTextSubtitleProps, Props, GameTextType,
     GameTextBannerProps, GameTextCardProps,
-    GameTextSmallProps, GameTextTitleProps,
+    GameTextSmallProps,  GameTextTitleProps,
 } from './type';
 
 
 export const GameText : RFC<Props> = ({
-    children, type, color = CardColor.White,
+    color = CardColor.White,
+    type  = GameTextType.Default,
+    size  = 'md',
+    children,
 }) => {
     if(!children) return null;
 
     switch(type) {
+
+        case GameTextType.Default:
+        case GameTextType.Medium:
+            return (
+                <Text
+                    className={classes.gameDefault}
+                    c={color}
+                    fz={size}>
+                    {children}
+                </Text>
+            );
+
         case GameTextType.Subtitle:
             return (
                 <Text
-                    c={color}
                     className={classes.gameSubtitle}
+                    c={color}
                     fz='lg'>
                     {children}
                 </Text>
@@ -29,8 +44,8 @@ export const GameText : RFC<Props> = ({
         case GameTextType.Title:
             return (
                 <Text
-                    c={color}
                     className={classes.gameTitle}
+                    c={color}
                     fz='xl'>
                     {children}
                 </Text>
@@ -39,8 +54,8 @@ export const GameText : RFC<Props> = ({
         case GameTextType.Small:
             return (
                 <Text
-                    c={color}
                     className={classes.gameSmall}
+                    c={color}
                     fz='sm'>
                     {children}
                 </Text>

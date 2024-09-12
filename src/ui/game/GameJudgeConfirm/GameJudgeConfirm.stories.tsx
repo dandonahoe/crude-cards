@@ -1,9 +1,10 @@
 import { CardColor } from '../../../api/src/constant/card-color.enum';
-import { Box, CloseButton, Flex } from '@mantine/core';
+import { GameBox, GameBoxCentered } from '../GameBox';
 import { Meta, StoryObj } from '@storybook/react';
 import { GameBanner } from '../GameBanner/index';
 import { GameButton } from '../GameButton/index';
 import { GameCard } from '../GameCard/index';
+import { CloseButton } from '@mantine/core';
 import { GameJudgeConfirm } from '.';
 
 // Set up default exports for Storybook
@@ -40,11 +41,11 @@ export const StyledJudgeConfirm: Story = {
 // Story with a scenario where only one card is visible
 export const SingleCardScenario: Story = {
   render : () => (
-      <div style={{ padding : '20px' }}>
-          <Box>
+      <GameBox size='lg'>
+          <GameBox>
               <CloseButton />
               <GameBanner
-                  color='#000'
+                  color={CardColor.Black}
                   subtitle='Confirm Your Winner'
                   text='Choosing' />
               <GameCard
@@ -53,16 +54,12 @@ export const SingleCardScenario: Story = {
                     color : CardColor.White,
                     text  : 'A lone card in this round',
           }}/>
-              <Flex
-                  mt='xl'
-                  mb='xl'
-                  align='center'
-                  justify='center'>
+              <GameBoxCentered>
                   <GameButton
                       onClick={() => {}}
                       text='Pick' />
-              </Flex>
-          </Box>
-      </div>
+              </GameBoxCentered>
+          </GameBox>
+      </GameBox>
   ),
 };

@@ -1,4 +1,4 @@
-import { Text, rem } from '@mantine/core';
+import { GameText } from '../GameText';
 import { RFC } from '@app/ui/type';
 import { Props } from './type';
 
@@ -6,8 +6,6 @@ import { Props } from './type';
 export const GameFoe : RFC<Props> = ({
     player,
 }) =>
-    <Text
-        fw={600}
-        fz={rem(20)}>
+    <GameText>
         {player.username}
-    </Text>
+    </GameText>

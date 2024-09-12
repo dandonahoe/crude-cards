@@ -1,9 +1,11 @@
 import { Button, Group, TextInput, Textarea, Text } from '@mantine/core';
+import { CardColor } from '../../../api/src/constant/card-color.enum';
 import { GameAction } from '../../../client/action/game.action';
 import { zodResolver } from 'mantine-form-zod-resolver';
 import { useFocusTrap } from '@mantine/hooks';
 import { useDispatch } from 'react-redux';
 import { useForm } from '@mantine/form';
+import { GameText } from '../GameText';
 import { RFC } from '@app/ui/type';
 import { useState } from 'react';
 import { z } from 'zod';
@@ -76,7 +78,6 @@ export const GameFeedback : RFC = () => {
                 aria-label='Name'
                 label='Name'
                 tabIndex={0} />
-
             <TextInput
                 {...form.getInputProps('email')}
                 fw={600}
@@ -86,7 +87,6 @@ export const GameFeedback : RFC = () => {
                 variant='filled'
                 label='Email'
                 tabIndex={0} />
-
             <Textarea
                 {...form.getInputProps('message')}
                 key={form.key('message')}
@@ -96,7 +96,6 @@ export const GameFeedback : RFC = () => {
                 label='Message'
                 tabIndex={0}
                 rows={4} />
-
             <Group
                 justify='center'
                 align='center'
@@ -104,12 +103,13 @@ export const GameFeedback : RFC = () => {
                 mt='md'>
                 <Button
                     variant='outline'
-                    color='#000'
+                    color={CardColor.Black}
                     size='sm'
                     m='lg'
-                    fw={600}
                     type='submit'>
-                    {'Submit'}
+                    <GameText>
+                        {'Submit'}
+                    </GameText>
                 </Button>
             </Group>
         </form>

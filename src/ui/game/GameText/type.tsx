@@ -4,7 +4,9 @@ import { PropsWithChildren } from 'react';
 
 export enum GameTextType {
     Subtitle = 'Subtitle',
+    Default  = 'Default',
     Banner   = 'Banner',
+    Medium   = 'Medium',
     Title    = 'Title',
     Small    = 'Small',
     Neon     = 'Neon',
@@ -13,8 +15,9 @@ export enum GameTextType {
 
 // props with children
 export type Props = PropsWithChildren<{
-    type   : GameTextType;
-    color? : CardColor;
+    color ?: CardColor;
+    type  ?: GameTextType;
+    size  ?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 }>;
 
 type GameTextCustomProps = Omit<Props, 'type'>;

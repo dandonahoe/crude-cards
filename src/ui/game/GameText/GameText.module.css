@@ -31,7 +31,6 @@
 .smallText {
     font-size: var(--mantine-font-size-sm);
     font-weight: 600;
-    text-align: center;
 }
 
 .bannerText {
@@ -41,4 +40,12 @@
     margin-top: var(--mantine-spacing-xl);
     font-size: var(--mantine-font-size-lg);
     padding-top: var(--mantine-spacing-xl);
+}
+
+.gameDefault {
+    color: #fff;
+    font-size: var(--mantine-font-size-sm);
+    font-weight: 600;
+    margin-top: var(--mantine-spacing-md);
+    padding-top: var(--mantine-spacing-md);
 }

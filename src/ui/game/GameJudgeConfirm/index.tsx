@@ -16,7 +16,7 @@ export const GameJudgeConfirm : RFC = () => {
         <Box>
             <CloseButton />
             <GameBanner
-                color='#000'
+                color={CardColor.Black}
                 subtitle='Confirm Your Winner'
                 text='Choosing' />
             <GameCard
