@@ -39,7 +39,7 @@
         "dev:kill": "kill-port 3000",
         "dev:reset": "ts-node internal/script/reset.ts",
         "dev:narrative": "ts-node internal/script/narrative",
-        "job:codebase": "ts-node internal/script/codebase.ts",
+        "job:codebase": "ts-node internal/script/codebase",
         "job:disable-snooping": "next telemetry disable",
         "job:docs": "typedoc",
         "job:purge": "ts-node internal/script/purge/index.ts",
