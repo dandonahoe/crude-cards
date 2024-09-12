@@ -7,99 +7,119 @@ import * as path from 'path';
 dotenv.config();
 
 interface ScanConfig {
-    fileTypesToScan : string[];
-    outputFilePath  : string;
-    excludePaths    : string[];
-    outputDir       : string;
-    srcDir          : string;
-
+    fileTypesToScan: string[];
+    outputFilePath: string;
+    excludePaths: string[];
+    outputDir: string;
+    srcDir: string;
+    outputHeader?: string;
+    outputDescription?: string;
 }
 
-const scanJobList: ScanConfig[] = [{
-    fileTypesToScan : ['.ts', '.tsx'],
-    outputFilePath  : path.join(__dirname, './output/codebase-crude-cards-frontend.md'),
-    excludePaths    : [],
-    outputDir       : path.join(__dirname, './output'),
-    srcDir          : path.join(__dirname, '../../../src/ui/game'),
-}, {
-    fileTypesToScan : ['.ts', '.tsx'],
-    outputFilePath  : path.join(__dirname, './output/codebase-crude-cards-backend.md'),
-    excludePaths    : [],
-    outputDir       : path.join(__dirname, './output'),
-    srcDir          : path.join(__dirname, '../../../src/api/src'),
-}, {
-    fileTypesToScan : ['.ts', '.tsx'],
-    outputFilePath  : path.join(__dirname, './output/codebase-attorney-ai.md'),
-    outputDir       : path.join(__dirname, './output'),
-    srcDir          : path.join(__dirname, '../../../src'),
-    excludePaths    : [
-        path.join(__dirname, '../../../src/api'),
-    ],
-}];
+const scanJobList: ScanConfig[] = [
+    {
+        fileTypesToScan   : ['.ts', '.tsx'],
+        outputFilePath    : path.join(__dirname, './output/codebase-crude-cards-frontend.md'),
+        excludePaths      : [],
+        outputDir         : path.join(__dirname, './output'),
+        srcDir            : path.join(__dirname, '../../../src/ui/game'),
+        outputHeader      : '## Frontend Codebase\n\n',
+        outputDescription : 'This document contains all the frontend codebase for the Crude Cards game.',
+    },
+    {
+        fileTypesToScan   : ['.ts', '.tsx'],
+        outputFilePath    : path.join(__dirname, './output/codebase-crude-cards-backend.md'),
+        excludePaths      : [],
+        outputDir         : path.join(__dirname, './output'),
+        srcDir            : path.join(__dirname, '../../../src/api/src'),
+        outputHeader      : '## Backend Codebase\n\n',
+        outputDescription : 'This document contains all the backend codebase for the Crude Cards game.',
+    },
+    {
+        fileTypesToScan   : ['.ts', '.tsx'],
+        outputFilePath    : path.join(__dirname, './output/codebase-attorney-ai.md'),
+        outputDir         : path.join(__dirname, './output'),
+        srcDir            : path.join(__dirname, '../../../src'),
+        excludePaths      : [path.join(__dirname, '../../../src/api')],
+        outputHeader      : '## Attorney AI Codebase\n\n',
+        outputDescription : 'This document contains the codebase for the Attorney AI project.',
+    },
+];
 
 // Function to check if a file path should be excluded
-const isExcluded = (filePath: string, excludePaths: string[]): boolean => {
-    return excludePaths.some(pattern => minimatch(filePath, pattern));
-};
+const isExcluded = (filePath: string, excludePaths: string[]): boolean =>
+    excludePaths.some(pattern => minimatch(filePath, pattern));
 
 // Function to recursively get all files of specified types in a directory
 const getAllFiles = async (dir: string, exts: string[], excludePaths: string[]): Promise<string[]> => {
-    const files = await fs.readdir(dir, { withFileTypes : true });
-    let matchedFiles: string[] = [];
+    const dirents = await fs.readdir(dir, { withFileTypes : true });
+    const files = await Promise.all(dirents.map(async dirent => {
+        const res = path.resolve(dir, dirent.name);
+        if (isExcluded(res, excludePaths)) return [];
 
-    for (const file of files) {
-        const res = path.resolve(dir, file.name);
+        if (dirent.isDirectory()) {
+            if (dirent.name === '__test__' || (dir.endsWith('src') && dirent.name === 'migrations')) return [];
 
-        if (isExcluded(res, excludePaths)) continue; // Skip excluded paths
-
-        if (file.isDirectory()) {
-            // Exclude '__test__' directories and 'migrations' directory within 'src/migrations'
-            if (file.name !== '__test__' && !(dir.endsWith('src') && file.name === 'migrations'))
-                matchedFiles = matchedFiles.concat(await getAllFiles(res, exts, excludePaths));
-        } else {
-            if (exts.some(ext => res.endsWith(ext)) && !res.endsWith('.spec.ts'))
-                matchedFiles.push(res);
+            return await getAllFiles(res, exts, excludePaths);
         }
-    }
 
-    return matchedFiles;
+        if (exts.some(ext => res.endsWith(ext)) && !res.endsWith('.spec.ts')) return [res];
+
+        return [];
+    }));
+
+    return Array.prototype.concat(...files);
 };
 
 // Function to read and combine content from multiple files
 const readAndCombineFiles = async (filePaths: string[]): Promise<string> => {
-    let combinedContent = '';
-
-    for (const filePath of filePaths) {
-        console.log('Processing', filePath);
-
+    return (await Promise.all(filePaths.map(async filePath => {
         const fileContent = await fs.readFile(filePath, 'utf-8');
 
-        combinedContent += `## ${filePath}\n\n`;
-        combinedContent += '```typescript\n';
-        combinedContent += fileContent;
-        combinedContent += '\n```\n\n';
-    }
-
-    return combinedContent;
+        return `## ${filePath}\n\n\`\`\`typescript\n${fileContent}\n\`\`\`\n\n`;
+    }))).join('');
 };
 
-// Main function to execute the script
+// Function to ensure output directory exists
+const ensureOutputDir = async (outputDir: string) => {
+    try {
+        await fs.mkdir(outputDir, { recursive : true });
+    } catch (err) {
+        console.error(`Error creating directory: ${outputDir}`, err);
+        throw err;
+    }
+};
+
+// Function to write content to file
+const writeToFile = async (filePath: string, content: string) => {
+    try {
+        await fs.writeFile(filePath, content, 'utf-8');
+        console.log(`Combined file created at ${filePath}`);
+    } catch (err) {
+        console.error(`Error writing file: ${filePath}`, err);
+        throw err;
+    }
+};
+
+// Function to combine the outputHeader, outputDescription and file content
+const generateFinalContent = (header: string = '', description: string = '', content: string): string =>
+    `${header}${description}\n\n${content}`;
+
+// Main function to execute the scan jobs
+const executeJob = async (job: ScanConfig): Promise<void> => {
+    await ensureOutputDir(job.outputDir);
+    const matchedFiles = await getAllFiles(job.srcDir, job.fileTypesToScan, job.excludePaths);
+    const combinedContent = await readAndCombineFiles(matchedFiles);
+    const finalContent = generateFinalContent(job.outputHeader, job.outputDescription, combinedContent);
+    await writeToFile(job.outputFilePath, finalContent);
+};
+
+// Main execution entry point
 const main = async (): Promise<void> => {
     try {
-        for (const job of scanJobList) {
-            // Ensure the output directory exists
-            await fs.mkdir(job.outputDir, { recursive : true });
-
-            const matchedFiles = await getAllFiles(job.srcDir, job.fileTypesToScan, job.excludePaths);
-
-            const combinedContent = await readAndCombineFiles(matchedFiles);
-
-            await fs.writeFile(job.outputFilePath, combinedContent, 'utf-8');
-
-            console.log(`Combined file created at ${job.outputFilePath}`);
-        }
+        await Promise.all(scanJobList.map(executeJob));
     } catch (error) {
-        console.error('Error combining files:', error);
+        console.error('Error during file scanning and combining:', error);
     }
 };
 
