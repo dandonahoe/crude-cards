@@ -1,6 +1,7 @@
-import { Box, Text } from '@mantine/core';
+import { Box } from '@mantine/core';
 import { RFC } from '@app/ui/type';
 import { Props } from './type';
+import { GameTextSubtitle, GameTextTitle } from '../GameText/index';
 
 
 export const GameBanner : RFC<Props> = ({
@@ -11,17 +12,10 @@ export const GameBanner : RFC<Props> = ({
         mb='sm'
         mt='xs'
         c={color}>
-        <Text
-            fz='lg'
-            fw={600}>
+        <GameTextTitle>
             {text}
-        </Text>
-        {subtitle &&
-            <Text
-                fw={600}
-                p='sm'
-                fz='md'>
-                {subtitle}
-            </Text>
-        }
+        </GameTextTitle>
+        <GameTextSubtitle>
+            {subtitle}
+        </GameTextSubtitle>
     </Box>
