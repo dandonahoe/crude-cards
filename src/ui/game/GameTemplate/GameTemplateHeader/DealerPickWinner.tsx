@@ -1,3 +1,4 @@
+import { CardColor } from '../../../../api/src/constant/card-color.enum';
 import { GameContext } from '../../GameContext';
 import { GameBanner } from '../../GameBanner';
 import { Stack } from '@mantine/core';
@@ -12,7 +13,7 @@ export const DealerPickWinner : RFC = () => {
     if(!isDealer)
         return (
             <GameBanner
-                color='#fff'
+                color={CardColor.White}
                 subtitle='Waiting on Dealer'
                 text='Judging' />
         );
@@ -23,9 +24,9 @@ export const DealerPickWinner : RFC = () => {
             align='center'
             pb='xl'>
             <GameBanner
-                color='#fff'
-                text='Pick a Winner'
-                subtitle={dealerDealtCard?.text ?? ''} />
+                subtitle={dealerDealtCard?.text ?? ''}
+                color={CardColor.White}
+                text='Pick a Winner' />
         </Stack>
     );
 

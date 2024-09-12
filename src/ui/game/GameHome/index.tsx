@@ -104,8 +104,8 @@ export const GameHome : RFC = () => {
                 tabIndex={0}
                 size='xs'
                 variant='outline'
-                c='#fff'
-                color='#fff'
+                c={CardColor.White}
+                color={CardColor.White}
                 visibleFrom='md'
                 onClick={handleResize}>
                 {'Resize'}

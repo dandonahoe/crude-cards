@@ -1,4 +1,5 @@
 import { GameStage } from '../../../../api/src/constant/game-stage.enum';
+import { CardColor } from '../../../../api/src/constant/card-color.enum';
 import { GameAction } from '../../../../client/action/game.action';
 import { selectIsHost } from '../../../../client/selector/game';
 import { CA } from '../../../../constant/framework/CoreAction';
@@ -17,22 +18,24 @@ export const LobbyHeader: RFC = () => {
     const { gameState } = useContext(GameContext);
     const dispatch = useDispatch();
 
-    const handleStartGame = (): CA =>
-        dispatch(GameAction.startGame({}));
-
-    let subtitleMessage = undefined;
+    const handleStartGame = (): CA => dispatch(GameAction.startGame({}));
 
     const isHost = useSelector(selectIsHost);
 
-    const playerCount = gameState.player_list.length;
+    const playerCount   = gameState.player_list.length;
     const needMoreCount = 3 - playerCount;
+
+    let subtitleMessage = undefined;
 
     if (gameState.game_stage === GameStage.DealerPickBlackCard)
         subtitleMessage = 'Dealer is Starting';
+
     else if (playerCount < 3)
         subtitleMessage = `Need ${needMoreCount} More Player${needMoreCount > 1 ? 's' : ''} to Start`;
+
     else if (playerCount >= 3 && isHost)
         subtitleMessage = 'Players Ready';
+
     else if (playerCount >= 3)
         subtitleMessage = 'Waiting on Host to Start';
 
@@ -40,8 +43,8 @@ export const LobbyHeader: RFC = () => {
         <Stack>
             <GameBanner
                 subtitle={subtitleMessage}
-                text='Lobby'
-                color='#fff' />
+                color={CardColor.White}
+                text='Lobby' />
             {isHost && gameState.player_list.length >= 3 &&
                 <Center m='xl'>
                     <GameButton
