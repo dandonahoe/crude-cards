@@ -1,31 +1,19 @@
 import classes from './GameButton.module.css';
-import { Button, Text } from '@mantine/core';
-import { App } from '../../AppContext';
-import { RFC } from '@app/ui/type';
-import { useContext } from 'react';
-import { Props } from './type';
 import { GameTextTitle } from '../GameText';
+import { Button } from '@mantine/core';
+import { RFC } from '@app/ui/type';
+import { Props } from './type';
 
 
 export const GameButton : RFC<Props> = ({
     text, onClick,
-}) => {
-    const { isPhone  } = useContext(App);
-
-
-    return (
-        <Button
-            style={{
-                width  : 180,
-                height : 180,
-            }}
-            aria-label={`Button ${text}`}
-            className={classes.gameButton}
-            onClick={onClick}>
-            <GameTextTitle>
-                {text}
-            </GameTextTitle>
-        </Button>
-    );
-}
+}) =>
+    <Button
+        aria-label={`Button ${text}`}
+        className={classes.gameButton}
+        onClick={onClick}>
+        <GameTextTitle>
+            {text}
+        </GameTextTitle>
+    </Button>
 

@@ -69,3 +69,8 @@ export const GameTextBanner : RFC<PropsWithChildren> = ({ children }) =>
     <GameText type={GameTextType.Banner}>
         {children}
     </GameText>
+
+export const GameTextNeon : RFC<PropsWithChildren> = ({ children }) =>
+    <GameText type={GameTextType.Neon}>
+        {children}
+    </GameText>

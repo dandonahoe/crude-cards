@@ -1,4 +1,7 @@
 .gameButton {
+    width: 180px;
+    height: 180px;
+
     outline: none;
     color: hsla(350, 0%, 100%, 1);
     text-shadow:
