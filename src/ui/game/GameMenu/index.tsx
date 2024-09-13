@@ -1,8 +1,7 @@
-import { GameStage } from '../../../api/src/constant/game-stage.enum';
 import { GameAction } from '../../../client/action/game.action';
 import { CA } from '../../../constant/framework/CoreAction';
 import { Burger, Menu, Text } from '@mantine/core';
-import { MenuItem, MenuItems } from './constant';
+import { getFilteredMenuItems } from './menuLogic';
 import { useDispatch } from '@app/client/hook';
 import { useDisclosure } from '@mantine/hooks';
 import { GameMenuItem } from './GameMenuItem';
@@ -11,15 +10,12 @@ import { RFC } from '@app/ui/type';
 import { useContext } from 'react';
 
 
-export const GameMenu : RFC = () => {
-
+export const GameMenu: RFC = () => {
     const dispatch = useDispatch();
     const { gameState, currentPlayer } = useContext(GameContext);
-    // const { isPhone } = useContext(App);
-
     const [opened, { toggle }] = useDisclosure();
 
-    const handleClickMenu = (menuItemId : string) : CA => {
+    const handleClickMenu = (menuItemId: string): CA => {
         toggle();
 
         return dispatch(GameAction.menuItemClicked({
@@ -27,17 +23,12 @@ export const GameMenu : RFC = () => {
             player_id : gameState.current_player_id,
             item_id   : menuItemId,
         }));
-    }
+    };
 
-    let FinalMenuItemList = MenuItems;
-
-    // if they're not in a game, drop "Leave" from the menu
-    if(gameState.game_stage === GameStage.Home)
-        FinalMenuItemList = MenuItems.filter(
-            item => item.id !== MenuItem.Leave && item.id !== MenuItem.Scoreboard);
+    const finalMenuItems = getFilteredMenuItems(gameState);
 
     return (
-        (<Menu
+        <Menu
             opened={opened}
             onChange={toggle}
             shadow='xl'
@@ -48,10 +39,10 @@ export const GameMenu : RFC = () => {
                     aria-label='Toggle Main Menu'
                     opened={opened}
                     color='#fff'
-                    size='lg' />
+                    size='lg'/>
             </Menu.Target>
             <Menu.Dropdown>
-                {currentPlayer?.username &&
+                {currentPlayer?.username && (
                     <Menu.Label>
                         <Text
                             fz='xs'
@@ -59,17 +50,16 @@ export const GameMenu : RFC = () => {
                             {currentPlayer?.username}
                         </Text>
                     </Menu.Label>
-                }
-                {FinalMenuItemList.map((item, index) =>
+                )}
+                {finalMenuItems.map((item, index) => (
                     <GameMenuItem
                         key={`${index}-${item.id}`}
                         onClick={handleClickMenu}
                         icon={item.icon}
                         text={item.text}
-                        id={item.id} />,
-                )}
+                        id={item.id}/>
+                ))}
             </Menu.Dropdown>
-        </Menu>)
+        </Menu>
     );
 };
-
