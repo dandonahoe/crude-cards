@@ -76,3 +76,6 @@ TypeScript, Node.js, NestJS, Jest
 Upload a codebase MD file
 "Given the MD file, list ALL files with any instance of a Box component, and print out the Box + props and remove the children. I want to see all boxes in a common spot."
 
+
+im refactoring the fronend to make it more 508 and usable. What else can I do to improve this?
+

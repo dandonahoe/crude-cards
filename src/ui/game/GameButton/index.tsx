@@ -1,19 +1,20 @@
 import classes from './GameButton.module.css';
 import { GameTextTitle } from '../GameText';
+import { GameButtonProps } from './type';
 import { Button } from '@mantine/core';
 import { RFC } from '@app/ui/type';
-import { Props } from './type';
 
 
-export const GameButton : RFC<Props> = ({
-    text, onClick,
+export const GameButton: RFC<GameButtonProps> = ({
+    text, onClick, buttonType = 'primary',
 }) =>
     <Button
-        aria-label={`Button ${text}`}
-        className={classes.gameButton}
-        onClick={onClick}>
+        className={classes[buttonType]}
+        aria-label={text}
+        onClick={onClick}
+        role='button'
+        tabIndex={0}>
         <GameTextTitle>
             {text}
         </GameTextTitle>
     </Button>
-
