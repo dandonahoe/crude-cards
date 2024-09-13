@@ -1,7 +1,6 @@
 import { ReactNode } from 'react';
 
 export interface MenuItemProps {
-
     onClick : (id : string) => void;
     text    : string;
     icon    : ReactNode;
@@ -9,7 +8,6 @@ export interface MenuItemProps {
 }
 
 export interface MenuLogicProps {
-
     current_player_id : string;
     game_stage        : string;
     game_code         : string;
@@ -21,10 +19,10 @@ export interface GameMenuBurgerProps {
 }
 
 export interface GameMenuDropdownProps {
-    toggle: () => void;
+    toggle : () => void;
 }
 
 export interface GameMenuItemsProps {
-    menuItems: { id: string; icon: React.ReactNode; text: string }[];
-    toggle: (is : string) => void;
+    menuItems : { id : string; icon : React.ReactNode; text : string }[];
+    toggle    : (is : string) => void;
 }
