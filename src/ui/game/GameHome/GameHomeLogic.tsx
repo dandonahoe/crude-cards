@@ -6,27 +6,28 @@ import { GameHomeHandlers } from './type';
 
 export const Logic : GameHomeHandlers = {
 
-    sanitizeGameCode : (input: string): string =>
+    sanitizeGameCode : (input : string) : string =>
         input.replace(/[^a-zA-Z0-9]/g, '').trim().toLowerCase(),
 
-    handleStartGame : (dispatch: Dispatch<UnknownAction>): CA =>
+    handleStartGame : (dispatch : Dispatch<UnknownAction>) : CA =>
         dispatch(GameAction.createGame({})),
 
-    handleJoinGame : (dispatch: Dispatch<any>, gameCode: string): CA =>
+    handleJoinGame : (
+        dispatch : Dispatch<UnknownAction>,
+        gameCode : string,
+    ) : CA =>
         dispatch(GameAction.joinGame({ game_code : gameCode })),
 
     handleKeyDown : (
         dispatch : Dispatch<UnknownAction>,
         e        : React.KeyboardEvent<HTMLInputElement>,
         gameCode : string,
-    ): CA => {
+    ) : CA => {
 
-        if (e.key === 'Enter') {
-            e.preventDefault();
+        e.preventDefault();
 
-            return Logic.handleJoinGame(dispatch, gameCode);
-        }
+        if (e.key !== 'Enter') dispatch(GameAction.noOp())
 
-        return dispatch(GameAction.noOp());
+        return Logic.handleJoinGame(dispatch, gameCode);
     },
 };
