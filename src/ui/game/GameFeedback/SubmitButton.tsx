@@ -1,7 +1,7 @@
 import { Group } from '@mantine/core';
 import { GameButton } from '../GameButton';
 
-export const SubmitButton = () => (
+export const SubmitButton = () =>
     <Group
         justify='center'
         align='center'
@@ -9,4 +9,3 @@ export const SubmitButton = () => (
         mt='md'>
         <GameButton text='Submit' />
     </Group>
-);
