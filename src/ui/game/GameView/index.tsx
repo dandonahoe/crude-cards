@@ -1,62 +1,54 @@
 import { GameStage } from '../../../api/src/constant/game-stage.enum';
-import { GameDealerSelection } from '../GameDealerSelection/index';
-import { GamePlayerSelection } from '../GamePlayerSelection';
 import { GameAction } from '../../../client/action/game.action';
+import { GameDealerSelection } from '../GameDealerSelection';
+import { GamePlayerSelection } from '../GamePlayerSelection';
 import { GameDealerJudge } from '../GameDealerJudge';
-import { GameResults } from '../GameResults/index';
 import { GameComplete } from '../GameComplete';
-import { useDispatch } from '@app/client/hook';
-import { useContext, useEffect } from 'react';
+import { useEffect, useContext } from 'react';
 import { GameContext } from '../GameContext';
-import { GameHome } from '../GameHome/index';
+import { GameResults } from '../GameResults';
 import { GameWaiting } from '../GameWaiting';
+import { useDispatch } from 'react-redux';
 import { GameLobby } from '../GameLobby';
 import { GameError } from '../GameError';
 import { useRouter } from 'next/router';
-import { RFC } from '../../type';
+import { GameHome } from '../GameHome';
+import { GameViewProps } from './type';
 
 
-export const GameView : RFC = () => {
+export const GameView: React.FC<GameViewProps> = () => {
 
     const dispatch = useDispatch();
     const router   = useRouter();
 
+    const { gameState, isDealer, playerDealtCard } = useContext(GameContext);
     const { gameCode } = router.query;
 
-    const { playerDealtCard, isDealer, gameState } = useContext(GameContext);
 
     useEffect(() => {
-        if (router.pathname === '/game/game_code')
-            if (gameCode && gameCode !== gameState.game_code)
-                dispatch(GameAction.joinGame({
-                    game_code : gameCode as string,
-                }));
-  }, [router.pathname, gameCode, gameState.game_code, dispatch]);
+        if (router.pathname === '/game/game_code' && gameCode && gameCode !== gameState.game_code)
+            dispatch(GameAction.joinGame({ game_code : gameCode as string }));
 
-    switch(gameState.game_stage) {
+    }, [router.pathname, gameCode, gameState.game_code, dispatch]);
 
-        case GameStage.Home:
-        case GameStage.Unknown:      return <GameHome />;
-        case GameStage.GameComplete: return <GameComplete />;
-        case GameStage.GameResults : return <GameResults />;
-        case GameStage.Lobby       : return <GameLobby />;
+    switch (gameState.game_stage) {
 
-        case GameStage.DealerPickBlackCard: {
-            if(isDealer)
-                return<GameDealerSelection />
+        case GameStage.GameComplete : return <GameComplete />;
+        case GameStage.GameResults  : return <GameResults />;
+        case GameStage.Lobby        : return <GameLobby />;
+        case GameStage.Home         : return <GameHome />;
 
-            if(gameState.hand_number > 0)
-                return <GameResults />;
-
-            return <GameLobby />;
-        }
-
-        case GameStage.PlayerPickWhiteCard:
+        case GameStage.PlayerPickWhiteCard :
             return isDealer || playerDealtCard
                 ? <GameWaiting />
-                : <GamePlayerSelection />
+                : <GamePlayerSelection />;
 
-        case GameStage.DealerPickWinner:
+        case GameStage.DealerPickBlackCard :
+            return isDealer
+                ? <GameDealerSelection />
+                : <GameLobby />;
+
+        case GameStage.DealerPickWinner    :
             return isDealer
                 ? <GameDealerJudge />
                 : <GameWaiting />;
@@ -64,4 +56,4 @@ export const GameView : RFC = () => {
         default:
             return <GameError />;
     }
-}
+};

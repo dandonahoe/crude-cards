@@ -1,8 +1,8 @@
 import { selectTimer } from '@app/client/selector/game';
 import { getTimeConfig } from './sharedLogic';
+import classes from './GameToast.module.css';
 import { TimerSymbol } from './TimerSymbol';
 import { useSelector } from 'react-redux';
-import classes from './style.module.css';
 import { Box } from '@mantine/core';
 import { RFC } from '@app/ui/type';
 
