@@ -6,12 +6,12 @@ import { RFC } from '@app/ui/type';
 
 
 export const GameButton: RFC<GameButtonProps> = ({
-    text, onClick, buttonType = 'primary',
+    text, onClick = null, buttonType = 'primary',
 }) =>
     <Button
         className={classes[buttonType]}
+        onClick={onClick ?? (() => {})}
         aria-label={text}
-        onClick={onClick}
         role='button'
         tabIndex={0}>
         <GameTextTitle>

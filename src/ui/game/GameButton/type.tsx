@@ -2,6 +2,6 @@
 
 export interface GameButtonProps {
     buttonType ?: 'primary' | 'secondary' | 'tertiary';
-    onClick     : () => void;
+    onClick    ?: () => void;
     text        : string;
 }

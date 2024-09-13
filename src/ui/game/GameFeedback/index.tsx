@@ -1,37 +1,19 @@
-import { Button, Group, TextInput, Textarea, Text } from '@mantine/core';
-import { CardColor } from '../../../api/src/constant/card-color.enum';
 import { GameAction } from '../../../client/action/game.action';
+import { Group, TextInput, Textarea } from '@mantine/core';
 import { zodResolver } from 'mantine-form-zod-resolver';
 import { useFocusTrap } from '@mantine/hooks';
+import { GameButton } from '../GameButton';
 import { useDispatch } from 'react-redux';
 import { useForm } from '@mantine/form';
 import { GameText } from '../GameText';
+import { schema } from './validation';
+import { FeedbackForm } from './type';
 import { RFC } from '@app/ui/type';
 import { useState } from 'react';
-import { z } from 'zod';
 
-
-interface FeedbackForm {
-    name    : string;
-    email   : string;
-    message : string;
-}
-
-const schema = z.object({
-    name : z.string().min(1, {
-        message : 'Name should have at least 2 letters',
-    }),
-
-    email : z.string().email({
-        message : 'Invalid email',
-    }),
-
-    message : z.string().min(1, {
-        message : 'Name should have at least 2 letters',
-    }),
-});
 
 export const GameFeedback : RFC = () => {
+
     const form = useForm({
         validate : zodResolver(schema),
 
@@ -62,21 +44,21 @@ export const GameFeedback : RFC = () => {
 
     if(isSubmitted)
         return (
-            <Text fw={600}>
+            <GameText>
                 {'Thank you for your feedback!'}
-            </Text>
+            </GameText>
         );
 
     return (
         <form onSubmit={form.onSubmit(handleSubmit)}>
             <TextInput
-                fw={600}
-                ref={focusTrapRef}
                 {...form.getInputProps('name')}
                 key={form.key('name')}
                 withAsterisk={true}
+                ref={focusTrapRef}
                 aria-label='Name'
                 label='Name'
+                fw={600}
                 tabIndex={0} />
             <TextInput
                 {...form.getInputProps('email')}
@@ -90,27 +72,18 @@ export const GameFeedback : RFC = () => {
             <Textarea
                 {...form.getInputProps('message')}
                 key={form.key('message')}
-                fw={600}
-                withAsterisk={true}
                 aria-label='Message'
+                withAsterisk={true}
                 label='Message'
                 tabIndex={0}
+                fw={600}
                 rows={4} />
             <Group
                 justify='center'
                 align='center'
                 tabIndex={0}
                 mt='md'>
-                <Button
-                    variant='outline'
-                    color={CardColor.Black}
-                    size='sm'
-                    m='lg'
-                    type='submit'>
-                    <GameText>
-                        {'Submit'}
-                    </GameText>
-                </Button>
+                <GameButton text='Submit' />
             </Group>
         </form>
     );
