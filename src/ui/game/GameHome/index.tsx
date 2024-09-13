@@ -1,8 +1,8 @@
-import { handleStartGame, handleJoinGame, handleKeyDown, sanitizeGameCode } from './GameHomeHandlers';
 import { TextInput, Group } from '@mantine/core';
 import { useDispatch } from '@app/client/hook';
 import { GameBoxCentered } from '../GameBox';
 import { GameButton } from '../GameButton';
+import { Logic } from './GameHomeLogic';
 import { RFC } from '@app/ui/type';
 import { useState } from 'react';
 
@@ -13,12 +13,12 @@ export const GameHome: RFC = () => {
     const dispatch = useDispatch();
 
     const handleGameCodeChange = (e: React.ChangeEvent<HTMLInputElement>) =>
-        setGameCode(sanitizeGameCode(e.target.value));
+        setGameCode(Logic.sanitizeGameCode(e.target.value));
 
     return (
         <GameBoxCentered>
             <TextInput
-                onKeyDown={e => handleKeyDown(dispatch, e, gameCode)}
+                onKeyDown={e => Logic.handleKeyDown(dispatch, e, gameCode)}
                 onChange={handleGameCodeChange}
                 placeholder='Enter game code'
                 value={gameCode}
@@ -26,11 +26,11 @@ export const GameHome: RFC = () => {
                 mb='md'/>
             <Group>
                 <GameButton
-                    onClick={() => handleStartGame(dispatch)}
+                    onClick={() => Logic.handleStartGame(dispatch)}
                     text='Start Game' />
                 <GameButton
-                    onClick={() => handleJoinGame(dispatch, gameCode)}
-                    text='Join Game' />
+                    onClick={() => Logic.handleJoinGame(dispatch, gameCode)}
+                    text='Join Game'/>
             </Group>
         </GameBoxCentered>
     );
