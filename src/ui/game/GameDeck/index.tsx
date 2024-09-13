@@ -1,5 +1,6 @@
+import { GameStackType } from '../GameStack/type';
 import { GameCardList } from './GameCardList';
-import { Stack } from '@mantine/core';
+import { GameStack } from '../GameStack';
 import { RFC } from '@app/ui/type';
 import { Props } from './type';
 
@@ -7,10 +8,8 @@ import { Props } from './type';
 export const GameDeck: RFC<Props> = ({
     onCardClicked, cards,
 }) =>
-    <Stack
-        justify='center'
-        align='center'>
+    <GameStack type={GameStackType.FullHeightCentered}>
         <GameCardList
             onCardClicked={onCardClicked}
             cards={cards} />
-    </Stack>
+    </GameStack>

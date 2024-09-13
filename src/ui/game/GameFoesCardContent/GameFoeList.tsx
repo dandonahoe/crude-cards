@@ -1,19 +1,15 @@
+import { GameStackType } from '../GameStack/type';
 import { GameFoeListProps } from './type';
-import { Stack } from '@mantine/core';
+import { GameStack } from '../GameStack';
 import { GameFoe } from '../GameFoe';
 import { RFC } from '@app/ui/type';
 
 
-export const GameFoeList: RFC<GameFoeListProps> = ({ foes }) => (
-    <Stack
-        justify='center'
-        align='center'
-        mt='xl'
-        mb='xl'>
-        {foes.map(player => (
+export const GameFoeList: RFC<GameFoeListProps> = ({ foes }) =>
+    <GameStack type={GameStackType.Centered}>
+        {foes.map(player =>
             <GameFoe
                 player={player}
-                key={player.id} />
-        ))}
-    </Stack>
-);
+                key={player.id} />,
+        )}
+    </GameStack>

@@ -1,7 +1,8 @@
 import { CardColor } from '../../../../api/src/constant/card-color.enum';
+import { GameStackType } from '../../GameStack/type';
 import { GameContext } from '../../GameContext';
 import { GameBanner } from '../../GameBanner';
-import { Stack } from '@mantine/core';
+import { GameStack } from '../../GameStack';
 import { RFC } from '../../../type';
 import { useContext } from 'react';
 
@@ -19,16 +20,11 @@ export const DealerPickWinner : RFC = () => {
         );
 
     return (
-        <Stack
-            justify='center'
-            align='center'
-            pb='xl'>
+        <GameStack type={GameStackType.Centered}>
             <GameBanner
                 subtitle={dealerDealtCard?.text ?? ''}
                 color={CardColor.White}
                 text='Pick a Winner' />
-        </Stack>
+        </GameStack>
     );
-
-
 }
