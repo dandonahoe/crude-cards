@@ -1,18 +1,17 @@
 import { GameAction } from '../../../client/action/game.action';
+import { CardDTO } from '../../../api/src/game/dtos/card.dto';
 import { CA } from '../../../constant/framework/CoreAction';
 import { GameContext } from '../GameContext';
+import { GameBoxCentered } from '../GameBox';
 import { useDispatch } from 'react-redux';
 import { GameDeck } from '../GameDeck';
 import { RFC } from '@app/ui/type';
 import { useContext } from 'react';
-import { Flex } from '@mantine/core';
-import { CardDTO } from '../../../api/src/game/dtos/card.dto';
 
 
 export const GameDealerSelection : RFC = () => {
 
     const { dealerCards } = useContext(GameContext);
-
     const dispatch = useDispatch();
 
     const handleCardClicked = (card : CardDTO) : CA =>
@@ -21,13 +20,10 @@ export const GameDealerSelection : RFC = () => {
         }));
 
     return (
-        <Flex
-            justify='center'
-            align='center'>
-
+        <GameBoxCentered>
             <GameDeck
                 onCardClicked={handleCardClicked}
                 cards={dealerCards}  />
-        </Flex>
+        </GameBoxCentered>
     );
 };
