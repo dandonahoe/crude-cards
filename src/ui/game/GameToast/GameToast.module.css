@@ -1,5 +1,4 @@
 .toast {
-    /* Styling for the toast box */
     position: fixed;
     bottom: 10px;
     left: 50%;
@@ -11,7 +10,6 @@
 }
 
 .symbol {
-    /* Symbol box styling */
     padding: 5px;
     text-align: center;
     font-size: 1.2em;
