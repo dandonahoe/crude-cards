@@ -14,21 +14,45 @@ interface ScanConfig {
     excludePaths       : string[];
     outputDir          : string;
     srcDir             : string;
-    includeTests?      : boolean; // New flag to include or exclude test files
+    includeTests       : boolean; // New flag to include or exclude test files
 }
 
-const scanJobList: ScanConfig[] = [
-    {
-        outputDescription : 'This document contains the codebase for the Q1 project.',
-        fileTypesToScan   : ['.ts', '.tsx', '.js'],
-        outputFilePath    : path.join(__dirname, './output/codebase-q1.md'),
-        excludePaths      : [
-            path.join(__dirname, '../../../../aws/q1/node_modules'),
-        ],
-        outputHeader : '## Q1 Codebase\n\n',
-        outputDir    : path.join(__dirname, './output'),
-        srcDir       : path.join(__dirname, '../../../../aws/q1'),
-        includeTests : false, // Do not include test files
+const scanJobList: ScanConfig[] = [{
+        outputDescription : 'This document contains all the frontend codebase for the Crude Cards game.',
+        fileTypesToScan   : ['.ts', '.tsx'],
+        outputFilePath    : path.join(__dirname, './output/codebase-crude-cards-frontend.md'),
+        excludePaths      : [],
+        outputHeader      : '## Frontend Codebase\n\n',
+        includeTests      : false,
+        outputDir         : path.join(__dirname, './output'),
+        srcDir            : path.join(__dirname, '../../../src/ui/game'),
+    }, {
+        outputDescription : 'This document contains all the backend codebase for the Crude Cards game.',
+        fileTypesToScan   : ['.ts', '.tsx'],
+        outputFilePath    : path.join(__dirname, './output/codebase-crude-cards-backend.md'),
+        excludePaths      : [],
+        outputHeader      : '## Backend Codebase\n\n',
+        includeTests      : false,
+        outputDir         : path.join(__dirname, './output'),
+        srcDir            : path.join(__dirname, '../../../src/api/src'),
+    }, {
+        outputDescription : 'This document contains the codebase for the Attorney AI project.',
+        fileTypesToScan   : ['.ts', '.tsx'],
+        outputFilePath    : path.join(__dirname, './output/codebase-attorney-ai.md'),
+        excludePaths      : [path.join(__dirname, '../../../src/api')],
+        outputHeader      : '## Attorney AI Codebase\n\n',
+        includeTests      : false,
+        outputDir         : path.join(__dirname, './output'),
+        srcDir            : path.join(__dirname, '../../../src'),
+    }, {
+        outputDescription : 'Experimental integration of Genertive AI and neo4js',
+        fileTypesToScan   : ['.ts'],
+        outputFilePath    : path.join(__dirname, './output/codebase-narrative.md'),
+        excludePaths      : [path.join(__dirname, '../narrative')],
+        outputHeader      : '## Generative AI and neo4js Experiment\n\n',
+        includeTests      : false,
+        outputDir         : path.join(__dirname, './output'),
+        srcDir            : path.join(__dirname, '../../../src'),
     },
 ];
 
