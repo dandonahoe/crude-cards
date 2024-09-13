@@ -1,5 +1,5 @@
-import { CoreAppRoot } from '@app/type/framework/core/CoreAppRoot';
 import { GameStateDTO } from '../../api/src/game/dtos/game-state.dto';
+import { CoreAppRoot } from '@app/type/framework/core/CoreAppRoot';
 
 const {
     player_list : _player_list,
@@ -14,7 +14,7 @@ export const InitialState : CoreAppRoot = {
         previousHandDealerCardId : null,
         previousHandWinnerCardId : null,
 
-        popupTypeId : null,
+        popupType : null,
 
         playerLookup : {},
         cardDeck     : {},

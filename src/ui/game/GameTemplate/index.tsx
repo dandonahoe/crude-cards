@@ -12,8 +12,8 @@ import { Props } from './type';
 import {
     selectDealerDealtCard, selectPlayerDealtCard,
     selectCurrentPlayer, selectDealerCards,
-    selectGameState, selectPopupTypeId,
     selectPlayerCards, selectIsDealer,
+    selectGameState, selectPopupType,
 } from '@app/client/selector/game';
 
 
@@ -26,7 +26,7 @@ export const GameTemplate : RFC<Props>= ({
     const currentPlayer   = useSelector(selectCurrentPlayer  );
     const dealerCards     = useSelector(selectDealerCards    );
     const playerCards     = useSelector(selectPlayerCards    );
-    const popupTypeId     = useSelector(selectPopupTypeId    );
+    const popupType       = useSelector(selectPopupType      );
     const gameState       = useSelector(selectGameState      );
     const isDealer        = useSelector(selectIsDealer       );
 
@@ -37,7 +37,7 @@ export const GameTemplate : RFC<Props>= ({
             value={{
                 currentPlayer, dealerCards, playerCards,
                 dealerDealtCard, playerDealtCard,
-                gameState,  isDealer, popupTypeId,
+                gameState,  isDealer, popupType,
                 headerHeight,
             }}>
             <MantineProvider

@@ -94,9 +94,9 @@ export const selectWinnerCard = createSelector(
     },
 );
 
-export const selectPopupTypeId = createSelector(
+export const selectPopupType = createSelector(
     selectGame,
-    game => game.popupTypeId,
+    game => game.popupType,
 );
 
 export const selectIsDealer = createSelector(

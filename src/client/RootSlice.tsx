@@ -5,9 +5,8 @@ import { ProjectName } from '@app/constant/framework/ProjectName';
 import { GameStage } from '../api/src/constant/game-stage.enum';
 import { PlayerDTO } from '../api/src/game/dtos/player.dto';
 import { CardDTO } from '../api/src/game/dtos/card.dto';
-import { createSlice } from '@reduxjs/toolkit';
 import { GameAction } from './action/game.action';
-
+import { createSlice } from '@reduxjs/toolkit';
 import _ from 'lodash';
 
 
@@ -20,7 +19,7 @@ const slice = createSlice({
 
         builder.addCase(GameAction.resetGameState, state => {
             state.game.gameState = GameStateDTO.Default;
-            state.game.popupTypeId = null;
+            state.game.popupType = null;
         });
 
         builder.addCase(GameAction.updateGameState, (state, { payload : gameStateString }) => {
@@ -99,14 +98,14 @@ const slice = createSlice({
         builder.addCase(GameAction.menuItemClicked, (state, { payload : menuItemClicked }) => {
             state.game = {
                 ...state.game,
-                popupTypeId : menuItemClicked.item_id as GamePopupType,
+                popupType : menuItemClicked.item_id as GamePopupType,
             };
         });
 
         builder.addCase(GameAction.closePopup, state => {
             state.game = {
                 ...state.game,
-                popupTypeId : null,
+                popupType : null,
             };
         });
     },

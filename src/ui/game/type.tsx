@@ -1,3 +1,4 @@
+import { GamePopupType } from '../../api/src/constant/game-popup-type.enum';
 import { GameStateDTO } from '../../api/src/game/dtos/game-state.dto';
 import { PlayerDTO } from '../../api/src/game/dtos/player.dto';
 import { CardDTO } from '../../api/src/game/dtos/card.dto';
@@ -8,9 +9,9 @@ export interface GameContextType {
     playerDealtCard : CardDTO   | null;
     currentPlayer   : PlayerDTO | null;
     headerHeight    : number;
-    popupTypeId     : string    | null;
     playerCards     : CardDTO[];
     dealerCards     : CardDTO[];
+    popupType       : GamePopupType | null;
     gameState       : GameStateDTO;
     isDealer        : boolean;
 }
