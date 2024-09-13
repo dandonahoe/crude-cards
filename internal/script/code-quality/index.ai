@@ -79,3 +79,14 @@ Upload a codebase MD file
 
 im refactoring the fronend to make it more 508 and usable. What else can I do to improve this?
 
+Show me every instantce of <Stack> from Mantine, just the previous 3 and following 3 lines of code around the opening and cliosing of
+a tag mentioned
+
+Can can also scan (above) for similar types, like `if theres a variable called authToken and always has a declaration of string|null, then create a type for it
+
+For types specific to a component, put the type in the same file as the component and for all sub components, put the type in the same file as the parent component,
+in other words, keep all local types in a central type.ts file as close to the parent component as possible, and forbid (via code review) use of those
+types from outside that component's directory. If another component reaches out like ../../components/OtherComponent/types.ts, then that's a code smell and
+we need more of these checks to fix those as well. I dont think linting rules can figure that out.
+
+
