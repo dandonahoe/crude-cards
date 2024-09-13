@@ -4,9 +4,10 @@ import { getCardStyles } from './cardStyles';
 import { Box } from '@mantine/core';
 import { RFC } from '@app/ui/type';
 
+
 export const GameCardContainer: RFC<GameCardContainerProps> = ({
-    isClickable = false,
     children, onClick, color,
+    isClickable = false,
 }) => {
     const { isHovered, refHover } = useHoverEffect();
 
