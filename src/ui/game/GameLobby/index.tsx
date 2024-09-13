@@ -1,58 +1,27 @@
 import { CardColor } from '../../../api/src/constant/card-color.enum';
-import { GameStage } from '../../../api/src/constant/game-stage.enum';
-import { UsernameCardContent } from '../UsernameCardContent/index';
 import { selectFoes } from '../../../client/selector/game';
-import { GameCardContainer } from '../GameCardContainer';
-import { ShareCardContent } from '../ShareCardContent';
 import { GameDeckLayout } from '../GameDeckLayout';
-import { Flex, List, Text } from '@mantine/core';
+import { PlayerWarning } from './PlayerWarning';
 import { useSelector } from '@app/client/hook';
 import { GameContext } from '../GameContext';
-import { GameFoe } from '../GameFoe';
-import { RFC } from '@app/ui/type';
+import { GameBoxCentered } from '../GameBox';
+import { ShareCard } from './ShareCard';
+import { FoeList } from './FoeList';
 import { useContext } from 'react';
+import { RFC } from '../../type';
 
 
-export const GameLobby: RFC = () => {
-
-    const foes = useSelector(selectFoes);
-
-    const foeCount = foes.length;
+export const GameLobby : RFC = () => {
 
     const { gameState } = useContext(GameContext);
 
-    const warningMessage = foes.length >= 2
-        ? null
-        : (
-            <GameCardContainer color={CardColor.Black}>
-                <Text
-                    fw={600}
-                    mb='xl'>
-                    {'Minimum 3 Players'}
-                </Text>
-                <Text
-                    ta='center'
-                    fz='sm'
-                    fw={600}>
-                    {`Need ${2 - foes.length} more players`}
-                </Text>
-            </GameCardContainer>
-        );
+    if(!gameState.game_code)
+        throw new Error('Game Code is not defined');
 
-    const shareCard = gameState.game_stage === GameStage.DealerPickBlackCard
-        ? null
-        : (
-            <GameCardContainer
-                color={CardColor.Black}
-                isClickable={true}>
-                <ShareCardContent />
-            </GameCardContainer>
-        );
+    const foes = useSelector(selectFoes);
 
     return (
-        <Flex
-            justify='center'
-            align='center'>
+        <GameBoxCentered>
             <GameDeckLayout
                 verticleWiggleFactor={100}
                 cardOverlapFactor={400}
@@ -60,45 +29,17 @@ export const GameLobby: RFC = () => {
                 wiggleFactor={40}
                 tiltFactor={10}
                 cards={[
-                    shareCard,
-                    <GameCardContainer
-                        key='two'
-                        color={CardColor.White}>
-                        <UsernameCardContent />
-                    </GameCardContainer>,
-                    warningMessage,
-                    <GameCardContainer
-                        key='foes'
-                        color={CardColor.White}>
-                        {foeCount === 0 &&
-                            <Text
-                                m='xl'
-                                fw={600}
-                                ta='center'
-                                fz='md'>
-                                {`No Players Yet, Share Game Code "${gameState.game_code}" to Invite People`}
-                            </Text>
-                        }
-                        {foeCount > 0 &&
-                            <>
-                                <Text
-                                    size='md'
-                                    fw={600}
-                                    mt='xl'
-                                    mb='md'>
-                                    {'Other Players'}
-                                </Text>
-                                <List>
-                                    {foes.map(player =>
-                                        <List.Item key={player.id}>
-                                            <GameFoe player={player ?? 'Invalid Player'} />
-                                        </List.Item>,
-                                    )}
-                                </List>
-                            </>
-                        }
-                    </GameCardContainer>,
-            ]} />
-        </Flex>
+                    <ShareCard
+                        gameStage={gameState.game_stage}
+                        key='share-card' />,
+                    <PlayerWarning
+                        foeCount={foes.length}
+                        key='player-warning' />,
+                    <FoeList
+                        foes={foes}
+                        gameCode={gameState.game_code}
+                        key='foe-list' />,
+                ]}/>
+        </GameBoxCentered>
     );
 };

@@ -1,9 +1,10 @@
-import { Stack, Button } from '@mantine/core';
-import { GameDeckLayout } from '../GameDeckLayout';
 import { CardColor } from '../../../api/src/constant/card-color.enum';
+import { GameDeckLayout } from '../GameDeckLayout';
+import { Stack, Button } from '@mantine/core';
 import { RFC } from '@app/ui/type';
 
-export const GameHomeLayout: RFC<{ children: React.ReactNode, onResize: () => void }> = ({ children, onResize }) => (
+
+export const GameHomeLayout: RFC<{ onResize: () => void }> = ({ onResize }) => (
     <Stack
         justify='center'
         align='center'
