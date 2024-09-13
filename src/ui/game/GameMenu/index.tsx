@@ -1,19 +1,24 @@
+import { CardColor } from '../../../api/src/constant/card-color.enum';
 import { GameAction } from '../../../client/action/game.action';
 import { CA } from '../../../constant/framework/CoreAction';
-import { Burger, Menu, Text } from '@mantine/core';
 import { getFilteredMenuItems } from './menuLogic';
 import { useDispatch } from '@app/client/hook';
 import { useDisclosure } from '@mantine/hooks';
 import { GameMenuItem } from './GameMenuItem';
+import { Burger, Menu } from '@mantine/core';
 import { GameContext } from '../GameContext';
+import { GameText } from '../GameText';
 import { RFC } from '@app/ui/type';
 import { useContext } from 'react';
 
 
 export const GameMenu: RFC = () => {
-    const dispatch = useDispatch();
+
     const { gameState, currentPlayer } = useContext(GameContext);
+
     const [opened, { toggle }] = useDisclosure();
+
+    const dispatch = useDispatch();
 
     const handleClickMenu = (menuItemId: string): CA => {
         toggle();
@@ -35,20 +40,18 @@ export const GameMenu: RFC = () => {
             width={250}>
             <Menu.Target>
                 <Burger
-                    tabIndex={0}
                     aria-label='Toggle Main Menu'
+                    color={CardColor.White}
                     opened={opened}
-                    color='#fff'
+                    tabIndex={0}
                     size='lg'/>
             </Menu.Target>
             <Menu.Dropdown>
                 {currentPlayer?.username && (
                     <Menu.Label>
-                        <Text
-                            fz='xs'
-                            fw={600}>
+                        <GameText>
                             {currentPlayer?.username}
-                        </Text>
+                        </GameText>
                     </Menu.Label>
                 )}
                 {finalMenuItems.map((item, index) => (
