@@ -15,9 +15,7 @@ import { useContext } from 'react';
 export const GameMenu: RFC = () => {
 
     const { gameState, currentPlayer } = useContext(GameContext);
-
     const [opened, { toggle }] = useDisclosure();
-
     const dispatch = useDispatch();
 
     const handleClickMenu = (menuItemId: string): CA => {

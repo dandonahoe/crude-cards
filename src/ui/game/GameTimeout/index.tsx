@@ -1,16 +1,14 @@
-import { Box, Text, Title } from '@mantine/core';
+import { GameText, GameTextTitle } from '../GameText';
+import { GameBoxCentered } from '../GameBox';
 import { RFC } from '@app/ui/type';
 
 
 export const GameTimeout : RFC = () =>
-    <Box
-        mb='md'
-        mt='lg'
-        ta='center'>
-        <Title>
+    <GameBoxCentered>
+        <GameTextTitle>
             {'Too Slow'}
-        </Title>
-        <Text>
+        </GameTextTitle>
+        <GameText>
             {'You didn\'t pick a card and are banished from this round.'}
-        </Text>
-    </Box>
+        </GameText>
+    </GameBoxCentered>

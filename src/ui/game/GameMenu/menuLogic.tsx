@@ -14,6 +14,5 @@ export const getFilteredMenuItems = (gameState : GameStateDTO) => {
             item => item.id !== 'Leave' && item.id !== 'Scoreboard',
         );
 
-
     return finalMenuItemList;
 };

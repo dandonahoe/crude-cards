@@ -6,7 +6,9 @@ import { ShareCardProps } from './type';
 import { RFC } from '../../type';
 
 
-export const ShareCard: RFC<ShareCardProps> = ({ gameStage }) => {
+export const ShareCard: RFC<ShareCardProps> = ({
+    gameStage,
+}) => {
 
     if (gameStage === GameStage.DealerPickBlackCard)
         return null;
