@@ -6,15 +6,16 @@ import { ShareCardProps } from './type';
 import { RFC } from '../../type';
 
 
-// I dont know if I like this or hate this
-export const ShareCard : RFC<ShareCardProps> = ({
-    gameStage,
-}) =>
-    gameStage !== GameStage.DealerPickBlackCard
-        ?
-            <GameCardContainer
-                color={CardColor.Black}
-                isClickable={true}>
-                <ShareCardContent />
-            </GameCardContainer>
-         : null;
+export const ShareCard: RFC<ShareCardProps> = ({ gameStage }) => {
+
+    if (gameStage === GameStage.DealerPickBlackCard)
+        return null;
+
+    return (
+        <GameCardContainer
+            color={CardColor.Black}
+            isClickable={true}>
+            <ShareCardContent />
+        </GameCardContainer>
+    );
+};
