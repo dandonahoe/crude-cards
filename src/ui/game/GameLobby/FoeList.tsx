@@ -1,27 +1,24 @@
 import { CardColor } from '../../../api/src/constant/card-color.enum';
 import { GameCardContainer } from '../GameCardContainer';
-import { List, Text } from '@mantine/core';
+import { GameText } from '../GameText';
 import { FoeListProps } from './type';
+import { List } from '@mantine/core';
 import { GameFoe } from '../GameFoe';
 import { RFC } from '../../type';
 
-export const FoeList : RFC<FoeListProps> = ({ foes, gameCode }) =>
+export const FoeList : RFC<FoeListProps> = ({
+    foes, gameCode,
+}) =>
     <GameCardContainer color={CardColor.White}>
         {foes.length === 0 ? (
-            <Text
-                m='xl'
-                fw={600}
-                ta='center'
-                fz='md'>
+            <GameText>
                 {`No Players Yet, Share Game Code "${gameCode}" to Invite People`}
-            </Text>
+            </GameText>
         ) : (
             <>
-                <Text
-                    size='md'
-                    fw={600}
-                    mt='xl'
-                    mb='md'>{'Other Players'}</Text>
+                <GameText>
+                    {'Other Players'}
+                </GameText>
                 <List>
                     {foes.map(player => (
                         <List.Item key={player.id}>

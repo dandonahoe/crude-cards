@@ -7,7 +7,9 @@ import { RFC } from '../../type';
 
 
 // I dont know if I like this or hate this
-export const ShareCard : RFC<ShareCardProps> = ({ gameStage }) =>
+export const ShareCard : RFC<ShareCardProps> = ({
+    gameStage,
+}) =>
     gameStage !== GameStage.DealerPickBlackCard
         ?
             <GameCardContainer

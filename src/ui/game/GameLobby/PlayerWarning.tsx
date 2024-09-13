@@ -5,7 +5,9 @@ import { PlayerWarningProps } from './type';
 import { Text } from '@mantine/core';
 
 
-export const PlayerWarning : RFC<PlayerWarningProps> = ({ foeCount }) => (
+export const PlayerWarning : RFC<PlayerWarningProps> = ({
+    foeCount,
+}) => (
     foeCount < 3 ? (
         <GameCardContainer color={CardColor.Black}>
             <Text
