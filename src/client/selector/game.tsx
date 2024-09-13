@@ -230,3 +230,10 @@ export const selectDealerCards = createSelector(
     (gameState, cardDeck) => gameState.dealer_card_id_list.map(
         card_id => cardDeck[card_id]),
 );
+
+export const selectGameResults = createSelector(
+    selectPreviousHandDealerCard, selectPreviousHandWinnerCard, selectSessionEndMessage, selectAllPlayerStatus, selectIsPlayerWinner,
+    (previousHandDealerCard, previousHandWinnerCard, sessionEndMessage, allPlayerStatus, isPlayerWinner) => ({
+        previousHandDealerCard, previousHandWinnerCard, sessionEndMessage, allPlayerStatus, isPlayerWinner,
+    }),
+);

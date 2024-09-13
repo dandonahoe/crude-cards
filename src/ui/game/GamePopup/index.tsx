@@ -6,6 +6,7 @@ import { useContext } from 'react';
 import { RFC } from '@app/ui/type';
 
 export const GamePopup: RFC = () => {
+
     const { popupType } = useContext(GameContext);
     const dispatch = useDispatch();
 
@@ -15,7 +16,7 @@ export const GamePopup: RFC = () => {
 
     return (
         <PopupModal
-            popupType={popupType}
-            handleClosePopup={handleClosePopup}/>
+            handleClosePopup={handleClosePopup}
+            popupType={popupType} />
     );
 };
