@@ -1,14 +1,14 @@
 import { IconPaperclip } from '@tabler/icons-react';
-import styles from './GameShareIcon.module.css';
+import classes from './GameShare.module.css';
 import { Flex, Stack } from '@mantine/core';
 
 
 export const GameShareIcon = () =>
-    <Flex className={styles.iconContainer}>
-        <Stack className={styles.paperclipIcon}>
+    <Flex className={classes.iconContainer}>
+        <Stack className={classes.paperclipIcon}>
             <IconPaperclip
-                size={30}
-                stroke={2} />
+                stroke={2}
+                size={30} />
         </Stack>
     </Flex>
 

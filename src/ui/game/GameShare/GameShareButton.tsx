@@ -1,8 +1,7 @@
 import { Env } from '../../../Env';
 import {
-    WhatsappShareButton, TwitterShareButton,
-    EmailShareButton, WhatsappIcon,
-    TwitterIcon, EmailIcon,
+    WhatsappShareButton, TwitterShareButton, EmailIcon,
+    EmailShareButton, WhatsappIcon, TwitterIcon,
 } from 'react-share';
 
 

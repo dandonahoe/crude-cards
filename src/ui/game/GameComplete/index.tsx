@@ -50,7 +50,7 @@ export const GameComplete : RFC = () => {
                 </GameTextSmall>
                 <GameBox size='sm'>
                     <GameStatusTable
-                        playerStatusList={allPlayerStatus!}
+                        playerStatusList={allPlayerStatus}
                         shouldShowScore={true}
                         shouldShowDone={false} />
                 </GameBox>

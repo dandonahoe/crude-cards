@@ -1,7 +1,7 @@
 import { CardColor } from '../../../api/src/constant/card-color.enum';
 import classes from './GameText.module.css';
 import { PropsWithChildren } from 'react';
-import { Text } from '@mantine/core';
+import { Box, Text } from '@mantine/core';
 import { RFC } from '@app/ui/type';
 import {
     GameTextSubtitleProps, Props, GameTextType,
@@ -79,6 +79,13 @@ export const GameTextSubtitle : RFC<GameTextSubtitleProps> = ({ children, color 
         color={color}>
         {children}
     </GameText>
+
+export const GameTextCentered : RFC<PropsWithChildren> = ({ children }) =>
+    <Box ta='center'>
+        <GameText>
+            {children}
+        </GameText>
+    </Box>
 
 export const GameTextCard : RFC<GameTextCardProps> = ({ children, color }) =>
     <GameText
