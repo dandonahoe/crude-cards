@@ -13,10 +13,10 @@ import { GameLobby } from '../GameLobby';
 import { GameError } from '../GameError';
 import { useRouter } from 'next/router';
 import { GameHome } from '../GameHome';
-import { GameViewProps } from './type';
+import { RFC } from '../../type';
 
 
-export const GameView: React.FC<GameViewProps> = () => {
+export const GameView: RFC = () => {
 
     const dispatch = useDispatch();
     const router   = useRouter();
