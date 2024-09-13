@@ -14,3 +14,17 @@ export interface MenuLogicProps {
     game_stage        : string;
     game_code         : string;
 }
+
+export interface GameMenuBurgerProps {
+    opened : boolean;
+    toggle : () => void;
+}
+
+export interface GameMenuDropdownProps {
+    toggle: () => void;
+}
+
+export interface GameMenuItemsProps {
+    menuItems: { id: string; icon: React.ReactNode; text: string }[];
+    toggle: (is : string) => void;
+}
