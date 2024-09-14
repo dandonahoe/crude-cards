@@ -46,7 +46,7 @@ const createCompletion = async (
             content : prompt,
         }],
         max_tokens  : 1500,
-        temperature : 0.7,
+        temperature : 0.6,
     };
 
     const chatCompletion = await openai.chat.completions.create(params);
