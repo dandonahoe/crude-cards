@@ -148,7 +148,7 @@ ${combinedPrompt}`,
 ${sanitizedCommitMessage}
 EOF`);
 console.log('\n\n\nGenerateed commit message----------------------\n\n', sanitizedCommitMessage);
-console.log('-----------------------------------------------');
+console.log('-----------------------------------------------\n\n');
 }
 
 // Run the main function
