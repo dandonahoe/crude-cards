@@ -162,12 +162,15 @@ const codeSample = `
     console.log('');
 `;
 
-    const stupidText = await createCompletion(`Generate ascii art for the terminal. It should
+    let stupidText = await createCompletion(`Generate ascii art for the terminal. It should
         display ascii art to indicate the operation completed appropriately. No more than
         500 chatacters wide. Do not include \`\`\`plaintext start, just content.
          Use the following code snippet as a reference
         for what we intend to display.
         ${codeSample}`);
+
+        stupidText = stupidText.replaceAll('```plaintext', '').trim();
+        stupidText = stupidText.replaceAll('```', '').trim();
 
 console.log(stupidText);
 }
