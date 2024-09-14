@@ -124,7 +124,7 @@ an indented bulletpoints listing the files involved, with
 "subject" describing the update in one word and not just a file name, then one more line
 giving a detailed description of the change in understandable terms but can use tech language.
 The final line should note if there is anything unusual or noteworthy, such as breaking code.
-Include a title, bullet points, and statistics in the commit message.
+Include a title, bullet points, and statistics in the commit message. Include links to github if useful.
 
 ${combinedPrompt}`,
     );
