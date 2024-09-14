@@ -295,7 +295,7 @@ export const selectGameWaitingPage = createSelector(
             playerStatus.player.id !== gameState.dealer_id) ?? [];
 
         return {
-            playersExceptDealer , isDealer,
+            playersExceptDealer, isDealer,
         };
     },
 );

@@ -1,5 +1,6 @@
 import { GameStage } from '../../../api/src/constant/game-stage.enum';
 import { PlayerStatus } from '../type';
+import { CardDTO } from '../../../api/src/game/dtos/card.dto';
 
 
 export interface GameStatusTableProps {
@@ -15,17 +16,12 @@ export interface GameCardContainerProps {
 }
 
 export interface DeckRendererProps {
-    playerDealtCard ?: Card;
-    dealerDealtCard  : Card;
+    playerDealtCard ?: CardDTO;
+    dealerDealtCard  : CardDTO;
     isDealer         : boolean;
 }
 
 export interface StatusTableRendererProps {
     playersExceptDealer : PlayerStatus[];
     gameStage           : GameStage;
-}
-
-export interface Card {
-    text : string;
-    id   : string;
 }
