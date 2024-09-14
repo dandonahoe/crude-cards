@@ -42,7 +42,8 @@ export const TextInputDebounced: RFC<Props> = ({
             value={text}
             size={size}
             style={{
-                input : {
+                border : '1px solid #f90',
+                input  : {
                     borderRadius : '10px',
                     textAlign    : 'center',
                     border       : `1px solid ${CardColor.Black}`,

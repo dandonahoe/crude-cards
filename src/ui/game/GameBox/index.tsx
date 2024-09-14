@@ -12,9 +12,11 @@ export const GameBox : RFC<Props> = ({
     if(!children) return null;
 
     const commonProps = {
-        mb : size,
-        mt : size,
+        mb     : size,
+        mt     : size,
+        border : '1px solid #f90',
     }
+
     switch(type) {
         case GameBoxType.Default:
             return (

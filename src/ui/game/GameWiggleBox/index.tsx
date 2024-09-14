@@ -19,6 +19,7 @@ export const GameWiggleBox : RFC<Props> = ({
     return (
         <Box
             style={{
+                border : '1px solid #f90',
                 rotate : `${rand() * tiltFactor - (tiltFactor / 2)}deg`,
                 width  : '100%',
                 left   : wiggleFactor * (rand() - 0.5) * 10,

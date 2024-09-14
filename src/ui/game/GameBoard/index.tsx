@@ -3,10 +3,10 @@ import { GameStackType } from '../GameStack/type';
 // import { GameDebug } from '../GameDebug';
 import { GameStack } from '../GameStack';
 // import { GameView } from '../GameView';
-import { Text } from '@mantine/core';
 import { RFC } from '@app/ui/type';
 // import { Env } from '../../../Env';
 import { Props } from './type';
+import { GameText } from '../GameText';
 
 
 // const isDebugOverlayVisible = Env.getBoolean('NEXT_PUBLIC_IS_DEBUG_OVERLAY_VISIBLE');
@@ -14,13 +14,13 @@ import { Props } from './type';
 
 export const GameBoard : RFC<Props> = () =>
     <GameStack type={GameStackType.FullHeightCentered}>
-        <Text>
-            {'GAMEBOARD BEGINNING BACK TO DEBBING'}
-        </Text>
+        <GameText>
+            {'GAMEBOARD BEGINNING BACK TO DEBBINvG'}
+        </GameText>
         {/* <GamePopup /> */}
         {/* <GameView /> */}
         {/* <GameDebug isVisible={isDebugOverlayVisible} /> */}
-        <Text>
+        <GameText>
             {'GAMEBOARD END'}
-        </Text>
+        </GameText>
     </GameStack>;
