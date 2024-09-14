@@ -22,14 +22,16 @@ enum Color {
 }
 
 // Constants
-const SpinnerChars = ['|', '/', '-', '\\']; // Spinner animation characters
+const ProgressBarWidth = 30; // Width of the progress bar in characters
 const OpenApiModel = 'gpt-4'; // OpenAI model used for completions
 const Temperature = 0.6; // Temperature for text generation randomness
 const MaxTokens = 1500; // Maximum tokens for OpenAI API completion
+const ProgressBarChar = '='; // Character used in the progress bar
 
 // Spinner state
-let spinnerIndex = 0;
+// const spinnerIndex = 0;
 let spinnerInterval: NodeJS.Timeout | null = null;
+let progress = 0; // Tracks progress for the progress bar
 
 // Initialize OpenAI with the API key from environment variables
 const openai = new OpenAI({
@@ -53,21 +55,23 @@ const rgbColor = (r: number, g: number, b: number): string => {
     return `\x1b[38;2;${r};${g};${b}m`;
 };
 
-// Start a spinner animation with color gradient
-const startSpinner = (): void => {
-    process.stdout.write('\x1b[?25l'); // Hide cursor
-    spinnerInterval = setInterval(() => {
-        const color = gradientColor(spinnerIndex); // Generate the color for current frame
-        process.stdout.write(`\r${color}${SpinnerChars[spinnerIndex++ % SpinnerChars.length]} `);
-        spinnerIndex = spinnerIndex % SpinnerChars.length;
-    }, 100);
-};
-
-// Generate a color gradient that cycles through RGB values
-const gradientColor = (index: number): string => {
-    const base = 50 + (index % 200);
+// Generate a color gradient for the progress bar
+const gradientColor = (progress: number): string => {
+    const base = (progress % 255);
 
     return rgbColor(base, 255 - base, (base * 2) % 255);
+};
+
+// Start a progress bar spinner with color change
+const startSpinner = (): void => {
+    progress = 0;
+    process.stdout.write('\x1b[?25l'); // Hide cursor
+    spinnerInterval = setInterval(() => {
+        progress = (progress + 1) % (ProgressBarWidth + 1);
+        const color = gradientColor(progress);
+        const bar = `${ProgressBarChar.repeat(progress)}${' '.repeat(ProgressBarWidth - progress)}`;
+        process.stdout.write(`\r[${color}${bar}${Color.Reset}] ${Math.floor((progress / ProgressBarWidth) * 100)}%`);
+    }, 100);
 };
 
 // Stop the spinner animation
