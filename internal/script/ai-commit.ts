@@ -21,6 +21,39 @@ function getStagedDiff(): string {
     return diff;
 }
 
+// ANSI color codes
+const colors = {
+    reset   : "\x1b[0m",
+    red     : "\x1b[31m",
+    green   : "\x1b[32m",
+    yellow  : "\x1b[33m",
+    blue    : "\x1b[34m",
+    magenta : "\x1b[35m",
+    cyan    : "\x1b[36m",
+};
+
+// Spinner animation setup
+let spinnerInterval: NodeJS.Timeout;
+const spinnerChars = ['|', '/', '-', '\\'];
+let spinnerIndex = 0;
+
+function startSpinner() {
+    process.stdout.write('\x1b[?25l'); // Hide cursor
+    spinnerInterval = setInterval(() => {
+        process.stdout.write(`\r${spinnerChars[spinnerIndex++ % spinnerChars.length]} `);
+    }, 100);
+}
+
+function stopSpinner() {
+    clearInterval(spinnerInterval);
+    process.stdout.write('\r \x1b[?25h'); // Show cursor
+}
+
+// Helper function to log colorized messages
+function logColor(message: string, color: string = colors.reset) {
+    console.log(`${color}${message}${colors.reset}`);
+}
+
 /**
  * Creates a text completion using OpenAI's API.
  *
@@ -38,26 +71,12 @@ const createCompletion = async (prompt: string): Promise<string> => {
         temperature : 0.6,
     };
 
+    startSpinner(); // Start spinner before the API call
     const chatCompletion = await openai.chat.completions.create(params);
+    stopSpinner(); // Stop spinner after the API call
 
     return chatCompletion.choices[0].message.content!.trim();
 };
-
-// ANSI color codes
-const colors = {
-    reset   : "\x1b[0m",
-    red     : "\x1b[31m",
-    green   : "\x1b[32m",
-    yellow  : "\x1b[33m",
-    blue    : "\x1b[34m",
-    magenta : "\x1b[35m",
-    cyan    : "\x1b[36m",
-};
-
-// Helper function to log colorized messages
-function logColor(message: string, color: string = colors.reset) {
-    console.log(`${color}${message}${colors.reset}`);
-}
 
 // Function to parse the diff into chunks and handle large files
 function parseDiffIntoChunks(diff: string): string[] {
@@ -124,7 +143,7 @@ an indented bulletpoints listing the files involved, with
 "subject" describing the update in one word and not just a file name, then one more line
 giving a detailed description of the change in understandable terms but can use tech language.
 The final line should note if there is anything unusual or noteworthy, such as breaking code.
-Include a title, bullet points, and statistics in the commit message. Include links to github if useful.
+Include a title, bullet points, and statistics in the commit message. Include links to GitHub if useful.
 
 ${combinedPrompt}`,
     );
@@ -136,29 +155,9 @@ ${combinedPrompt}`,
 ${sanitizedCommitMessage}
 EOF`);
 
-    // Generate ASCII art
-    const codeSample = `
-        '\x1b[38;2;255;0;0m     Color         \x1b[0m'
-        '\x1b[38;2;255;128;0m   :) Multi line ASCII Art in Color! ()()  \x1b[0m'
-    `;
-
-    let asciiArt = await createCompletion(`Generate ascii art for the terminal. It should
-        display ascii art to indicate the operation completed appropriately. No more than
-        500 characters wide and do not include commentary. Do not include \`\`\`plaintext start, just content.
-        Use the following code snippet as a reference
-        for what we intend to display.
-        ${codeSample}`);
-
-    asciiArt = asciiArt.replaceAll('```plaintext', '').trim();
-    asciiArt = asciiArt.replaceAll('```', '').trim();
-
-    logColor(asciiArt, colors.magenta);
-
     logColor('\nGenerated commit message:', colors.blue);
     console.log(sanitizedCommitMessage);
     logColor('Commit successfully generated!', colors.green);
-
-
 }
 
 // Run the main function
