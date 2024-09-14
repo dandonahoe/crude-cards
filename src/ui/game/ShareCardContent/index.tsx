@@ -13,7 +13,9 @@ import { RFC } from '@app/ui/type';
 export const ShareCardContent: RFC = () => {
 
     const { gameState } = useContext(GameContext);
+
     const [isCopied, setCopied] = useState(false);
+
     const { start } = useTimeout(() => setCopied(false), 3000);
 
     const handleCopy = () => {
