@@ -45,7 +45,7 @@ const createCompletion = async (
             role    : 'user',
             content : prompt,
         }],
-        max_tokens  : 150,
+        max_tokens  : 1500,
         temperature : 0.7,
     };
 
