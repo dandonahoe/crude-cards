@@ -38,6 +38,7 @@ const App : RFC<CustomPageProps> = ({
             <MantineProvider theme={AppTheme} >
                 <Notifications />
                 <GameTemplate appId='app-alpha'>
+                    {'hello'}
                     <Component {...pageProps} />
                 </GameTemplate>
             </MantineProvider>

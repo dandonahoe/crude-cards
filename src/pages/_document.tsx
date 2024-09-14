@@ -1,6 +1,6 @@
 import { NextScript, Html, Main, Head } from 'next/document';
-import { ColorSchemeScript } from '@mantine/core';
 import { AppHeadGame } from './AppContent/AppHeadGame';
+import { ColorSchemeScript } from '@mantine/core';
 
 
 // eslint-disable-next-line import/no-default-export
