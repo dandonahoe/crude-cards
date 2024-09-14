@@ -162,10 +162,10 @@ const codeSample = `
     console.log('');
 `;
 
-    const stupidText = await createCompletion(`Return completion text which will be displayed on the terminal
-        as ascii ari, colorized and multi line, text, images, whatever is ok.
-        We are replacing hard coded code like this. Output just a string of text (complete with newlines and color etc),
-        which can be sent directly to the terminal for display
+    const stupidText = await createCompletion(`Generate ascii art for the terminal. It should
+        display ascii art to indicate the operation completed appropriately. No more than
+        300 chatacters wide and 12 lines long. Use the following code snippet as a reference
+        for what we intend to display:
         ${codeSample}`);
 
 console.log(stupidText);
