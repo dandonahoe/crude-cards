@@ -20,7 +20,7 @@ function execCommand(command: string): string {
 
 // Function to get the diff of staged changes
 function getStagedDiff(): string {
-    console.log('Getting staged diff...');
+    // console.log('Getting staged diff...');
     const diff = execCommand('git diff --cached');
     // console.log(`Staged diff:\n${diff}`);
 
@@ -37,7 +37,7 @@ const createCompletion = async (
     prompt: string,
 ): Promise<string> => {
 
-    console.log(`Creating completion for prompt:\n${prompt.slice(0, previewLineLength)}...`);
+    // console.log(`Creating completion for prompt:\n${prompt.slice(0, previewLineLength)}...`);
 
     const params: OpenAI.Chat.ChatCompletionCreateParams = {
         model    : 'gpt-4o',
@@ -56,7 +56,7 @@ const createCompletion = async (
 
 // Function to parse the diff into chunks and handle large files
 function parseDiffIntoChunks(diff: string): string[] {
-    console.log('Parsing diff into chunks...');
+    // console.log('Parsing diff into chunks...');
     const parsedDiff = parseDiff(diff);
 
     const chunks = parsedDiff.map(file => {
@@ -69,7 +69,8 @@ function parseDiffIntoChunks(diff: string): string[] {
 
         // Include the file name in the summary
         const chunkSummary = `File: ${file.to}\nChanges:\n\n${JSON.stringify(file.chunks)}`;
-        console.log(`Generated chunk summary for ${file.to}:\n${chunkSummary.slice(0, previewLineLength)}`);
+
+        // console.log(`Generated chunk summary for ${file.to}:\n${chunkSummary.slice(0, previewLineLength)}`);
 
         return chunkSummary;
     });
@@ -92,7 +93,7 @@ async function main() {
     // Parse the diff into manageable chunks
     const fileSummaries = parseDiffIntoChunks(diff);
 
-    console.log('Generating individual file summaries via OpenAI...');
+    // console.log('Generating individual file summaries via OpenAI...');
 
     // Generate summaries for each file in parallel using Promise.all
     const summaryPromises = fileSummaries.map(summary =>
@@ -100,15 +101,15 @@ async function main() {
     );
     const fileSummariesResponses = await Promise.all(summaryPromises);
 
-    console.log('Received all file summaries from OpenAI:');
+    // console.log('Received all file summaries from OpenAI:');
 
-    fileSummariesResponses.forEach((response, index) => {
-        console.log(`Summary ${index + 1}:\n${response.slice(0, previewLineLength)}`);
-    });
+    // fileSummariesResponses.forEach((response, index) => {
+    //     console.log(`Summary ${index + 1}:\n${response.slice(0, previewLineLength)}`);
+    // });
 
     // Combine the individual file summaries into a single prompt for the final completion
     const combinedPrompt = fileSummariesResponses.join('\n\n');
-    console.log(`Combined prompt for final commit message:\n${combinedPrompt.slice(0, previewLineLength)}...`);
+    // console.log(`Combined prompt for final commit message:\n${combinedPrompt.slice(0, previewLineLength)}...`);
 
     // Generate the final commit message based on the combined summary
     const finalCommitMessage = await createCompletion(
