@@ -1,6 +1,6 @@
 import { GameStage } from '../../../api/src/constant/game-stage.enum';
-import { PlayerStatus } from '../type';
 import { CardDTO } from '../../../api/src/game/dtos/card.dto';
+import { PlayerStatus } from '../type';
 
 
 export interface GameStatusTableProps {
