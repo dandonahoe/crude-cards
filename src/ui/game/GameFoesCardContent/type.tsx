@@ -11,3 +11,8 @@ export interface GameFoeListProps {
 export interface NoFoesMessageProps {
     gameCode: string | null;
 }
+
+export interface FoeContentProps {
+    gameCode : string | null;
+    foes     : PlayerDTO[];
+}

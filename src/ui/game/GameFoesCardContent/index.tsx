@@ -1,9 +1,7 @@
-import { CardColor } from '../../../api/src/constant/card-color.enum';
-import { GameDeckLayout } from '../GameDeckLayout';
 import { GameStackType } from '../GameStack/type';
-import { NoFoesMessage } from './NoFoesMessage';
 import { GameContext } from '../GameContext';
 import { GameFoeList } from './GameFoeList';
+import { FoeContent } from './FoeContent';
 import { GameStack } from '../GameStack';
 import { useContext } from 'react';
 import { RFC } from '@app/ui/type';
@@ -16,14 +14,9 @@ export const GameFoesCardContent: RFC<Props> = ({ foes }) => {
 
     return (
         <GameStack type={GameStackType.Centered}>
-            {foes.length === 0
-                ? <NoFoesMessage gameCode={gameState.game_code} />
-                : (
-                    <GameDeckLayout
-                        color={CardColor.Black}
-                        cards={[]} />
-                )
-            }
+            <FoeContent
+                gameCode={gameState.game_code}
+                foes={foes} />
             <GameFoeList foes={foes} />
         </GameStack>
     );
