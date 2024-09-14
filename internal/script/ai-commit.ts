@@ -26,10 +26,9 @@ const ProgressBarWidth = 30; // Width of the progress bar in characters
 const OpenApiModel = 'gpt-4'; // OpenAI model used for completions
 const Temperature = 0.6; // Temperature for text generation randomness
 const MaxTokens = 1500; // Maximum tokens for OpenAI API completion
-const ProgressBarChar = '='; // Character used in the progress bar
+const ProgressBarChars = ['=', '-', '*', '~', '#']; // Different characters for animation
 
 // Spinner state
-// const spinnerIndex = 0;
 let spinnerInterval: NodeJS.Timeout | null = null;
 let progress = 0; // Tracks progress for the progress bar
 
@@ -55,23 +54,32 @@ const rgbColor = (r: number, g: number, b: number): string => {
     return `\x1b[38;2;${r};${g};${b}m`;
 };
 
-// Generate a color gradient for the progress bar
-const gradientColor = (progress: number): string => {
-    const base = (progress % 255);
+// Generate a psychedelic color gradient that cycles across the bar
+const psychedelicColor = (index: number): string => {
+    const r = Math.floor(128 + 128 * Math.sin(index / 5));
+    const g = Math.floor(128 + 128 * Math.sin((index / 5) + 2));
+    const b = Math.floor(128 + 128 * Math.sin((index / 5) + 4));
 
-    return rgbColor(base, 255 - base, (base * 2) % 255);
+    return rgbColor(r, g, b);
 };
 
-// Start a progress bar spinner with color change
+// Start a psychedelic progress bar spinner
 const startSpinner = (): void => {
     progress = 0;
     process.stdout.write('\x1b[?25l'); // Hide cursor
     spinnerInterval = setInterval(() => {
         progress = (progress + 1) % (ProgressBarWidth + 1);
-        const color = gradientColor(progress);
-        const bar = `${ProgressBarChar.repeat(progress)}${' '.repeat(ProgressBarWidth - progress)}`;
-        process.stdout.write(`\r[${color}${bar}${Color.Reset}] ${Math.floor((progress / ProgressBarWidth) * 100)}%`);
-    }, 100);
+
+        // Build a random, colorful progress bar with varying characters and colors
+        const progressBar = Array.from({ length : ProgressBarWidth }, (_, i) => {
+            const color = psychedelicColor(progress + i);
+            const char = ProgressBarChars[Math.floor(Math.random() * ProgressBarChars.length)];
+
+            return `${color}${char}${Color.Reset}`;
+        }).join('');
+
+        process.stdout.write(`\r[${progressBar}]`);
+    }, 100); // Updates every 100ms
 };
 
 // Stop the spinner animation
