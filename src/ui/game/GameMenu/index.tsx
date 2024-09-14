@@ -10,16 +10,20 @@ export const GameMenu: RFC = () => {
 
     return (
         <Menu
+            // position='top-end'
             opened={opened}
             onChange={toggle}
-            shadow='xl'
-            width={250}>
-            <Menu.Target>
+            shadow='xl'>
+            <Menu.Target >
                 <GameMenuBurger
                     opened={opened}
                     toggle={toggle} />
             </Menu.Target>
-            <GameMenuDropdown toggle={toggle} />
+
+            <Menu.Dropdown >
+                <GameMenuDropdown toggle={toggle} />
+            </Menu.Dropdown>
         </Menu>
+
     );
 };

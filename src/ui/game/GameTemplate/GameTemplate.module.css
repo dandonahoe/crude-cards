@@ -13,36 +13,35 @@
 .neonText {
     color: #fff;
 
-  text-shadow:
-      0 0 7px #fff,
-      0 0 10px #fff,
-      0 0 21px #fff,
-      0 0 42px #0fa,
-      0 0 82px #0fa,
-      0 0 92px #0fa,
-      0 0 102px #0fa,
-      0 0 151px #0fa;
-}
-
-
-.menu {
-    background-color : #000;
-    box-shadow: 0px 13px 28px 0px rgba(0,0,0,1);
-    color            : #fff;
+    text-shadow:
+        0 0 7px #fff,
+        0 0 10px #fff,
+        0 0 21px #fff,
+        0 0 42px #0fa,
+        0 0 82px #0fa,
+        0 0 92px #0fa,
+        0 0 102px #0fa,
+        0 0 151px #0fa;
 }
 
 .appHeader {
     background-color: #000;
     color: #fff;
 
-    display: 'flex';
-    flex-direction: 'column';
+    display: "flex";
+    flex-direction: "column";
     /* min-height: '100vh'; */
 }
 
 .headerText {
     color: #fff;
     background-color: #000;
+}
+
+.menu {
+    background-color: #000;
+    box-shadow: 0px 13px 28px 0px rgba(0, 0, 0, 1);
+    color: #fff;
 }
 
 .symbol {

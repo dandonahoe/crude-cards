@@ -15,6 +15,7 @@ import {
     selectPlayerCards, selectIsDealer,
     selectGameState, selectPopupType,
 } from '@app/client/selector/game';
+import { GameText } from '../GameText';
 
 
 export const GameTemplate : RFC<Props>= ({
@@ -55,6 +56,10 @@ export const GameTemplate : RFC<Props>= ({
                             ? 0
                             : headerHeight +  50,
                         )}>
+                        <GameText>
+                            {'TEMPLATE'}
+                        </GameText>
+
                         <GamePopup />
                         <GameToast />
                         <Group

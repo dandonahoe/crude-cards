@@ -14,7 +14,7 @@ export const GameMenuDropdown: RFC<GameMenuDropdownProps> = ({ toggle }) => {
     const finalMenuItems = getFilteredMenuItems(gameState);
 
     return (
-        <Menu.Dropdown>
+        <>
             {currentPlayer?.username &&
                 <Menu.Label>
                     <GameText>{currentPlayer.username}</GameText>
@@ -23,6 +23,6 @@ export const GameMenuDropdown: RFC<GameMenuDropdownProps> = ({ toggle }) => {
             <GameMenuItems
                 menuItems={finalMenuItems}
                 toggle={toggle} />
-        </Menu.Dropdown>
+        </>
     );
 };

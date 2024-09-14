@@ -1,15 +1,15 @@
 import { GameStackType } from '../GameStack/type';
-import { GamePopup } from '../GamePopup';
-import { GameDebug } from '../GameDebug';
+// import { GamePopup } from '../GamePopup';
+// import { GameDebug } from '../GameDebug';
 import { GameStack } from '../GameStack';
-import { GameView } from '../GameView';
+// import { GameView } from '../GameView';
 import { Text } from '@mantine/core';
 import { RFC } from '@app/ui/type';
-import { Env } from '../../../Env';
+// import { Env } from '../../../Env';
 import { Props } from './type';
 
 
-const isDebugOverlayVisible = Env.getBoolean('NEXT_PUBLIC_IS_DEBUG_OVERLAY_VISIBLE');
+// const isDebugOverlayVisible = Env.getBoolean('NEXT_PUBLIC_IS_DEBUG_OVERLAY_VISIBLE');
 
 
 export const GameBoard : RFC<Props> = () =>
@@ -17,9 +17,9 @@ export const GameBoard : RFC<Props> = () =>
         <Text>
             {'GAMEBOARD BEGINNING BACK TO DEBBING'}
         </Text>
-        <GamePopup />
+        {/* <GamePopup /> */}
         {/* <GameView /> */}
-        <GameDebug isVisible={isDebugOverlayVisible} />
+        {/* <GameDebug isVisible={isDebugOverlayVisible} /> */}
         <Text>
             {'GAMEBOARD END'}
         </Text>

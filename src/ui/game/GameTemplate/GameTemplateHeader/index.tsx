@@ -1,12 +1,12 @@
 import classes from '../GameTemplate.module.css';
 import { HeaderContent } from './HeaderContent';
-import { Box, Stack} from '@mantine/core';
+import { Box, Group, Stack} from '@mantine/core';
 import { GameMenu } from '../../GameMenu';
 import { RFC } from '@app/ui/type';
 
 
 export const GameTemplateHeader : RFC = () =>
-    <Stack className={classes.menu}>
+    <Group className={classes.menu}>
         <Box className={classes.pi}>
             <Box className={classes.symbol}>
                 <GameMenu />
@@ -15,4 +15,4 @@ export const GameTemplateHeader : RFC = () =>
         <Box>
             <HeaderContent />
         </Box>
-    </Stack>
+    </Group>
