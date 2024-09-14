@@ -136,10 +136,6 @@ ${combinedPrompt}`,
 ${sanitizedCommitMessage}
 EOF`);
 
-    logColor('\nGenerated commit message:', colors.blue);
-    console.log(sanitizedCommitMessage);
-    logColor('Commit successfully generated!', colors.green);
-
     // Generate ASCII art
     const codeSample = `
         '\x1b[38;2;255;0;0m     Color         \x1b[0m'
@@ -148,8 +144,8 @@ EOF`);
 
     let asciiArt = await createCompletion(`Generate ascii art for the terminal. It should
         display ascii art to indicate the operation completed appropriately. No more than
-        500 characters wide. Do not include \`\`\`plaintext start, just content.
-         Use the following code snippet as a reference
+        500 characters wide and do not include commentary. Do not include \`\`\`plaintext start, just content.
+        Use the following code snippet as a reference
         for what we intend to display.
         ${codeSample}`);
 
@@ -157,6 +153,12 @@ EOF`);
     asciiArt = asciiArt.replaceAll('```', '').trim();
 
     logColor(asciiArt, colors.magenta);
+
+    logColor('\nGenerated commit message:', colors.blue);
+    console.log(sanitizedCommitMessage);
+    logColor('Commit successfully generated!', colors.green);
+
+
 }
 
 // Run the main function
