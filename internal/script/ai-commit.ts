@@ -105,10 +105,16 @@ const createCompletion = async (prompt: string): Promise<string> => {
     };
 
     startSpinner();
-    const chatCompletion = await openai.chat.completions.create(params as any);
-    stopSpinner();
+    try {
+        const chatCompletion = await openai.chat.completions.create(params as any);
 
-    return chatCompletion.choices[0].message.content!.trim();
+        return chatCompletion.choices[0].message.content!.trim();
+    } catch (error) {
+        console.error(error);
+        throw new Error('Error during API call');
+    } finally {
+        stopSpinner(); // Ensure the spinner stops even on error
+    }
 };
 
 // Git and Diff Handling
@@ -132,7 +138,7 @@ const parseDiffIntoChunks = (diff: string): string[] => {
         return `File: ${file.to}\nChanges:\n\n${JSON.stringify(file.chunks)}`;
     });
 
-    logColor(`Analyzing ${chunks.length} file${chunks.length == 1 ? '' : 's' }...`, Color.Green);
+    logColor(`Analyzing ${chunks.length} file${chunks.length === 1 ? '' : 's'}...`, Color.Green);
 
     return chunks;
 };
