@@ -147,6 +147,7 @@ ${combinedPrompt}`,
     execCommand(`git commit -F - <<EOF
 ${sanitizedCommitMessage}
 EOF`);
+console.log('Generateed commit message:', sanitizedCommitMessage);
 }
 
 // Run the main function
