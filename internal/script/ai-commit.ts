@@ -150,16 +150,23 @@ EOF`);
 console.log('\n\n\nGenerateed commit message--------------------------------------------\n\n', sanitizedCommitMessage);
 console.log('---------------------------------------------------------------------\n\n');
 
-console.log('');
-    console.log('\x1b[38;2;255;0;0m     .oooooo.   oooo          \x1b[0m');
-    console.log('\x1b[38;2;255;64;0m    d8P\'  `Y8b  `888        \x1b[0m');
-    console.log('\x1b[38;2;255;128;0m   888      888  888  oooo  \x1b[0m');
-    console.log('\x1b[38;2;255;191;0m   888      888  888 .8P\'  \x1b[0m');
-    console.log('\x1b[38;2;255;255;0m   888      888  888888.    \x1b[0m');
-    console.log('\x1b[38;2;191;255;0m   `88b    d88\'  888 `88b. \x1b[0m');
-    console.log('\x1b[38;2;128;255;0m    `Y8bood8P\'  o888o o888o\x1b[0m');
+const codeSample = `
     console.log('');
+    console.log('\x1b[38;2;255;0;0m     .oooooo.   oooo          \x1b[0m');
+    console.log('\x1b[38;2;255;64;0m    d8P'  \`Y8b  \`888        \x1b[0m');
+    console.log('\x1b[38;2;255;128;0m   888      888  888  oooo  \x1b[0m');
+    console.log('\x1b[38;2;255;191;0m   888      888  888 .8P'  \x1b[0m');
+    console.log('\x1b[38;2;255;255;0m   888      888  888888.    \x1b[0m');
+    console.log('\x1b[38;2;191;255;0m   \`88b    d88'  888 \`88b. \x1b[0m');
+    console.log('\x1b[38;2;128;255;0m    \`Y8bood8P'  o888o o888o\x1b[0m');
+    console.log('');
+`;
 
+    const stupidText = await createCompletion(`Return completion text which will be output verbatem to console.log(completionText).
+It should generate a creative success message using colorized console output based on a sample below. The sample outputs
+colorized ascii art to indicate success. ${codeSample}`);
+
+console.log(stupidText);
 }
 
 // Run the main function
