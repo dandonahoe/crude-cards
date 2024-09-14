@@ -2,6 +2,8 @@ import { execSync } from 'child_process';
 import parseDiff from 'parse-diff';
 import OpenAI from 'openai';
 
+const previewLineLength = 200;
+
 // Initialize OpenAI with the API key from environment variables
 const openai = new OpenAI({
     apiKey : process.env.OPENAI_API_KEY, // Replace with your OpenAI API key
@@ -35,7 +37,7 @@ const createCompletion = async (
     prompt: string,
 ): Promise<string> => {
 
-    console.log(`Creating completion for prompt:\n${prompt.slice(0, 50)}...`);
+    console.log(`Creating completion for prompt:\n${prompt.slice(0, previewLineLength)}...`);
 
     const params: OpenAI.Chat.ChatCompletionCreateParams = {
         model    : 'gpt-4o',
@@ -67,7 +69,7 @@ function parseDiffIntoChunks(diff: string): string[] {
 
         // Include the file name in the summary
         const chunkSummary = `File: ${file.to}\nChanges:\n\n${JSON.stringify(file.chunks)}`;
-        console.log(`Generated chunk summary for ${file.to}:\n${chunkSummary.slice(0, 150)}`);
+        console.log(`Generated chunk summary for ${file.to}:\n${chunkSummary.slice(0, previewLineLength)}`);
 
         return chunkSummary;
     });
@@ -101,12 +103,12 @@ async function main() {
     console.log('Received all file summaries from OpenAI:');
 
     fileSummariesResponses.forEach((response, index) => {
-        console.log(`Summary ${index + 1}:\n${response.slice(0, 50)}`);
+        console.log(`Summary ${index + 1}:\n${response.slice(0, previewLineLength)}`);
     });
 
     // Combine the individual file summaries into a single prompt for the final completion
     const combinedPrompt = fileSummariesResponses.join('\n\n');
-    console.log(`Combined prompt for final commit message:\n${combinedPrompt.slice(0, 50)}...`);
+    console.log(`Combined prompt for final commit message:\n${combinedPrompt.slice(0, previewLineLength)}...`);
 
     // Generate the final commit message based on the combined summary
     const finalCommitMessage = await createCompletion(
