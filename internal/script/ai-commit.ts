@@ -9,9 +9,9 @@ const openai = new OpenAI({
 
 // Function to execute a shell command and return the output as a string
 function execCommand(command: string): string {
-    console.log(`Executing command: ${command}`);
+    // console.log(`Executing command: ${command}`);
     const output = execSync(command, { encoding : 'utf-8' });
-    console.log(`Command output:\n${output}`);
+    // console.log(`Command output:\n${output}`);
 
     return output;
 }
@@ -20,7 +20,7 @@ function execCommand(command: string): string {
 function getStagedDiff(): string {
     console.log('Getting staged diff...');
     const diff = execCommand('git diff --cached');
-    console.log(`Staged diff:\n${diff}`);
+    // console.log(`Staged diff:\n${diff}`);
 
     return diff;
 }
@@ -31,10 +31,11 @@ function getStagedDiff(): string {
  * @param prompt - The prompt to send to the AI for completion.
  * @returns A promise resolving to the generated commit message.
  */
-const
-createCompletion = async (prompt: string): Promise<string> =>
-     {
-    console.log(`Creating completion for prompt:\n${prompt}`);
+const createCompletion = async (
+    prompt: string,
+): Promise<string> => {
+
+    console.log(`Creating completion for prompt:\n${prompt.slice(0, 50)}...`);
 
     const params: OpenAI.Chat.ChatCompletionCreateParams = {
         model    : 'gpt-4o',
@@ -96,11 +97,12 @@ async function main() {
 
     // Generate summaries for each file in parallel using Promise.all
     const summaryPromises = fileSummaries.map(summary =>
-        createCompletion(`Summarize the file diff in a commit. Provide a few statistics at the end ${summary.slice(0, 50)}`),
+        createCompletion(`Summarize the file diff in a commit. Provide a few statistics at the end ${summary.slice(0, 1000)}`),
     );
     const fileSummariesResponses = await Promise.all(summaryPromises);
 
     console.log('Received all file summaries from OpenAI:');
+
     fileSummariesResponses.forEach((response, index) => {
         console.log(`Summary ${index + 1}:\n${response.slice(0, 50)}`);
     });
@@ -139,14 +141,12 @@ ${combinedPrompt}`,
 
     // fully sanitize this to allow simple characters which will not trip up a git commit message
     const sanitizedCommitMessage = finalCommitMessage.replaceAll('`', '').trim();
-    console.log(`\n\n\n-------------------------------\n\n\n\nFinal commit message:\n\n`);
+
 
     // Commit the staged changes with the generated commit message
     execCommand(`git commit -F - <<EOF
 ${sanitizedCommitMessage}
 EOF`);
-
-    console.log('\n\n\n\n\n-------------------------------\nChanges committed successfully with the generated commit message.');
 }
 
 // Run the main function
