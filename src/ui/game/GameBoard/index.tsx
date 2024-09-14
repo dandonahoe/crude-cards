@@ -15,10 +15,10 @@ const isDebugOverlayVisible = Env.getBoolean('NEXT_PUBLIC_IS_DEBUG_OVERLAY_VISIB
 export const GameBoard : RFC<Props> = () =>
     <GameStack type={GameStackType.FullHeightCentered}>
         <Text>
-            {'GAMEBOARD BEGINNING'}
+            {'GAMEBOARD BEGINNING BACK TO DEBBING'}
         </Text>
         <GamePopup />
-        <GameView />
+        {/* <GameView /> */}
         <GameDebug isVisible={isDebugOverlayVisible} />
         <Text>
             {'GAMEBOARD END'}

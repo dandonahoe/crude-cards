@@ -132,7 +132,7 @@ const parseDiffIntoChunks = (diff: string): string[] => {
         return `File: ${file.to}\nChanges:\n\n${JSON.stringify(file.chunks)}`;
     });
 
-    logColor(`Total chunks generated: ${chunks.length}`, Color.Green);
+    logColor(`Analyzing ${chunks.length} file${chunks.length == 1 ? '' : 's' }: `, Color.Green);
 
     return chunks;
 };
