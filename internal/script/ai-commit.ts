@@ -2,8 +2,6 @@ import { execSync } from 'child_process';
 import parseDiff from 'parse-diff';
 import OpenAI from 'openai';
 
-const previewLineLength = 200;
-
 // Initialize OpenAI with the API key from environment variables
 const openai = new OpenAI({
     apiKey : process.env.OPENAI_API_KEY, // Replace with your OpenAI API key
@@ -11,18 +9,14 @@ const openai = new OpenAI({
 
 // Function to execute a shell command and return the output as a string
 function execCommand(command: string): string {
-    // console.log(`Executing command: ${command}`);
     const output = execSync(command, { encoding : 'utf-8' });
-    // console.log(`Command output:\n${output}`);
 
     return output;
 }
 
 // Function to get the diff of staged changes
 function getStagedDiff(): string {
-    // console.log('Getting staged diff...');
     const diff = execCommand('git diff --cached');
-    // console.log(`Staged diff:\n${diff}`);
 
     return diff;
 }
@@ -33,14 +27,9 @@ function getStagedDiff(): string {
  * @param prompt - The prompt to send to the AI for completion.
  * @returns A promise resolving to the generated commit message.
  */
-const createCompletion = async (
-    prompt: string,
-): Promise<string> => {
-
-    // console.log(`Creating completion for prompt:\n${prompt.slice(0, previewLineLength)}...`);
-
+const createCompletion = async (prompt: string): Promise<string> => {
     const params: OpenAI.Chat.ChatCompletionCreateParams = {
-        model    : 'gpt-4o',
+        model    : 'gpt-4',
         messages : [{
             role    : 'user',
             content : prompt,
@@ -54,35 +43,46 @@ const createCompletion = async (
     return chatCompletion.choices[0].message.content!.trim();
 };
 
+// ANSI color codes
+const colors = {
+    reset   : "\x1b[0m",
+    red     : "\x1b[31m",
+    green   : "\x1b[32m",
+    yellow  : "\x1b[33m",
+    blue    : "\x1b[34m",
+    magenta : "\x1b[35m",
+    cyan    : "\x1b[36m",
+};
+
+// Helper function to log colorized messages
+function logColor(message: string, color: string = colors.reset) {
+    console.log(`${color}${message}${colors.reset}`);
+}
+
 // Function to parse the diff into chunks and handle large files
 function parseDiffIntoChunks(diff: string): string[] {
-    // console.log('Parsing diff into chunks...');
     const parsedDiff = parseDiff(diff);
 
     const chunks = parsedDiff.map(file => {
-        // Check if the file is large based on some heuristic, e.g., length of the diff
         if (file.to && file.to.includes('package-lock.json')) {
-            console.log('Detected package-lock.json, summarizing without diff details.');
+            logColor('Detected package-lock.json, summarizing without diff details.', colors.yellow);
 
             return `The package-lock.json file was updated with lots of changes.`;
         }
 
-        // Include the file name in the summary
         const chunkSummary = `File: ${file.to}\nChanges:\n\n${JSON.stringify(file.chunks)}`;
-
-        // console.log(`Generated chunk summary for ${file.to}:\n${chunkSummary.slice(0, previewLineLength)}`);
 
         return chunkSummary;
     });
 
-    console.log(`Total chunks generated: ${chunks.length}`);
+    logColor(`Total chunks generated: ${chunks.length}`, colors.green);
 
     return chunks;
 }
 
 // Main function to run the script
 async function main() {
-    console.log('Starting commit message generation...');
+    logColor('Starting commit message generation...', colors.cyan);
 
     // Stage all changes
     execCommand('git add .');
@@ -93,23 +93,13 @@ async function main() {
     // Parse the diff into manageable chunks
     const fileSummaries = parseDiffIntoChunks(diff);
 
-    // console.log('Generating individual file summaries via OpenAI...');
-
     // Generate summaries for each file in parallel using Promise.all
     const summaryPromises = fileSummaries.map(summary =>
         createCompletion(`Summarize the file diff in a commit. Provide a few statistics at the end ${summary.slice(0, 1000)}`),
     );
     const fileSummariesResponses = await Promise.all(summaryPromises);
 
-    // console.log('Received all file summaries from OpenAI:');
-
-    // fileSummariesResponses.forEach((response, index) => {
-    //     console.log(`Summary ${index + 1}:\n${response.slice(0, previewLineLength)}`);
-    // });
-
-    // Combine the individual file summaries into a single prompt for the final completion
     const combinedPrompt = fileSummariesResponses.join('\n\n');
-    // console.log(`Combined prompt for final commit message:\n${combinedPrompt.slice(0, previewLineLength)}...`);
 
     // Generate the final commit message based on the combined summary
     const finalCommitMessage = await createCompletion(
@@ -139,37 +129,38 @@ Include a title, bullet points, and statistics in the commit message.
 ${combinedPrompt}`,
     );
 
-    // fully sanitize this to allow simple characters which will not trip up a git commit message
     const sanitizedCommitMessage = finalCommitMessage.replaceAll('`', '').trim();
-
 
     // Commit the staged changes with the generated commit message
     execCommand(`git commit -F - <<EOF
 ${sanitizedCommitMessage}
 EOF`);
-console.log('\n\n\nGenerateed commit message--------------------------------------------\n\n', sanitizedCommitMessage);
-console.log('---------------------------------------------------------------------\n\n');
 
-const codeSample = `
-    '\x1b[38;2;255;0;0m     Color         \x1b[0m'
-    '\x1b[38;2;255;128;0m   :) Multi line ASCII Art in Color! ()()  \x1b[0m'
-`;
+    logColor('\nGenerated commit message:', colors.blue);
+    console.log(sanitizedCommitMessage);
+    logColor('Commit successfully generated!', colors.green);
 
-    let stupidText = await createCompletion(`Generate ascii art for the terminal. It should
+    // Generate ASCII art
+    const codeSample = `
+        '\x1b[38;2;255;0;0m     Color         \x1b[0m'
+        '\x1b[38;2;255;128;0m   :) Multi line ASCII Art in Color! ()()  \x1b[0m'
+    `;
+
+    let asciiArt = await createCompletion(`Generate ascii art for the terminal. It should
         display ascii art to indicate the operation completed appropriately. No more than
-        500 chatacters wide. Do not include \`\`\`plaintext start, just content.
+        500 characters wide. Do not include \`\`\`plaintext start, just content.
          Use the following code snippet as a reference
         for what we intend to display.
         ${codeSample}`);
 
-        stupidText = stupidText.replaceAll('```plaintext', '').trim();
-        stupidText = stupidText.replaceAll('```', '').trim();
+    asciiArt = asciiArt.replaceAll('```plaintext', '').trim();
+    asciiArt = asciiArt.replaceAll('```', '').trim();
 
-console.log(stupidText);
+    logColor(asciiArt, colors.magenta);
 }
 
 // Run the main function
 main().catch(error => {
-    console.error('Error:', error);
+    logColor('Error:', colors.red);
     console.error(error.stack);
 });
