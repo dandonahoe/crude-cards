@@ -1,4 +1,4 @@
-import { CA } from '../../../constant/framework/CoreAction';
+import { CardColor } from '../../../api/src/constant/card-color.enum';
 import { useDebouncedValue } from '@mantine/hooks';
 import { useEffect, useState } from 'react';
 import { TextInput } from '@mantine/core';
@@ -6,31 +6,30 @@ import { RFC } from '@app/ui/type';
 import { Props } from './type';
 
 
-export const TextInputDebounced : RFC<Props> = ({
+export const TextInputDebounced: RFC<Props> = ({
     onChange, onBlur, value, label, name,
     milliseconds = 3000,
-    size ='md',
+    size = 'md',
 }) => {
+
     const [text, setText] = useState(value);
     const [debounced] = useDebouncedValue(text, milliseconds);
 
+    const handleChange = (evt: React.ChangeEvent<HTMLInputElement>) =>
+        setText(evt.currentTarget.value);
+
+    const handleBlur = () => onBlur(text, name);
+
     useEffect(() => {
+
         if (debounced !== value)
             onChange(debounced, name);
 
-    }, [debounced, name, onChange, value]);
+    }, [debounced, value, onChange, name]);
 
-    const handleChange = (evt : React.ChangeEvent<HTMLInputElement>) : void => {
-        setText(evt.currentTarget.value);
-    };
-
-    const handleBlur = () : CA => onBlur(text, name)
-
-    const handleKeyDownTextBox = (
-        event : React.KeyboardEvent<HTMLInputElement>,
-    ) : CA | void => {
+    const handleKeyDownTextBox = (event: React.KeyboardEvent<HTMLInputElement>) => {
         if (event.key === 'Enter')
-            return handleBlur();
+            handleBlur();
     };
 
     return (
@@ -42,11 +41,11 @@ export const TextInputDebounced : RFC<Props> = ({
             label={label}
             value={text}
             size={size}
-            styles={{
+            style={{
                 input : {
                     borderRadius : '10px',
-                    border       : '1px solid #000',
                     textAlign    : 'center',
+                    border       : `1px solid ${CardColor.Black}`,
                 },
             }} />
     );
