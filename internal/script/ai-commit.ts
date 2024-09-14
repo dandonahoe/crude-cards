@@ -162,10 +162,11 @@ const codeSample = `
     console.log('');
 `;
 
-    const stupidText = await createCompletion(`Return completion text which will be output
-verbatem to the statement \`console.log(completionText)\` upon being received.
-It should generate a creative success message using colorized console output based on a sample below. The sample outputs
-colorized ascii art to indicate success. ${codeSample}`);
+    const stupidText = await createCompletion(`Return completion text which will be displayed on the terminal
+        as ascii ari, colorized and multi line, text, images, whatever is ok.
+        We are replacing hard coded code like this. Output just a string of text (complete with newlines and color etc),
+        which can be sent directly to the terminal for display
+        ${codeSample}`);
 
 console.log(stupidText);
 }
