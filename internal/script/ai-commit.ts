@@ -48,11 +48,8 @@ const createCompletion = async (
     };
 
     const chatCompletion = await openai.chat.completions.create(params);
-    const result = chatCompletion.choices[0].message.content!.trim();
 
-    console.log(`Received completion:\n${result}`);
-
-    return result;
+    return chatCompletion.choices[0].message.content!.trim();
 };
 
 // Function to parse the diff into chunks and handle large files
