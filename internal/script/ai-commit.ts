@@ -164,8 +164,9 @@ const codeSample = `
 
     const stupidText = await createCompletion(`Generate ascii art for the terminal. It should
         display ascii art to indicate the operation completed appropriately. No more than
-        300 chatacters wide and 12 lines long. Use the following code snippet as a reference
-        for what we intend to display:
+        300 chatacters wide and 12 lines long. Do not include \`\`\`plaintext start, just content.
+         Use the following code snippet as a reference
+        for what we intend to display.
         ${codeSample}`);
 
 console.log(stupidText);
