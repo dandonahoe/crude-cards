@@ -1,35 +1,31 @@
-import { selectGameWaitingPage } from '../../../client/selector/game';
-import { GameStage } from '../../../api/src/constant/game-stage.enum';
-import { GameStackType } from '../GameStack/type';
-import { useSelector } from '@app/client/hook';
-import { GameContext } from '../GameContext';
-import { StatusTable } from './StatusTable';
-import { DealerDeck } from './DealerDeck';
-import { PlayerDeck } from './PlayerDeck';
-import { GameStack } from '../GameStack';
+import { Flex, Stack } from '@mantine/core';
 import { useContext } from 'react';
+import { GameContext } from '../GameContext';
+import { useIsDealer, usePlayerStatusList } from './hooks';
+import { DeckRenderer } from './DeckRenderer';
+import { StatusTableRenderer } from './StatusTableRenderer';
 
 
 export const GameWaiting = () => {
-
-    const { dealerDealtCard, playerDealtCard, gameState } = useContext(GameContext);
-    const { isDealer, playersExceptDealer } = useSelector(selectGameWaitingPage);
-
-    if(!dealerDealtCard || !playerDealtCard)
-        return console.error('Dealer has not dealt a card', {
-            isDealer, dealerDealtCard, playerDealtCard });
+    const { dealerDealtCard, playerDealtCard, gameState: { game_stage, dealer_id } } = useContext(GameContext);
+    const playerStatusList = usePlayerStatusList();
+    const isDealer = useIsDealer();
+    const playersExceptDealer = playerStatusList.filter(player => player.player.id !== dealer_id);
 
     return (
-        <GameStack type={GameStackType.Centered}>
-            {isDealer
-                ? <DealerDeck dealerDealtCard={dealerDealtCard} />
-                : (<PlayerDeck
-                        dealerDealtCard={dealerDealtCard}
-                        playerDealtCard={playerDealtCard} />)
-            }
-            {gameState.game_stage === GameStage.PlayerPickWhiteCard &&
-                <StatusTable playerStatusList={playersExceptDealer} />
-            }
-        </GameStack>
+        <Flex
+            justify='center'
+            align='center'
+            mt='xl'>
+            <Stack>
+                <DeckRenderer
+                    isDealer={isDealer}
+                    dealerDealtCard={dealerDealtCard}
+                    playerDealtCard={playerDealtCard}/>
+                <StatusTableRenderer
+                    gameStage={game_stage}
+                    playersExceptDealer={playersExceptDealer}/>
+            </Stack>
+        </Flex>
     );
 };

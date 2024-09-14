@@ -8,7 +8,7 @@ export interface GameCardContainerProps extends PropsWithChildren {
 }
 
 export interface CardStylesProps {
-    color: CardColor;
-    isHovered: boolean;
-    isClickable: boolean;
+    isClickable : boolean;
+    isHovered   : boolean;
+    color       : CardColor;
 }

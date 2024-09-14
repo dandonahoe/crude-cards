@@ -1,30 +1,54 @@
-import { Box } from '@mantine/core';
-import seedrandom from 'seedrandom';
-import { RFC } from '../../type';
-import { Props } from './type';
+import { Flex, Stack } from '@mantine/core';
+import { GameDeck } from '../GameDeck';
+import { GameStatusTable } from '../GameStatusTable';
+import { GameCardContainer } from '../GameCardContainer';
+import { usePlayerStatusList, useIsDealer } from './hooks';
+import { CardColor } from '../../../api/src/constant/card-color.enum';
+import { GameStage } from '../../../api/src/constant/game-stage.enum';
+import { useContext } from 'react';
+import { GameContext } from '../GameContext';
+import { RFC } from '@app/ui/type';
+
+export const GameWaiting: RFC = () => {
+    const { dealerDealtCard, playerDealtCard, gameState: { game_stage, dealer_id } } = useContext(GameContext);
+    const playerStatusList = usePlayerStatusList();
+    const isDealer = useIsDealer();
+
+    const playersExceptDealer = playerStatusList.filter(player => player.player.id !== dealer_id);
+
+    const renderDeck = () => {
+        if (isDealer)
+            return <GameDeck cards={[dealerDealtCard!]} />;
 
 
-export const GameWiggleBox : RFC<Props> = ({
-    children, index,
+        return <GameDeck cards={[dealerDealtCard!, playerDealtCard!]} />;
+    };
 
-    verticleWiggleFactor = 50,
-    cardOverlapFactor    = 40,
-    wiggleFactor         = 6,
-    tiltFactor           = 8,
-}) => {
+    const renderStatusTable = () => {
+        if (game_stage === GameStage.PlayerPickWhiteCard)
+            return (
+                <GameCardContainer color={CardColor.Black}>
+                    <GameStatusTable
+                        playerStatusList={playersExceptDealer}
+                        shouldShowScore={false}
+                        shouldShowDone={true}
+                        title='Waiting on Players'/>
+                </GameCardContainer>
+            );
 
-    // stops random wobbling on rerender
-    const rand = seedrandom(`${index}`);
+
+        return null;
+    };
 
     return (
-        <Box
-            style={{
-                width  : '100%',
-                rotate : `${rand() * tiltFactor - (tiltFactor / 2)}deg`,
-                left   : wiggleFactor * (rand() - 0.5) * 10,
-                top    : -cardOverlapFactor * (index + 1) + rand() * verticleWiggleFactor,
-            }}>
-            {children}
-        </Box>
+        <Flex
+            justify='center'
+            align='center'
+            mt='xl'>
+            <Stack>
+                {renderDeck()}
+                {renderStatusTable()}
+            </Stack>
+        </Flex>
     );
 };
