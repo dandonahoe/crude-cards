@@ -3,12 +3,11 @@ import parseDiff from 'parse-diff';
 import OpenAI from 'openai';
 
 // Type Definitions and Interfaces
-
 interface ChatCompletionParams {
-    model: string;
-    messages: { role: string; content: string }[];
-    max_tokens: number;
     temperature: number;
+    max_tokens: number;
+    messages: { role: string; content: string }[];
+    model: string;
 }
 
 // Enum for colorized output
@@ -23,11 +22,10 @@ enum Color {
 }
 
 // Constants
-
-const SPINNER_CHARS = ['|', '/', '-', '\\']; // Spinner animation characters
-const API_MODEL = 'gpt-4'; // OpenAI model used for completions
-const MAX_TOKENS = 1500; // Maximum tokens for OpenAI API completion
-const TEMPERATURE = 0.6; // Temperature for text generation randomness
+const SpinnerChars = ['|', '/', '-', '\\']; // Spinner animation characters
+const OpenApiModel = 'gpt-4'; // OpenAI model used for completions
+const Temperature = 0.6; // Temperature for text generation randomness
+const MaxTokens = 1500; // Maximum tokens for OpenAI API completion
 
 // Spinner state
 let spinnerIndex = 0;
@@ -50,12 +48,26 @@ const execCommand = (command: string): string => {
     return execSync(command, { encoding : 'utf-8' });
 };
 
-// Start a spinner animation
+// Helper to generate an RGB color code
+const rgbColor = (r: number, g: number, b: number): string => {
+    return `\x1b[38;2;${r};${g};${b}m`;
+};
+
+// Start a spinner animation with color gradient
 const startSpinner = (): void => {
     process.stdout.write('\x1b[?25l'); // Hide cursor
     spinnerInterval = setInterval(() => {
-        process.stdout.write(`\r${SPINNER_CHARS[spinnerIndex++ % SPINNER_CHARS.length]} `);
+        const color = gradientColor(spinnerIndex); // Generate the color for current frame
+        process.stdout.write(`\r${color}${SpinnerChars[spinnerIndex++ % SpinnerChars.length]} `);
+        spinnerIndex = spinnerIndex % SpinnerChars.length;
     }, 100);
+};
+
+// Generate a color gradient that cycles through RGB values
+const gradientColor = (index: number): string => {
+    const base = 50 + (index % 200);
+
+    return rgbColor(base, 255 - base, (base * 2) % 255);
 };
 
 // Stop the spinner animation
@@ -72,10 +84,10 @@ const stopSpinner = (): void => {
 // Create a text completion using OpenAI's API
 const createCompletion = async (prompt: string): Promise<string> => {
     const params: ChatCompletionParams = {
-        model       : API_MODEL,
+        model       : OpenApiModel,
         messages    : [{ role : 'user', content : prompt }],
-        max_tokens  : MAX_TOKENS,
-        temperature : TEMPERATURE,
+        max_tokens  : MaxTokens,
+        temperature : Temperature,
     };
 
     startSpinner();
@@ -166,9 +178,9 @@ const main = async (): Promise<void> => {
 ${finalCommitMessage}
 EOF`);
 
-    logColor('\nGenerated commit message:', Color.Blue);
+    logColor('\nGenerated commit message:\n', Color.Blue);
     console.log(finalCommitMessage);
-    logColor('Commit successfully generated!', Color.Green);
+    logColor('\nCommit successfully generated!', Color.Green);
 };
 
 // Error handling and execution
