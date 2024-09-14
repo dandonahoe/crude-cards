@@ -82,13 +82,15 @@ const startSpinner = (): void => {
     }, 100); // Updates every 100ms
 };
 
-// Stop the spinner animation
+// Stop the spinner animation and clear the line
 const stopSpinner = (): void => {
     if (spinnerInterval) {
         clearInterval(spinnerInterval);
         spinnerInterval = null;
     }
-    process.stdout.write('\r \x1b[?25h'); // Show cursor
+    // Clear the current line by overwriting it with spaces, and move the cursor to the beginning
+    process.stdout.write('\r' + ' '.repeat(ProgressBarWidth + 2) + '\r');
+    process.stdout.write('\x1b[?25h'); // Show cursor
 };
 
 // OpenAI API Interaction
