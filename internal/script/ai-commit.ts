@@ -151,15 +151,8 @@ console.log('\n\n\nGenerateed commit message------------------------------------
 console.log('---------------------------------------------------------------------\n\n');
 
 const codeSample = `
-    console.log('');
-    console.log('\x1b[38;2;255;0;0m     .oooooo.   oooo          \x1b[0m');
-    console.log('\x1b[38;2;255;64;0m    d8P'  \`Y8b  \`888        \x1b[0m');
-    console.log('\x1b[38;2;255;128;0m   888      888  888  oooo  \x1b[0m');
-    console.log('\x1b[38;2;255;191;0m   888      888  888 .8P'  \x1b[0m');
-    console.log('\x1b[38;2;255;255;0m   888      888  888888.    \x1b[0m');
-    console.log('\x1b[38;2;191;255;0m   \`88b    d88'  888 \`88b. \x1b[0m');
-    console.log('\x1b[38;2;128;255;0m    \`Y8bood8P'  o888o o888o\x1b[0m');
-    console.log('');
+    '\x1b[38;2;255;0;0m     Color         \x1b[0m'
+    '\x1b[38;2;255;128;0m   :) Multi line ASCII Art in Color! ()()  \x1b[0m'
 `;
 
     let stupidText = await createCompletion(`Generate ascii art for the terminal. It should
