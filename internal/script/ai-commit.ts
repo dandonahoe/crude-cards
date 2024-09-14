@@ -109,6 +109,12 @@ async function main() {
     // Get the diff of staged changes
     const diff = getStagedDiff();
 
+    // Handle the case where there are no pending changes
+    if (!diff.trim()) {
+        logColor('No changes to commit. Exiting...', colors.yellow);
+        process.exit(0); // Exit the script
+    }
+
     // Parse the diff into manageable chunks
     const fileSummaries = parseDiffIntoChunks(diff);
 
