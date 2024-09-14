@@ -4,6 +4,10 @@ import { CardDTO } from '../../../api/src/game/dtos/card.dto';
 import { ReactNode } from 'react';
 
 
+export interface Props {
+    isVisible: boolean;
+}
+
 export interface DebugTableRowProps {
 
     fontSize ?: string;
