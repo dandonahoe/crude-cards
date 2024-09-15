@@ -25,7 +25,6 @@ export const HeaderContent : RFC = () => {
             return null;
 
         case GameStage.Home:
-
             return <GameHomeHeader />;
 
         case GameStage.DealerPickBlackCard:  {

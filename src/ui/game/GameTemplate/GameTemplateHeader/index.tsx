@@ -14,19 +14,19 @@ export const GameTemplateHeader : RFC = () =>
         <Box
             className={classes.pi}
             style={{
-                border : '1px solid #f90',
+                border : '1px dotted #290',
             }}>
             <Box
                 className={classes.symbol}
                 style={{
-                    border : '1px solid #f90',
+                    border : '1px dashed #19d',
                 }}>
                 <GameMenu />
             </Box>
         </Box>
         <Box
             style={{
-                border : '1px solid #f90',
+                border : '1px solid #a30',
             }}>
             <HeaderContent />
         </Box>

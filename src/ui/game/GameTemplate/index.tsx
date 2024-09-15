@@ -15,7 +15,6 @@ import {
     selectPlayerCards, selectIsDealer,
     selectGameState, selectPopupType,
 } from '@app/client/selector/game';
-import { GameText } from '../GameText';
 
 
 export const GameTemplate : RFC<Props>= ({
@@ -38,7 +37,7 @@ export const GameTemplate : RFC<Props>= ({
             value={{
                 currentPlayer, dealerCards, playerCards,
                 dealerDealtCard, playerDealtCard,
-                gameState,  isDealer, popupType,
+                gameState, isDealer, popupType,
                 headerHeight,
             }}>
             <MantineProvider
@@ -47,22 +46,22 @@ export const GameTemplate : RFC<Props>= ({
                 theme={GameTheme}>
                 <AppShell
                     className={classes.appRoot}
-                    withBorder={false}>
-                    <AppShell.Header ref={ref}>
+                    withBorder={true}>
+                    <AppShell.Header
+                        ref={ref}
+                        bd='1px solid #f0f'>
                         <GameTemplateHeader />
                     </AppShell.Header>
                     <AppShell.Main
+                        bd='1px solid #0f0'
                         pt={rem(headerHeight === 0
                             ? 0
                             : headerHeight +  50,
                         )}>
-                        <GameText>
-                            {'TEMPLATE'}
-                        </GameText>
-
                         <GamePopup />
                         <GameToast />
                         <Group
+                            bd='1px dashed #0fd'
                             wrap='nowrap'
                             justify='space-between'>
                             <Box
@@ -72,6 +71,7 @@ export const GameTemplate : RFC<Props>= ({
                                 {'.'}
                             </Box>
                             <Box
+                                bd='1px solid #cf0'
                                 c='#000'
                                 w='100%'>
                                 {children}

@@ -11,10 +11,7 @@ export default function Document() : React.JSX.Element {
                 <AppHeadGame />
                 <ColorSchemeScript defaultColorScheme='dark' />
             </Head>
-            <body
-                style={{
-                    backgroundColor : '#000',
-                }}>
+            <body>
                 <Main />
                 <NextScript />
             </body>

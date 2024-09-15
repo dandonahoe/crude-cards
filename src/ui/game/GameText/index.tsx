@@ -1,7 +1,7 @@
 import { CardColor } from '../../../api/src/constant/card-color.enum';
+import { Box, Text } from '@mantine/core';
 import classes from './GameText.module.css';
 import { PropsWithChildren } from 'react';
-import { Box, rem, Text } from '@mantine/core';
 import { RFC } from '@app/ui/type';
 import {
     GameTextSubtitleProps, Props, GameTextType,
@@ -19,14 +19,14 @@ export const GameText : RFC<Props> = ({
 }) => {
     if(!children) return null;
 
-    const commonStyles = {
-        backgroundColor : '1px solid #f00',
-        opacity         : 0.5,
-        color           : 'green',
-        fontSize        : rem(100),
-    };
-
     // TODO: When this settles down, refactor and reduce
+
+    let overrideColor : string | null = null;
+
+    //
+    overrideColor = '#FFA500';
+    //contrast the orange
+    const overrideBackgroundColor = '#0057B8';
 
     switch(type) {
 
@@ -35,9 +35,9 @@ export const GameText : RFC<Props> = ({
             return (
                 <Text
                     className={classes.gameDefault}
-                    style={commonStyles}
-                    c={color}
+                    c={overrideColor ?? color}
                     fz={size}
+                    bg={overrideBackgroundColor}
                     {...propsMysterioso}>
                     {children}
                 </Text>
@@ -47,8 +47,7 @@ export const GameText : RFC<Props> = ({
             return (
                 <Text
                     className={classes.gameSubtitle}
-                    style={commonStyles}
-                    c={color}
+                    c={overrideColor ?? color}
                     fz='lg'
                     {...propsMysterioso}>
                     {children}
@@ -59,10 +58,10 @@ export const GameText : RFC<Props> = ({
             return (
                 <Text
                     className={classes.gameTitle}
-                    style={commonStyles}
-                    c={color}
+                    c={overrideColor ?? color}
                     fz='xl'
                     {...propsMysterioso}>
+                    {'THIS ONE!'}
                     {children}
                 </Text>
             );
@@ -71,10 +70,10 @@ export const GameText : RFC<Props> = ({
             return (
                 <Text
                     className={classes.gameSmall}
-                    style={commonStyles}
-                    c={color}
+                    c={overrideColor ?? color}
                     fz='sm'
                     {...propsMysterioso}>
+                    {'THIS ONE2!'}
                     {children}
                 </Text>
             );
@@ -82,9 +81,9 @@ export const GameText : RFC<Props> = ({
         case GameTextType.Banner:
             return (
                 <Text
-                    style={commonStyles}
                     className={classes.bannerText}
                     {...propsMysterioso}>
+                    {'THIS ONE3!'}
                     {children}
                 </Text>
             );

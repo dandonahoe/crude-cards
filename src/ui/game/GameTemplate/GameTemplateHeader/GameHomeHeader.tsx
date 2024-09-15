@@ -17,6 +17,8 @@ export const GameHomeHeader : RFC = () => {
         <Flex
             justify='center'
             align='center'>
+            {'hello?'}
+            {GameHomeHeader.displayName}
             <GameCard
                 card={{
                 ...CardDTO.Default,
