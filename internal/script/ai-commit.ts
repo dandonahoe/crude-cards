@@ -24,7 +24,7 @@ enum Color {
 // Constants
 const ProgressBarWidth = 30; // Width of the progress bar in characters
 const OpenApiModel = 'gpt-4'; // OpenAI model used for completions
-const Temperature = 0.6; // Temperature for text generation randomness
+const Temperature = 1; // Temperature for text generation randomness
 const MaxTokens = 1500; // Maximum tokens for OpenAI API completion
 const ProgressBarChars = ['=', '-', '*', '~', '#']; // Different characters for animation
 

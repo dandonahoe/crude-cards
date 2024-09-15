@@ -17,7 +17,7 @@ export const GameTemplateHeader : RFC = () => {
 
     return (
         <Group
-            className={classes.menu}
+            className={classes.headerShadow}
             style={debugStyle}>
             <Box
                 className={classes.pi}

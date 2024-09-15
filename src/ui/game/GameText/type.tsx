@@ -1,6 +1,6 @@
 import { CardColor } from '../../../api/src/constant/card-color.enum';
 import { PropsWithChildren } from 'react';
-import { TextAlignment } from '@mantine/core'; // Adjust according to the actual type you need from Mantine
+
 
 
 export enum GameTextType {
@@ -19,7 +19,7 @@ export type Props = PropsWithChildren<{
     color ?: CardColor;
     type  ?: GameTextType;
     size  ?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
-    ta    ?: TextAlignment;
+    ta    ?: 'left' | 'center' | 'right';
 }>;
 
 type GameTextCustomProps = Omit<Props, 'type'>;

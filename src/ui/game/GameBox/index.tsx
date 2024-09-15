@@ -1,8 +1,8 @@
 import { GameBoxCenteredProps, GameBoxDefaultProps, GameBoxType, Props } from './type';
-import { Box, Center} from '@mantine/core';
+import { App } from '../../AppContext';
+import { Box } from '@mantine/core';
 import { RFC } from '@app/ui/type';
 import { useContext } from 'react';
-import { App } from '../../AppContext';
 
 
 export const GameBox : RFC<Props> = ({
