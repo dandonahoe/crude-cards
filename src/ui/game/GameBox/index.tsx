@@ -31,9 +31,11 @@ export const GameBox : RFC<Props> = ({
 
         case GameBoxType.Centered:
             return (
-                <Center {...commonProps}>
+                <Box
+                    {...commonProps}
+                    ta='center'>
                     {children}
-                </Center>
+                </Box>
             );
 
         default: throw new Error(`Unknown GameBoxType: ${type}`);

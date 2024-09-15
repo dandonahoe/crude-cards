@@ -139,6 +139,7 @@ export const GameTextTitle : RFC<GameTextTitleProps> = ({
     <GameText
         type={GameTextType.Title}
         color={color}
+        ta='center'
         {...propsMysterioso}>
         {children}
     </GameText>

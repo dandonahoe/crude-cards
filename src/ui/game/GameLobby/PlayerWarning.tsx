@@ -9,6 +9,8 @@ export const PlayerWarning : RFC<PlayerWarningProps> = ({
     foeCount,
 }) => {
 
+    // todo - put this into settings
+
     if(foeCount < 3)
         return null;
 
