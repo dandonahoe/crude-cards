@@ -2,7 +2,6 @@ import { CardColor } from '../../../api/src/constant/card-color.enum';
 import { PropsWithChildren } from 'react';
 
 
-
 export enum GameTextType {
     Subtitle = 'Subtitle',
     Default  = 'Default',

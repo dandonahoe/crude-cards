@@ -32,14 +32,12 @@ export const GameCard: RFC<Props> = ({
             p='xl'
             style={{
                 backgroundColor : getBackgroundColor(color!, isHovered && onClick !== undefined),
+                borderRadius    : getCardBorder(color!),
                 boxShadow       : `4px 4px 20px 14px  rgba(${colorNum}, ${colorNum}, ${colorNum}, ${alpha})`,
-                border          : getCardBorder(color!),
             }}>
             <GameTextCard>
                 {text}
             </GameTextCard>
         </Box>
     );
-
-
 }

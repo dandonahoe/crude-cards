@@ -40,11 +40,13 @@ export const LobbyHeader: RFC = () => {
         subtitleMessage = 'Waiting on Host to Start';
 
     return (
-        <Stack>
+        <Stack align='center' justify='center'>
+            {'bef'}
             <GameBanner
                 subtitle={subtitleMessage}
                 color={CardColor.White}
-                text='Lobby' />
+                text='Lobby12' />
+            {'aft'}
             {isHost && gameState.player_list.length >= 3 &&
                 <Center m='xl'>
                     <GameButton

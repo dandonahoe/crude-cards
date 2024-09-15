@@ -1,6 +1,7 @@
-import { Injectable } from '@nestjs/common';
 import { CreateEntityDto } from './dto/create-entity.dto';
 import { UpdateEntityDto } from './dto/update-entity.dto';
+import { Injectable } from '@nestjs/common';
+
 
 @Injectable()
 export class EntityService {
@@ -11,13 +12,9 @@ export class EntityService {
     return 'This action adds a new entity';
   }
 
-  public debugTest = () => {
-    debugger;
-  }
-
   // running localhost:8080/entity to test
   public findAll() {
-    return this.debugTest();
+    return null;
   }
 
   public findOne(id: number) {

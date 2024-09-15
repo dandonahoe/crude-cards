@@ -22,141 +22,155 @@ enum Color {
 }
 
 // Constants
-const ProgressBarWidth = 30; // Width of the progress bar in characters
-const OpenApiModel = 'gpt-4'; // OpenAI model used for completions
-const Temperature = 1; // Temperature for text generation randomness
-const MaxTokens = 1500; // Maximum tokens for OpenAI API completion
-const ProgressBarChars = ['=', '-', '*', '~', '#']; // Different characters for animation
-
-// Spinner state
-let spinnerInterval: NodeJS.Timeout | null = null;
-let progress = 0; // Tracks progress for the progress bar
+const OpenApiModel = 'gpt-4';
+const Temperature = 1;
+const MaxTokens = 1500;
 
 // Initialize OpenAI with the API key from environment variables
 const openai = new OpenAI({
-    apiKey : process.env.OPENAI_API_KEY,
+    apiKey: process.env.OPENAI_API_KEY,
 });
 
 // Utility Functions
 
-// Log colorized messages to the terminal
-const logColor = (message: string, color: Color = Color.Reset): void => {
+/**
+ * Logs colorized messages to the terminal
+ * @param message The message to log
+ * @param color The color to use
+ */
+export const logColor = (message: string, color: Color = Color.Reset): void => {
     console.log(`${color}${message}${Color.Reset}`);
 };
 
-// Execute a shell command and return the output
-const execCommand = (command: string): string => {
-    return execSync(command, { encoding : 'utf-8' });
-};
-
-// Helper to generate an RGB color code
-const rgbColor = (r: number, g: number, b: number): string => {
-    return `\x1b[38;2;${r};${g};${b}m`;
-};
-
-// Generate a psychedelic color gradient that cycles across the bar
-const psychedelicColor = (index: number): string => {
-    const r = Math.floor(128 + 128 * Math.sin(index / 5));
-    const g = Math.floor(128 + 128 * Math.sin((index / 5) + 2));
-    const b = Math.floor(128 + 128 * Math.sin((index / 5) + 4));
-
-    return rgbColor(r, g, b);
-};
-
-// Start a psychedelic progress bar spinner
-const startSpinner = (): void => {
-    progress = 0;
-    process.stdout.write('\x1b[?25l'); // Hide cursor
-    spinnerInterval = setInterval(() => {
-        progress = (progress + 1) % (ProgressBarWidth + 1);
-
-        // Build a random, colorful progress bar with varying characters and colors
-        const progressBar = Array.from({ length : ProgressBarWidth }, (_, i) => {
-            const color = psychedelicColor(progress + i);
-            const char = ProgressBarChars[Math.floor(Math.random() * ProgressBarChars.length)];
-
-            return `${color}${char}${Color.Reset}`;
-        }).join('');
-
-        process.stdout.write(`\r[${progressBar}]`);
-    }, 100); // Updates every 100ms
-};
-
-// Stop the spinner animation and clear the line
-const stopSpinner = (): void => {
-    if (spinnerInterval) {
-        clearInterval(spinnerInterval);
-        spinnerInterval = null;
-    }
-    // Clear the current line by overwriting it with spaces, and move the cursor to the beginning
-    process.stdout.write('\r' + ' '.repeat(ProgressBarWidth + 2) + '\r');
-    process.stdout.write('\x1b[?25h'); // Show cursor
+/**
+ * Executes a shell command and returns the output
+ * @param command The shell command to execute
+ * @returns The output of the command
+ */
+export const execCommand = (command: string): string => {
+    return execSync(command, { encoding: 'utf-8' });
 };
 
 // OpenAI API Interaction
 
-// Create a text completion using OpenAI's API
-const createCompletion = async (prompt: string): Promise<string> => {
+/**
+ * Creates a text completion using OpenAI's API
+ * @param prompt The prompt to send to the API
+ * @returns The generated completion
+ */
+export const createCompletion = async (prompt: string): Promise<string> => {
     const params: ChatCompletionParams = {
-        model       : OpenApiModel,
-        messages    : [{ role : 'user', content : prompt }],
-        max_tokens  : MaxTokens,
-        temperature : Temperature,
+        model: OpenApiModel,
+        messages: [{ role: 'user', content: prompt }],
+        max_tokens: MaxTokens,
+        temperature: Temperature,
     };
 
-    startSpinner();
     try {
         const chatCompletion = await openai.chat.completions.create(params as any);
-
         return chatCompletion.choices[0].message.content!.trim();
     } catch (error) {
         console.error(error);
         throw new Error('Error during API call');
-    } finally {
-        stopSpinner(); // Ensure the spinner stops even on error
     }
 };
 
 // Git and Diff Handling
 
-// Get the diff of staged changes
-const getStagedDiff = (): string => {
+/**
+ * Gets the diff of staged changes
+ * @returns The git diff of staged changes
+ */
+export const getStagedDiff = (): string => {
     return execCommand('git diff --cached');
 };
 
-// Parse the diff into chunks and summarize
-const parseDiffIntoChunks = (diff: string): string[] => {
+/**
+ * Parses the diff into chunks and returns summaries
+ * @param diff The raw diff from git
+ * @returns An array of file summaries
+ */
+export const parseDiffIntoChunks = (diff: string): string[] => {
     const parsedDiff = parseDiff(diff);
 
-    const chunks = parsedDiff.map(file => {
+    return parsedDiff.map(file => {
         if (file.to && file.to.includes('package-lock.json')) {
             logColor('Detected package-lock.json, summarizing without diff details.', Color.Yellow);
-
-            return 'The package-lock.json file was updated with lots of changes.';
+            return 'The package-lock.json file was updated with many changes.';
         }
-
         return `File: ${file.to}\nChanges:\n\n${JSON.stringify(file.chunks)}`;
     });
-
-    logColor(`Analyzing ${chunks.length} file${chunks.length === 1 ? '' : 's'}...`, Color.Green);
-
-    return chunks;
 };
 
 // Commit message generation
 
-// Generate a final commit message from file summaries
-const generateCommitMessage = async (fileSummaries: string[]): Promise<string> => {
+/**
+ * Generates a final commit message from file summaries
+ * @param fileSummaries An array of file summaries
+ * @returns The generated commit message
+ */
+export const generateCommitMessage = async (fileSummaries: string[]): Promise<string> => {
     const combinedPrompt = fileSummaries.join('\n\n');
 
     const finalCommitMessage = await createCompletion(`
-        Summarize the following file summaries into a commit message.
-        Title formatted as "feat(subject): summary" where 'feat' is one of:
-        feat, fix, perf, docs, style, refactor, test, build, ci, chore, revert.
 
-        Subject should be a single word describing the change. Bullet points
-        should list the files involved (short path names), describing the updates in one word.
-        The final line should note any unusual details, such as breaking changes.
+**Summarize the following file summaries into a concise, human-readable commit message.**
+
+- The commit message should follow this format:
+  \`"feat(noun): short description"\` or \`"fix(noun): short description"\`, where the noun is the subject of the change.
+
+- Use these keywords for the commit type: feat, fix, perf, docs, style, refactor, test, build, ci, chore, revert.
+
+- For a single commit, multiple \`"feat(noun): short description"\` entries may be generated to explain different changes.
+
+- Each message should include:
+  1. A **concise subject** describing the main change (3-9 words max).
+  2. A **description** of what was done (e.g., 'updated error handling for Chinese character sets', 'added login validation, which should improve performance on MacBooks').
+  3. For multiple changes, generate a list of messages using bullet points.
+
+- Use **short, clear file names** or relevant directories (if multiple files share the same purpose) to describe where changes occurred, rather than long file paths.
+
+- Avoid phrases like "changed lots of things" or "made updates"; be specific, but **keep the description short and to the point**.
+
+- The commit message should be structured for easy readability:
+    - Bullet points for multiple entries
+    - A tree-style structure to categorize related changes, when applicable
+
+- Example output for a **simple important change**:
+
+  \`\`\`markdown
+  feat(auth): add login validation to improve security
+
+  - Added validation for login form inputs.
+  - Prevented empty email submissions.
+  - Improved error messages for incorrect passwords.
+  \`\`\`
+
+- Example output for **lots of random fixes**:
+
+  \`\`\`markdown
+  fix(auth): resolve multiple validation and session issues
+
+  - Corrected input validation for user registration.
+  - Fixed session persistence for user logins.
+  - Updated password reset form to handle edge cases.
+  - Refactored error handling to provide clearer feedback.
+
+  refactor(ui): improve button alignment and spacing
+
+  - Standardized button layout across all forms.
+  - Improved padding on the mobile login screen.
+  - Updated CSS to fix alignment issues on small screens.
+
+  perf(api): optimize database queries for user profiles
+
+  - Reduced query time for user profile fetches.
+  - Optimized user search functionality in admin panel.
+
+  **BREAKING CHANGE:** Session handling logic has been updated. All sessions will be reset after this update.
+  \`\`\`
+
+DATA TO ANALYZE:
 
         ${combinedPrompt}
     `);
@@ -166,7 +180,10 @@ const generateCommitMessage = async (fileSummaries: string[]): Promise<string> =
 
 // Main Execution Flow
 
-const main = async (): Promise<void> => {
+/**
+ * Main function to execute the flow
+ */
+export const main = async (): Promise<void> => {
     logColor('Starting commit message generation...', Color.Cyan);
 
     // Stage all changes
@@ -186,7 +203,7 @@ const main = async (): Promise<void> => {
 
     // Generate summaries for each file in parallel using Promise.all
     const summaryPromises = fileSummaries.map(summary =>
-        createCompletion(`Summarize the file diff for commit. Provide statistics at the end: ${summary.slice(0, 1000)}`),
+        createCompletion(`Summarize the file diff for commit. Provide statistics at the end: ${summary.slice(0, 1000)}`)
     );
     const fileSummariesResponses = await Promise.all(summaryPromises);
 
@@ -194,9 +211,7 @@ const main = async (): Promise<void> => {
     const finalCommitMessage = await generateCommitMessage(fileSummariesResponses);
 
     // Commit the staged changes with the generated commit message
-    execCommand(`git commit -F - <<EOF
-${finalCommitMessage}
-EOF`);
+    execCommand(`git commit -m "${finalCommitMessage}"`);
 
     logColor('\nGenerated commit message:\n', Color.Blue);
     console.log(finalCommitMessage);
