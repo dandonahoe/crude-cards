@@ -15,6 +15,7 @@ import {
     selectPlayerCards, selectIsDealer,
     selectGameState, selectPopupType,
 } from '@app/client/selector/game';
+import { GameText } from '../GameText';
 
 
 export const GameTemplate : RFC<Props>= ({
@@ -46,7 +47,7 @@ export const GameTemplate : RFC<Props>= ({
                 theme={GameTheme}>
                 <AppShell
                     className={classes.appRoot}
-                    withBorder={true}>
+                    withBorder={false}>
                     <AppShell.Header
                         ref={ref}
                         bd='1px solid #f0f'>
@@ -58,8 +59,12 @@ export const GameTemplate : RFC<Props>= ({
                             ? 0
                             : headerHeight +  50,
                         )}>
-                        <GamePopup />
+                        <GameText>
+                            {'hellooo'}
+                        </GameText>
+                        {/* <GamePopup />
                         <GameToast />
+                         */}
                         <Group
                             bd='1px dashed #0fd'
                             wrap='nowrap'
