@@ -128,7 +128,7 @@ export const generateCommitMessage = async (fileSummaries: string[]): Promise<st
   2. A **description** of what was done (e.g., 'updated error handling for Chinese character sets', 'added login validation, which should improve performance on MacBooks').
   3. For multiple changes, generate a list of messages using bullet points.
 
-- Use **short, clear file names** or relevant directories (if multiple files share the same purpose) to describe where changes occurred, rather than long file paths.
+- Use **short, clear file names** (placed on a new line) or relevant directories (if multiple files share the same purpose) to describe where changes occurred, rather than long file paths.
 
 - Avoid phrases like "changed lots of things" or "made updates"; be specific, but **keep the description short and to the point**.
 
