@@ -123,6 +123,8 @@ export const generateCommitMessage = async (fileSummaries: string[]): Promise<st
 
 - For a single commit, multiple \`"feat(noun): short description"\` entries may be generated to explain different changes.
 
+- When mentioning a file, put the file name alone on a new line
+
 - Each message should include:
   1. A **concise subject** describing the main change (3-9 words max).
   2. A **description** of what was done (e.g., 'updated error handling for Chinese character sets', 'added login validation, which should improve performance on MacBooks').
