@@ -1,5 +1,5 @@
 import { CardColor } from '../../../api/src/constant/card-color.enum';
-import { GameCardContainer } from '../GameCardContainer';
+import { GameCard } from '../GameCard';
 import { GameText } from '../GameText';
 import { FoeListProps } from './type';
 import { List } from '@mantine/core';
@@ -9,7 +9,7 @@ import { RFC } from '../../type';
 export const FoeList : RFC<FoeListProps> = ({
     foes, gameCode,
 }) =>
-    <GameCardContainer color={CardColor.White}>
+    <GameCard color={CardColor.White}>
         {foes.length === 0 ? (
             <GameText>
                 {`No Players Yet, Share Game Code "${gameCode}" to Invite People`}
@@ -28,4 +28,4 @@ export const FoeList : RFC<FoeListProps> = ({
                 </List>
             </>
         )}
-    </GameCardContainer>;
+    </GameCard>;

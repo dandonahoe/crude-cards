@@ -1,7 +1,7 @@
 import { CardColor } from '../../../api/src/constant/card-color.enum';
 import { GameStage } from '../../../api/src/constant/game-stage.enum';
-import { GameCardContainer } from '../GameCardContainer';
 import { ShareCardContent } from '../ShareCardContent';
+import { GameCardCentered } from '../GameCard';
 import { ShareCardProps } from './type';
 import { RFC } from '../../type';
 
@@ -14,10 +14,8 @@ export const ShareCard: RFC<ShareCardProps> = ({
         return null;
 
     return (
-        <GameCardContainer
-            color={CardColor.Black}
-            isClickable={true}>
+        <GameCardCentered color={CardColor.Black}>
             <ShareCardContent />
-        </GameCardContainer>
+        </GameCardCentered>
     );
 };

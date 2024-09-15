@@ -10,7 +10,7 @@ export interface GameStatusTableProps {
     title            : string;
 }
 
-export interface GameCardContainerProps {
+export interface GameCardProps {
     children : React.ReactNode;
     color    : string;
 }

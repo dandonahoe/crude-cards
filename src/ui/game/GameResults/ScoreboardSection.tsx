@@ -1,5 +1,5 @@
 import { CardColor } from '../../../api/src/constant/card-color.enum';
-import { GameCardContainer } from '../GameCardContainer';
+import { GameCardStack } from '../GameCard';
 import { GameStatusTable } from '../GameStatusTable';
 import { ScoreboardSectionProps } from './type';
 import { Text } from '@mantine/core';
@@ -11,7 +11,7 @@ export const ScoreboardSection: RFC<ScoreboardSectionProps> = ({
     playerStatus,
 }) =>
     <GameBox>
-        <GameCardContainer color={CardColor.Black}>
+        <GameCardStack color={CardColor.Black}>
             <Text
                 fz='sm'
                 ta='center'>{"3 Points to Win"}</Text>
@@ -20,5 +20,5 @@ export const ScoreboardSection: RFC<ScoreboardSectionProps> = ({
                 playerStatusList={playerStatus}
                 shouldShowDone={false}
                 shouldShowScore={true}/>
-        </GameCardContainer>
+        </GameCardStack>
     </GameBox>

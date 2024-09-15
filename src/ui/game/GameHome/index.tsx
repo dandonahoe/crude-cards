@@ -2,9 +2,9 @@ import { Text, rem, Flex, Stack, TextInput, Button, Group, FocusTrap, Box } from
 import { CardColor } from '../../../api/src/constant/card-color.enum';
 import { GameAction } from '../../../client/action/game.action';
 import { CA } from '../../../constant/framework/CoreAction';
-import { GameCardContainer } from '../GameCardContainer';
 import { GameDeckLayout } from '../GameDeckLayout';
 import { useDispatch } from '@app/client/hook';
+import { GameCardStack } from '../GameCard';
 import { GameButton } from '../GameButton';
 import { RFC } from '@app/ui/type';
 import { Env } from '../../../Env';
@@ -113,7 +113,7 @@ export const GameHome : RFC = () => {
             <GameDeckLayout
                 color={CardColor.Black}
                 cards={[
-                    <GameCardContainer
+                    <GameCardStack
                         key='sdf'
                         color={CardColor.White}>
                         <Box
@@ -142,8 +142,8 @@ export const GameHome : RFC = () => {
                                 text='Go' />
                         </Flex>
 
-                    </GameCardContainer>,
-                    <GameCardContainer
+                    </GameCardStack>,
+                    <GameCardStack
                         key='sdssf'
                         color={CardColor.Black}>
                         <Text
@@ -189,7 +189,7 @@ export const GameHome : RFC = () => {
                                 </Button>
                             </form>
                         </Group>
-                    </GameCardContainer>,
+                    </GameCardStack>,
             ]} />
         </Stack>
     );

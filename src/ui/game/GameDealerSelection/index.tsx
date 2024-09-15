@@ -1,6 +1,4 @@
 import { GameAction } from '../../../client/action/game.action';
-import { CardDTO } from '../../../api/src/game/dtos/card.dto';
-import { CA } from '../../../constant/framework/CoreAction';
 import { GameContext } from '../GameContext';
 import { GameBoxCentered } from '../GameBox';
 import { useDispatch } from 'react-redux';
@@ -14,10 +12,8 @@ export const GameDealerSelection : RFC = () => {
     const { dealerCards } = useContext(GameContext);
     const dispatch = useDispatch();
 
-    const handleCardClicked = (card : CardDTO) : CA =>
-        dispatch(GameAction.dealerPickBlackCard({
-            card_id : card.id,
-        }));
+    const handleCardClicked = (id : string) =>
+        dispatch(GameAction.dealerPickBlackCard({ card_id : id }));
 
     return (
         <GameBoxCentered>

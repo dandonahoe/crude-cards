@@ -4,8 +4,9 @@ import { GameBox, GameBoxCentered } from '../GameBox';
 import { CloseButton } from '@mantine/core';
 import { GameBanner } from '../GameBanner';
 import { GameButton } from '../GameButton';
-import { GameCard } from '../GameCard';
+import { GameCard, GameCardCentered } from '../GameCard';
 import { RFC } from '@app/ui/type';
+import { GameText } from '../GameText';
 
 
 export const GameDealerConfirm : RFC = () => {
@@ -20,12 +21,11 @@ export const GameDealerConfirm : RFC = () => {
                 subtitle='You Are Dealer'
                 color={CardColor.Black}
                 text='Deal this?' />
-            <GameCard
-                card={{
-                    ...CardDTO.Default,
-                    color : CardColor.Black,
-                    text  : 'Deal',
-                }} />
+            <GameCardCentered color={CardColor.Black}>
+                <GameText>
+                    {'Deal'}
+                </GameText>
+            </GameCardCentered>
             <GameBoxCentered size='lg'>
                 <GameButton
                     onClick={handleConfirm}

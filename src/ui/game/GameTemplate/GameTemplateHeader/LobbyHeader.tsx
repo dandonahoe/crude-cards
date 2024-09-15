@@ -3,12 +3,14 @@ import { CardColor } from '../../../../api/src/constant/card-color.enum';
 import { GameAction } from '../../../../client/action/game.action';
 import { selectIsHost } from '../../../../client/selector/game';
 import { CA } from '../../../../constant/framework/CoreAction';
+import { GameStackType } from '../../GameStack/type';
 import { GameContext } from '../../GameContext';
 import { useDispatch } from '@app/client/hook';
 import { GameBanner } from '../../GameBanner';
 import { GameButton } from '../../GameButton';
-import { Center, Stack } from '@mantine/core';
+import { GameStack } from '../../GameStack';
 import { useSelector } from 'react-redux';
+import { Center } from '@mantine/core';
 import { RFC } from '../../../type';
 import { useContext } from 'react';
 
@@ -40,13 +42,11 @@ export const LobbyHeader: RFC = () => {
         subtitleMessage = 'Waiting on Host to Start';
 
     return (
-        <Stack align='center' justify='center'>
-            {'bef'}
+        <GameStack type={GameStackType.Centered}>
             <GameBanner
                 subtitle={subtitleMessage}
                 color={CardColor.White}
                 text='Lobby12' />
-            {'aft'}
             {isHost && gameState.player_list.length >= 3 &&
                 <Center m='xl'>
                     <GameButton
@@ -54,6 +54,6 @@ export const LobbyHeader: RFC = () => {
                         text='Start' />
                 </Center>
             }
-        </Stack>
+        </GameStack>
     );
 }
