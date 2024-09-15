@@ -3,6 +3,7 @@ import { NetworkStatus } from '../type/framework/core/NetworkStatus';
 import { ColorTheme } from '@app/constant/framework/ColorTheme';
 import { ScreenSize } from '@app/constant/framework/ScreenSize';
 import React, { PropsWithChildren, useMemo } from 'react';
+import { DefaultAppContext } from '../ui/AppContext';
 import { App } from '@app/ui/AppContext';
 import { RFC } from '@app/ui/type';
 import {
@@ -14,19 +15,21 @@ import {
 export const AppContextProvider : RFC<PropsWithChildren> = ({
     children,
 }) => {
-    const isReducedMotion = useReducedMotion() || false;
+    const isReducedMotion = useReducedMotion(DefaultAppContext.isReducedMotion);
     const tabVisibility   = useDocumentVisibility();
     const networkStatus   = useNetwork() as NetworkStatus;
-    const colorScheme     = useColorScheme();
+    const colorScheme     = useColorScheme(DefaultAppContext.colorTheme);
     const isIdle          = useIdle(5000);
-    const os              = useOs() || 'undetermined';
+    const os              = useOs() || DefaultAppContext.os;
 
-    const colorTheme =  colorScheme === 'dark'
+    // todo - this has never worked reliably but seems close
+    const colorTheme = colorScheme === ColorTheme.Dark
         ? ColorTheme.Dark
         : ColorTheme.Light;
 
-    const isPhone  = useMediaQuery('(max-width: 36em)') || false;
-    const isTablet = useMediaQuery('(max-width: 75em)') || false;
+    // todo - remove hard coded values
+    const isPhone  = useMediaQuery('(max-width: 36em)') || DefaultAppContext.isPhone;
+    const isTablet = useMediaQuery('(max-width: 75em)') || DefaultAppContext.isTablet;
 
     const screenSize : ScreenSize =
         isPhone
@@ -38,27 +41,17 @@ export const AppContextProvider : RFC<PropsWithChildren> = ({
     const isDesktop = screenSize === ScreenSize.Desktop;
     const isMobile  = isPhone || isTablet;
 
-    // value is cached by useMemo to avoid excessive re-renders
-    const context = useMemo(() => ({
-
-        isDesktop, isTablet, isMobile, isPhone,
-
-        tabVisibility,
-        isReducedMotion,
-        networkStatus,
-        colorTheme,
-        screenSize,
-
-        isIdle,
-        os,
+    const appContext = useMemo(() => ({
+        isDebugging : DefaultAppContext.isDebugging,
+        tabVisibility, isReducedMotion, networkStatus, isDesktop, os,
+        isTablet, isMobile, isPhone, colorTheme, screenSize, isIdle,
     } as AppContextModel), [
-        isIdle, os, tabVisibility, isReducedMotion,
-        isDesktop, isTablet, isMobile, isPhone,
-        networkStatus, colorTheme, screenSize,
+        tabVisibility, isReducedMotion, networkStatus, isDesktop, os,
+        isTablet, isMobile, isPhone, colorTheme, screenSize, isIdle,
     ]);
 
     return (
-        <App.Provider value={context}>
+        <App.Provider value={appContext}>
             {children}
         </App.Provider>
     );

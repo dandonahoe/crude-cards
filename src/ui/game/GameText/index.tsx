@@ -1,7 +1,7 @@
 import { CardColor } from '../../../api/src/constant/card-color.enum';
 import { Box, Text } from '@mantine/core';
 import classes from './GameText.module.css';
-import { PropsWithChildren } from 'react';
+import { PropsWithChildren, useContext } from 'react';
 import { RFC } from '@app/ui/type';
 import {
     GameTextSubtitleProps, Props, GameTextType,
@@ -9,6 +9,7 @@ import {
     GameTextSmallProps,  GameTextTitleProps,
 } from './type';
 // import seedrandom from 'seedrandom';
+import { AppContext } from '../../AppContext';
 // Consistent random number
 // const rand = seedrandom(`${index}`);
 
@@ -20,14 +21,15 @@ export const GameText : RFC<Props> = ({
     children,
     ...propsMysterioso
 }) => {
-    if(!children) return null;
 
-    // TODO: When this settles down, refactor and reduce
+    const { isDebugging } = useContext(AppContext);
 
-    let overrideColor : string | null = null;
+    if(!children)
+        return null;
 
-    //
-    overrideColor = '#FFA500';
+    const overrideColor = isDebugging
+        ? '#FFA500'
+        : undefined;
 
     const overrideBackgroundColor = undefined;
 
