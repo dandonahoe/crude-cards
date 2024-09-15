@@ -66,7 +66,6 @@ export const GameText : RFC<Props> = ({
                     c={overrideColor ?? color}
                     fz='xl'
                     {...propsMysterioso}>
-                    {'THIS ONE!'}
                     {children}
                 </Text>
             );

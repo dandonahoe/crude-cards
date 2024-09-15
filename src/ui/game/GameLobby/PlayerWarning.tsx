@@ -1,22 +1,25 @@
-import { RFC } from '@app/ui/type';
 import { CardColor } from '../../../api/src/constant/card-color.enum';
+import { GameText, GameTextCentered } from '../GameText/index';
 import { GameCardContainer } from '../GameCardContainer';
 import { PlayerWarningProps } from './type';
-import { Text } from '@mantine/core';
+import { RFC } from '@app/ui/type';
 
 
 export const PlayerWarning : RFC<PlayerWarningProps> = ({
     foeCount,
-}) => (
-    foeCount < 3 ? (
+}) => {
+
+    if(foeCount < 3)
+        return null;
+
+    return (
         <GameCardContainer color={CardColor.Black}>
-            <Text
-                fw={600}
-                mb='xl'>{'Minimum 3 Players'}</Text>
-            <Text
-                ta='center'
-                fz='sm'
-                fw={600}>{`Need ${3 - foeCount} more players`}</Text>
+            <GameText>
+                {'Minimum 3 Players'}
+            </GameText>
+            <GameTextCentered>
+                {`Need ${3 - foeCount} more players`}
+            </GameTextCentered>
         </GameCardContainer>
-    ) : null
-);
+    );
+}
