@@ -6,6 +6,7 @@ import { createContext } from 'react';
 
 export const AppContext = createContext<AppContextModel>({
 
+    isDebugging : false,
 
     screenSize : ScreenSize.Desktop,
     colorTheme : ColorTheme.Light,

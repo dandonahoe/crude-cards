@@ -8,6 +8,9 @@ import {
     GameTextBannerProps, GameTextCardProps,
     GameTextSmallProps,  GameTextTitleProps,
 } from './type';
+// import seedrandom from 'seedrandom';
+// Consistent random number
+// const rand = seedrandom(`${index}`);
 
 
 export const GameText : RFC<Props> = ({
@@ -25,8 +28,8 @@ export const GameText : RFC<Props> = ({
 
     //
     overrideColor = '#FFA500';
-    //contrast the orange
-    const overrideBackgroundColor = '#0057B8';
+
+    const overrideBackgroundColor = undefined;
 
     switch(type) {
 

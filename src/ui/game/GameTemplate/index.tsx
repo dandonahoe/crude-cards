@@ -3,11 +3,13 @@ import { GameTemplateHeader } from './GameTemplateHeader';
 import { GameTheme } from '@app/client/GameTheme';
 import classes from './GameTemplate.module.css';
 import { useElementSize } from '@mantine/hooks';
+import { AppContext } from '@app/ui/AppContext';
 import { useSelector } from '@app/client/hook';
 import { GameContext } from '../GameContext';
 import { GamePopup } from '../GamePopup';
 import { GameToast } from '../GameToast';
 import { RFC } from '@app/ui/type';
+import { useContext } from 'react';
 import { Props } from './type';
 import {
     selectDealerDealtCard, selectPlayerDealtCard,
@@ -15,7 +17,6 @@ import {
     selectPlayerCards, selectIsDealer,
     selectGameState, selectPopupType,
 } from '@app/client/selector/game';
-import { GameText } from '../GameText';
 
 
 export const GameTemplate : RFC<Props>= ({
@@ -33,13 +34,18 @@ export const GameTemplate : RFC<Props>= ({
 
     const { ref, height : headerHeight } = useElementSize();
 
+    const { isDebugging } = useContext(AppContext);
+
+    const debugProps = {
+        bd : isDebugging ? '1px solid #f00' : undefined,
+    };
+
     return (
         <GameContext.Provider
             value={{
+                gameState, isDealer, popupType, headerHeight,
                 currentPlayer, dealerCards, playerCards,
                 dealerDealtCard, playerDealtCard,
-                gameState, isDealer, popupType,
-                headerHeight,
             }}>
             <MantineProvider
                 defaultColorScheme='dark'
@@ -50,7 +56,7 @@ export const GameTemplate : RFC<Props>= ({
                     withBorder={false}>
                     <AppShell.Header
                         ref={ref}
-                        bd='1px solid #f0f'>
+                        {...debugProps}>
                         <GameTemplateHeader />
                     </AppShell.Header>
                     <AppShell.Main
@@ -59,12 +65,8 @@ export const GameTemplate : RFC<Props>= ({
                             ? 0
                             : headerHeight +  50,
                         )}>
-                        <GameText>
-                            {'hellooo'}
-                        </GameText>
-                        {/* <GamePopup />
+                        <GamePopup />
                         <GameToast />
-                         */}
                         <Group
                             bd='1px dashed #0fd'
                             wrap='nowrap'
