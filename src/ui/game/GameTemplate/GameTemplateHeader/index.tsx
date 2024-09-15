@@ -2,32 +2,37 @@ import classes from '../GameTemplate.module.css';
 import { HeaderContent } from './HeaderContent';
 import { Box, Group } from '@mantine/core';
 import { GameMenu } from '../../GameMenu';
+import { App } from '../../../AppContext';
 import { RFC } from '@app/ui/type';
+import { useContext } from 'react';
 
 
-export const GameTemplateHeader : RFC = () =>
-    <Group
-        className={classes.menu}
-        style={{
-            border : '1px solid #f90',
-        }}>
-        <Box
-            className={classes.pi}
-            style={{
-                border : '1px dotted #290',
-            }}>
+export const GameTemplateHeader : RFC = () => {
+
+    const { isDebugging } = useContext(App);
+
+    const debugStyle = {
+        border : isDebugging ? '1px solid #290' : undefined,
+    };
+
+    return (
+        <Group
+            className={classes.menu}
+            style={debugStyle}>
             <Box
-                className={classes.symbol}
-                style={{
-                    border : '1px dashed #19d',
-                }}>
-                <GameMenu />
+                className={classes.pi}
+                style={debugStyle}>
+                <Box
+                    className={classes.symbol}
+                    style={debugStyle}>
+                    <GameMenu />
+                </Box>
             </Box>
-        </Box>
-        <Box
-            style={{
-                border : '1px solid #a30',
-            }}>
-            <HeaderContent />
-        </Box>
-    </Group>
+            <Box
+                style={debugStyle}>
+                <HeaderContent />
+            </Box>
+        </Group>
+    );
+}
+

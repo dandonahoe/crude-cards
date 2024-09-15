@@ -6,7 +6,7 @@ import { createContext } from 'react';
 
 export const DefaultAppContext : AppContextModel = Object.freeze({
 
-    isDebugging : false,
+    isDebugging : true,
 
     screenSize : ScreenSize.Desktop,
     colorTheme : ColorTheme.Dark,

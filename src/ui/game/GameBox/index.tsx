@@ -1,6 +1,8 @@
 import { GameBoxCenteredProps, GameBoxDefaultProps, GameBoxType, Props } from './type';
 import { Box, Center} from '@mantine/core';
 import { RFC } from '@app/ui/type';
+import { useContext } from 'react';
+import { App } from '../../AppContext';
 
 
 export const GameBox : RFC<Props> = ({
@@ -9,12 +11,14 @@ export const GameBox : RFC<Props> = ({
     children,
 }) => {
 
+    const { isDebugging } = useContext(App);
+
     if(!children) return null;
 
     const commonProps = {
         mb     : size,
         mt     : size,
-        border : '1px solid #f90',
+        border : isDebugging ? '1px solid #f90' : undefined,
     }
 
     switch(type) {

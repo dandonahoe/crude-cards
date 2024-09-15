@@ -1,5 +1,7 @@
+import { App } from '../../AppContext';
 import { Box } from '@mantine/core';
 import seedrandom from 'seedrandom';
+import { useContext } from 'react';
 import { RFC } from '../../type';
 import { Props } from './type';
 
@@ -16,10 +18,12 @@ export const GameWiggleBox : RFC<Props> = ({
     // stops random wobbling on rerender
     const rand = seedrandom(`${index}`);
 
+    const { isDebugging } = useContext(App);
+
     return (
         <Box
             style={{
-                border : '1px solid #f90',
+                border : isDebugging ? '1px solid #f90' : undefined,
                 rotate : `${rand() * tiltFactor - (tiltFactor / 2)}deg`,
                 width  : '100%',
                 left   : wiggleFactor * (rand() - 0.5) * 10,

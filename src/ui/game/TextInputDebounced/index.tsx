@@ -1,9 +1,10 @@
 import { CardColor } from '../../../api/src/constant/card-color.enum';
 import { useDebouncedValue } from '@mantine/hooks';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { TextInput } from '@mantine/core';
 import { RFC } from '@app/ui/type';
 import { Props } from './type';
+import { App } from '../../AppContext';
 
 
 export const TextInputDebounced: RFC<Props> = ({
@@ -14,6 +15,8 @@ export const TextInputDebounced: RFC<Props> = ({
 
     const [text, setText] = useState(value);
     const [debounced] = useDebouncedValue(text, milliseconds);
+
+    const { isDebugging } = useContext(App);
 
     const handleChange = (evt: React.ChangeEvent<HTMLInputElement>) =>
         setText(evt.currentTarget.value);
@@ -42,8 +45,10 @@ export const TextInputDebounced: RFC<Props> = ({
             value={text}
             size={size}
             style={{
-                border : '1px solid #f90',
-                input  : {
+                border : isDebugging
+                    ? '1px dotted #f9d'
+                    : undefined,
+                input : {
                     borderRadius : '10px',
                     textAlign    : 'center',
                     border       : `1px solid ${CardColor.Black}`,
