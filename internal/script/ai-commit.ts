@@ -155,7 +155,7 @@ const generateCommitMessage = async (fileSummaries: string[]): Promise<string> =
         feat, fix, perf, docs, style, refactor, test, build, ci, chore, revert.
 
         Subject should be a single word describing the change. Bullet points
-        should list the files involved, describing the updates in one word.
+        should list the files involved (short path names), describing the updates in one word.
         The final line should note any unusual details, such as breaking changes.
 
         ${combinedPrompt}

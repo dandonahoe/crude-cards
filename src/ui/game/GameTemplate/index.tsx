@@ -77,6 +77,7 @@ export const GameTemplate : RFC<Props>= ({
                                 {children}
                             </Box>
                             <Box
+                                c='#000'
                                 w={rem(0)}
                                 hiddenFrom='xs'>
                                 {'.'}
