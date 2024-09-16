@@ -181,7 +181,7 @@ export const GameCardStack: RFC<GameCardStackProps> = ({
 }) => {
     return (
         <GameCard
-            cardType={GameCardType.Centered}
+            cardType={GameCardType.Stack}
             id={id ?? nanoid()}
             onClick={onClick}
             color={color}>

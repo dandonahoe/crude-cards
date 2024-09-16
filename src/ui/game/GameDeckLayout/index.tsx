@@ -8,7 +8,6 @@ import { Props } from './type';
 
 export const GameDeckLayout: RFC<Props> = ({
     cards,
-    color = CardColor.White,
     verticleWiggleFactor = 50,
     cardOverlapFactor    = 40,
     wiggleFactor         = 6,
