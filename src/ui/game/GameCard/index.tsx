@@ -1,6 +1,7 @@
 import { CardColor } from '../../../api/src/constant/card-color.enum';
 import { CardDTO } from '../../../api/src/game/dtos/card.dto';
 import { getBackgroundColor, getCardBorder } from './Logic';
+import renderHtmlAsReact from 'html-react-parser';
 import { Box, Center, rem } from '@mantine/core';
 import { GameWiggleBox } from '../GameWiggleBox';
 import classes from './GameCard.module.css';
@@ -9,7 +10,6 @@ import { nanoid } from '@reduxjs/toolkit';
 import { GameStack } from '../GameStack';
 import { GameCardType } from '../type';
 import { GameText } from '../GameText';
-import renderHtmlAsReact from 'html-react-parser';
 import { RFC } from '@app/ui/type';
 import { ReactNode } from 'react';
 import {
