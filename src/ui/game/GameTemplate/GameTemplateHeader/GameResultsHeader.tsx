@@ -1,62 +1,47 @@
 import { selectIsPlayerWinner, selectWinner } from '@app/client/selector/game';
+import { GameTextNeon, GameTextSmall, GameTextSubtitle } from '../../GameText';
 import { useDispatch, useSelector } from '../../../../client/hook';
 import { GameAction } from '../../../../client/action/game.action';
-import { CA } from '../../../../constant/framework/CoreAction';
-import { Stack, Text, Center } from '@mantine/core';
-import classes from '../GameTemplate.module.css';
+import { GameStackType } from '../../GameStack/type';
 import { GameContext } from '../../GameContext';
 import { GameButton } from '../../GameButton'
+import { GameStack } from '../../GameStack';
 import { useContext } from 'react';
 
 
 export const GameResultsHeader = () => {
 
     const isWinner = useSelector(selectIsPlayerWinner);
-    const winner = useSelector(selectWinner);
+    const winner   = useSelector(selectWinner);
 
     const { isDealer } = useContext(GameContext);
-
     const dispatch = useDispatch();
 
-    const handleNextHand = () : CA => dispatch(GameAction.nextHand({}));
+    const handleNextHand = () => dispatch(GameAction.nextHand({}));
 
     return (
-        <Stack mb='md'>
-            <Text
-                fw={600}
-                fz='lg'
-                pt='xs'
-                ta='center'>
+        <GameStack>
+            <GameTextSubtitle>
                 {'WINNER IS'}
-            </Text>
-            <Text
-                className={classes.neonText}
-                fw={200}
-                ta='center'
-                fz='lg'>
+            </GameTextSubtitle>
+            <GameTextNeon>
                 {isWinner
                     ? 'YOU!'
                     : winner?.username
                 }
-            </Text>
+            </GameTextNeon>
             {!isDealer &&
-                <Text
-                    fz='xs'
-                    mt='xl'
-                    fw={600}
-                    ta='center'>
+                <GameTextSmall>
                     {'Waiting on Dealer'}
-                </Text>
+                </GameTextSmall>
             }
             {isDealer &&
-                <Center
-                    mt='xl'
-                    mb='md'>
+                <GameStack type={GameStackType.Centered}>
                     <GameButton
                         onClick={handleNextHand}
                         text='Next' />
-                </Center>
+                </GameStack>
             }
-        </Stack>
+        </GameStack>
     );
 }
