@@ -8,9 +8,8 @@ import { useSelector } from '@app/client/hook';
 import { ResultsCards } from './ResultsCards';
 import { GameStack } from '../GameStack';
 import Confetti from 'react-confetti';
-import { RFC } from '../../type';
 
-export const GameResults: RFC = () => {
+export const GameResults = () => {
 
     const {
         sessionEndMessage, allPlayerStatus, isPlayerWinner,

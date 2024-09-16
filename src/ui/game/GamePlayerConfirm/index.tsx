@@ -4,10 +4,9 @@ import { CloseButton } from '@mantine/core';
 import { GameBanner } from '../GameBanner';
 import { GameButton } from '../GameButton';
 import { GameCardDTO } from '../GameCard';
-import { RFC } from '@app/ui/type';
 
 
-export const GamePlayerConfirm : RFC = () => {
+export const GamePlayerConfirm = () => {
 
     const handleClick = () : void => {
     }

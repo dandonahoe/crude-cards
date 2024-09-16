@@ -1,11 +1,10 @@
 import { CardColor } from '../../../../api/src/constant/card-color.enum';
 import { GameContext } from '../../GameContext';
 import { GameBanner } from '../../GameBanner';
-import { RFC } from '../../../type';
 import { useContext } from 'react';
 
 
-export const DealerPickBlackCard : RFC = () => {
+export const DealerPickBlackCard = () => {
 
     const { isDealer } = useContext(GameContext);
 

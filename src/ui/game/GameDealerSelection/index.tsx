@@ -3,11 +3,10 @@ import { GameContext } from '../GameContext';
 import { GameBoxCentered } from '../GameBox';
 import { useDispatch } from 'react-redux';
 import { GameDeck } from '../GameDeck';
-import { RFC } from '@app/ui/type';
 import { useContext } from 'react';
 
 
-export const GameDealerSelection : RFC = () => {
+export const GameDealerSelection = () => {
 
     const { dealerCards } = useContext(GameContext);
     const dispatch = useDispatch();

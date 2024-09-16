@@ -13,10 +13,9 @@ import { GameLobby } from '../GameLobby';
 import { GameError } from '../GameError';
 import { useRouter } from 'next/router';
 import { GameHome } from '../GameHome';
-import { RFC } from '../../type';
 
 
-export const GameView: RFC = () => {
+export const GameView = () => {
 
     const dispatch = useDispatch();
     const router   = useRouter();

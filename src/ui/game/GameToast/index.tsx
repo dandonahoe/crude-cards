@@ -4,10 +4,9 @@ import classes from './GameToast.module.css';
 import { TimerSymbol } from './TimerSymbol';
 import { useSelector } from 'react-redux';
 import { Box } from '@mantine/core';
-import { RFC } from '@app/ui/type';
 
 
-export const GameToast: RFC = () => {
+export const GameToast = () => {
 
     const timer = useSelector(selectTimer);
 

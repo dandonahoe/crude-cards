@@ -4,16 +4,15 @@ import { PlayerPickWhiteCard } from './PlayerPickWhiteCard';
 import { selectIsDealer } from '@app/client/selector/game';
 import { GameResultsHeader } from './GameResultsHeader';
 import { DealerPickWinner } from './DealerPickWinner';
+import { GameHomeHeader } from './GameHomeHeader';
 import { GameContext } from '../../GameContext';
 import { LobbyHeader } from './LobbyHeader';
 import { useSelector } from 'react-redux';
-import { RFC } from '../../../type';
 import { Box } from '@mantine/core';
 import { useContext } from 'react';
-import { GameHomeHeader } from './GameHomeHeader';
 
 
-export const HeaderContent : RFC = () => {
+export const HeaderContent = () => {
 
     const { gameState } = useContext(GameContext);
 

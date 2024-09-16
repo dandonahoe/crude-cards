@@ -5,11 +5,10 @@ import { useDispatch } from '@app/client/hook';
 import { GameContext } from '../GameContext';
 import { GameStack } from '../GameStack';
 import { GameText } from '../GameText';
-import { RFC } from '@app/ui/type';
 import { useContext } from 'react';
 
 
-export const UsernameCardContent: RFC = () => {
+export const UsernameCardContent = () => {
 
     const { gameState, currentPlayer } = useContext(GameContext);
     const dispatch = useDispatch();

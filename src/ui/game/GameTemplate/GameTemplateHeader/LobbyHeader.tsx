@@ -11,11 +11,10 @@ import { GameButton } from '../../GameButton';
 import { GameStack } from '../../GameStack';
 import { useSelector } from 'react-redux';
 import { Center } from '@mantine/core';
-import { RFC } from '../../../type';
 import { useContext } from 'react';
 
 
-export const LobbyHeader: RFC = () => {
+export const LobbyHeader = () => {
 
     const { gameState } = useContext(GameContext);
     const dispatch = useDispatch();

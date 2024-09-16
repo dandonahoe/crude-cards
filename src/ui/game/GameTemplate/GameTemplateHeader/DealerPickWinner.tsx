@@ -3,11 +3,10 @@ import { GameStackType } from '../../GameStack/type';
 import { GameContext } from '../../GameContext';
 import { GameBanner } from '../../GameBanner';
 import { GameStack } from '../../GameStack';
-import { RFC } from '../../../type';
 import { useContext } from 'react';
 
 
-export const DealerPickWinner : RFC = () => {
+export const DealerPickWinner = () => {
 
     const { dealerDealtCard, isDealer } = useContext(GameContext);
 

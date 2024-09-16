@@ -3,11 +3,10 @@ import { isPlayerWaiting, shouldPlayCard } from './Logic';
 import { GameContext } from '../../GameContext';
 import { GameBanner } from '../../GameBanner';
 import { GameBox } from '../../GameBox';
-import { RFC } from '../../../type';
 import { useContext } from 'react';
 
 
-export const PlayerPickWhiteCard : RFC = () => {
+export const PlayerPickWhiteCard = () => {
 
     const { isDealer, playerDealtCard, dealerDealtCard } = useContext(GameContext);
 

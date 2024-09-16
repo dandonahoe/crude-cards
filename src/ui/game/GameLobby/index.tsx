@@ -8,10 +8,9 @@ import { GameBoxCentered } from '../GameBox';
 import { ShareCard } from './ShareCard';
 import { FoeList } from './FoeList';
 import { useContext } from 'react';
-import { RFC } from '../../type';
 
 
-export const GameLobby : RFC = () => {
+export const GameLobby = () => {
 
     const { gameState } = useContext(GameContext);
 

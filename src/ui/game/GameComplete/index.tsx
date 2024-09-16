@@ -10,10 +10,9 @@ import { IconArrowRight } from '@tabler/icons-react';
 import { useViewportSize } from '@mantine/hooks';
 import { Button, Stack } from '@mantine/core';
 import Confetti from 'react-confetti'
-import { RFC } from '@app/ui/type';
 
 
-export const GameComplete : RFC = () => {
+export const GameComplete = () => {
 
     const dispatch = useDispatch();
     const handleExitGame = () : CA => dispatch(GameAction.leaveGame({}));

@@ -98,6 +98,7 @@
         "cookie": "0.6.0",
         "cookies-next": "4.2.1",
         "dotenv": "16.4.5",
+        "html-react-parser": "5.1.16",
         "kill-port": "2.0.1",
         "lodash": "4.17.21",
         "mantine-form-zod-resolver": "1.1.0",

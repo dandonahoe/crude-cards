@@ -3,11 +3,10 @@ import { HeaderContent } from './HeaderContent';
 import { Box, Group } from '@mantine/core';
 import { GameMenu } from '../../GameMenu';
 import { App } from '../../../AppContext';
-import { RFC } from '@app/ui/type';
 import { useContext } from 'react';
 
 
-export const GameTemplateHeader : RFC = () => {
+export const GameTemplateHeader = () => {
 
     const { isDebugging } = useContext(App);
 

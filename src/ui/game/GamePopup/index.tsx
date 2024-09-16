@@ -3,9 +3,8 @@ import { useDispatch } from '@app/client/hook';
 import { GameContext } from '../GameContext';
 import { PopupModal } from './PopupModal';
 import { useContext } from 'react';
-import { RFC } from '@app/ui/type';
 
-export const GamePopup: RFC = () => {
+export const GamePopup = () => {
 
     const { popupType } = useContext(GameContext);
     const dispatch = useDispatch();

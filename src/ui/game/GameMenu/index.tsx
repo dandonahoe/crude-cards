@@ -2,9 +2,8 @@ import { GameMenuDropdown } from './GameMenuDropdown';
 import { GameMenuBurger } from './GameMenuBurger';
 import { useDisclosure } from '@mantine/hooks';
 import { Menu } from '@mantine/core';
-import { RFC } from '@app/ui/type';
 
-export const GameMenu: RFC = () => {
+export const GameMenu = () => {
 
     const [opened, { toggle }] = useDisclosure();
 

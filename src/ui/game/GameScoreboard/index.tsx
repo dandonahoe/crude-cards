@@ -4,10 +4,9 @@ import { GameStatusTable } from '../GameStatusTable';
 import { useSelector } from '@app/client/hook';
 import { GameStack } from '../GameStack';
 import { GameText } from '../GameText';
-import { RFC } from '@app/ui/type';
 
 
-export const GameScoreboard : RFC = () => {
+export const GameScoreboard = () => {
 
     const allPlayerStatus = useSelector(selectAllPlayerStatus);
 

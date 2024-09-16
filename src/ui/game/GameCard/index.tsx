@@ -5,31 +5,29 @@ import { Box, Center, rem } from '@mantine/core';
 import { GameWiggleBox } from '../GameWiggleBox';
 import classes from './GameCard.module.css';
 import { useHover } from '@mantine/hooks';
+import { nanoid } from '@reduxjs/toolkit';
 import { GameStack } from '../GameStack';
 import { GameCardType } from '../type';
 import { GameText } from '../GameText';
+import renderHtmlAsReact from 'html-react-parser';
 import { RFC } from '@app/ui/type';
 import { ReactNode } from 'react';
 import {
-    GameCardStackProps, GameCardDTOProps, CardCenteredProps,
-    GameCardChildrenProps, Props, GameCardRawProps,
-    GameCardHtmlProps,
+    GameCardStackProps, GameCardDTOProps,
+    GameCardRawProps, GameCardHtmlProps,
+    CardCenteredProps, Props,
+    GameCardChildrenProps,
 } from './type';
-import { nanoid } from '@reduxjs/toolkit';
 
 
 export const GameCard: RFC<Props> = ({
-    id, cardType,  children,
-    color, onClick, card,
+    id,    cardType,  children,
+    color, onClick,   card,
     hasHoverWiggle = true,
 }) => {
     const { hovered: isHovered, ref: refHover } = useHover();
 
     const debugString = `color: ${color}, onClick: ${onClick}, id: ${id}`;
-
-    // if one is defined but the other isnt
-    if((id || onClick) && (!id || !onClick))
-        throw new Error(`Card id and onClick must be both defined or both undefined: ${debugString}`);
 
     if (color === CardColor.Unknown)
         throw new Error(`Card color is unknown: ${debugString}`);
@@ -38,14 +36,12 @@ export const GameCard: RFC<Props> = ({
     const alpha    = color === CardColor.Black ? 0.6 : 0.2;
 
     const handleClickCard = (evt : React.MouseEvent<HTMLDivElement>) => {
+
         if(!onClick) throw new Error(`onClick is not defined: ${debugString}`);
 
         evt.stopPropagation();
 
-        onClick(id, {
-            ...CardDTO.Default,
-            ...card,
-        });
+        onClick(id, { ...CardDTO.Default, ...card });
     };
 
     const renderCardWiggle = (
@@ -106,6 +102,12 @@ export const GameCard: RFC<Props> = ({
             return renderCardWiggle(
                 renderCardContainer(
                     children,
+                ));
+
+        case GameCardType.Html:
+            return renderCardWiggle(
+                renderCardContainer(
+                    renderHtmlAsReact(children as string),
                 ));
 
             default:

@@ -7,10 +7,9 @@ import { GameContext } from '../GameContext';
 import { useContext, useState } from 'react';
 import { useTimeout } from '@mantine/hooks';
 import { GameShare } from '../GameShare';
-import { RFC } from '@app/ui/type';
 
 
-export const ShareCardContent: RFC = () => {
+export const ShareCardContent = () => {
 
     const { gameState } = useContext(GameContext);
 

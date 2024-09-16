@@ -8,11 +8,10 @@ import { useForm } from '@mantine/form';
 import { GameText } from '../GameText';
 import { schema } from './validation';
 import { FeedbackForm } from './type';
-import { RFC } from '@app/ui/type';
 import { useState } from 'react';
 
 
-export const GameFeedback : RFC = () => {
+export const GameFeedback = () => {
 
     const form = useForm({
         validate : zodResolver(schema),

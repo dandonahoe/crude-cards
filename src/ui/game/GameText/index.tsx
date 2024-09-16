@@ -22,7 +22,9 @@ export const GameText : RFC<Props> = ({
     ...propsMysterioso
 }) => {
 
-    const { isDebugging } = useContext(AppContext);
+    let { isDebugging } = useContext(AppContext);
+
+    isDebugging = false;
 
     if(!children)
         return null;
@@ -77,7 +79,6 @@ export const GameText : RFC<Props> = ({
                     c={overrideColor ?? color}
                     fz='sm'
                     {...propsMysterioso}>
-                    {'THIS ONE2!'}
                     {children}
                 </Text>
             );

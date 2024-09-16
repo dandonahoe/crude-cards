@@ -5,12 +5,11 @@ import { CA } from '../../../../constant/framework/CoreAction';
 import { Stack, Text, Center } from '@mantine/core';
 import classes from '../GameTemplate.module.css';
 import { GameContext } from '../../GameContext';
-import { GameButton } from '../../GameButton';
-import { RFC } from '../../../type';
+import { GameButton } from '../../GameButton'
 import { useContext } from 'react';
 
 
-export const GameResultsHeader : RFC = () => {
+export const GameResultsHeader = () => {
 
     const isWinner = useSelector(selectIsPlayerWinner);
     const winner = useSelector(selectWinner);

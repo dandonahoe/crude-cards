@@ -1,20 +1,17 @@
 import { GameAction } from '../../../client/action/game.action';
-import { CA } from '../../../constant/framework/CoreAction';
 import { GameBox, GameBoxCentered } from '../GameBox';
 import { useDispatch } from '@app/client/hook';
 import { GameTextSubtitle } from '../GameText';
 import { GameButton } from '../GameButton';
-import { RFC } from '@app/ui/type';
 
 
-export const GameQuit : RFC = () => {
+export const GameQuit = () => {
 
     const dispatch = useDispatch();
 
-    const handleClick = () : CA => {
+    const handleClick = () => {
         dispatch(GameAction.leaveGame({}));
-
-        return dispatch(GameAction.closePopup());
+        dispatch(GameAction.closePopup());
     }
 
     return (

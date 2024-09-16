@@ -6,12 +6,11 @@ import { GameDeckLayout } from '../GameDeckLayout';
 import { useDispatch } from '@app/client/hook';
 import { GameCardStack } from '../GameCard';
 import { GameButton } from '../GameButton';
-import { RFC } from '@app/ui/type';
 import { Env } from '../../../Env';
 import { useState } from 'react';
 
 
-export const GameHome : RFC = () => {
+export const GameHome = () => {
     const dispatch = useDispatch();
 
     const [gameCode, setGameCode] = useState('');

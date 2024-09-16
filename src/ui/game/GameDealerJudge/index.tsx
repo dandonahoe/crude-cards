@@ -3,10 +3,9 @@ import { GameAction } from '../../../client/action/game.action';
 import { useSelector , useDispatch } from '@app/client/hook';
 import { GameDeck } from '../GameDeck';
 import { GameBox } from '../GameBox';
-import { RFC } from '@app/ui/type';
 
 
-export const GameDealerJudge : RFC = () => {
+export const GameDealerJudge = () => {
 
     const selectedCards = useSelector(selectSelectedCards);
     const dispatch      = useDispatch();

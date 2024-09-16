@@ -98,6 +98,9 @@ importers:
       dotenv:
         specifier: 16.4.5
         version: 16.4.5
+      html-react-parser:
+        specifier: 5.1.16
+        version: 5.1.16(@types/react@18.3.5)(react@18.3.1)
       kill-port:
         specifier: 2.0.1
         version: 2.0.1
@@ -5270,6 +5273,9 @@ packages:
     resolution: {integrity: sha512-puUZAUKT5m8Zzvs72XWy3HtvVbTWljRE66cP60bxJzAqf2DgICo7lYTY2IHUmLnNpjYvw5bvmoHvPc0QO2a62w==}
     engines: {node: ^16.14.0 || >=18.0.0}
 
+  html-dom-parser@5.0.10:
+    resolution: {integrity: sha512-GwArYL3V3V8yU/mLKoFF7HlLBv80BZ2Ey1BzfVNRpAci0cEKhFHI/Qh8o8oyt3qlAMLlK250wsxLdYX4viedvg==}
+
   html-encoding-sniffer@3.0.0:
     resolution: {integrity: sha512-oWv4T4yJ52iKrufjnyZPkrN0CH3QnrUqdB6In1g5Fe1mia8GmF36gnfNySxoZtxD5+NmYw1EElVXiBk93UeskA==}
     engines: {node: '>=12'}
@@ -5284,6 +5290,15 @@ packages:
     resolution: {integrity: sha512-YXxSlJBZTP7RS3tWnQw74ooKa6L9b9i9QYXY21eUEvhZ3u9XLfv6OnFsQq6RxkhHygsaUMvYsZRV5rU/OVNZxw==}
     engines: {node: '>=12'}
     hasBin: true
+
+  html-react-parser@5.1.16:
+    resolution: {integrity: sha512-OtVPEQRwa4eelyMbHmUfMSw5VwJsVGSVsfa8I+M8xuV87n91cF3PHpvT/z0Frf1uG34atqh3dxgjaGIsmqVsRA==}
+    peerDependencies:
+      '@types/react': 0.14 || 15 || 16 || 17 || 18
+      react: 0.14 || 15 || 16 || 17 || 18
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
 
   html-tags@3.3.1:
     resolution: {integrity: sha512-ztqyC3kLto0e9WbNp0aeP+M3kTt+nbaIveGmUxAtZa+8iFgKLUOD4YKM5j+f3QD89bra7UeumolZHKuOXnTmeQ==}
@@ -7498,6 +7513,9 @@ packages:
       react: ^0.14 || ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0
       react-dom: ^0.14 || ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0
 
+  react-property@2.0.2:
+    resolution: {integrity: sha512-+PbtI3VuDV0l6CleQMsx2gtK0JZbZKbpdu5ynr+lbsuvtmgbNcS3VM0tuY2QjFNOcWxvXeHjDpy42RO+4U2rug==}
+
   react-redux@9.1.2:
     resolution: {integrity: sha512-0OA4dhM1W48l3uzmv6B7TXPCGmokUU4p1M44DGN2/D9a1FjVPukVjER1PcPX97jIg6aUeLq1XJo1IpfbgULn0w==}
     peerDependencies:
@@ -8200,8 +8218,14 @@ packages:
     peerDependencies:
       webpack: ^5.0.0
 
+  style-to-js@1.1.14:
+    resolution: {integrity: sha512-+FGNddHGLPY4NOPneEEdFj8dIy+oV4mHGrPZpB38P+YXrCAG9mp70dbcsAWnM8BFZULkJRvMqD0CXRjZLOYJFA==}
+
   style-to-object@1.0.6:
     resolution: {integrity: sha512-khxq+Qm3xEyZfKd/y9L3oIWQimxuc4STrQKtQn8aSDRHb8mFgpukgX1hdzfrMEW6JCjyJ8p89x+IUMVnCBI1PA==}
+
+  style-to-object@1.0.7:
+    resolution: {integrity: sha512-uSjr59G5u6fbxUfKbb8GcqMGT3Xs9v5IbPkjb0S16GyOeBLAzSRK0CixBv5YrYvzO6TDLzIS6QCn78tkqWngPw==}
 
   styled-components@6.1.12:
     resolution: {integrity: sha512-n/O4PzRPhbYI0k1vKKayfti3C/IGcPf+DqcrOB7O/ab9x4u/zjqraneT5N45+sIe87cxrCApXM8Bna7NYxwoTA==}
@@ -15133,6 +15157,11 @@ snapshots:
     dependencies:
       lru-cache: 10.4.3
 
+  html-dom-parser@5.0.10:
+    dependencies:
+      domhandler: 5.0.3
+      htmlparser2: 9.1.0
+
   html-encoding-sniffer@3.0.0:
     dependencies:
       whatwg-encoding: 2.0.0
@@ -15150,6 +15179,16 @@ snapshots:
       param-case: 3.0.4
       relateurl: 0.2.7
       terser: 5.31.6
+
+  html-react-parser@5.1.16(@types/react@18.3.5)(react@18.3.1):
+    dependencies:
+      domhandler: 5.0.3
+      html-dom-parser: 5.0.10
+      react: 18.3.1
+      react-property: 2.0.2
+      style-to-js: 1.1.14
+    optionalDependencies:
+      '@types/react': 18.3.5
 
   html-tags@3.3.1: {}
 
@@ -17730,6 +17769,8 @@ snapshots:
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
 
+  react-property@2.0.2: {}
+
   react-redux@9.1.2(@types/react@18.3.5)(react@18.3.1)(redux@5.0.1):
     dependencies:
       '@types/use-sync-external-store': 0.0.3
@@ -18601,7 +18642,15 @@ snapshots:
     dependencies:
       webpack: 5.94.0(esbuild@0.21.5)
 
+  style-to-js@1.1.14:
+    dependencies:
+      style-to-object: 1.0.7
+
   style-to-object@1.0.6:
+    dependencies:
+      inline-style-parser: 0.2.3
+
+  style-to-object@1.0.7:
     dependencies:
       inline-style-parser: 0.2.3
 
