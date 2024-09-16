@@ -3,7 +3,7 @@ import { GameCardDTO } from '../GameCard';
 import { RFC } from '@app/ui/type';
 
 
-export const GameCardList: RFC<GameCardListProps> = ({
+export const GameDeckCards: RFC<GameCardListProps> = ({
     cards, onCardClicked,
 }) =>
     cards.map((card, index) =>

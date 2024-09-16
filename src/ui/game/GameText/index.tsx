@@ -1,5 +1,5 @@
 import { CardColor } from '../../../api/src/constant/card-color.enum';
-import { Box, Text } from '@mantine/core';
+import { Box, Text, Title } from '@mantine/core';
 import classes from './GameText.module.css';
 import { PropsWithChildren, useContext } from 'react';
 import { RFC } from '@app/ui/type';
@@ -52,24 +52,25 @@ export const GameText : RFC<Props> = ({
 
         case GameTextType.Subtitle:
             return (
-                <Text
+                <Title
+                    order={2}
                     className={classes.gameSubtitle}
                     c={overrideColor ?? color}
-                    fz='lg'
+                    fz='md'
                     {...propsMysterioso}>
                     {children}
-                </Text>
+                </Title>
             );
 
         case GameTextType.Title:
             return (
-                <Text
+                <Title
                     className={classes.gameTitle}
                     c={overrideColor ?? color}
                     fz='xl'
                     {...propsMysterioso}>
                     {children}
-                </Text>
+                </Title>
             );
 
         case GameTextType.Small:
@@ -103,6 +104,7 @@ export const GameTextSubtitle : RFC<GameTextSubtitleProps> = ({
 }) =>
     <GameText
         type={GameTextType.Subtitle}
+        ta='center'
         color={color}
         {...propsMysterioso}>
         {children}
@@ -140,6 +142,7 @@ export const GameTextTitle : RFC<GameTextTitleProps> = ({
     <GameText
         type={GameTextType.Title}
         color={color}
+        pb='md'
         ta='center'
         {...propsMysterioso}>
         {children}

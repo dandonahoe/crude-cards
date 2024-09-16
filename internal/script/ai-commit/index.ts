@@ -57,6 +57,20 @@ export const execCommand = (command: string): string => {
     return execSync(command, { encoding : 'utf-8' });
 };
 
+/**
+ * Displays a loading spinner for a set duration (useful during API requests)
+ */
+export const displaySpinner = (message: string) => {
+    const spinnerChars = ['|', '/', '-', '\\'];
+    let i = 0;
+
+    const spinnerInterval = setInterval(() => {
+        process.stdout.write(`\r${spinnerChars[i++ % spinnerChars.length]} ${message}`);
+    }, 100);
+
+    return () => clearInterval(spinnerInterval);
+};
+
 // OpenAI API Interaction
 
 /**
@@ -75,6 +89,9 @@ export const createCompletion = async (prompt: string): Promise<string> => {
     let fullResponse = '';
     let incomplete = true;
 
+    // Show spinner while waiting for API completion
+    const stopSpinner = displaySpinner('Waiting for OpenAI API response...');
+
     while (incomplete)
         try {
             const chatCompletion: ChatCompletionResponse = await openai.chat.completions.create(params as any);
@@ -92,10 +109,12 @@ export const createCompletion = async (prompt: string): Promise<string> => {
                 params.messages.push({ role : 'user', content : 'Continue from the last point.' });
 
         } catch (error) {
+            stopSpinner(); // Stop spinner in case of error
             console.error(error);
             throw new Error('Error during API call');
         }
 
+    stopSpinner(); // Stop spinner after completion
 
     return fullResponse;
 };
@@ -215,9 +234,11 @@ export const main = async (): Promise<void> => {
     logColor('Starting commit message generation...', Color.Cyan);
 
     // Stage all changes
+    logColor('Staging changes...', Color.Magenta);
     execCommand('git add .');
 
     // Get staged changes
+    logColor('Fetching staged diff...', Color.Magenta);
     const diff = getStagedDiff();
 
     // Handle case where there are no pending changes
@@ -227,18 +248,22 @@ export const main = async (): Promise<void> => {
     }
 
     // Parse the diff into manageable chunks
+    logColor('Parsing staged changes...', Color.Magenta);
     const fileSummaries = parseDiffIntoChunks(diff);
 
     // Generate summaries for each file in parallel using Promise.all
+    logColor('Summarizing file diffs...', Color.Magenta);
     const summaryPromises = fileSummaries.map(summary =>
         createCompletion(`Summarize the file diff for commit. Provide statistics at the end: ${summary.slice(0, 1000)}`),
     );
     const fileSummariesResponses = await Promise.all(summaryPromises);
 
     // Generate final commit message
+    logColor('Generating commit message...', Color.Magenta);
     const finalCommitMessage = await generateCommitMessage(fileSummariesResponses);
 
     // Commit the staged changes with the generated commit message
+    logColor('Committing changes...', Color.Magenta);
     execCommand(`git commit -m "${finalCommitMessage}"`);
 
     logColor('\nGenerated commit message:\n', Color.Blue);

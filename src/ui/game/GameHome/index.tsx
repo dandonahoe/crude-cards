@@ -9,12 +9,14 @@ import { useState } from 'react';
 import {
     Stack, TextInput, Button, Group,
     Text, rem, Flex, Box, FocusTrap,
+    Space,
 } from '@mantine/core';
 import { GameStack } from '../GameStack';
 import { GameText, GameTextSmall, GameTextSubtitle, GameTextTitle } from '../GameText';
 import { GameBox } from '../GameBox';
 import { GameDeck } from '../GameDeck';
 import { GameStackType } from '../GameStack/type';
+import { GameBoxType } from '../GameBox/type';
 
 
 // Utility function for sanitizing game code input
@@ -71,9 +73,9 @@ export const GameHome = () => {
                     {'Resize'}
                 </GameTextSmall>
             </Button>
-            <GameStack>
+            <GameDeck cards={[
                 <GameCardStack color={CardColor.Black}>
-                    <GameBox size='lg'>
+                    <GameBox>
                         <GameTextTitle>
                             {'CrudeCards'}
                         </GameTextTitle>
@@ -81,14 +83,12 @@ export const GameHome = () => {
                             {'A Party Game for Terrible People.'}
                         </GameTextSubtitle>
                     </GameBox>
-
-                    <GameBox>
+                    <GameBox type={GameBoxType.Centered}>
                         <GameButton
                             onClick={handleStartGame}
                             text='Go' />
                     </GameBox>
-                </GameCardStack>{","}
-
+                </GameCardStack>,
                 <GameCardStack color={CardColor.White}>
                     <GameText>
                         {'~ or ~'}
@@ -130,8 +130,10 @@ export const GameHome = () => {
                             </Button>
                         </form>
                     </Group>
-                </GameCardStack>{","}
-            </GameStack>
+                </GameCardStack>
+            ]} />
+
+            </GameDeck>
         </GameStack>
     );
 };
