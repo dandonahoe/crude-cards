@@ -61,7 +61,7 @@ export const GameCard: RFC<Props> = ({
         <Box
             style={{
                 backgroundColor : getBackgroundColor(color!, isHovered && onClick !== undefined),
-                boxShadow       : `4px 4px 20px 14px  rgba(${colorNum}, ${colorNum}, ${colorNum}, ${alpha})`,
+                boxShadow       : `4px 4px 20px 14px rgba(${colorNum}, ${colorNum}, ${colorNum}, ${alpha})`,
                 maxWidth        : rem(400),
                 border          : getCardBorder(color!),
             }}
