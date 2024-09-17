@@ -27,7 +27,6 @@
         "build:frontend": "IS_BUILDING=true pnpm build",
         "build:storybook": "IS_BUILDING=true storybook build --output-dir storybook-static",
         "ci-semantic-release": "semantic-release",
-        "cmsg": "GPG_TTY=$(tty) ts-node internal/script/ai-commit",
         "docker:frontend": "docker build --progress=plain --no-cache -f DockerfileUI -t crude-cards-ui-container .",
         "docker:backend": "docker build --progress=plain --no-cache -f DockerfileAPI -t rude-cards-api-container .",
         "docker:ui": "docker build --progress=plain --no-cache -f DockerfileWeb -t rude-cards-web-container .",
