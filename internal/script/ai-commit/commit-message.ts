@@ -1,8 +1,6 @@
 import { createCompletion } from './ai-helpers';
 
-/**
- * Generates a final commit message from file summaries
- */
+
 export const generateCommitMessage = async (fileSummaries: string[]): Promise<string> => {
     const combinedPrompt = fileSummaries.join('\n\n');
 
@@ -17,5 +15,6 @@ ${combinedPrompt}
 
     return finalCommitMessage.replace(/`/g, '').trim();
 };
+
 export { createCompletion };
 

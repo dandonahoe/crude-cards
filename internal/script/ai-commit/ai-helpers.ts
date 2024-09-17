@@ -1,18 +1,11 @@
-import OpenAI from 'openai';
+import { ChatCompletionParams, ChatCompletionResponse } from './type';
 import { OpenApiModel, Temperature, MaxTokens } from './constant';
+import OpenAI from 'openai';
 
-const openai = new OpenAI({ apiKey : process.env.OPENAI_API_KEY });
+const openai = new OpenAI({
+    apiKey : process.env.OPENAI_API_KEY,
+});
 
-export interface ChatCompletionParams {
-    temperature: number;
-    max_tokens: number;
-    messages: { role: string; content: string }[];
-    model: string;
-}
-
-export interface ChatCompletionResponse {
-    choices: { message: { content: string | null } }[];
-}
 
 export const createCompletion = async (prompt: string): Promise<string> => {
     const params: ChatCompletionParams = {

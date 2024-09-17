@@ -2,6 +2,12 @@
     "folders": [
         {
             "path": "."
+        },
+        {
+            "path": "../slick-commit"
+        },
+        {
+            "path": "../slick-commit/dist"
         }
     ],
     "settings": {

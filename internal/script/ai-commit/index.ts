@@ -1,9 +1,10 @@
-import { logColor, Color } from './logger';
+import { generateCommitMessage, createCompletion } from './commit-message';
 import { getStagedDiff, execCommand } from './git-helpers';
 import { parseDiffIntoChunks } from './git-helpers';
-import { generateCommitMessage, createCompletion } from './commit-message';
+import { logColor, Color } from './logger';
 
 export const main = async (): Promise<void> => {
+
     logColor('Starting commit message generation...', Color.Cyan);
 
     // Stage all changes
