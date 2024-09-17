@@ -18,7 +18,7 @@
         "/dist"
     ],
     "scripts": {
-        "slick-commit": "slick-commit",
+        "commit": "slick-commit",
         "artifact:build": "pnpm job:docs && pnpm test:coverage && pnpm dep:circular && pnpm dep:full && pnpm build:storybook",
         "auth:google": "gcloud auth application-default login",
         "build": "IS_BUILDING=true next build",
