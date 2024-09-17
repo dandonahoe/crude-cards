@@ -1,5 +1,5 @@
 # Use the official Node.js 20 image as the base for the build stage
-# Adding Datadog to Test
+
 FROM node:20-alpine AS builder
 
 # This line allows the agent to run without a configuration file.
