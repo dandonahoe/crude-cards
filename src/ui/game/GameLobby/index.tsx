@@ -24,7 +24,6 @@ export const GameLobby = () => {
             <GameDeckLayout
                 verticleWiggleFactor={100}
                 cardOverlapFactor={400}
-                color={CardColor.Black}
                 wiggleFactor={40}
                 tiltFactor={10}
                 cards={[

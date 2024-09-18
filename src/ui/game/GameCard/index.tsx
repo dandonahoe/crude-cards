@@ -20,7 +20,7 @@ import {
 } from './type';
 
 
-export const GameCard: RFC<Props> = ({
+export const GameCard: RFC<Progps> = ({
     id,    cardType,  children,
     color, onClick,   card,
     hasHoverWiggle = true,
