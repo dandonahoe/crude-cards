@@ -1,4 +1,3 @@
-import { CardColor } from '../../../api/src/constant/card-color.enum';
 import { selectFoes } from '../../../client/selector/game';
 import { GameDeckLayout } from '../GameDeckLayout';
 import { PlayerWarning } from './PlayerWarning';

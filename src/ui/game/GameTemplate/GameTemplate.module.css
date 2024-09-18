@@ -6,9 +6,6 @@
 .asideIcon {
     cursor: pointer;
 }
-.appRoot {
-    background-color: #000;
-}
 
 .neonText {
     color: #fff;
@@ -58,4 +55,14 @@
     top: 1rem;
     color: #ccc;
     right: 1rem;
+}
+
+.appRoot {
+    background: repeating-linear-gradient(
+        45deg,
+        #000,
+        #000 5px,
+        #111 5px,
+        #111 10px
+    );
 }

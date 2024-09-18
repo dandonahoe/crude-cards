@@ -1,22 +1,17 @@
+import { GameText, GameTextSmall, GameTextSubtitle, GameTextTitle } from '../GameText';
+import { TextInput, Button, Group, rem, FocusTrap } from '@mantine/core';
 import { CardColor } from '../../../api/src/constant/card-color.enum';
 import { GameAction } from '../../../client/action/game.action';
 import { GameDeckLayout } from '../GameDeckLayout';
+import { GameStackType } from '../GameStack/type';
 import { useDispatch } from '@app/client/hook';
+import { GameBoxType } from '../GameBox/type';
 import { GameCardStack } from '../GameCard';
 import { GameButton } from '../GameButton';
+import { GameStack } from '../GameStack';
+import { GameBox } from '../GameBox';
 import { Env } from '../../../Env';
 import { useState } from 'react';
-import {
-    Stack, TextInput, Button, Group,
-    Text, rem, Flex, Box, FocusTrap,
-    Space,
-} from '@mantine/core';
-import { GameStack } from '../GameStack';
-import { GameText, GameTextSmall, GameTextSubtitle, GameTextTitle } from '../GameText';
-import { GameBox } from '../GameBox';
-import { GameDeck } from '../GameDeck';
-import { GameStackType } from '../GameStack/type';
-import { GameBoxType } from '../GameBox/type';
 
 
 // Utility function for sanitizing game code input
@@ -73,67 +68,70 @@ export const GameHome = () => {
                     {'Resize'}
                 </GameTextSmall>
             </Button>
-            <GameDeck cards={[
-                <GameCardStack color={CardColor.Black}>
-                    <GameBox>
-                        <GameTextTitle>
-                            {'CrudeCards'}
-                        </GameTextTitle>
-                        <GameTextSubtitle>
-                            {'A Party Game for Terrible People.'}
-                        </GameTextSubtitle>
-                    </GameBox>
-                    <GameBox type={GameBoxType.Centered}>
-                        <GameButton
-                            onClick={handleStartGame}
-                            text='Go' />
-                    </GameBox>
-                </GameCardStack>,
-                <GameCardStack color={CardColor.White}>
-                    <GameText>
-                        {'~ or ~'}
-                    </GameText>
+            <GameDeckLayout
+                cards={[
+                    <GameCardStack
+                        color={CardColor.Black}
+                        key='title-card'>
+                        <GameBox>
+                            <GameTextTitle>
+                                {'CrudeCards'}
+                            </GameTextTitle>
+                            <GameTextSubtitle>
+                                {'A Party Game for Terrible People.'}
+                            </GameTextSubtitle>
+                        </GameBox>
+                        <GameBox type={GameBoxType.Centered}>
+                            <GameButton
+                                onClick={handleStartGame}
+                                text='Go' />
+                        </GameBox>
+                    </GameCardStack>,
+                    <GameCardStack
+                        key='title-card'
+                        color={CardColor.White}>
+                        <GameText>
+                            {'~ or ~'}
+                        </GameText>
 
-                    <Group
-                        justify='center'
-                        align='end'>
-                        <form onSubmit={handleJoinGame}>
-                            <FocusTrap active={true}>
-                                <TextInput
-                                    tabIndex={0}
-                                    styles={{
+                        <Group
+                            justify='center'
+                            align='end'>
+                            <form onSubmit={handleJoinGame}>
+                                <FocusTrap active={true}>
+                                    <TextInput
+                                        tabIndex={0}
+                                        styles={{
                                             input : {
                                                 textAlign : 'center',
                                             },
                                         }}
-                                    mb='md'
-                                    aria-label='Game Code'
-                                    onChange={handleGameCodeChange}
-                                    onKeyDown={handleKeyDown}
-                                    value={gameCode}
-                                    w={rem(300)}
-                                    size='md'
-                                    pt='xs' />
-                            </FocusTrap>
-                            <Button
-                                mb='xl'
-                                tabIndex={0}
-                                type='submit'
-                                style={{
+                                        mb='md'
+                                        aria-label='Game Code'
+                                        onChange={handleGameCodeChange}
+                                        onKeyDown={handleKeyDown}
+                                        value={gameCode}
+                                        w={rem(300)}
+                                        size='md'
+                                        pt='xs' />
+                                </FocusTrap>
+                                <Button
+                                    mb='xl'
+                                    tabIndex={0}
+                                    type='submit'
+                                    style={{
                                         border : '1px solid #fff',
                                     }}
-                                variant='outline'
-                                aria-label='Join Game Button'
-                                c='#fff'
-                                size='md'>
-                                {'Join by Code'}
-                            </Button>
-                        </form>
-                    </Group>
-                </GameCardStack>
+                                    variant='outline'
+                                    aria-label='Join Game Button'
+                                    c='#fff'
+                                    size='md'>
+                                    {'Join by Code'}
+                                </Button>
+                            </form>
+                        </Group>
+                    </GameCardStack>,
             ]} />
-
-            </GameDeck>
         </GameStack>
     );
 };
