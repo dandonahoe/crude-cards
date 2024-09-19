@@ -5,10 +5,10 @@ import { Stack } from '@mantine/core';
 import { useContext } from 'react';
 
 export const GameStack = ({
-    children, type = GameStackType.Default,
+    children, type = GameStackType.Default, isDebug = false,
 }: Props) => {
 
-    const { isDebugging } = useContext(App);
+    const isDebugging = useContext(App).isDebugging || isDebug;
 
     return (
         <Stack

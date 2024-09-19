@@ -28,6 +28,7 @@ export const GameTemplateHeader = () => {
                 </Box>
             </Box>
             <Box
+                w='100%'
                 style={debugStyle}>
                 <HeaderContent />
             </Box>

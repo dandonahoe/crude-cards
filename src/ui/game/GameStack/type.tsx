@@ -1,8 +1,9 @@
 import { ReactNode } from "react";
 
 export interface Props {
-    type     ?: GameStackType; // Use GameStackType for predefined layouts
     children  : ReactNode;
+    isDebug  ?: boolean;
+    type     ?: GameStackType; // Use GameStackType for predefined layouts
 }
 
 

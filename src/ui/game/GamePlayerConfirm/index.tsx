@@ -15,8 +15,8 @@ export const GamePlayerConfirm = () => {
         <GameBox>
             <CloseButton />
             <GameBanner
-                color={CardColor.Black}
                 subtitle='Confirm Your Choice'
+                color={CardColor.Black}
                 text='Play this?' />
             <GameCardDTO
                 card={{

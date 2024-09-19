@@ -45,8 +45,7 @@ export const GameJoinForm = ({
                             tabIndex={0}
                             w={rem(300)}
                             size='md'
-                            mb='md'
-                            pt='xs'/>
+                            mb='md'/>
                     </FocusTrap>
                     <Button
                         style={{ border : `1px solid ${CardColor.Black}` }}

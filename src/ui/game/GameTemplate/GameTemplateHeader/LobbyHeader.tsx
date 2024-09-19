@@ -3,14 +3,13 @@ import { CardColor } from '../../../../api/src/constant/card-color.enum';
 import { GameAction } from '../../../../client/action/game.action';
 import { selectIsHost } from '../../../../client/selector/game';
 import { CA } from '../../../../constant/framework/CoreAction';
-import { GameStackType } from '../../GameStack/type';
+import { MinimumPlayerCount } from '../../constant';
 import { GameContext } from '../../GameContext';
 import { useDispatch } from '@app/client/hook';
 import { GameBanner } from '../../GameBanner';
 import { GameButton } from '../../GameButton';
-import { GameStack } from '../../GameStack';
+import { Box, Center } from '@mantine/core';
 import { useSelector } from 'react-redux';
-import { Center } from '@mantine/core';
 import { useContext } from 'react';
 
 
@@ -23,36 +22,35 @@ export const LobbyHeader = () => {
 
     const isHost = useSelector(selectIsHost);
 
-    const playerCount   = gameState.player_list.length;
-    const needMoreCount = 3 - playerCount;
+    const playerCount = gameState.player_list.length;
+    const needMoreCount = MinimumPlayerCount - playerCount;
 
-    let subtitleMessage = undefined;
+    const isDealerPickingBlackCard = () => gameState.game_stage === GameStage.DealerPickBlackCard;
+    const showHostStartButton      = () => isHost && hasEnoughPlayers();
+    const hasEnoughPlayers         = () => !isTooFewPlayers();
+    const isTooFewPlayers          = () => gameState.player_list.length < MinimumPlayerCount;
+    const isWaitingOnHost          = () => !isHost && hasEnoughPlayers();
 
-    if (gameState.game_stage === GameStage.DealerPickBlackCard)
-        subtitleMessage = 'Dealer is Starting';
+    let subtitle = undefined;
 
-    else if (playerCount < 3)
-        subtitleMessage = `Need ${needMoreCount} More Player${needMoreCount > 1 ? 's' : ''} to Start`;
-
-    else if (playerCount >= 3 && isHost)
-        subtitleMessage = 'Players Ready';
-
-    else if (playerCount >= 3)
-        subtitleMessage = 'Waiting on Host to Start';
+    if (isDealerPickingBlackCard()) subtitle = 'Dealer is Starting';
+    else if (isTooFewPlayers())     subtitle = `Need ${needMoreCount} More Player${needMoreCount > 1 ? 's' : ''} to Start`;
+    else if (showHostStartButton()) subtitle = 'Players Ready';
+    else if (isWaitingOnHost())     subtitle = 'Waiting on Host to Start';
 
     return (
-        <GameStack type={GameStackType.Centered}>
+        <Box>
             <GameBanner
-                subtitle={subtitleMessage}
                 color={CardColor.White}
-                text='Lobby12' />
-            {isHost && gameState.player_list.length >= 3 &&
+                subtitle={subtitle}
+                text='Lobby' />
+            {showHostStartButton() &&
                 <Center m='xl'>
                     <GameButton
                         onClick={handleStartGame}
                         text='Start' />
                 </Center>
             }
-        </GameStack>
+        </Box>
     );
 }
