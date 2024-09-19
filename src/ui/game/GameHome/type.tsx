@@ -14,3 +14,15 @@ export interface GameHomeHandlers {
         gameCode : string,
     ) => CA;
 }
+
+
+export interface GameJoinFormProps {
+    setGameCode : (code : string) => void;
+    onJoinGame  : () => void;
+    gameCode    : string;
+}
+
+
+export interface GameTitleCardProps {
+    onStartGame: () => void
+}

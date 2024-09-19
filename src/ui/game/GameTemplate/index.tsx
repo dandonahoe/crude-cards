@@ -11,6 +11,7 @@ import { GameToast } from '../GameToast';
 import { RFC } from '@app/ui/type';
 import { useContext } from 'react';
 import { Props } from './type';
+import { CardColor } from '../../../api/src/constant/card-color.enum';
 import {
     selectDealerDealtCard, selectPlayerDealtCard,
     selectCurrentPlayer, selectDealerCards,
@@ -60,7 +61,7 @@ export const GameTemplate : RFC<Props>= ({
                         <GameTemplateHeader />
                     </AppShell.Header>
                     <AppShell.Main
-                        bd='1px solid #0f0'
+                        bd={isDebugging ? '1px solid #0f0' : undefined}
                         pt={rem(headerHeight === 0
                             ? 0
                             : headerHeight +  50,
@@ -68,23 +69,23 @@ export const GameTemplate : RFC<Props>= ({
                         <GamePopup />
                         <GameToast />
                         <Group
-                            bd='1px dashed #0fd'
+                            bd={isDebugging ? '1px dashed #0fd' : undefined}
                             wrap='nowrap'
                             justify='space-between'>
                             <Box
-                                c='#000'
+                                c={CardColor.Black}
                                 w={rem(0)}
                                 hiddenFrom='xs'>
                                 {'.'}
                             </Box>
                             <Box
-                                bd='1px solid #cf0'
-                                c='#000'
+                                bd={isDebugging ? '1px solid #cf0' : undefined}
+                                c={CardColor.Black}
                                 w='100%'>
                                 {children}
                             </Box>
                             <Box
-                                c='#000'
+                                c={CardColor.Black}
                                 w={rem(0)}
                                 hiddenFrom='xs'>
                                 {'.'}
