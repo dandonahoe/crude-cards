@@ -28,3 +28,5 @@ export type GameTextBannerProps   = GameTextCustomProps;
 export type GameTextTitleProps    = GameTextCustomProps;
 export type GameTextSmallProps    = GameTextCustomProps;
 export type GameTextCardProps     = GameTextCustomProps;
+
+export type GameTextCenteredProps = GameTextCustomProps;

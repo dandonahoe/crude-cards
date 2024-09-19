@@ -1,4 +1,4 @@
-import { GameText, GameTextSmall, GameTextSubtitle, GameTextTitle } from '../GameText';
+import { GameTextCentered, GameTextSmall, GameTextSubtitle, GameTextTitle } from '../GameText';
 import { TextInput, Button, Group, rem, FocusTrap } from '@mantine/core';
 import { CardColor } from '../../../api/src/constant/card-color.enum';
 import { GameAction } from '../../../client/action/game.action';
@@ -90,10 +90,9 @@ export const GameHome = () => {
                     <GameCardStack
                         key='title-card'
                         color={CardColor.White}>
-                        <GameText>
+                        <GameTextCentered color={CardColor.Black}>
                             {'~ or ~'}
-                        </GameText>
-
+                        </GameTextCentered>
                         <Group
                             justify='center'
                             align='end'>
