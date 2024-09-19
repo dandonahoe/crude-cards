@@ -13,12 +13,17 @@ export const GameWiggleBox : RFC<Props> = ({
     cardOverlapFactor    = 40,
     wiggleFactor         = 6,
     tiltFactor           = 8,
+
+    uniqueKey = '',
 }) => {
 
+    // const id = useId();
+
     // stops random wobbling on rerender
-    const rand = seedrandom(`${index}`);
+    const rand = seedrandom(uniqueKey);
 
     const { isDebugging } = useContext(App);
+
 
     return (
         <Box

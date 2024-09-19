@@ -14,5 +14,6 @@ export const FoeContent : RFC<FoeContentProps> = ({
 
     return <GameDeckLayout
         color={CardColor.Black}
-        cards={[]} />;
+        cards={[]}
+        id='foes' />;
 };

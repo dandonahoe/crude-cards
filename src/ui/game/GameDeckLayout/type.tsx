@@ -10,6 +10,7 @@ export interface Props {
     tiltFactor           ?: number;
     color                ?: CardColor;
     cards                 : ReactNode[];
+    id                    : string;
 }
 
 export interface GameDeckCardProps {

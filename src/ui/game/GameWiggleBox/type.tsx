@@ -6,4 +6,5 @@ export type Props = PropsWithChildren<{
     wiggleFactor         ?: number;
     tiltFactor           ?: number;
     index                 : number;
+    uniqueKey            ?: string;
 }>;

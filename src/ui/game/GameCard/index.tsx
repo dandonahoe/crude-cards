@@ -50,7 +50,9 @@ export const GameCard: RFC<Props> = ({
         !hasHoverWiggle
             ? cardContent
             : (
-                <GameWiggleBox index={0}>
+                <GameWiggleBox
+                    uniqueKey='hover-wiggle'
+                    index={0}>
                     {cardContent}
                 </GameWiggleBox>
             );

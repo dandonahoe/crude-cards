@@ -1,5 +1,4 @@
 import { getFilteredMenuItems } from './menuLogic';
-import { GameMenuBurger } from './GameMenuBurger';
 import { GameMenuItems } from './GameMenuItems';
 import { useDisclosure } from '@mantine/hooks';
 import { GameContext } from '../GameContext';
@@ -36,7 +35,9 @@ export const GameMenu = () => {
                 <>
                     {currentPlayer?.username &&
                         <Menu.Label>
-                            <GameText>{currentPlayer.username}</GameText>
+                            <GameText>
+                                {currentPlayer.username}
+                            </GameText>
                         </Menu.Label>
                     }
                     <GameMenuItems

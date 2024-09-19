@@ -21,6 +21,7 @@ export const GameHome = () => {
         <GameStack type={GameStackType.FullHeightCentered}>
             <ResizeButton />
             <GameDeckLayout
+                id='home-screen'
                 cards={[
                     <GameTitleCard
                         onStartGame={handleStartGame}

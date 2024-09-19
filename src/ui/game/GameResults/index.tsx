@@ -26,6 +26,7 @@ export const GameResults = () => {
                     width={width} />
             }
             <GameDeckLayout
+                id='game-results'
                 color={CardColor.Black}
                 cards={[
                     <ResultsCards

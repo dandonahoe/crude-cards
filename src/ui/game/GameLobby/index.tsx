@@ -21,6 +21,7 @@ export const GameLobby = () => {
     return (
         <GameBoxCentered>
             <GameDeckLayout
+                id='game-lobby'
                 verticleWiggleFactor={100}
                 cardOverlapFactor={400}
                 wiggleFactor={40}

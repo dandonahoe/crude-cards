@@ -9,12 +9,14 @@ export const GameDeckLayout: RFC<Props> = ({
     wiggleFactor         = 6,
     tiltFactor           = 8,
     cards,
+    id,
 }) => cards.map((card, index) =>
     <GameWiggleBox
         verticleWiggleFactor={verticleWiggleFactor}
         cardOverlapFactor={cardOverlapFactor}
         wiggleFactor={wiggleFactor}
         tiltFactor={tiltFactor}
+        uniqueKey={`${id}-${index}`}
         key={`card-${index}`}
         index={index}>
         {card}
