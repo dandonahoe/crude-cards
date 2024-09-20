@@ -2,15 +2,17 @@
 
 FROM node:20-alpine AS builder
 
-# This line allows the agent to run without a configuration file.
-ENV NEW_RELIC_NO_CONFIG_FILE=true
+DD_API_KEY=6f31daa08f76d3208bf8e46b0ab2ce46 DD_SITE="us5.datadoghq.com" DD_APM_INSTRUMENTATION_ENABLED=host DD_APM_INSTRUMENTATION_LIBRARIES=java:1,python:2,js:5,dotnet:3,ruby:2 bash -c "$(curl -L https://install.datadoghq.com/scripts/install_script_agent7.sh)"
 
-# Turn this on to enable AI monitoring for your AI application.
-ENV NEW_RELIC_DISTRIBUTED_TRACING_ENABLED=true
-ENV NEW_RELIC_LOG=stdout
-ENV NEW_RELIC_AI_MONITORING_ENABLED=true
-ENV NEW_RELIC_CUSTOM_INSIGHTS_EVENTS_MAX_SAMPLES_STORED=100k
-ENV NEW_RELIC_SPAN_EVENTS_MAX_SAMPLES_STORED=10k
+# This line allows the agent to run without a configuration file.
+# ENV NEW_RELIC_NO_CONFIG_FILE=true
+
+# # Turn this on to enable AI monitoring for your AI application.
+# ENV NEW_RELIC_DISTRIBUTED_TRACING_ENABLED=true
+# ENV NEW_RELIC_LOG=stdout
+# ENV NEW_RELIC_AI_MONITORING_ENABLED=true
+# ENV NEW_RELIC_CUSTOM_INSIGHTS_EVENTS_MAX_SAMPLES_STORED=100k
+# ENV NEW_RELIC_SPAN_EVENTS_MAX_SAMPLES_STORED=10k
 
 
 # Set the working directory inside the container to /app
