@@ -32,8 +32,7 @@ WORKDIR /app
 # Use the official Node.js 20 image as the base for the runtime stage
 FROM node:20-alpine
 
-RUN apk add --no-cache bash curl
-
+RUN apk add bash curl
 
 # Install Datadog Agent again in the runtime stage
 # DD_API_KEY, DD_SITE, and DD_APM_INSTRUMENTATION_ENABLED are
