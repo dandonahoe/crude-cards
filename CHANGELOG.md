@@ -1,3 +1,10 @@
+## [1.0.29](https://github.com/dandonahoe/crude-cards/compare/v1.0.28...v1.0.29) (2024-09-20)
+
+
+### Features
+
+* **data:** dog 2 ([c0f1c6f](https://github.com/dandonahoe/crude-cards/commit/c0f1c6f6ebec0210de7d4b4352b2617340b7cc29))
+
 ## [1.0.28](https://github.com/dandonahoe/crude-cards/compare/v1.0.27...v1.0.28) (2024-09-20)
 
 
