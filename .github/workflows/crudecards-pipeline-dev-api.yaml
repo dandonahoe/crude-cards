@@ -33,12 +33,17 @@ jobs:
       - name: env file
         run: |-
           # Secrets
+
+          echo DD_APM_INSTRUMENTATION_ENABLED="${{ vars.DD_APM_INSTRUMENTATION_ENABLED }}" >> .env
+          echo DD_SITE                       ="${{ vars.DD_SITE                        }}" >> .env
+          echo DATADOG_KEY_ID                ="${{ secrets.DATADOG_KEY_ID              }}" >> .env
+
           echo GH_TOKEN                                          = "${{ secrets.GH_TOKEN                                       }}" >> .env
           echo BACKEND_DATABASE_PASS                             = "${{ secrets.BACKEND_DATABASE_PASS                          }}" >> .env
           echo OCO_OPENAI_API_KEY                                = "${{ secrets.OCO_OPENAI_API_KEY                             }}" >> .env
           echo OPENAI_API_KEY                                    = "${{ secrets.OPENAI_API_KEY                                 }}" >> .env
 
-          echo DATADOG_KEY_ID = "${{ secrets.DATADOG_KEY_ID }}" >> .env
+
 
           #  Front End Visible
           echo NEXT_PUBLIC_APP_ID                                = "${{ vars.NEXT_PUBLIC_APP_ID                                }}" >> .env
@@ -59,10 +64,6 @@ jobs:
           echo GCP_LOGGER_PROJECT_ID                             = "${{ vars.GCP_LOGGER_PROJECT_ID                             }}" >> .env
           echo LOGGING_LEVEL                                     = "${{ vars.LOGGING_LEVEL                                     }}" >> .env
           echo NEXT_PUBLIC_IS_DEBUG_OVERLAY_VISIBLE              = "${{ vars.NEXT_PUBLIC_IS_DEBUG_OVERLAY_VISIBLE              }}" >> .env
-
-
-          echo DD_SITE                                           ="${{ vars.DD_SITE }}"
-          echo DD_APM_INSTRUMENTATION_ENABLED                    ="${{ vars.DD_APM_INSTRUMENTATION_ENABLED }}"
 
       # Authenticate on GCP using service account
       - id: Auth
