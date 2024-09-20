@@ -1,3 +1,11 @@
+## [1.0.34](https://github.com/dandonahoe/crude-cards/compare/v1.0.33...v1.0.34) (2024-09-20)
+
+
+### Features
+
+* **test:** ci testing 3 ([0fe1a6e](https://github.com/dandonahoe/crude-cards/commit/0fe1a6e74304eb1216be25893c200ad3cb896241))
+* **pipe:** testing datagog ([d4bcffd](https://github.com/dandonahoe/crude-cards/commit/d4bcffd80811ca06a19f67c6d037ffe80b7b0683))
+
 ## [1.0.33](https://github.com/dandonahoe/crude-cards/compare/v1.0.32...v1.0.33) (2024-09-20)
 
 
