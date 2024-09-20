@@ -1,3 +1,10 @@
+## [1.0.25](https://github.com/dandonahoe/crude-cards/compare/v1.0.24...v1.0.25) (2024-09-20)
+
+
+### Features
+
+* **auth:** updating token handling ([#94](https://github.com/dandonahoe/crude-cards/issues/94)) ([e95e79a](https://github.com/dandonahoe/crude-cards/commit/e95e79a24744704216b50b025f42bc5f2f68736d))
+
 ## [1.0.24](https://github.com/dandonahoe/crude-cards/compare/v1.0.23...v1.0.24) (2024-09-08)
 
 
