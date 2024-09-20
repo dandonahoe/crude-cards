@@ -27,7 +27,7 @@
             ],
             "program": "${workspaceFolder}/src/api/src/main.ts",
             "console": "integratedTerminal",
-            "runtimeExecutable": "/Users/dan/.nvm/versions/node/v20.17.0/bin/pnpm",
+            "runtimeExecutable": "pnpm",
             "runtimeArgs": [
                 "--prefix",
                 "src/api",
