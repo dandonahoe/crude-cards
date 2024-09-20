@@ -105,7 +105,7 @@
         "mantine-form-zod-resolver": "1.1.0",
         "micro": "10.0.1",
         "moment": "2.30.1",
-        "next": "14.2.8",
+        "next": "14.2.10",
         "react": "18.3.1",
         "react-confetti": "6.1.0",
         "react-copy-to-clipboard": "5.1.0",
