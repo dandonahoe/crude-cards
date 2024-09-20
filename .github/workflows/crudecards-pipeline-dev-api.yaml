@@ -1,100 +1,106 @@
 name: CrudeCards - Pipeline - Dev - API
 on:
-    push:
-        branches: [dev]
-    workflow_dispatch:
+  push:
+    branches: [dev]
+  workflow_dispatch:
 
 jobs:
-    deploy-cloud-run:
-        runs-on: ubuntu-latest
-        environment: Development
-        env:
-            # Domain of the Docker registry (hosted on GCP)
-            CI_REGISTRY: us-west1-docker.pkg.dev
+  deploy-cloud-run:
+    runs-on: ubuntu-latest
+    environment: Development
+    env:
+      # Domain of the Docker registry (hosted on GCP)
+      CI_REGISTRY: us-west1-docker.pkg.dev
 
-            # GCP Project ID
-            PROJECT_ID: constructworks-dev-01
+      # GCP Project ID
+      PROJECT_ID: constructworks-dev-01
 
-            # Repository name within the GCP project
-            REPOSITORY_NAME: crude-cards
+      # Repository name within the GCP project
+      REPOSITORY_NAME: crude-cards
 
-            # Specific image name within the repository
-            SERVICE_NAME: crude-cards-api-service
+      # Specific image name within the repository
+      SERVICE_NAME: crude-cards-api-service
 
-            # Region where the Cloud Run service is deployed
-            REGION: us-west1
+      # Region where the Cloud Run service is deployed
+      REGION: us-west1
 
-        steps:
-            # Get last updates
-            - name: Checkout
-              uses: actions/checkout@v4
+    steps:
+      # Get last updates
+      - name: Checkout
+        uses: actions/checkout@v4
 
-            # Write to complete env file
-            - name: env file
-              run: |-
-                  # Secrets
-                  echo GH_TOKEN                                          = "${{ secrets.GH_TOKEN                                       }}" >> .env
-                  echo BACKEND_DATABASE_PASS                             = "${{ secrets.BACKEND_DATABASE_PASS                          }}" >> .env
-                  echo OCO_OPENAI_API_KEY                                = "${{ secrets.OCO_OPENAI_API_KEY                             }}" >> .env
-                  echo OPENAI_API_KEY                                    = "${{ secrets.OPENAI_API_KEY                                 }}" >> .env
+      # Write to complete env file
+      - name: env file
+        run: |-
+          # Secrets
+          echo GH_TOKEN                                          = "${{ secrets.GH_TOKEN                                       }}" >> .env
+          echo BACKEND_DATABASE_PASS                             = "${{ secrets.BACKEND_DATABASE_PASS                          }}" >> .env
+          echo OCO_OPENAI_API_KEY                                = "${{ secrets.OCO_OPENAI_API_KEY                             }}" >> .env
+          echo OPENAI_API_KEY                                    = "${{ secrets.OPENAI_API_KEY                                 }}" >> .env
 
-                  #  Front End Visible
-                  echo NEXT_PUBLIC_APP_ID                                = "${{ vars.NEXT_PUBLIC_APP_ID                                }}" >> .env
-                  echo NEXT_PUBLIC_BROWSER_WINDOW_LOCATION_ORIGIN        = "${{ vars.NEXT_PUBLIC_BROWSER_WINDOW_LOCATION_ORIGIN        }}" >> .env
-                  echo NEXT_PUBLIC_GOOGLE_ANALYTICS_ID                   = "${{ vars.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID                   }}" >> .env
-                  echo NEXT_PUBLIC_WEB_SOCKET_HOST_ORIGIN                = "${{ vars.NEXT_PUBLIC_WEB_SOCKET_HOST_ORIGIN                }}" >> .env
-                  echo NEXT_PUBLIC_NEXT_COUNTDOWN_TIMER_DURATION_SECONDS = "${{ vars.NEXT_PUBLIC_NEXT_COUNTDOWN_TIMER_DURATION_SECONDS }}" >> .env
+          echo DATADOG_KEY_ID = "${{ secrets.DATADOG_KEY_ID }}" >> .env
 
-                  # Backend Database
-                  echo BACKEND_DATABASE_HOST                             = "${{ vars.BACKEND_DATABASE_HOST                             }}" >> .env
-                  echo BACKEND_DATABASE_USER                             = "${{ vars.BACKEND_DATABASE_USER                             }}" >> .env
-                  echo BACKEND_DATABASE_NAME                             = "${{ vars.BACKEND_DATABASE_NAME                             }}" >> .env
-                  echo BACKEND_DATABASE_PORT                             = "${{ vars.BACKEND_DATABASE_PORT                             }}" >> .env
-                  echo BACKEND_PORT                                      = "${{ vars.BACKEND_PORT                                      }}" >> .env
+          #  Front End Visible
+          echo NEXT_PUBLIC_APP_ID                                = "${{ vars.NEXT_PUBLIC_APP_ID                                }}" >> .env
+          echo NEXT_PUBLIC_BROWSER_WINDOW_LOCATION_ORIGIN        = "${{ vars.NEXT_PUBLIC_BROWSER_WINDOW_LOCATION_ORIGIN        }}" >> .env
+          echo NEXT_PUBLIC_GOOGLE_ANALYTICS_ID                   = "${{ vars.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID                   }}" >> .env
+          echo NEXT_PUBLIC_WEB_SOCKET_HOST_ORIGIN                = "${{ vars.NEXT_PUBLIC_WEB_SOCKET_HOST_ORIGIN                }}" >> .env
+          echo NEXT_PUBLIC_NEXT_COUNTDOWN_TIMER_DURATION_SECONDS = "${{ vars.NEXT_PUBLIC_NEXT_COUNTDOWN_TIMER_DURATION_SECONDS }}" >> .env
 
-                  # Stuff
-                  echo WEB_SOCKET_CORS_ALLOWED_ORIGIN                    = "${{ vars.WEB_SOCKET_CORS_ALLOWED_ORIGIN                    }}" >> .env
-                  echo GCP_LOGGER_PROJECT_ID                             = "${{ vars.GCP_LOGGER_PROJECT_ID                             }}" >> .env
-                  echo LOGGING_LEVEL                                     = "${{ vars.LOGGING_LEVEL                                     }}" >> .env
-                  echo NEXT_PUBLIC_IS_DEBUG_OVERLAY_VISIBLE              = "${{ vars.NEXT_PUBLIC_IS_DEBUG_OVERLAY_VISIBLE              }}" >> .env
+          # Backend Database
+          echo BACKEND_DATABASE_HOST                             = "${{ vars.BACKEND_DATABASE_HOST                             }}" >> .env
+          echo BACKEND_DATABASE_USER                             = "${{ vars.BACKEND_DATABASE_USER                             }}" >> .env
+          echo BACKEND_DATABASE_NAME                             = "${{ vars.BACKEND_DATABASE_NAME                             }}" >> .env
+          echo BACKEND_DATABASE_PORT                             = "${{ vars.BACKEND_DATABASE_PORT                             }}" >> .env
+          echo BACKEND_PORT                                      = "${{ vars.BACKEND_PORT                                      }}" >> .env
 
-            # Authenticate on GCP using service account
-            - id: Auth
-              name: Authenticate to Google Cloud
-              uses: google-github-actions/auth@v1
-              with:
-                  credentials_json: "${{ secrets.SERVICEACCOUNT }}"
+          # Stuff
+          echo WEB_SOCKET_CORS_ALLOWED_ORIGIN                    = "${{ vars.WEB_SOCKET_CORS_ALLOWED_ORIGIN                    }}" >> .env
+          echo GCP_LOGGER_PROJECT_ID                             = "${{ vars.GCP_LOGGER_PROJECT_ID                             }}" >> .env
+          echo LOGGING_LEVEL                                     = "${{ vars.LOGGING_LEVEL                                     }}" >> .env
+          echo NEXT_PUBLIC_IS_DEBUG_OVERLAY_VISIBLE              = "${{ vars.NEXT_PUBLIC_IS_DEBUG_OVERLAY_VISIBLE              }}" >> .env
 
-            - uses: benjlevesque/short-sha@v3.0
-              id: short-sha
-              with:
-                  length: 6
 
-            # Construct the REGISTRY variable
-            - name: Set REGISTRY variable
-              run: echo "REGISTRY=${{ env.CI_REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY_NAME }}/${{ env.SERVICE_NAME }}" >> $GITHUB_ENV
+          echo DD_SITE                                           ="${{ vars.DD_SITE }}"
+          echo DD_APM_INSTRUMENTATION_ENABLED                    ="${{ vars.DD_APM_INSTRUMENTATION_ENABLED }}"
 
-            # Build and tag Docker image
-            - name: docker build
-              run: docker build -f DockerfileAPI -t ${{ env.REGISTRY }}:${{ steps.short-sha.outputs.sha }} -t ${{ env.REGISTRY }}:latest .
+      # Authenticate on GCP using service account
+      - id: Auth
+        name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: "${{ secrets.SERVICEACCOUNT }}"
 
-            # Authenticate to Artifact Registry
-            - name: Login to GAR
-              uses: docker/login-action@v3
-              with:
-                  registry: ${{ env.CI_REGISTRY }}
-                  username: _json_key
-                  password: ${{ secrets.SERVICEACCOUNT }}
+      - uses: benjlevesque/short-sha@v3.0
+        id: short-sha
+        with:
+          length: 6
 
-            # Push image to Artifact Registry
-            - name: docker push
-              run: docker push ${{ env.REGISTRY }} --all-tags
+      # Construct the REGISTRY variable
+      - name: Set REGISTRY variable
+        run: echo "REGISTRY=${{ env.CI_REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY_NAME }}/${{ env.SERVICE_NAME }}" >> $GITHUB_ENV
 
-            # Deploy revision to Cloud Run
-            - id: deploy
-              uses: google-github-actions/deploy-cloudrun@v2
-              with:
-                  project_id: ${{ env.PROJECT_ID }}
-                  region: ${{ env.REGION }}
-                  service: ${{ env.SERVICE_NAME }}
-                  image: ${{ env.REGISTRY }}:${{ steps.short-sha.outputs.sha }}
+      # Build and tag Docker image
+      - name: docker build
+        run: docker build -f DockerfileAPI -t ${{ env.REGISTRY }}:${{ steps.short-sha.outputs.sha }} -t ${{ env.REGISTRY }}:latest .
+
+      # Authenticate to Artifact Registry
+      - name: Login to GAR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.CI_REGISTRY }}
+          username: _json_key
+          password: ${{ secrets.SERVICEACCOUNT }}
+
+      # Push image to Artifact Registry
+      - name: docker push
+        run: docker push ${{ env.REGISTRY }} --all-tags
+
+      # Deploy revision to Cloud Run
+      - id: deploy
+        uses: google-github-actions/deploy-cloudrun@v2
+        with:
+          project_id: ${{ env.PROJECT_ID }}
+          region: ${{ env.REGION }}
+          service: ${{ env.SERVICE_NAME }}
+          image: ${{ env.REGISTRY }}:${{ steps.short-sha.outputs.sha }}
