@@ -1,3 +1,12 @@
+## [1.0.26](https://github.com/dandonahoe/crude-cards/compare/v1.0.25...v1.0.26) (2024-09-20)
+
+
+### Features
+
+* **datadog:** testing datadog ([729e1f4](https://github.com/dandonahoe/crude-cards/commit/729e1f4cc0f3cb22a31e3791be9a9c7270e06280))
+* **git:** testing signed commits ([51591c4](https://github.com/dandonahoe/crude-cards/commit/51591c41b90ce631024ce73ed184b72db4c92a78))
+* **git:** testing signed commits ([d8a2248](https://github.com/dandonahoe/crude-cards/commit/d8a2248a5f71886f457710c9b6d8114e7863f0cf))
+
 ## [1.0.25](https://github.com/dandonahoe/crude-cards/compare/v1.0.24...v1.0.25) (2024-09-20)
 
 
