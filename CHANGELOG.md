@@ -1,3 +1,10 @@
+## [1.0.27](https://github.com/dandonahoe/crude-cards/compare/v1.0.26...v1.0.27) (2024-09-20)
+
+
+### Features
+
+* **git:** testing signed commits ([f688aa1](https://github.com/dandonahoe/crude-cards/commit/f688aa19f79f0edf60178ddab98affc78e006259))
+
 ## [1.0.26](https://github.com/dandonahoe/crude-cards/compare/v1.0.25...v1.0.26) (2024-09-20)
 
 
