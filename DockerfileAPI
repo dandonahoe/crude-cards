@@ -37,7 +37,10 @@ RUN apk add bash curl
 # Install Datadog Agent again in the runtime stage
 # DD_API_KEY, DD_SITE, and DD_APM_INSTRUMENTATION_ENABLED are
 # Use Gloud Run Env Variables DD_API_KEY
-RUN bash -c "$(curl -L https://install.datadoghq.com/scripts/install_script_agent7.sh)"
+# RUN DD_SITE="us5.datadoghq.com" DD_API_KEY=DD_API_KEY bash  -c "$(curl -L https://install.datadoghq.com/scripts/install_script_agent7.sh)"
+RUN DD_SITE="us5.datadoghq.com" DD_APM_INSTRUMENTATION_ENABLED="host" bash -c "DD_API_KEY=${DD_API_KEY} curl -L https://install.datadoghq.com/scripts/install_script_agent7.sh | bash"
+
+
 
 # Set the working directory inside the container to /app
 WORKDIR /app
