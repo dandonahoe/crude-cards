@@ -77,6 +77,15 @@ jobs:
         with:
           length: 6
 
+      # Debugging step to check if the Datadog variables exist
+      - name: Debug Datadog variables
+        run: |-
+          echo "Checking Datadog environment variables..."
+          echo "DD_APM_INSTRUMENTATION_ENABLED=${{ vars.DD_APM_INSTRUMENTATION_ENABLED }}"
+          echo "DD_SITE=${{ vars.DD_SITE }}"
+          echo "DATADOG_KEY_ID=${{ secrets.DATADOG_KEY_ID }}"
+          echo "DD_API_KEY=${{ secrets.DD_API_KEY }}"
+
       # Construct the REGISTRY variable
       - name: Set REGISTRY variable
         run: echo "REGISTRY=${{ env.CI_REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY_NAME }}/${{ env.SERVICE_NAME }}" >> $GITHUB_ENV
