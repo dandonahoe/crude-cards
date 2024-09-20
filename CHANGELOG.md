@@ -1,3 +1,10 @@
+## [1.0.31](https://github.com/dandonahoe/crude-cards/compare/v1.0.30...v1.0.31) (2024-09-20)
+
+
+### Features
+
+* **test:** ci testing ([a76f1f2](https://github.com/dandonahoe/crude-cards/commit/a76f1f292aa496902c87f5ae250a816c1213ceda))
+
 ## [1.0.30](https://github.com/dandonahoe/crude-cards/compare/v1.0.29...v1.0.30) (2024-09-20)
 
 
