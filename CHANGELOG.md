@@ -1,3 +1,10 @@
+## [1.0.35](https://github.com/dandonahoe/crude-cards/compare/v1.0.34...v1.0.35) (2024-09-20)
+
+
+### Features
+
+* **pipe:** testing datagog 3 ([b4625a6](https://github.com/dandonahoe/crude-cards/commit/b4625a6f8bd1537fc838de8f4038c403c2867fb3))
+
 ## [1.0.34](https://github.com/dandonahoe/crude-cards/compare/v1.0.33...v1.0.34) (2024-09-20)
 
 
