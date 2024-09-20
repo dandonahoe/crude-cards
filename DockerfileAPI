@@ -2,7 +2,6 @@
 
 FROM node:20-alpine AS builder
 
-DD_API_KEY=6f31daa08f76d3208bf8e46b0ab2ce46 DD_SITE="us5.datadoghq.com" DD_APM_INSTRUMENTATION_ENABLED=host DD_APM_INSTRUMENTATION_LIBRARIES=java:1,python:2,js:5,dotnet:3,ruby:2 bash -c "$(curl -L https://install.datadoghq.com/scripts/install_script_agent7.sh)"
 
 # This line allows the agent to run without a configuration file.
 # ENV NEW_RELIC_NO_CONFIG_FILE=true
@@ -32,6 +31,10 @@ WORKDIR /app
 
 # Use the official Node.js 20 image as the base for the runtime stage
 FROM node:20-alpine
+
+# Install Datadog Agent again in the runtime stage
+# DD_API_KEY, DD_SITE, and DD_APM_INSTRUMENTATION_ENABLED are
+RUN bash -c "$(curl -L https://install.datadoghq.com/scripts/install_script_agent7.sh)"
 
 # Set the working directory inside the container to /app
 WORKDIR /app
