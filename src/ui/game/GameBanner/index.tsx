@@ -1,27 +1,23 @@
-import { Box, Text } from '@mantine/core';
+import { GameTextSubtitle, GameTextTitle } from '../GameText/index';
+import { GameBox } from '../GameBox';
 import { RFC } from '@app/ui/type';
 import { Props } from './type';
+import { Box } from '@mantine/core';
 
 
 export const GameBanner : RFC<Props> = ({
     text, subtitle, color,
 }) =>
-    <Box
-        ta='center'
-        mb='sm'
-        mt='xs'
-        c={color}>
-        <Text
-            fz='lg'
-            fw={600}>
-            {text}
-        </Text>
-        {subtitle &&
-            <Text
-                fw={600}
-                p='sm'
-                fz='md'>
+    <GameBox>
+        <Box
+            style={{
+
+        }}>
+            <GameTextTitle color={color}>
+                {text} {'asdf'}
+            </GameTextTitle>
+            <GameTextSubtitle color={color}>
                 {subtitle}
-            </Text>
-        }
-    </Box>
+            </GameTextSubtitle>
+        </Box>
+    </GameBox>

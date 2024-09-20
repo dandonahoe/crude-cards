@@ -1,33 +1,29 @@
+import { CardColor } from '../../../../api/src/constant/card-color.enum';
+import { GameStackType } from '../../GameStack/type';
 import { GameContext } from '../../GameContext';
 import { GameBanner } from '../../GameBanner';
-import { Stack } from '@mantine/core';
-import { RFC } from '../../../type';
+import { GameStack } from '../../GameStack';
 import { useContext } from 'react';
 
 
-export const DealerPickWinner : RFC = () => {
+export const DealerPickWinner = () => {
 
     const { dealerDealtCard, isDealer } = useContext(GameContext);
 
     if(!isDealer)
         return (
             <GameBanner
-                color='#fff'
+                color={CardColor.White}
                 subtitle='Waiting on Dealer'
                 text='Judging' />
         );
 
     return (
-        <Stack
-            justify='center'
-            align='center'
-            pb='xl'>
+        <GameStack type={GameStackType.Centered}>
             <GameBanner
-                color='#fff'
-                text='Pick a Winner'
-                subtitle={dealerDealtCard?.text ?? ''} />
-        </Stack>
+                subtitle={dealerDealtCard?.text ?? ''}
+                color={CardColor.White}
+                text='Pick a Winner' />
+        </GameStack>
     );
-
-
 }

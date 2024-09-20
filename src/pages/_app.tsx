@@ -1,7 +1,6 @@
 import { CustomPageProps } from '../type/framework/template/CustomPageProps';
 import { Notifications } from '@mantine/notifications';
 import { AppProvider } from '@app/client/AppProvider';
-import { useReportWebVitals } from 'next/web-vitals';
 import { AppScript } from './AppContent/AppScript';
 import { MantineProvider } from '@mantine/core';
 import { AppTheme } from '@app/client/AppTheme';
@@ -20,12 +19,6 @@ import { GameTemplate } from '../ui/game/GameTemplate/index';
 const App : RFC<CustomPageProps> = ({
     Component, pageProps,
 }) => {
-
-    useReportWebVitals(metric => {
-        console.log(`Web Vitals - ${metric}`, {
-            metric,
-        })
-    })
 
     const [isInitialLoad, setIsInitialLoad] = useState(true);
 

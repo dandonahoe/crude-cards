@@ -1,46 +1,25 @@
 import { selectTimer } from '@app/client/selector/game';
+import { getTimeConfig } from './sharedLogic';
+import classes from './GameToast.module.css';
+import { TimerSymbol } from './TimerSymbol';
 import { useSelector } from 'react-redux';
-import classes from './style.module.css';
-import { Box} from '@mantine/core';
-import { RFC } from '@app/ui/type';
+import { Box } from '@mantine/core';
 
 
-export const GameToast : RFC= () => {
+export const GameToast = () => {
 
-    // get the current tick cound from selectoar
     const timer = useSelector(selectTimer);
 
-    if(!timer.timerType)
+    if (!timer.timerType)
         return null;
 
-    let color = '#fff';
-    let jiggleClass = '';
-
-    // todo: finish making this thing wiggle a bunch
-    // when it gets toward zero
-    if(timer.timeLeft <= 3) {
-        jiggleClass = 'jiggle-high';
-        color = '#f00';
-    } else if(timer.timeLeft <= 5) {
-        jiggleClass = 'jiggle-medium';
-        color = '#ff8c00';
-    } else if(timer.timeLeft <= 10) {
-        jiggleClass = 'jiggle-low';
-        color = '#ffff00';
-    }
+    const { color, jiggleClass } = getTimeConfig(timer.timeLeft);
 
     return (
-        <Box className={classes.toast  + ' ' + jiggleClass} >
-            <Box
-                className={classes.symbol}
-                c={color}
-                id='pi'
-                style={{
-                    border : `2px solid ${color}`,
-                }}>
-                {`${timer.timeLeft}s Left`}
-            </Box>
+        <Box className={`${classes.toast} ${classes[jiggleClass]}`}>
+            <TimerSymbol
+                timeLeft={timer.timeLeft}
+                color={color} />
         </Box>
     );
-}
-
+};

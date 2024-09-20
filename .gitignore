@@ -11,12 +11,14 @@ internal/log/**/*
 
 storybook-static
 
+
+
 src/api/internal/*.sql
 src/api/internal/*.sql
 src/api/logging/**/*
 src/api/log/**/*
 
-internal/script/code/Codebase.*
+internal/script/codebase/output/**/*
 
 src/api/log
 .terraform

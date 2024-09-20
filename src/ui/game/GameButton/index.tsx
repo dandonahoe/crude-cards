@@ -1,18 +1,14 @@
 import classes from './GameButton.module.css';
 import { Button, Text } from '@mantine/core';
-import { App } from '../../AppContext';
 import { RFC } from '@app/ui/type';
-import { useContext } from 'react';
 import { Props } from './type';
 
 
 export const GameButton : RFC<Props> = ({
     text, onClick,
 }) => {
-    const { isPhone  } = useContext(App);
-
-    const buttonSize = isPhone ? 180 : 180;
-    const fontSize   = isPhone ? 'xl' : 'xl';
+    const buttonSize = 180;
+    const fontSize   = 'xl';
 
     return (
         <Button
@@ -32,4 +28,3 @@ export const GameButton : RFC<Props> = ({
         </Button>
     );
 }
-

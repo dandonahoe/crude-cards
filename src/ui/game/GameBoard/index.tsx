@@ -1,21 +1,27 @@
-import { GamePopup } from '../GamePopup';
+import { GameStackType } from '../GameStack/type';
+import { AppContext } from '../../AppContext';
+import { GameStack } from '../GameStack';
 import { GameDebug } from '../GameDebug';
 import { GameView } from '../GameView';
-import { Stack } from '@mantine/core';
 import { RFC } from '@app/ui/type';
-import { Env } from '../../../Env';
+import { useContext } from 'react';
 import { Props } from './type';
+import { Env } from '@app/Env';
 
 
 const isDebugOverlayVisible = Env.getBoolean('NEXT_PUBLIC_IS_DEBUG_OVERLAY_VISIBLE');
 
-export const GameBoard : RFC<Props> = ({ id }) =>
-    <Stack
-        h='100vh'
-        id={id}>
-        <GamePopup />
-        <GameView />
-        {isDebugOverlayVisible &&
-            <GameDebug />
-        }
-    </Stack>;
+
+export const GameBoard : RFC<Props> = () => {
+
+    const { isDebugging } = useContext(AppContext);
+
+    return (
+        <GameStack type={GameStackType.FullHeightCentered}>
+            {/* <GamePopup /> */}
+            <GameView />
+            <GameDebug isVisible={isDebugOverlayVisible || isDebugging} />
+        </GameStack>
+    );
+};
+

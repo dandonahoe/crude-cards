@@ -233,8 +233,6 @@ function* onSendWebSocketMessage(
 // and just use the relay channel
 
 function* sagaSendWebSocketMessage(): Saga {
-    console.log('Starting Listener for WebSocket Messages');
-
     yield* takeEvery([
         GameAction.dealerPickBlackCard,
         GameAction.playerSelectCard,
@@ -246,8 +244,10 @@ function* sagaSendWebSocketMessage(): Saga {
         GameAction.leaveGame,
         GameAction.joinGame,
         GameAction.nextHand,
+        GameAction.logRelay,
     ], onSendWebSocketMessage);
 }
+
 
 function* sagaStartTimer(): Saga {
 

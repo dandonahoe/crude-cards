@@ -1,18 +1,38 @@
 import classes from '../GameTemplate.module.css';
 import { HeaderContent } from './HeaderContent';
-import { Box, Stack} from '@mantine/core';
+import { Box, Group } from '@mantine/core';
 import { GameMenu } from '../../GameMenu';
-import { RFC } from '@app/ui/type';
+import { App } from '../../../AppContext';
+import { useContext } from 'react';
 
 
-export const GameTemplateHeader : RFC = () =>
-    <Stack className={classes.menu}>
-        <Box className={classes.pi}>
-            <Box className={classes.symbol}>
-                <GameMenu />
+export const GameTemplateHeader = () => {
+
+    const { isDebugging } = useContext(App);
+
+    const debugStyle = {
+        border : isDebugging ? '1px solid #290' : undefined,
+    };
+
+    return (
+        <Group
+            className={classes.headerShadow}
+            style={debugStyle}>
+            <Box
+                className={classes.pi}
+                style={debugStyle}>
+                <Box
+                    className={classes.symbol}
+                    style={debugStyle}>
+                    <GameMenu />
+                </Box>
             </Box>
-        </Box>
-        <Box>
-            <HeaderContent />
-        </Box>
-    </Stack>
+            <Box
+                w='100%'
+                style={debugStyle}>
+                <HeaderContent />
+            </Box>
+        </Group>
+    );
+}
+

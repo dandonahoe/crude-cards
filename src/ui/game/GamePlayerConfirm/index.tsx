@@ -1,45 +1,39 @@
 import { CardColor } from '../../../api/src/constant/card-color.enum';
-import { CardDTO } from '../../../api/src/game/dtos/card.dto';
-import { Box, CloseButton, Flex } from '@mantine/core';
+import { GameBox, GameBoxCentered } from '../GameBox';
+import { CloseButton } from '@mantine/core';
 import { GameBanner } from '../GameBanner';
 import { GameButton } from '../GameButton';
-import { GameCard } from '../GameCard';
-import { RFC } from '@app/ui/type';
+import { GameCardDTO } from '../GameCard';
 
 
-export const GamePlayerConfirm : RFC = () => {
+export const GamePlayerConfirm = () => {
 
     const handleClick = () : void => {
     }
 
     return (
-        <Box>
+        <GameBox>
             <CloseButton />
             <GameBanner
-                color='#000'
                 subtitle='Confirm Your Choice'
+                color={CardColor.Black}
                 text='Play this?' />
-            <GameCard
+            <GameCardDTO
                 card={{
-                    ...CardDTO.Default,
                     color : CardColor.Black,
                     text  : 'Doing the Hustle',
                 }} />
-            <GameCard
+            <GameCardDTO
                 card={{
-                    ...CardDTO.Default,
                     color : CardColor.Black,
                     text  : 'Doing the Hustle',
                 }} />
-            <Flex
-                mt='xl'
-                align='center'
-                justify='center'>
+            <GameBoxCentered>
                 <GameButton
                     onClick={handleClick}
                     text='Yep' />
-            </Flex>
-        </Box>
+            </GameBoxCentered>
+        </GameBox>
     );
 }
 

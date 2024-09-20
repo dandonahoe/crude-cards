@@ -1,74 +1,43 @@
-import { selectSessionEndMessage } from '../../../client/selector/game';
 import { CardColor } from '../../../api/src/constant/card-color.enum';
-import { GameCardContainer } from '../GameCardContainer';
-import { GameStatusTable } from '../GameStatusTable';
+import { selectGameResults } from '../../../client/selector/game';
+import { ScoreboardSection } from './ScoreboardSection';
 import { GameDeckLayout } from '../GameDeckLayout';
+import { GameStackType } from '../GameStack/type';
 import { useViewportSize } from '@mantine/hooks';
-import { Box, Flex, Text } from '@mantine/core';
 import { useSelector } from '@app/client/hook';
-import { GameCard } from '../GameCard';
-import Confetti from 'react-confetti'
-import { RFC } from '@app/ui/type';
+import { ResultsCards } from './ResultsCards';
+import { GameStack } from '../GameStack';
+import Confetti from 'react-confetti';
 
-import {
-    selectPreviousHandDealerCard, selectPreviousHandWinnerCard,
-    selectAllPlayerStatus, selectIsPlayerWinner,
-} from '../../../client/selector/game';
+export const GameResults = () => {
 
-
-export const GameResults: RFC = () => {
-
-    const previousHandDealerCard = useSelector(selectPreviousHandDealerCard);
-    const previousHandWinnerCard = useSelector(selectPreviousHandWinnerCard);
-    const sessionEndMessage = useSelector(selectSessionEndMessage);
-    const allPlayerStatus = useSelector(selectAllPlayerStatus);
-    const isWinner = useSelector(selectIsPlayerWinner);
-
+    const {
+        sessionEndMessage, allPlayerStatus, isPlayerWinner,
+        previousHandDealerCard, previousHandWinnerCard,
+    } = useSelector(selectGameResults);
 
     const { height, width } = useViewportSize();
 
     return (
-        <Flex
-            justify='center'
-            align='center'>
-            {isWinner &&
+        <GameStack type={GameStackType.Centered}>
+            {isPlayerWinner &&
                 <Confetti
-                    width={width}
-                    height={height} />
+                    height={height}
+                    width={width} />
             }
             <GameDeckLayout
+                id='game-results'
                 color={CardColor.Black}
                 cards={[
-                    <GameCard
-                        key='one'
-                        card={previousHandDealerCard} />,
-                    <GameCard
-                        key='two'
-                        card={previousHandWinnerCard} />,
-                    <GameCard
-                        key='asdf'
-                        card={{
-                            id    : 'asdfwef',
-                            color : CardColor.Black,
-                            text  : sessionEndMessage,
-                        }} />,
-                    <Box
-                        mt='xl'
-                        key='three'>
-                        <GameCardContainer color={CardColor.Black}>
-                            <Text
-                                fz='sm'
-                                ta='center'>
-                                {'3 Points to Win'}
-                            </Text>
-                            <GameStatusTable
-                                title='Scoreboard'
-                                playerStatusList={allPlayerStatus!}
-                                shouldShowDone={false}
-                                shouldShowScore={true} />
-                        </GameCardContainer>
-                    </Box>,
+                    <ResultsCards
+                        key='uno'
+                        dealerCard={previousHandDealerCard}
+                        winnerCard={previousHandWinnerCard}
+                        endMessage={sessionEndMessage} />,
+                    <ScoreboardSection
+                        key='dos'
+                        playerStatus={allPlayerStatus} />,
                 ]} />
-        </Flex>
+        </GameStack>
     );
-}
+};

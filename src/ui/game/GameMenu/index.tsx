@@ -1,75 +1,51 @@
-import { GameStage } from '../../../api/src/constant/game-stage.enum';
-import { GameAction } from '../../../client/action/game.action';
-import { CA } from '../../../constant/framework/CoreAction';
-import { Burger, Menu, Text } from '@mantine/core';
-import { MenuItem, MenuItems } from './constant';
-import { useDispatch } from '@app/client/hook';
+import { getFilteredMenuItems } from './menuLogic';
+import { GameMenuItems } from './GameMenuItems';
 import { useDisclosure } from '@mantine/hooks';
-import { GameMenuItem } from './GameMenuItem';
 import { GameContext } from '../GameContext';
-import { RFC } from '@app/ui/type';
+import { GameText } from '../GameText';
+import { Burger, Menu } from '@mantine/core';
 import { useContext } from 'react';
+import { CardColor } from '../../../api/src/constant/card-color.enum';
 
 
-export const GameMenu : RFC = () => {
-
-    const dispatch = useDispatch();
-    const { gameState, currentPlayer } = useContext(GameContext);
-    // const { isPhone } = useContext(App);
+export const GameMenu = () => {
 
     const [opened, { toggle }] = useDisclosure();
 
-    const handleClickMenu = (menuItemId : string) : CA => {
-        toggle();
-
-        return dispatch(GameAction.menuItemClicked({
-            game_code : gameState.game_code,
-            player_id : gameState.current_player_id,
-            item_id   : menuItemId,
-        }));
-    }
-
-    let FinalMenuItemList = MenuItems;
-
-    // if they're not in a game, drop "Leave" from the menu
-    if(gameState.game_stage === GameStage.Home)
-        FinalMenuItemList = MenuItems.filter(
-            item => item.id !== MenuItem.Leave && item.id !== MenuItem.Scoreboard);
+    const { gameState, currentPlayer } = useContext(GameContext);
+    const finalMenuItems = getFilteredMenuItems(gameState);
 
     return (
-        (<Menu
+        <Menu
+            // position='top-end'
             opened={opened}
             onChange={toggle}
-            shadow='xl'
-            width={250}>
-            <Menu.Target>
+            shadow='xl'>
+            <Menu.Target >
                 <Burger
-                    tabIndex={0}
                     aria-label='Toggle Main Menu'
+                    color={CardColor.White}
+                    onClick={toggle}
                     opened={opened}
-                    color='#fff'
+                    tabIndex={0}
                     size='lg' />
             </Menu.Target>
-            <Menu.Dropdown>
-                {currentPlayer?.username &&
-                    <Menu.Label>
-                        <Text
-                            fz='xs'
-                            fw={600}>
-                            {currentPlayer?.username}
-                        </Text>
-                    </Menu.Label>
-                }
-                {FinalMenuItemList.map((item, index) =>
-                    <GameMenuItem
-                        key={`${index}-${item.id}`}
-                        onClick={handleClickMenu}
-                        icon={item.icon}
-                        text={item.text}
-                        id={item.id} />,
-                )}
+
+            <Menu.Dropdown >
+                <>
+                    {currentPlayer?.username &&
+                        <Menu.Label>
+                            <GameText>
+                                {currentPlayer.username}
+                            </GameText>
+                        </Menu.Label>
+                    }
+                    <GameMenuItems
+                        menuItems={finalMenuItems}
+                        toggle={toggle} />
+                </>
             </Menu.Dropdown>
-        </Menu>)
+        </Menu>
+
     );
 };
-

@@ -1,31 +1,23 @@
 import { selectSelectedCards } from '@app/client/selector/game';
 import { GameAction } from '../../../client/action/game.action';
-import { CardDTO } from '../../../api/src/game/dtos/card.dto';
 import { useSelector , useDispatch } from '@app/client/hook';
-import { CA } from '../../../constant/framework/CoreAction';
 import { GameDeck } from '../GameDeck';
-import { Flex } from '@mantine/core';
-import { RFC } from '@app/ui/type';
+import { GameBox } from '../GameBox';
 
 
-export const GameDealerJudge : RFC = () => {
+export const GameDealerJudge = () => {
 
     const selectedCards = useSelector(selectSelectedCards);
+    const dispatch      = useDispatch();
 
-    const dispatch = useDispatch();
-
-    const handleCardClicked = (card : CardDTO) : CA =>
-        dispatch(GameAction.dealerPickWinner({
-            card_id : card.id,
-        }));
+    const handleCardClicked = (id : string) =>
+        dispatch(GameAction.dealerPickWinner({ card_id : id }));
 
     return (
-        <Flex
-            justify='center'
-            align='center'>
+        <GameBox>
             <GameDeck
                 onCardClicked={handleCardClicked}
                 cards={selectedCards} />
-        </Flex>
+        </GameBox>
     );
 }

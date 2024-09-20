@@ -1,43 +1,41 @@
+import { CardColor } from '../../../../api/src/constant/card-color.enum';
+import { isPlayerWaiting, shouldPlayCard } from './Logic';
 import { GameContext } from '../../GameContext';
 import { GameBanner } from '../../GameBanner';
-import { Box } from '@mantine/core';
-import { RFC } from '../../../type';
+import { GameBox } from '../../GameBox';
 import { useContext } from 'react';
 
 
-export const PlayerPickWhiteCard : RFC = () => {
+export const PlayerPickWhiteCard = () => {
 
     const { isDealer, playerDealtCard, dealerDealtCard } = useContext(GameContext);
 
     if(isDealer)
         return (
             <GameBanner
-                text='Waiting'
                 subtitle='Players Picking Card'
-                color='#fff' />
+                color={CardColor.White}
+                text='Waiting' />
         );
 
     return (
-        <Box pt='md'>
-            {!playerDealtCard && !isDealer &&
-                <Box mb='xl'>
+        <GameBox>
+            {shouldPlayCard(playerDealtCard, isDealer) &&
+                <GameBox size='lg'>
                     <GameBanner
                         text='Play a Card'
                         subtitle={dealerDealtCard?.text ?? '[WHOOPS]'}
-                        color='#fff' />
-                </Box>
+                        color={CardColor.White} />
+                </GameBox>
             }
-            {playerDealtCard && !isDealer &&
-                <Box
-                    ml='xl'
-                    mr='xl'
-                    pb='lg'>
+            {isPlayerWaiting(playerDealtCard, isDealer) &&
+                <GameBox size='lg'>
                     <GameBanner
                         text='Waiting'
                         subtitle='Players Picking Card'
-                        color='#fff' />
-                </Box>
+                        color={CardColor.White} />
+                </GameBox>
             }
-        </Box>
+        </GameBox>
     );
 }

@@ -1,13 +1,11 @@
-import { CardDTO } from '../../../../api/src/game/dtos/card.dto';
 import { CardColor } from '../../../../api/src/constant/card-color.enum';
 import { GameContext } from '../../GameContext';
-import { GameCard } from '../../GameCard';
+import { GameCardDTO } from '../../GameCard';
 import { Flex } from '@mantine/core';
-import { RFC } from '../../../type';
 import { useContext } from 'react';
 
 
-export const GameHomeHeader : RFC = () => {
+export const GameHomeHeader = () => {
 
     const { gameState : { error_message } } = useContext(GameContext);
 
@@ -17,9 +15,9 @@ export const GameHomeHeader : RFC = () => {
         <Flex
             justify='center'
             align='center'>
-            <GameCard
+            {'hello?'}
+            <GameCardDTO
                 card={{
-                ...CardDTO.Default,
                 color : CardColor.Black,
                 text  : error_message,
             }} />

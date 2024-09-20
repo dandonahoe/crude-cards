@@ -1,3 +1,4 @@
+import { CardColor } from '../../../../api/src/constant/card-color.enum';
 import { GameContext } from '../../GameContext';
 import { GameBanner } from '../../GameBanner';
 import { RFC } from '../../../type';
@@ -12,8 +13,8 @@ export const DealerPickBlackCard : RFC = () => {
 
     return (
         <GameBanner
+            color={CardColor.White}
             subtitle='You Are Dealer'
-            text='Pick a Card'
-            color='#fff' />
+            text='Pick a Card' />
     );
 }

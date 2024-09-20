@@ -1,38 +1,28 @@
-import { CardDTO } from '../../../api/src/game/dtos/card.dto';
-import { CA } from '../../../constant/framework/CoreAction';
 import { GameAction } from '../../../client/action/game.action';
 import { useDispatch } from '../../../client/hook';
+import { GameStackType } from '../GameStack/type';
 import { GameContext } from '../GameContext';
+import { GameStack } from '../GameStack';
 import { GameDeck } from '../GameDeck';
-import { Flex } from '@mantine/core';
-import { RFC } from '@app/ui/type';
 import { useContext } from 'react';
 
 
-export const GamePlayerSelection : RFC = () => {
+export const GamePlayerSelection = () => {
 
-    const {
-        playerCards, playerDealtCard,
-    } = useContext(GameContext);
-
+    const { playerCards, playerDealtCard } = useContext(GameContext);
     const dispatch = useDispatch();
 
-    const handlePlayWhiteCard = (card : CardDTO) : CA =>
-        dispatch(GameAction.playerSelectCard({
-            card_id : card.id,
-        }));
+    const handlePlayWhiteCard = (id : string) =>
+        dispatch(GameAction.playerSelectCard({ card_id : id }));
 
     return (
-        <Flex
-            justify='center'
-            align='center'
-            mb='xl'>
+        <GameStack type={GameStackType.Centered}>
             {!playerDealtCard &&
                 <GameDeck
                     onCardClicked={handlePlayWhiteCard}
                     cards={playerCards} />
             }
-        </Flex>
+        </GameStack>
     );
 }
 

@@ -1,4 +1,4 @@
 export interface Props {
-    text : string;
-    onClick : () => void;
+    onClick ?: () => void;
+    text     : string;
 }

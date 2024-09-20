@@ -1,33 +1,24 @@
 import { GameAction } from '../../../client/action/game.action';
-import { CA } from '../../../constant/framework/CoreAction';
 import { GameContext } from '../GameContext';
+import { GameBoxCentered } from '../GameBox';
 import { useDispatch } from 'react-redux';
 import { GameDeck } from '../GameDeck';
-import { RFC } from '@app/ui/type';
 import { useContext } from 'react';
-import { Flex } from '@mantine/core';
-import { CardDTO } from '../../../api/src/game/dtos/card.dto';
 
 
-export const GameDealerSelection : RFC = () => {
+export const GameDealerSelection = () => {
 
     const { dealerCards } = useContext(GameContext);
-
     const dispatch = useDispatch();
 
-    const handleCardClicked = (card : CardDTO) : CA =>
-        dispatch(GameAction.dealerPickBlackCard({
-            card_id : card.id,
-        }));
+    const handleCardClicked = (id : string) =>
+        dispatch(GameAction.dealerPickBlackCard({ card_id : id }));
 
     return (
-        <Flex
-            justify='center'
-            align='center'>
-
+        <GameBoxCentered>
             <GameDeck
                 onCardClicked={handleCardClicked}
                 cards={dealerCards}  />
-        </Flex>
+        </GameBoxCentered>
     );
 };

@@ -1,61 +1,34 @@
-import { selectIsDealer, selectPlayerWaitStatus } from '../../../client/selector/game';
-import { GameStage } from '../../../api/src/constant/game-stage.enum';
-import { CardColor } from '../../../api/src/constant/card-color.enum';
-import { GameCardContainer } from '../GameCardContainer';
-import { GameStatusTable } from '../GameStatusTable';
+import { selectGameWaitingPage } from '../../../client/selector/game';
+import { StatusTableRenderer } from './StatusTableRenderer';
+import { GameStackType } from '../GameStack/type';
 import { useSelector } from '@app/client/hook';
+import { DeckRenderer } from './DeckRenderer';
 import { GameContext } from '../GameContext';
-import { Flex, Stack } from '@mantine/core';
-import { GameDeck } from '../GameDeck';
-import { RFC } from '@app/ui/type';
+import { GameStack } from '../GameStack';
 import { useContext } from 'react';
 
 
-export const GameWaiting: RFC = () => {
+export const GameWaiting = () => {
 
-    const {
-        dealerDealtCard, playerDealtCard,
-        gameState: {
-            game_stage, dealer_id,
-        },
-    } = useContext(GameContext);
+    const { dealerDealtCard, playerDealtCard, gameState } = useContext(GameContext);
+    const { playersExceptDealer, isDealer } = useSelector(selectGameWaitingPage);
 
-    const playerStatusList = useSelector(selectPlayerWaitStatus);
-    const isDealer = useSelector(selectIsDealer);
+    if(!dealerDealtCard || !playerDealtCard) {
+        console.error('dealerDealtCard or playerDealtCard is not defined', {
+            dealerDealtCard, playerDealtCard });
 
-    const playersExceptDealer = playerStatusList.filter(
-        playerStatus => playerStatus.player.id !== dealer_id);
+        return null;
+    }
 
     return (
-        <Flex
-            justify='center'
-            align='center'
-            mt='xl'>
-            <Stack>
-                {isDealer &&
-                    <GameDeck
-                        cards={[
-                            dealerDealtCard!,
-                        ]} />
-                }
-                {!isDealer &&
-                    <GameDeck
-                        cards={[
-                            dealerDealtCard!,
-                            playerDealtCard!,
-                        ]} />
-                }
-                {game_stage === GameStage.PlayerPickWhiteCard &&
-
-                    <GameCardContainer color={CardColor.Black}>
-                        <GameStatusTable
-                            playerStatusList={playersExceptDealer}
-                            shouldShowScore={false}
-                            shouldShowDone={true}
-                            title='Waiting on Players' />
-                    </GameCardContainer>
-                }
-            </Stack>
-        </Flex>
+        <GameStack type={GameStackType.Centered}>
+            <DeckRenderer
+                playerDealtCard={playerDealtCard}
+                dealerDealtCard={dealerDealtCard}
+                isDealer={isDealer} />
+            <StatusTableRenderer
+                playersExceptDealer={playersExceptDealer}
+                gameStage={gameState.game_stage} />
+        </GameStack>
     );
-}
+};

@@ -1,58 +1,40 @@
-import { selectGameChampion, selectAllPlayerStatus, selectIsPlayerWinner } from '../../../client/selector/game';
-import { Box, Button, Center, Flex, Stack, Text } from '@mantine/core';
+import { GameTextBanner, GameTextNeon, GameTextSmall } from '../GameText';
+import { CardColor } from '../../../api/src/constant/card-color.enum';
+import { selectGameComplete } from '../../../client/selector/game';
 import { GameAction } from '../../../client/action/game.action';
 import { useDispatch, useSelector } from '@app/client/hook';
 import { CA } from '../../../constant/framework/CoreAction';
+import { GameBox, GameBoxCentered } from '../GameBox';
 import { GameStatusTable } from '../GameStatusTable';
 import { IconArrowRight } from '@tabler/icons-react';
 import { useViewportSize } from '@mantine/hooks';
-import classes from './GameComplete.module.css';
+import { Button, Stack } from '@mantine/core';
 import Confetti from 'react-confetti'
-import { RFC } from '@app/ui/type';
 
 
-export const GameComplete : RFC = () => {
+export const GameComplete = () => {
 
     const dispatch = useDispatch();
+    const handleExitGame = () : CA => dispatch(GameAction.leaveGame({}));
 
-    const allPlayerStatus = useSelector(selectAllPlayerStatus);
-    const gameChampion    = useSelector(selectGameChampion);
-    const isWinner        = useSelector(selectIsPlayerWinner);
-
+    const { allPlayerStatus, gameChampion, isWinner } = useSelector(selectGameComplete);
     const { height, width } = useViewportSize();
 
-    const handleExitGame = () : CA =>
-        dispatch(GameAction.leaveGame({}));
-
-    console.log('GameComplete', { allPlayerStatus, gameChampion, isWinner });
-
     return (
-        <Flex
-            justify='center'
-            align='center'>
+        <GameBoxCentered>
             {isWinner &&
                 <Confetti
                     width={width}
                     height={height}/>
             }
-            <Stack c='#fff'>
-                <Text
-                    mt='xl'
-                    fz='lg'
-                    fw={600}
-                    c='#fff'
-                    pt='xl'
-                    ta='center'>
+            <Stack>
+                <GameTextBanner color={CardColor.White}>
                     {'CHAMP'}
-                </Text>
-                <Text
-                    fw={600}
-                    className={classes.neonText}
-                    ta='center'
-                    fz='lg'>
+                </GameTextBanner>
+                <GameTextNeon>
                     {gameChampion?.username}
-                </Text>
-                <Center mb='xl'>
+                </GameTextNeon>
+                <GameBoxCentered>
                     <Button
                         onClick={handleExitGame}
                         variant='subtle'
@@ -61,21 +43,18 @@ export const GameComplete : RFC = () => {
                         {'Home'}
                         <IconArrowRight size={50} />
                     </Button>
-                </Center>
-                <Text
-                    fz='sm'
-                    fw={600}
-                    ta='center'>
+                </GameBoxCentered>
+                <GameTextSmall>
                     {'Scoreboard'}
-                </Text>
-                <Box >
+                </GameTextSmall>
+                <GameBox size='sm'>
                     <GameStatusTable
-                        playerStatusList={allPlayerStatus!}
+                        playerStatusList={allPlayerStatus}
                         shouldShowScore={true}
                         shouldShowDone={false} />
-                </Box>
+                </GameBox>
             </Stack>
-        </Flex>
+        </GameBoxCentered>
     );
 }
 

@@ -1,6 +1,9 @@
 .gameCard {
     border: 3px solid #000;
     border-radius: rem(36);
-    /* max-width: rem(500); */
-    cursor: pointer;
+
+    &:hover {
+        /* transform: scale(1.03); */
+        animation: jiggle-subtle 1s ease-in-out 0s normal forwards;
+    }
 }

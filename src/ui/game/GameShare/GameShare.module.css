@@ -1,0 +1,17 @@
+.iconContainer {
+    background-color: #9b1717;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    border-radius: 4px;
+    display: flex;
+    height: 64px;
+    color: #fff;
+    width: 64px;
+}
+
+.paperclipIcon {
+    justify-content: center;
+    align-items: center;
+    display: flex;
+}

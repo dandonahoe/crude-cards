@@ -1,14 +1,13 @@
-import { PropsWithChildren } from 'react';
 import { CardDTO } from '../../../api/src/game/dtos/card.dto';
+import { OnClickCard } from '../type';
 
 
 export interface Props {
-    onCardClicked ?: (card : CardDTO) => void;
-    cards : CardDTO[];
-
+    onCardClicked ?: OnClickCard;
+    cards          : CardDTO[];
 }
 
-
-export type WiggleBoxProps = PropsWithChildren<{
-    index : number;
-}>;
+export interface GameCardListProps {
+    onCardClicked ?: OnClickCard;
+    cards          : CardDTO[];
+}

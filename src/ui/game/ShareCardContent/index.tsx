@@ -1,13 +1,15 @@
-import { Stack, Text, Tooltip, rem } from '@mantine/core';
+import { GameTextSmall, GameTextTitle } from '../GameText';
 import CopyToClipboard from 'react-copy-to-clipboard';
+import { ShareCardTooltip } from './ShareCardTooltip';
+import { GameStackType } from '../GameStack/type';
+import { GameStack } from '../GameStack/index';
 import { GameContext } from '../GameContext';
 import { useContext, useState } from 'react';
 import { useTimeout } from '@mantine/hooks';
 import { GameShare } from '../GameShare';
-import { RFC } from '@app/ui/type';
 
 
-export const ShareCardContent: RFC = () => {
+export const ShareCardContent = () => {
 
     const { gameState } = useContext(GameContext);
 
@@ -22,37 +24,22 @@ export const ShareCardContent: RFC = () => {
 
     return (
         <>
-            <Text
-                ta='center'
-                fw={600}
-                mt='xl'>
+            <GameTextTitle>
                 {'Share Game Code'}
-            </Text>
-            <Stack
-                justify='center'
-                align='center'>
+            </GameTextTitle>
+            <GameStack type={GameStackType.Centered}>
                 <CopyToClipboard
                     text={gameState.game_code!}
                     onCopy={handleCopy}>
-                    <Tooltip
-                        label='Copied'
-                        opened={isCopied}
-                        position='bottom'
-                        offset={0}>
-                        <Text
-                            ta='center'
-                            fw={600}
-                            fz={rem(80)}>
-                            {gameState.game_code}
-                        </Text>
-                    </Tooltip>
+                    <ShareCardTooltip
+                        gameState={gameState}
+                        isCopied={isCopied} />
                 </CopyToClipboard>
-                <Text fz='xs'>
+                <GameTextSmall>
                     {'Share With Friends to Join Game'}
-                </Text>
-
+                </GameTextSmall>
                 <GameShare />
-            </Stack>
+            </GameStack>
         </>
     );
 }

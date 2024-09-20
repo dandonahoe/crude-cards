@@ -39,7 +39,7 @@
             "name": "Frontend",
             "type": "node-terminal",
             "request": "launch",
-            "command": "pnpm run dev",
+            "command": "pnpm dev",
             "serverReadyAction": {
                 "pattern": "- Local:.+(https?://.+)",
                 "uriFormat": "%s",
@@ -47,16 +47,22 @@
             }
         },
         {
+            "name": "Narrative",
+            "type": "node-terminal",
+            "request": "launch",
+            "command": "pnpm dev:narrative"
+        },
+        {
             "name": "Storybook",
             "type": "node-terminal",
             "request": "launch",
-            "command": "pnpm run storybook"
+            "command": "pnpm storybook"
         },
         {
             "name": "Multi Browser",
             "type": "node-terminal",
             "request": "launch",
-            "command": "pnpm run puppet"
+            "command": "pnpm puppet"
         }
     ],
 }
