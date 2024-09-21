@@ -93,8 +93,18 @@ jobs:
         run: echo "REGISTRY=${{ env.CI_REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY_NAME }}/${{ env.SERVICE_NAME }}" >> $GITHUB_ENV
 
       # Build and tag Docker image
+      # Build and tag Docker image
       - name: docker build
-        run: docker build -f DockerfileAPI -t ${{ env.REGISTRY }}:${{ steps.short-sha.outputs.sha }} -t ${{ env.REGISTRY }}:latest .
+        run: |
+          docker build -f DockerfileAPI \
+            --build-arg DD_SITE=${{ vars.DD_SITE }} \
+            --build-arg DD_APM_INSTRUMENTATION_ENABLED=${{ vars.DD_APM_INSTRUMENTATION_ENABLED }} \
+            --build-arg DD_API_KEY=${{ secrets.DD_API_KEY }} \
+            -t ${{ env.REGISTRY }}:${{ steps.short-sha.outputs.sha }} \
+            -t ${{ env.REGISTRY }}:latest .
+
+      # - name: docker build
+      #   run: docker build -f DockerfileAPI -t ${{ env.REGISTRY }}:${{ steps.short-sha.outputs.sha }} -t ${{ env.REGISTRY }}:latest .
 
       # Authenticate to Artifact Registry
       - name: Login to GAR
