@@ -244,7 +244,7 @@ function* sagaSendWebSocketMessage(): Saga {
         GameAction.leaveGame,
         GameAction.joinGame,
         GameAction.nextHand,
-        GameAction.logRelay,
+        // GameAction.logRelay, // reenable this
     ], onSendWebSocketMessage);
 }
 

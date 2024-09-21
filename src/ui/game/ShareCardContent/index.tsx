@@ -18,6 +18,8 @@ export const ShareCardContent = () => {
     const { start } = useTimeout(() => setCopied(false), 3000);
 
     const handleCopy = () => {
+        debugger;
+
         setCopied(true);
         start();
     };
