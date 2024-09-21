@@ -37,6 +37,8 @@ jobs:
           echo DD_APM_INSTRUMENTATION_ENABLED="${{ vars.DD_APM_INSTRUMENTATION_ENABLED }}" >> .env
           echo DD_SITE                       ="${{ vars.DD_SITE                        }}" >> .env
           echo DATADOG_KEY_ID                ="${{ secrets.DATADOG_KEY_ID              }}" >> .env
+          echo DD_API_KEY                    ="${{ secrets.DD_API_KEY                  }}" >> .env
+
 
           echo GH_TOKEN                                          = "${{ secrets.GH_TOKEN                                       }}" >> .env
           echo BACKEND_DATABASE_PASS                             = "${{ secrets.BACKEND_DATABASE_PASS                          }}" >> .env
