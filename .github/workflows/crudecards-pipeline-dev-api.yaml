@@ -67,6 +67,15 @@ jobs:
           echo LOGGING_LEVEL                                     = "${{ vars.LOGGING_LEVEL                                     }}" >> .env
           echo NEXT_PUBLIC_IS_DEBUG_OVERLAY_VISIBLE              = "${{ vars.NEXT_PUBLIC_IS_DEBUG_OVERLAY_VISIBLE              }}" >> .env
 
+      # Debugging step to check if the Datadog variables exist
+      - name: Debug Datadog Variables 123
+        run: |-
+          echo "Checking Datadog environment variables..."
+          echo "DD_APM_INSTRUMENTATION_ENABLED=${{ vars.DD_APM_INSTRUMENTATION_ENABLED }}"
+          echo "DD_SITE=${{ vars.DD_SITE }}"
+          echo "DATADOG_KEY_ID=${{ secrets.DATADOG_KEY_ID }}"
+          echo "DD_API_KEY=${{ secrets.DD_API_KEY }}"
+
       # Authenticate on GCP using service account
       - id: Auth
         name: Authenticate to Google Cloud
@@ -78,15 +87,6 @@ jobs:
         id: short-sha
         with:
           length: 6
-
-      # Debugging step to check if the Datadog variables exist
-      - name: Debug Datadog variables
-        run: |-
-          echo "Checking Datadog environment variables..."
-          echo "DD_APM_INSTRUMENTATION_ENABLED=${{ vars.DD_APM_INSTRUMENTATION_ENABLED }}"
-          echo "DD_SITE=${{ vars.DD_SITE }}"
-          echo "DATADOG_KEY_ID=${{ secrets.DATADOG_KEY_ID }}"
-          echo "DD_API_KEY=${{ secrets.DD_API_KEY }}"
 
       # Construct the REGISTRY variable
       - name: Set REGISTRY variable
