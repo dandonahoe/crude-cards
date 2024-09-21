@@ -34,6 +34,7 @@ FROM node:20-alpine
 
 RUN apk add bash curl
 
+
 # Install Datadog Agent again in the runtime stage
 # DD_API_KEY, DD_SITE, and DD_APM_INSTRUMENTATION_ENABLED are
 # Use Gloud Run Env Variables DD_API_KEY
