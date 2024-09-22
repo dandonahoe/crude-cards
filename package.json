@@ -211,6 +211,7 @@
         "sharp": "0.33.5",
         "slick-commit": "1.3.0",
         "storybook": "8.3.2",
+        "storybook-css-modules": "1.0.8",
         "ts-jest": "29.2.5",
         "ts-node": "10.9.2",
         "tsconfig-paths": "4.2.0",

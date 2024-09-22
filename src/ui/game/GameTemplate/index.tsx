@@ -1,5 +1,7 @@
 import { AppShell, Box, Group, MantineProvider, rem } from '@mantine/core';
+import { CardColor } from '../../../api/src/constant/card-color.enum';
 import { GameTemplateHeader } from './GameTemplateHeader';
+import { Notifications } from '@mantine/notifications';
 import { GameTheme } from '@app/client/GameTheme';
 import classes from './GameTemplate.module.css';
 import { useElementSize } from '@mantine/hooks';
@@ -11,7 +13,6 @@ import { GameToast } from '../GameToast';
 import { RFC } from '@app/ui/type';
 import { useContext } from 'react';
 import { Props } from './type';
-import { CardColor } from '../../../api/src/constant/card-color.enum';
 import {
     selectDealerDealtCard, selectPlayerDealtCard,
     selectCurrentPlayer, selectDealerCards,
@@ -48,10 +49,12 @@ export const GameTemplate : RFC<Props>= ({
                 currentPlayer, dealerCards, playerCards,
                 dealerDealtCard, playerDealtCard,
             }}>
+
             <MantineProvider
                 defaultColorScheme='dark'
                 forceColorScheme='dark'
                 theme={GameTheme}>
+                <Notifications />
                 <AppShell
                     className={classes.appRoot}
                     withBorder={false}>
