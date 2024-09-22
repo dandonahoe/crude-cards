@@ -2,6 +2,9 @@
     "folders": [
         {
             "path": "."
+        },
+        {
+            "path": "../node-live-example"
         }
     ],
     "settings": {
