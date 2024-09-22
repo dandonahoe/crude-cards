@@ -1,18 +1,22 @@
-import type { Meta, StoryObj } from '@storybook/react';
-import { GameStatusTable } from './index'; // Import the GameStatusTable component
-import { PlayerStatus } from '../type'; // Import PlayerStatus type
+import { CardColor } from '../../../api/src/constant/card-color.enum';
 import { PlayerDTO } from '../../../api/src/game/dtos/player.dto';
+import type { Meta, StoryObj } from '@storybook/react';
+import { GameStatusTable } from './index';
+import { PlayerStatus } from '../type';
+
 
 const meta: Meta<typeof GameStatusTable> = {
-    title     : 'Game/GameStatusTable',
+
     component : GameStatusTable,
+    title     : 'Game/GameStatusTable',
     tags      : ['autodocs'],
-    argTypes  : {
-        shouldShowScore : { control : 'boolean' }, // Control to toggle score visibility
-        shouldShowDone  : { control : 'boolean' },  // Control to toggle "done" status visibility
-        title           : { control : 'text' },              // Control for the table title
+
+    argTypes : {
+        shouldShowScore : { control : 'boolean' },
+        shouldShowDone  : { control : 'boolean' },
+        title           : { control : 'text'    },
     },
-};
+}
 
 
 export default meta;
@@ -28,27 +32,31 @@ const samplePlayerStatuses: PlayerStatus[] = [
 
 export const DefaultStatusTable: Story = {
     args : {
-        playerStatusList : samplePlayerStatuses,  // Sample player statuses
-        shouldShowScore  : true,                   // Show player scores
-        shouldShowDone   : true,                    // Show whether players are done
-        title            : 'Game Status',                    // Title of the status table
+        playerStatusList : samplePlayerStatuses,
+        shouldShowScore  : true,
+        shouldShowDone   : true,
+        textColor        : CardColor.White,
+        title            : 'Game Status 123',
     },
-};
+}
 
 export const NoDoneColumn: Story = {
     args : {
-        playerStatusList : samplePlayerStatuses,  // Sample player statuses
-        shouldShowScore  : true,                   // Show player scores
-        shouldShowDone   : false,                   // Hide "done" status column
-        title            : 'Game Status (No Done Column)',   // Title of the status table
+        playerStatusList : samplePlayerStatuses,
+        shouldShowScore  : true,
+        shouldShowDone   : false,
+        textColor        : CardColor.White,
+        title            : 'Game Status (No Done Column)',
     },
-};
+}
 
 export const NoScoreColumn: Story = {
     args : {
-        playerStatusList : samplePlayerStatuses,  // Sample player statuses
-        shouldShowScore  : false,                  // Hide player scores
-        shouldShowDone   : true,                    // Show "done" status
-        title            : 'Game Status (No Score Column)',  // Title of the status table
+        playerStatusList : samplePlayerStatuses,
+        shouldShowScore  : false,
+        shouldShowDone   : true,
+        textColor        : CardColor.White,
+        title            : 'Game Status (No Score Column)',
+
     },
-};
+}

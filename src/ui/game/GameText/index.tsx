@@ -92,7 +92,16 @@ export const GameText: RFC<Props> = ({
                     fw={600}
                     className={classes.bannerText}
                     {...propsMysterioso}>
-                    {'THIS ONE3!'}
+                    {children}
+                </Text>
+            );
+
+        case GameTextType.Neon:
+            return (
+                <Text
+                    fw={600}
+                    className={classes.neonText}
+                    {...propsMysterioso}>
                     {children}
                 </Text>
             );

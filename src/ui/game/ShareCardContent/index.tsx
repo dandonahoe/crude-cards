@@ -23,7 +23,7 @@ export const ShareCardContent = () => {
     };
 
     return (
-        <>
+        <GameStack>
             <GameTextTitle>
                 {'Share Game Code'}
             </GameTextTitle>
@@ -40,7 +40,7 @@ export const ShareCardContent = () => {
                 </GameTextSmall>
                 <GameShare />
             </GameStack>
-        </>
+        </GameStack>
     );
 }
 
