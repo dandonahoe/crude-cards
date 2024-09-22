@@ -1,25 +1,28 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { fn } from '@storybook/test';
-import { GameButton } from '.';
+import { GameButton } from './index'; // Import the GameButton component
 
-const meta = {
+const meta: Meta<typeof GameButton> = {
     title     : 'Game/GameButton',
     component : GameButton,
     tags      : ['autodocs'],
     argTypes  : {
+        text    : { control : 'text' }, // Text displayed on the button
+        onClick : { action : 'clicked' }, // Action logger for Storybook
     },
-
-    args : {
-        onClick : fn(),
-    },
-} satisfies Meta<typeof GameButton>;
+};
 
 export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-export const Primary : Story = {
+export const DefaultButton: Story = {
     args : {
-        text : 'Foo!',
+        text : 'ClickD', // Default button text
+    },
+};
+
+export const LargeButton: Story = {
+    args : {
+        text : 'ClickL',
     },
 };
