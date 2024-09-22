@@ -81,6 +81,7 @@ export const GameTemplate : RFC<Props>= ({
                                 hiddenFrom='xs'>
                                 {'.'}
                             </Box>
+                            {/* Testing Git */}
                             <Box
                                 bd={isDebugging ? '1px solid #cf0' : undefined}
                                 c={CardColor.Black}
