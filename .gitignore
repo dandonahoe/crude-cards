@@ -10,7 +10,7 @@ artifact
 internal/log/**/*
 
 storybook-static
-
+cli-pew/data
 
 
 src/api/internal/*.sql
