@@ -18,6 +18,7 @@
         "/dist"
     ],
     "scripts": {
+        "pew": "ts-node cli-pew",
         "commit": "slick-commit",
         "artifact:build": "pnpm job:docs && pnpm test:coverage && pnpm dep:circular && pnpm dep:full && pnpm build:storybook",
         "auth:google": "gcloud auth application-default login",
@@ -40,7 +41,6 @@
         "dev:reset": "ts-node internal/script/reset",
         "dev:narrative": "ts-node internal/script/narrative",
         "job:codebase": "ts-node internal/script/codebase",
-        "cli": "ts-node cli",
         "job:disable-snooping": "next telemetry disable",
         "job:docs": "typedoc",
         "job:purge": "ts-node internal/script/purge",

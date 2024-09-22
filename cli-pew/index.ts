@@ -6,7 +6,7 @@ const program = new Command();
 
 
 program
-    .name('cli')
+    .name('pew')
     .description('Utility Functions for Development and DevOps')
     .version('0.0.1');
 
