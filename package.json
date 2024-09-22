@@ -64,7 +64,6 @@
         "test:web": "TZ=GMT pnpm test",
         "trunk": "trunk",
         "trunk:check": "trunk check --no-fix --show-existing",
-        "storybook": "storybook dev -p 6006",
         "build-storybook": "storybook build"
     },
     "dependencies": {

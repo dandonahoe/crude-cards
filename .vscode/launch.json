@@ -56,7 +56,7 @@
             "name": "Storybook",
             "type": "node-terminal",
             "request": "launch",
-            "command": "pnpm storybook"
+            "command": "pnpm dev:storybook"
         },
         {
             "name": "Multi Browser",
