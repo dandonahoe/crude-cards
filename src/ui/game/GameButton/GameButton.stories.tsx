@@ -1,41 +1,28 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { fn } from '@storybook/test';
-import { GameButton } from '.';
+import { GameButton } from './index'; // Import the GameButton component
 
-// More on how to set up stories at: https://storybook.js.org/docs/writing-stories#default-export
-const meta = {
-    title      : 'Game/GameButton',
-    component  : GameButton,
-    parameters : {
-        // Optional parameter to center the component in the Canvas. More info: https://storybook.js.org/docs/configure/story-layout
-        layout : 'centered',
+const meta: Meta<typeof GameButton> = {
+    title     : 'Game/GameButton',
+    component : GameButton,
+    tags      : ['autodocs'],
+    argTypes  : {
+        text    : { control : 'text' }, // Text displayed on the button
+        onClick : { action : 'clicked' }, // Action logger for Storybook
     },
-    // This component will have an automatically generated Autodocs entry: https://storybook.js.org/docs/writing-docs/autodocs
-    tags     : ['autodocs'],
-    // More on argTypes: https://storybook.js.org/docs/api/argtypes
-    argTypes : {
-
-    },
-
-    args : {
-        onClick : fn(),
-    },
-} satisfies Meta<typeof GameButton>;
+};
 
 export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-// More on writing stories with args: https://storybook.js.org/docs/writing-stories/args
-export const Primary: Story = {
+export const DefaultButton: Story = {
     args : {
-
-        text : 'Imma FIrst OnE',
+        text : 'ClickD', // Default button text
     },
 };
 
-export const Secondary: Story = {
+export const LargeButton: Story = {
     args : {
-        text : 'SeCond OnE',
+        text : 'ClickL',
     },
 };

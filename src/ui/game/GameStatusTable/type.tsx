@@ -22,5 +22,5 @@ export interface GameStatusTableHeaderProps {
 }
 
 export interface GameStatusTableTitleProps {
-    title : string
+    title ?: string
 }

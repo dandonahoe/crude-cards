@@ -18,7 +18,6 @@ export const GameBoard : RFC<Props> = () => {
 
     return (
         <GameStack type={GameStackType.FullHeightCentered}>
-            {/* <GamePopup /> */}
             <GameView />
             <GameDebug isVisible={isDebugOverlayVisible || isDebugging} />
         </GameStack>
