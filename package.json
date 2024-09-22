@@ -18,6 +18,7 @@
         "/dist"
     ],
     "scripts": {
+        "cli:four": "ts-node internal/cli/slice.ts",
         "commit": "slick-commit",
         "artifact:build": "pnpm job:docs && pnpm test:coverage && pnpm dep:circular && pnpm dep:full && pnpm build:storybook",
         "auth:google": "gcloud auth application-default login",
@@ -40,6 +41,7 @@
         "dev:reset": "ts-node internal/script/reset",
         "dev:narrative": "ts-node internal/script/narrative",
         "job:codebase": "ts-node internal/script/codebase",
+        "job:cli": "ts-node internal/script/cli",
         "job:disable-snooping": "next telemetry disable",
         "job:docs": "typedoc",
         "job:purge": "ts-node internal/script/purge",
@@ -128,6 +130,7 @@
         "@babel/preset-env": "7.25.4",
         "@babel/preset-typescript": "7.24.7",
         "@chromatic-com/storybook": "^1.9.0",
+        "@commander-js/extra-typings": "12.1.0",
         "@emotion/react": "11.13.3",
         "@emotion/server": "11.11.0",
         "@faker-js/faker": "9.0.0",

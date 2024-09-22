@@ -12,6 +12,8 @@
     "scripts": {
         "typeorm": "typeorm-ts-node-commonjs",
         "migrate:backend:run": "pnpm run typeorm migration:run -d src/data-source.ts",
+        "cli": "node -r ts-node/register ./src/cli/slice.ts",
+        "cli:two": "ts-node ./src/cli/string-util.ts",
         "migrate:backend:create": "pnpm run typeorm migration:create src/migrations/PostRefactoring",
         "migrate:reset": "pnpm run typeorm migration:create src/migrations/PostRefactoring",
         "build": "nest build --webpack",
@@ -56,6 +58,7 @@
         "winston-daily-rotate-file": "^5.0.0"
     },
     "devDependencies": {
+        "@commander-js/extra-typings": "^12.1.0",
         "@nestjs/cli": "^10.4.5",
         "@nestjs/testing": "^10.4.1",
         "@types/deep-freeze-strict": "^1.1.2",
