@@ -39,6 +39,7 @@ export const GameText: RFC<Props> = ({
         case GameTextType.Medium:
             return (
                 <Text
+                    fw={600}
                     className={classes.gameDefault}
                     c={overrideColor ?? color}
                     fz={size}
@@ -51,6 +52,7 @@ export const GameText: RFC<Props> = ({
         case GameTextType.Subtitle:
             return (
                 <Title
+                    fw={600}
                     order={2}
                     className={classes.gameSubtitle}
                     c={overrideColor ?? color}
@@ -63,6 +65,7 @@ export const GameText: RFC<Props> = ({
         case GameTextType.Title:
             return (
                 <Title
+                    fw={600}
                     className={classes.gameTitle}
                     c={overrideColor ?? color}
                     fz='xl'
@@ -74,6 +77,7 @@ export const GameText: RFC<Props> = ({
         case GameTextType.Small:
             return (
                 <Text
+                    fw={600}
                     className={classes.gameSmall}
                     c={overrideColor ?? color}
                     fz='sm'
@@ -85,6 +89,7 @@ export const GameText: RFC<Props> = ({
         case GameTextType.Banner:
             return (
                 <Text
+                    fw={600}
                     className={classes.bannerText}
                     {...propsMysterioso}>
                     {'THIS ONE3!'}
