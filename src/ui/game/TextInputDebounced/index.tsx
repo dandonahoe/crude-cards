@@ -1,10 +1,10 @@
 import { CardColor } from '../../../api/src/constant/card-color.enum';
-import { useDebouncedValue } from '@mantine/hooks';
 import { useEffect, useState, useContext } from 'react';
+import { useDebouncedValue } from '@mantine/hooks';
 import { TextInput } from '@mantine/core';
+import { App } from '../../AppContext';
 import { RFC } from '@app/ui/type';
 import { Props } from './type';
-import { App } from '../../AppContext';
 
 
 export const TextInputDebounced: RFC<Props> = ({
@@ -24,7 +24,6 @@ export const TextInputDebounced: RFC<Props> = ({
     const handleBlur = () => onBlur(text, name);
 
     useEffect(() => {
-
         if (debounced !== value)
             onChange(debounced, name);
 

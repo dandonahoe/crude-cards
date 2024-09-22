@@ -14,14 +14,15 @@ const meta: Meta<typeof GameStatusTable> = {
     },
 };
 
+
 export default meta;
 
 type Story = StoryObj<typeof meta>;
 
 // Sample player statuses
 const samplePlayerStatuses: PlayerStatus[] = [
-    {  player : { ...PlayerDTO.Default, id : '1', username : 'Player 1' }, score : 3, isWinner : false, isDone : true },
-    {  player : { ...PlayerDTO.Default, id : '2', username : 'Player 2' }, score : 5, isWinner : true, isDone : true },
+    {  player : { ...PlayerDTO.Default, id : '1', username : 'Player 1' }, score : 3, isWinner : false, isDone : true  },
+    {  player : { ...PlayerDTO.Default, id : '2', username : 'Player 2' }, score : 5, isWinner : true,  isDone : true  },
     {  player : { ...PlayerDTO.Default, id : '3', username : 'Player 3' }, score : 2, isWinner : false, isDone : false },
 ];
 
