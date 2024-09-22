@@ -14,7 +14,7 @@ export const GameBanner : RFC<Props> = ({
 
         }}>
             <GameTextTitle color={color}>
-                {text} {'asdf'}
+                {text}
             </GameTextTitle>
             <GameTextSubtitle color={color}>
                 {subtitle}

@@ -18,11 +18,9 @@ const preview: Preview = {
             <AppProvider>
                 <AppScript />
                 <GameTemplate appId='app-alpha'>
-                    {'AboveFlex'}
                     <Flex justify='center' pt={rem(100)}>
                         <Story {...context} />
                     </Flex>
-                    {'Beloflex'}
                 </GameTemplate>
             </AppProvider>
         ),
