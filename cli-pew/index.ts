@@ -1,4 +1,5 @@
 import { Command } from '@commander-js/extra-typings';
+import { codebaseAction } from './action/codebase';
 import { talkAction } from './action/talk';
 
 
@@ -14,5 +15,10 @@ program
     .command('talk')
     .description('Testing Sub Actions, Like Talking.')
     .action(talkAction);
+
+program
+    .command('codebase')
+    .description('Compile Codebase Markdown')
+    .action(codebaseAction);
 
 program.parse();

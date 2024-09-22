@@ -6,54 +6,61 @@ import * as path from 'path';
 // Load environment variables from .env file
 dotenv.config();
 
+import inquirer from 'inquirer';
+
+export const codebaseAction = async () => {
+    main();
+};
+
+
 interface ScanConfig {
-    outputDescription? : string;
-    fileTypesToScan    : string[];
-    outputFilePath     : string;
-    outputHeader?      : string;
-    excludePaths       : string[];
-    outputDir          : string;
-    srcDir             : string;
-    includeTests       : boolean; // New flag to include or exclude test files
+    outputDescription?: string;
+    fileTypesToScan: string[];
+    outputFilePath: string;
+    outputHeader?: string;
+    excludePaths: string[];
+    outputDir: string;
+    srcDir: string;
+    includeTests: boolean; // New flag to include or exclude test files
 }
 
 const scanJobList: ScanConfig[] = [{
-        outputDescription : 'This document contains all the frontend codebase for the Crude Cards game.',
-        fileTypesToScan   : ['.ts', '.tsx'],
-        outputFilePath    : path.join(__dirname, './output/codebase-crude-cards-frontend.md'),
-        excludePaths      : [],
-        outputHeader      : '## Frontend Codebase\n\n',
-        includeTests      : false,
-        outputDir         : path.join(__dirname, './output'),
-        srcDir            : path.join(__dirname, '../../../src/ui/game'),
-    }, {
-        outputDescription : 'This document contains all the backend codebase for the Crude Cards game.',
-        fileTypesToScan   : ['.ts', '.tsx'],
-        outputFilePath    : path.join(__dirname, './output/codebase-crude-cards-backend.md'),
-        excludePaths      : [],
-        outputHeader      : '## Backend Codebase\n\n',
-        includeTests      : false,
-        outputDir         : path.join(__dirname, './output'),
-        srcDir            : path.join(__dirname, '../../../src/api/src'),
-    }, {
-        outputDescription : 'This document contains the codebase for the Attorney AI project.',
-        fileTypesToScan   : ['.ts', '.tsx'],
-        outputFilePath    : path.join(__dirname, './output/codebase-attorney-ai.md'),
-        excludePaths      : [path.join(__dirname, '../../../src/api')],
-        outputHeader      : '## Attorney AI Codebase\n\n',
-        includeTests      : false,
-        outputDir         : path.join(__dirname, './output'),
-        srcDir            : path.join(__dirname, '../../../src'),
-    }, {
-        outputDescription : 'Experimental integration of Genertive AI and neo4js',
-        fileTypesToScan   : ['.ts'],
-        outputFilePath    : path.join(__dirname, './output/codebase-narrative.md'),
-        excludePaths      : [path.join(__dirname, '../narrative')],
-        outputHeader      : '## Generative AI and neo4js Experiment\n\n',
-        includeTests      : false,
-        outputDir         : path.join(__dirname, './output'),
-        srcDir            : path.join(__dirname, '../../../src'),
-    },
+    outputDescription: 'This document contains all the frontend codebase for the Crude Cards game.',
+    fileTypesToScan: ['.ts', '.tsx'],
+    outputFilePath: path.join(__dirname, './output/codebase-crude-cards-frontend.md'),
+    excludePaths: [],
+    outputHeader: '## Frontend Codebase\n\n',
+    includeTests: false,
+    outputDir: path.join(__dirname, './output'),
+    srcDir: path.join(__dirname, '../../src/ui/game'),
+}, {
+    outputDescription: 'This document contains all the backend codebase for the Crude Cards game.',
+    fileTypesToScan: ['.ts', '.tsx'],
+    outputFilePath: path.join(__dirname, './output/codebase-crude-cards-backend.md'),
+    excludePaths: [],
+    outputHeader: '## Backend Codebase\n\n',
+    includeTests: false,
+    outputDir: path.join(__dirname, './output'),
+    srcDir: path.join(__dirname, '../../src/api/src'),
+}, {
+    outputDescription: 'This document contains the codebase for the Attorney AI project.',
+    fileTypesToScan: ['.ts', '.tsx'],
+    outputFilePath: path.join(__dirname, './output/codebase-attorney-ai.md'),
+    excludePaths: [path.join(__dirname, '../../src/api')],
+    outputHeader: '## Attorney AI Codebase\n\n',
+    includeTests: false,
+    outputDir: path.join(__dirname, './output'),
+    srcDir: path.join(__dirname, '../../src'),
+}, {
+    outputDescription: 'Experimental integration of Genertive AI and neo4js',
+    fileTypesToScan: ['.ts'],
+    outputFilePath: path.join(__dirname, './output/codebase-narrative.md'),
+    excludePaths: [path.join(__dirname, '../narrative')],
+    outputHeader: '## Generative AI and neo4js Experiment\n\n',
+    includeTests: false,
+    outputDir: path.join(__dirname, './output'),
+    srcDir: path.join(__dirname, '../../src'),
+},
 ];
 
 // Function to check if a file path should be excluded
@@ -66,7 +73,7 @@ const getAllFilesAndTree = async (
     includeTests: boolean, relativeRoot: string,
 ): Promise<{ files: string[], tree: string }> => {
 
-    const dirents = await fs.readdir(dir, { withFileTypes : true });
+    const dirents = await fs.readdir(dir, { withFileTypes: true });
 
     const files: string[] = [];
     let tree = '';
@@ -80,6 +87,7 @@ const getAllFilesAndTree = async (
     tree += `${' '.repeat(indent)}- ${currentDirName}/\n`;
 
     for (const dirent of dirents) {
+
         const res = path.resolve(dir, dirent.name);
 
         if (isExcluded(res, excludePaths)) continue;
@@ -87,12 +95,20 @@ const getAllFilesAndTree = async (
         if (dirent.isDirectory()) {
             // Automatically exclude __test__, migrations, and .git directories
             if (!includeTests && (
-                dirent.name === '__test__' || (dir.endsWith('src') && dirent.name === 'migrations')) || dirent.name === '.git') continue;
+                dirent.name === '__test__' || (
+                    dir.endsWith('src') && dirent.name === 'migrations'
+                )) || dirent.name === '.git')
+                continue;
+
             const { files: subFiles, tree: subTree } = await getAllFilesAndTree(res, exts, excludePaths, includeTests, relativeRoot);
+
             files.push(...subFiles);
+
             tree += subTree;
+
         } else if (exts.some(ext => res.endsWith(ext)) && (includeTests || !res.endsWith('.spec.ts'))) {
             files.push(res);
+
             tree += `${' '.repeat(indent + 2)}- ${dirent.name}\n`;
         }
     }
@@ -112,7 +128,7 @@ const readAndCombineFiles = async (filePaths: string[]): Promise<string> => {
 // Function to ensure output directory exists
 const ensureOutputDir = async (outputDir: string) => {
     try {
-        await fs.mkdir(outputDir, { recursive : true });
+        await fs.mkdir(outputDir, { recursive: true });
     } catch (err) {
         console.error(`Error creating directory: ${outputDir}`, err);
         throw err;
@@ -156,7 +172,7 @@ const main = async (): Promise<void> => {
         results.forEach((result, index) => {
             if (result.status === 'rejected')
                 console.error(`Error during job ${index + 1}:`, result.reason);
-             else
+            else
                 console.log(`Job ${index + 1} completed successfully.`);
         });
     } catch (error) {
@@ -164,4 +180,4 @@ const main = async (): Promise<void> => {
     }
 };
 
-main();
+// main();
