@@ -186,6 +186,9 @@ importers:
       '@commander-js/extra-typings':
         specifier: 12.1.0
         version: 12.1.0(commander@12.1.0)
+      '@deepgram/sdk':
+        specifier: 3.7.0
+        version: 3.7.0
       '@emotion/react':
         specifier: 11.13.3
         version: 11.13.3(@types/react@18.3.5)(react@18.3.1)
@@ -393,12 +396,18 @@ importers:
       madge:
         specifier: 8.0.0
         version: 8.0.0(typescript@5.5.4)
+      mic:
+        specifier: 2.1.2
+        version: 2.1.2
       minimatch:
         specifier: 10.0.1
         version: 10.0.1
       neo4j-driver:
         specifier: 5.24.1
         version: 5.24.1
+      node-record-lpcm16:
+        specifier: 1.0.1
+        version: 1.0.1
       open:
         specifier: 10.1.0
         version: 10.1.0
@@ -1161,6 +1170,14 @@ packages:
   '@cspotcode/source-map-support@0.8.1':
     resolution: {integrity: sha512-IchNf6dN4tHoMFIn/7OE8LWZ19Y6q/67Bmf6vnGREv8RSbBVb9LPJxEcnwrcwX6ixSvaiGoomAUvu4YSxXrVgw==}
     engines: {node: '>=12'}
+
+  '@deepgram/captions@1.2.0':
+    resolution: {integrity: sha512-8B1C/oTxTxyHlSFubAhNRgCbQ2SQ5wwvtlByn8sDYZvdDtdn/VE2yEPZ4BvUnrKWmsbTQY6/ooLV+9Ka2qmDSQ==}
+    engines: {node: '>=18.0.0'}
+
+  '@deepgram/sdk@3.7.0':
+    resolution: {integrity: sha512-3p7OwqAGNoPl80/m58Wv2VjYbC/BI7FEtvrGmnL723Xm7hEzNR8fVLUHkog5RC7Sm/OB6G7QBVYBturPtDBEpQ==}
+    engines: {node: '>=18.0.0'}
 
   '@dependents/detective-less@5.0.0':
     resolution: {integrity: sha512-D/9dozteKcutI5OdxJd8rU+fL6XgaaRg60sPPJWkT33OCiRfkCu5wO5B/yXTaaL2e6EB0lcCBGe5E0XscZCvvQ==}
@@ -6394,6 +6411,9 @@ packages:
     resolution: {integrity: sha512-iclAHeNqNm68zFtnZ0e+1L2yUIdvzNoauKU4WBA3VvH/vPFieF7qfRlwUZU+DA9P9bPXIS90ulxoUoCH23sV2w==}
     engines: {node: '>= 0.6'}
 
+  mic@2.1.2:
+    resolution: {integrity: sha512-rpl4tgdXX24sAzYwjRc5OZfGNAuhUIIjdd0cw8+Ubq7rp3iGhi40AdqcwurDWhEZADk60tPOxb3E2MpoeLeyxw==}
+
   micro@10.0.1:
     resolution: {integrity: sha512-9uwZSsUrqf6+4FLLpiPj5TRWQv5w5uJrJwsx1LR/TjqvQmKC1XnGQ9OHrFwR3cbZ46YqPqxO/XJCOpWnqMPw2Q==}
     engines: {node: '>= 16.0.0'}
@@ -6683,6 +6703,9 @@ packages:
     engines: {node: '>=12'}
     peerDependencies:
       webpack: '>=5'
+
+  node-record-lpcm16@1.0.1:
+    resolution: {integrity: sha512-H75GMOP8ErnF67m21+qSgj4USnzv5RLfm7OkEItdIi+soNKoJZpMQPX6umM8Cn9nVPSgd/dBUtc1msst5MmABA==}
 
   node-releases@2.0.18:
     resolution: {integrity: sha512-d9VeXT4SJ7ZeOqGX6R5EM022wpL+eWPooLI+5UpWn2jCT1aosUQEhQP214x33Wkwx3JQMvIm+tIoVOdodFS40g==}
@@ -10154,6 +10177,22 @@ snapshots:
   '@cspotcode/source-map-support@0.8.1':
     dependencies:
       '@jridgewell/trace-mapping': 0.3.9
+
+  '@deepgram/captions@1.2.0':
+    dependencies:
+      dayjs: 1.11.13
+
+  '@deepgram/sdk@3.7.0':
+    dependencies:
+      '@deepgram/captions': 1.2.0
+      cross-fetch: 3.1.8
+      deepmerge: 4.3.1
+      events: 3.3.0
+      ws: 8.18.0
+    transitivePeerDependencies:
+      - bufferutil
+      - encoding
+      - utf-8-validate
 
   '@dependents/detective-less@5.0.0':
     dependencies:
@@ -16697,6 +16736,8 @@ snapshots:
 
   methods@1.1.2: {}
 
+  mic@2.1.2: {}
+
   micro@10.0.1:
     dependencies:
       arg: 4.1.0
@@ -17060,6 +17101,12 @@ snapshots:
       util: 0.12.5
       vm-browserify: 1.1.2
       webpack: 5.94.0(esbuild@0.21.5)
+
+  node-record-lpcm16@1.0.1:
+    dependencies:
+      debug: 2.6.9
+    transitivePeerDependencies:
+      - supports-color
 
   node-releases@2.0.18: {}
 
