@@ -17,6 +17,17 @@ jobs:
             - name: Checkout
               uses: actions/checkout@v4
 
+            # Write to complete env file
+            - name: env file
+              run: |-
+                  #  Front End Visible
+                  echo NEXT_PUBLIC_APP_ID                                = "${{ vars.NEXT_PUBLIC_APP_ID                                }}" >> .env
+                  echo NEXT_PUBLIC_BROWSER_WINDOW_LOCATION_ORIGIN        = "${{ vars.NEXT_PUBLIC_BROWSER_WINDOW_LOCATION_ORIGIN        }}" >> .env
+                  echo NEXT_PUBLIC_GOOGLE_ANALYTICS_ID                   = "${{ vars.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID                   }}" >> .env
+                  echo NEXT_PUBLIC_WEB_SOCKET_HOST_ORIGIN                = "${{ vars.NEXT_PUBLIC_WEB_SOCKET_HOST_ORIGIN                }}" >> .env
+                  echo NEXT_PUBLIC_NEXT_COUNTDOWN_TIMER_DURATION_SECONDS = "${{ vars.NEXT_PUBLIC_NEXT_COUNTDOWN_TIMER_DURATION_SECONDS }}" >> .env
+                  echo NEXT_PUBLIC_IS_DEBUG_OVERLAY_VISIBLE              = "${{ vars.NEXT_PUBLIC_IS_DEBUG_OVERLAY_VISIBLE              }}" >> .env
+
             # Install pnpm
             - name: Install pnpm
               run: npm install -g pnpm
