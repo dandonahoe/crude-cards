@@ -43,6 +43,7 @@ export const GameStatusTableRow: RFC<GameStatusTableRowProps> = ({
                     }
                     <Text
                         fw={playerStatus.isWinner ? 600 : 400}
+                        c={textColor}
                         className={playerStatus.isWinner ? classes.neonText : ''}
                         ta='center'>
                         {playerStatus.score}

@@ -185,6 +185,7 @@ export const GameTextNeon: RFC<PropsWithChildren> = ({
 }) =>
     <GameText
         type={GameTextType.Neon}
+        color={CardColor.White}
         {...propsMysterioso}>
         {children}
     </GameText>
