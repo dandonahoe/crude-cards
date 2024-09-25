@@ -17,6 +17,12 @@ export interface GameContextType {
     isDealer        : boolean;
 }
 
+export enum BrowserTheme {
+    BlueSteel = 'BlueSteel', // zoolander
+    JazzHands = 'JazzHands', // proper
+    Default   = 'Default',   // Parody (CAH)
+};
+
 export interface PlayerStatus {
     isWinner : boolean;
     player   : PlayerDTO;

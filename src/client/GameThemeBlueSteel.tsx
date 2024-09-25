@@ -1,7 +1,7 @@
 import { createTheme, rem } from '@mantine/core';
 
 
-export const GameTheme = createTheme({
+export const GameThemeBlueSteel = createTheme({
 
     fontFamily : '\'Helvetica Neue Bold\', Arial, sans-serif',
 

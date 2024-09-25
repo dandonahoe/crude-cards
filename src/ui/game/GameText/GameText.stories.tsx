@@ -18,6 +18,5 @@ type Story = StoryObj<typeof meta>;
 export const Primary : Story = {
     args : {
         children : 'CrudeCards Text', // Example ReactNode as a string
-
     },
 };
