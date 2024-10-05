@@ -39,4 +39,4 @@ ENV PORT=8080
 
 # todo - run multiple apps here?
 # Command to run the application
-CMD ["pnpm", "run", "start:storybook"]
+CMD ["pnpm", "start:storybook"]

@@ -8,9 +8,9 @@ export const GameContext = createContext<GameContextType>({
     playerDealtCard : null,
     currentPlayer   : null,
     headerHeight    : 0,
-    popupTypeId     : null,
     playerCards     : [],
     dealerCards     : [],
+    popupType       : null,
     gameState       : GameStateDTO.Default,
     isDealer        : false,
 });

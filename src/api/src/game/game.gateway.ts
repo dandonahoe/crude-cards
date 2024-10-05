@@ -20,6 +20,7 @@ import { StartGameDTO } from './dtos/start-game.dto';
 import { LeaveGameDTO } from './dtos/leave-game.dto';
 import { JoinGameDTO } from './dtos/join-game.dto';
 import { NextHandDTO } from './dtos/next-hand.dto';
+import { LogRelayDTO } from './dtos/log-relay.dto';
 import { GameService } from './game.service';
 import { Server, Socket } from 'socket.io';
 import { corsPolicy } from './Cors';
@@ -79,6 +80,16 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         return this.gameService.createGame(this.server, socket, createGame);
     }
 
+    @SubscribeMessage(WebSocketEventType.LogRelay)
+    @AllowPlayerTypes(PlayerType.Player, PlayerType.Visitor, PlayerType.Unknown)
+    public async logClient(
+        @MessageBody(new ZodValidationPipe(LogRelayDTO.Schema))
+        logRelay: LogRelayDTO,
+    ) : P<unknown> {
+        return this.log.info(`CLIENT: ${logRelay.message}`, logRelay.payload);
+    }
+
+
     @SubscribeMessage(WebSocketEventType.StartGame)
     public async startGame(
         @ConnectedSocket()
@@ -103,7 +114,8 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     ) : P<unknown> {
         this.log.silly('GameGateway::joinGame', { joinGame });
 
-        return this.gameService.joinGame(this.server, socket, joinGame, 'Joining via WebSocketEventType.JoinGame');
+        return this.gameService.joinGame(
+            this.server, socket, joinGame, 'Joining via WebSocketEventType.JoinGame');
     }
 
     @SubscribeMessage(WebSocketEventType.LeaveGame)

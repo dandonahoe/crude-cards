@@ -4,12 +4,12 @@ import { ScreenSize } from '../constant/framework/ScreenSize';
 import { createContext } from 'react';
 
 
-export const AppContext = createContext<AppContextModel>({
+export const DefaultAppContext : AppContextModel = Object.freeze({
 
+    isDebugging : false,
 
     screenSize : ScreenSize.Desktop,
-    colorTheme : ColorTheme.Light,
-
+    colorTheme : ColorTheme.Dark,
 
     isDesktop : true,
     isMobile  : false,
@@ -21,7 +21,9 @@ export const AppContext = createContext<AppContextModel>({
     networkStatus   : { online : true },
     isIdle          : false,
     os              : 'undetermined',
-});
+} as const);
+
+export const AppContext = createContext<AppContextModel>(DefaultAppContext);
 
 // Shorthand
 export const App = AppContext;

@@ -1,5 +1,6 @@
 import { Player } from './player/player.entity';
 import { Game } from './game/game.entity';
+import { Card } from './card/card.entity';
 
 
 type NullableString = string | null;
@@ -32,6 +33,11 @@ export enum CookieType {
 
     // Fallback or unrecognized cookie type.
     Unknown = 'Unknown',
+}
+
+export interface GameDeck {
+    blackCards : Card[]
+    whiteCards : Card[]
 }
 
 // Interface representing the disconnection state of a player.

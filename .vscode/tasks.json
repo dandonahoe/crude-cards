@@ -15,6 +15,18 @@
                 "reveal": "always",
                 "panel": "shared"
             }
+        },
+        {
+            "label": "close-terminal",
+            "type": "shell",
+            "command": "echo -e '\\033]2;\\007'",
+            "presentation": {
+                "reveal": "never",
+                "panel": "dedicated",
+                "showReuseMessage": false,
+                "clear": true
+            },
+            "problemMatcher": []
         }
     ]
 }
