@@ -1,3 +1,11 @@
+## [1.0.44](https://github.com/dandonahoe/crude-cards/compare/v1.0.43...v1.0.44) (2024-10-05)
+
+
+### Features
+
+* **storybook:** added storybook stories ([d911854](https://github.com/dandonahoe/crude-cards/commit/d9118545fcf677bfe3601348a4fb49898d062ac9))
+* **storybook:** testing ([d5d09b2](https://github.com/dandonahoe/crude-cards/commit/d5d09b21f5c82ab9b99639e44d04098958829698))
+
 ## [1.0.43](https://github.com/dandonahoe/crude-cards/compare/v1.0.42...v1.0.43) (2024-09-23)
 
 
