@@ -41,7 +41,7 @@
         "class-transformer": "^0.5.1",
         "class-validator": "^0.14.1",
         "cli-table3": "^0.6.5",
-        "cookie": "^0.6.0",
+        "cookie": "^0.7.0",
         "deep-freeze-strict": "^1.1.1",
         "js-cookie": "^3.0.5",
         "nest-winston": "^1.9.7",
