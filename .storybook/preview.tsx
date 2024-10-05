@@ -1,10 +1,9 @@
-import { GameTemplate } from '../src/ui/game/GameTemplate/index';
+import { GameTemplate } from '../src/ui/game/template/GameTemplate';
 import { AppScript } from '../src/pages/AppContent/AppScript';
-import {  Flex, rem } from '@mantine/core';
 import { AppProvider } from '../src/client/AppProvider';
-
 import type { Preview } from "@storybook/react";
 import '@mantine/code-highlight/styles.css';
+import { Flex, rem } from '@mantine/core';
 import '@mantine/notifications/styles.css';
 import '@mantine/spotlight/styles.css';
 import '@mantine/tiptap/styles.css';
@@ -15,7 +14,7 @@ import React from "react";
 
 const preview: Preview = {
     decorators: [
-        (Story, context) => (
+        (Story, context) =>
             <AppProvider>
                 <AppScript />
                 <GameTemplate appId='app-alpha'>
@@ -23,8 +22,7 @@ const preview: Preview = {
                         <Story {...context} />
                     </Flex>
                 </GameTemplate>
-            </AppProvider>
-        ),
+            </AppProvider>,
     ],
     parameters: {
         controls: {

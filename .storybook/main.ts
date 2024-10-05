@@ -11,7 +11,7 @@ const config: StorybookConfig = {
         "@storybook/addon-essentials",
         "@chromatic-com/storybook",
         "@storybook/addon-interactions",
-        "storybook-css-modules", // 👈 The addon registered here
+        "storybook-css-modules",
     ],
     framework: {
         name: "@storybook/nextjs",

@@ -1,6 +1,5 @@
 import { CustomPageProps } from '../type/framework/template/CustomPageProps';
-import { GameTemplate } from '../ui/game/GameTemplate/index';
-
+import { GameTemplate } from '../ui/game/template/GameTemplate';
 import { AppProvider } from '@app/client/AppProvider';
 import { AppScript } from './AppContent/AppScript';
 import '@mantine/code-highlight/styles.css';
