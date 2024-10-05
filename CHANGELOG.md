@@ -1,3 +1,10 @@
+## [1.0.45](https://github.com/dandonahoe/crude-cards/compare/v1.0.44...v1.0.45) (2024-10-05)
+
+
+### Features
+
+* **sb:** reorganization of ui in repo to reflect sotrybook ([cde5630](https://github.com/dandonahoe/crude-cards/commit/cde5630b62de0f320fb43ce970fd9ef9fb185a05))
+
 ## [1.0.44](https://github.com/dandonahoe/crude-cards/compare/v1.0.43...v1.0.44) (2024-10-05)
 
 
