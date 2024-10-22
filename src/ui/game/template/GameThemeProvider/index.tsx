@@ -10,7 +10,7 @@ export const GameThemeProvider : RFC<Props> = ({
     browserTheme, children,
 }) => {
 
-    debugger;
+    // debugger;
 
     switch(browserTheme) {
 
