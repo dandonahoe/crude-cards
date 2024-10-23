@@ -1,4 +1,5 @@
 import { GameBoxCenteredProps, GameBoxDefaultProps, GameBoxType, Props } from './type';
+import { CardColor } from '../../../../api/src/constant/card-color.enum';
 import { App } from '../../../AppContext';
 import { Box } from '@mantine/core';
 import { RFC } from '@app/ui/type';
@@ -7,6 +8,7 @@ import { useContext } from 'react';
 
 export const GameBox : RFC<Props> = ({
     type = GameBoxType.Default,
+    color = CardColor.Black,
     size = 'md',
     children,
 }) => {
@@ -24,7 +26,9 @@ export const GameBox : RFC<Props> = ({
     switch(type) {
         case GameBoxType.Default:
             return (
-                <Box {...commonProps}>
+                <Box
+                    c={color}
+                    {...commonProps}>
                     {children}
                 </Box>
             );
@@ -33,6 +37,7 @@ export const GameBox : RFC<Props> = ({
             return (
                 <Box
                     {...commonProps}
+                    c={color}
                     ta='center'>
                     {children}
                 </Box>
