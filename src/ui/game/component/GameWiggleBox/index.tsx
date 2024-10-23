@@ -4,7 +4,7 @@ import seedrandom from 'seedrandom';
 import { RFC } from '../../../type';
 import { useContext } from 'react';
 import { Props } from './type';
-import { useId } from '@mantine/hooks';
+// import { GameText } from '../GameText';
 
 
 export const GameWiggleBox : RFC<Props> = ({
@@ -14,16 +14,14 @@ export const GameWiggleBox : RFC<Props> = ({
     cardOverlapFactor    = 40,
     wiggleFactor         = 6,
     tiltFactor           = 8,
-    id                   = '',
+    id : wiggleBoxId,
 }) => {
 
-    const unique = useId();
+    const wiggleSeed = `id(${wiggleBoxId})-ind(${index})`;
 
-    // stops random wobbling on rerender
-    const rand = seedrandom(`${id}${index}${unique}`);
+    const rand = seedrandom(wiggleSeed);
 
     const { isDebugging } = useContext(App);
-
 
     return (
         <Box
@@ -34,6 +32,12 @@ export const GameWiggleBox : RFC<Props> = ({
                 left   : wiggleFactor * (rand() - 0.5) * 10,
                 top    : -cardOverlapFactor * (index + 1) + rand() * verticleWiggleFactor,
             }}>
+            {/* <GameText>
+                {`WB(${wiggleBoxId})`}
+            </GameText> */}
+            {/* <GameDebugCard
+                wiggleBoxId={wiggleBoxId}
+                wiggleSeed={wiggleSeed} /> */}
             {children}
         </Box>
     );

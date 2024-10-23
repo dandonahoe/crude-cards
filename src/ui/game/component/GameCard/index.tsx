@@ -3,7 +3,6 @@ import { CardDTO } from '../../../../api/src/game/dtos/card.dto';
 import { getBackgroundColor, getCardBorder } from './Logic';
 import renderHtmlAsReact from 'html-react-parser';
 import { Box, Center, rem } from '@mantine/core';
-import { GameWiggleBox } from '../GameWiggleBox';
 import classes from './GameCard.module.css';
 import { useHover } from '@mantine/hooks';
 import { nanoid } from '@reduxjs/toolkit';
@@ -22,7 +21,6 @@ import {
 
 export const GameCard: RFC<Props> = ({
     id, cardType, children, color, onClick, card,
-    hasHoverWiggle = true, index = 0,
 }) => {
     const { hovered: isHovered, ref: refHover } = useHover();
 
@@ -42,21 +40,6 @@ export const GameCard: RFC<Props> = ({
 
         onClick(id, { ...CardDTO.Default, ...card });
     };
-
-    const renderCardWiggle = (
-        id          : string,
-        index       : number,
-        cardContent : ReactNode | ReactNode[],
-    ) =>
-        !hasHoverWiggle
-            ? cardContent
-            : (
-                <GameWiggleBox
-                    id={id}
-                    index={index}>
-                    {cardContent}
-                </GameWiggleBox>
-            );
 
     const renderCardContainer = (
         id : string,
@@ -83,39 +66,29 @@ export const GameCard: RFC<Props> = ({
 
     switch(cardType){
         case GameCardType.Children:
-            return renderCardWiggle(id,
-                index,
-                renderCardContainer(id, children));
+            return renderCardContainer(id, children);
 
         case GameCardType.Stack:
-            return renderCardWiggle(id,
-                index,
-                renderCardContainer(id,
-                    <GameStack>
-                        {children}
-                    </GameStack>,
-                ));
+            return renderCardContainer(id,
+                <GameStack>
+                    {children}
+                </GameStack>,
+            );
 
         case GameCardType.Centered:
-            return renderCardWiggle(id,
-                index,
-                renderCardContainer(id,
-                    <Center>
-                        {children}
-                    </Center>,
-                ));
+            return renderCardContainer(id,
+                <Center>
+                    {children}
+                </Center>,
+            );
 
         case GameCardType.Raw:
-            return renderCardWiggle(id,
-                index,
-                renderCardContainer(id, children));
+            return renderCardContainer(id, children);
 
         case GameCardType.Html:
-            return renderCardWiggle(id,
-                index,
-                renderCardContainer(id,
-                    renderHtmlAsReact(children as string),
-                ));
+            return renderCardContainer(id,
+                renderHtmlAsReact(children as string),
+            );
 
             default:
                 throw new Error(`Unknown card type: ${cardType}`);
