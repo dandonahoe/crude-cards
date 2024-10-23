@@ -1,3 +1,10 @@
+## [1.0.48](https://github.com/dandonahoe/crude-cards/compare/v1.0.47...v1.0.48) (2024-10-23)
+
+
+### Features
+
+* **ui:** link to ui ([83d89f8](https://github.com/dandonahoe/crude-cards/commit/83d89f884f462c8ca4e884200bdaa9c645e8c4df))
+
 ## [1.0.47](https://github.com/dandonahoe/crude-cards/compare/v1.0.46...v1.0.47) (2024-10-23)
 
 
