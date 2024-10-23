@@ -1,10 +1,11 @@
 import { GameSession } from '../game-session/game-session.entity';
 import { CardColor } from '../constant/card-color.enum';
+import { WSE } from '../exceptions/WebSocket.exception';
 import { InjectRepository } from '@nestjs/typeorm';
+import { P } from '../../../type/framework/data/P';
 import { Injectable } from '@nestjs/common';
 import { In, Repository } from 'typeorm';
 import { Card } from './card.entity';
-
 /**
  * This service provides methods to interact with cards in the database.
  * It includes functionalities to find cards by session and select random cards by color.
@@ -24,6 +25,17 @@ export class CardService {
         private readonly cardRepo: Repository<Card>,
     ) {}
 
+    public getCardById = async (id: string) : P<Card | null>=>
+        this.cardRepo.findOneBy({ id });
+
+    public getCardByIdOrExplode = async (id: string) : P<Card> => {
+        const card = await this.getCardById(id);
+
+        if (!card)
+            throw WSE.InternalServerError500(`Card with ID ${id} not found`);
+
+        return card;
+    }
     /**
      * Finds cards associated with a given game session.
      *
