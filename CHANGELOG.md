@@ -1,3 +1,10 @@
+## [1.0.47](https://github.com/dandonahoe/crude-cards/compare/v1.0.46...v1.0.47) (2024-10-23)
+
+
+### Features
+
+* **color:** colorizing the box component ([#133](https://github.com/dandonahoe/crude-cards/issues/133)) ([c995e24](https://github.com/dandonahoe/crude-cards/commit/c995e24670d64dd55f4eb6c57bc288a63d0e247d))
+
 ## [1.0.46](https://github.com/dandonahoe/crude-cards/compare/v1.0.45...v1.0.46) (2024-10-23)
 
 
