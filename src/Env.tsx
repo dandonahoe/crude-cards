@@ -35,8 +35,6 @@ const getValue = <T = string,>(name : string) : T => {
         case 'NEXT_PUBLIC_NEXT_COUNTDOWN_TIMER_DURATION_SECONDS' : return toStringOrExplode(process.env.NEXT_PUBLIC_NEXT_COUNTDOWN_TIMER_DURATION_SECONDS, 'NEXT_PUBLIC_NEXT_COUNTDOWN_TIMER_DURATION_SECONDS')as unknown as T;
 
         case 'NEXT_GOOGLE_GEMINI_API_KEY' : return toStringOrExplode(process.env.NEXT_GOOGLE_GEMINI_API_KEY, 'NEXT_GOOGLE_GEMINI_API_KEY') as unknown as T;
-        case 'NEXT_PUBLIC_PUSHER_CLUSTER' : return toStringOrExplode(process.env.NEXT_PUBLIC_PUSHER_CLUSTER, 'NEXT_PUBLIC_PUSHER_CLUSTER') as unknown as T;
-        case 'NEXT_PUBLIC_PUSHER_KEY'     : return toStringOrExplode(process.env.NEXT_PUBLIC_PUSHER_KEY,     'NEXT_PUBLIC_PUSHER_KEY'    ) as unknown as T;
         case 'NEXT_PUSHER_APP_ID'         : return toStringOrExplode(process.env.NEXT_PUSHER_APP_ID,         'NEXT_PUSHER_APP_ID'        ) as unknown as T;
         case 'NEXT_PUSHER_SECRET'         : return toStringOrExplode(process.env.NEXT_PUSHER_SECRET,         'NEXT_PUSHER_SECRET'        ) as unknown as T;
 

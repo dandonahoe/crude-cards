@@ -22,8 +22,8 @@ RUN pnpm install --frozen-lockfile
 
 # Copy all other files to the working directory
 COPY . .
-RUN pnpm run db:generate
-RUN pnpm run build:frontend
+# RUN pnpm db:generate
+RUN pnpm build:frontend
 
 # Copy all other files to the working directory
 
@@ -46,4 +46,4 @@ ENV PORT=8080
 
 # todo - run multiple apps here?
 # Command to run the application
-CMD ["pnpm", "run", "start:frontend"]
+CMD ["pnpm", "start:frontend"]

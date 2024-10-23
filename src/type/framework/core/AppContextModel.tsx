@@ -5,6 +5,8 @@ import { OS } from '@mantine/hooks';
 
 
 export interface AppContextModel {
+    isDebugging : boolean;
+
     screenSize       : ScreenSize;
     colorTheme       : ColorTheme;
 

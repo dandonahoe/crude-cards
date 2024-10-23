@@ -68,14 +68,15 @@ export class UtilService {
             let gameCode = getRandomGameCode();
 
             if (gameCode.length <= maxLength) {
+
                 const twoDigitNumber = getRandomTwoDigitNumber();
 
                 // Append or prepend the two-digit number
-                gameCode = Math.random() < 0.5 ? `${twoDigitNumber}${gameCode}` : `${gameCode}${twoDigitNumber}`;
+                gameCode = Math.random() < 0.5
+                    ? `${twoDigitNumber}${gameCode}`
+                    : `${gameCode}${twoDigitNumber}`;
 
-                this.log.silly('UtilService::startGame::generated', {
-                    maxLength, maxAttempts, gameCode,
-                });
+                this.log.silly('UtilService::startGame::generated', { maxLength, maxAttempts, gameCode });
 
                 return gameCode;
             }
@@ -94,5 +95,4 @@ export class UtilService {
     }
 }
 
-// Exporting the gameCodes array for testing purposes
 export { gameCodes };

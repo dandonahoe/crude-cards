@@ -61,6 +61,11 @@ export const selectCurrentPlayer = createSelector(
     },
 );
 
+export const selectSessionEndMessage = createSelector(
+    selectGameState,
+    gameState => gameState.game_end_message ?? '[NO MESSAGE]',
+);
+
 export const selectWinner = createSelector(
     selectGameState, selectPlayerLookup,
     (gameState, playerLookup) => {
@@ -89,9 +94,9 @@ export const selectWinnerCard = createSelector(
     },
 );
 
-export const selectPopupTypeId = createSelector(
+export const selectPopupType = createSelector(
     selectGame,
-    game => game.popupTypeId,
+    game => game.popupType,
 );
 
 export const selectIsDealer = createSelector(
@@ -205,6 +210,15 @@ export const selectPlayerCards = createSelector(
     },
 );
 
+export const selectGameComplete = createSelector(
+    selectAllPlayerStatus, selectGameChampion, selectIsPlayerWinner,
+    (allPlayerStatus, gameChampion, isWinner) => ({
+        allPlayerStatus,
+        gameChampion,
+        isWinner,
+    }),
+);
+
 export const selectSelectedCards = createSelector(
     selectGameState, selectCardDeck,
     (gameState, cardDeck) => gameState.selected_card_id_list.map(
@@ -215,4 +229,73 @@ export const selectDealerCards = createSelector(
     selectGameState, selectCardDeck,
     (gameState, cardDeck) => gameState.dealer_card_id_list.map(
         card_id => cardDeck[card_id]),
+);
+
+export const selectGameResults = createSelector(
+    selectPreviousHandDealerCard, selectPreviousHandWinnerCard, selectSessionEndMessage, selectAllPlayerStatus, selectIsPlayerWinner,
+    (previousHandDealerCard, previousHandWinnerCard, sessionEndMessage, allPlayerStatus, isPlayerWinner) => ({
+        previousHandDealerCard, previousHandWinnerCard, sessionEndMessage, allPlayerStatus, isPlayerWinner,
+    }),
+);
+
+/*
+import { selectPlayerWaitStatus, selectIsDealer } from '../../../client/selector/game';
+import { GameStage } from '../../../api/src/constant/game-stage.enum';
+import { GameStackType } from '../GameStack/type';
+import { useSelector } from '@app/client/hook';
+import { GameContext } from '../GameContext';
+import { StatusTable } from './StatusTable';
+import { DealerDeck } from './DealerDeck';
+import { PlayerDeck } from './PlayerDeck';
+import { GameStack } from '../GameStack';
+import { useContext } from 'react';
+
+
+export const GameWaiting = () => {
+
+    const { dealerDealtCard, playerDealtCard, gameState } = useContext(GameContext);
+
+    const { isDealer, playersExceptDealer } = useSelector(selectGameWaitingPage);
+
+    const playerStatusList = useSelector(selectPlayerWaitStatus);
+    const isDealer         = useSelector(selectIsDealer);
+
+    const playersExceptDealer = playerStatusList.filter(playerStatus =>
+        playerStatus.player.id !== gameState.dealer_id);
+
+    if(!dealerDealtCard || !playerDealtCard) {
+        const errorMessage = 'Dealer has not dealt a card';
+
+        console.error(errorMessage, { isDealer, dealerDealtCard, playerDealtCard });
+
+        throw new Error(errorMessage);
+    }
+
+    return (
+        <GameStack type={GameStackType.Centered}>
+            {isDealer
+                ? <DealerDeck dealerDealtCard={dealerDealtCard} />
+                : (<PlayerDeck
+                        dealerDealtCard={dealerDealtCard}
+                        playerDealtCard={playerDealtCard} />)
+            }
+            {gameState.game_stage === GameStage.PlayerPickWhiteCard &&
+                <StatusTable playerStatusList={playersExceptDealer} />
+            }
+        </GameStack>
+    );
+};
+making this work
+*/
+export const selectGameWaitingPage = createSelector(
+    selectPlayerWaitStatus, selectIsDealer, selectGameState,
+    (playerStatusList, isDealer, gameState) => {
+
+        const playersExceptDealer = playerStatusList.filter(playerStatus =>
+            playerStatus.player.id !== gameState.dealer_id) ?? [];
+
+        return {
+            playersExceptDealer, isDealer,
+        };
+    },
 );

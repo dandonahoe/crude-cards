@@ -1,6 +1,7 @@
 import { BaseEntity } from '../framework/BaseEntity';
 import { Entity, Column } from 'typeorm';
 
+
 /**
  * ScoreLog entity representing a log of scores in a game session.
  */
