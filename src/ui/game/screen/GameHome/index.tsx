@@ -11,6 +11,7 @@ import { useState } from 'react';
 
 /** Main Game Home Component */
 export const GameHome = () => {
+
     const dispatch = useDispatch();
     const [gameCode, setGameCode] = useState('');
 

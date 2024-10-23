@@ -10,6 +10,7 @@ export type Props = {
     children        : React.ReactNode | React.ReactNode[];
     onClick        ?: OnClickCard;
     color          ?: CardColor;
+    index          ?: number,
     card           ?: Partial<CardDTO>;
     id              : string;
 };

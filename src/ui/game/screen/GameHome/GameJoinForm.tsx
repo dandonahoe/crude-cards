@@ -27,7 +27,7 @@ export const GameJoinForm = ({
     };
 
     return (
-        (<GameCardStack color={CardColor.White}>
+        <GameCardStack color={CardColor.White}>
             <GameTextCentered color={CardColor.Black}>
                 {'~ or ~'}
             </GameTextCentered>
@@ -37,7 +37,7 @@ export const GameJoinForm = ({
                 <form onSubmit={onJoinGame}>
                     <FocusTrap active={true}>
                         <TextInput
-                            styles={{ input : { textAlign : 'center' } }}
+                            styles={{ input : { textAlign : 'center', backgroundColor : '#fff' } }}
                             onChange={handleGameCodeChange}
                             onKeyDown={handleKeyDown}
                             aria-label='Game Code'
@@ -60,6 +60,6 @@ export const GameJoinForm = ({
                     </Button>
                 </form>
             </Group>
-        </GameCardStack>)
+        </GameCardStack>
     );
 };
