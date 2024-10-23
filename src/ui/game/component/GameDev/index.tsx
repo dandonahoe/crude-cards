@@ -21,7 +21,16 @@ export const GameDev = () =>
                 {'Browse the GitHub Repo.'}
             </a>
             <GameText size='sm'>
-                {'Or don\'t, nerd.'}
+                {'Or.'}
             </GameText>
+            <a
+                href='https://ui.crude.cards'
+                style={{
+                    textDecoration : 'underline',
+                    color          : 'white',
+
+                }}>
+                {'Browse the UI Components.'}
+            </a>
         </GameText>
     </GameStack>
