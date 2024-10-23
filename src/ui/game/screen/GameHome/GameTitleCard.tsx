@@ -1,8 +1,8 @@
 import { GameTextTitle, GameTextSubtitle } from "../../component/GameText";
 import { CardColor } from '../../../../api/src/constant/card-color.enum';
 import { GameBoxType } from "../../component/GameBox/type";
-import { GameCard } from "../../component/GameCard";
 import { GameButton } from "../../component/GameButton";
+import { GameCard } from "../../component/GameCard";
 import { GameBox } from "../../component/GameBox";
 import { GameTitleCardProps } from "./type";
 import { GameCardType } from "../../type";

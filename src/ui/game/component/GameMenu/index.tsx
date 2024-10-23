@@ -15,11 +15,15 @@ export const GameMenu = () => {
     const { gameState, currentPlayer } = useContext(GameContext);
     const finalMenuItems = getFilteredMenuItems(gameState);
 
+    const handleMenutItemClick = (id: string) => {
+        console.log(id);
+        toggle();
+    };
+
     return (
         <Menu
-            // position='top-end'
-            opened={opened}
             onChange={toggle}
+            opened={opened}
             shadow='xl'>
             <Menu.Target >
                 <Burger
@@ -42,7 +46,7 @@ export const GameMenu = () => {
                     }
                     <GameMenuItems
                         menuItems={finalMenuItems}
-                        toggle={toggle} />
+                        toggle={handleMenutItemClick} />
                 </>
             </Menu.Dropdown>
         </Menu>
