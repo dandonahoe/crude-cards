@@ -2,12 +2,13 @@ import { GameWiggleBox } from '../GameWiggleBox';
 import { RFC } from '@app/ui/type';
 import { Props } from './type';
 
+const scale = 1.5;
 
 export const GameDeckLayout: RFC<Props> = ({
-    verticleWiggleFactor = 50,
-    cardOverlapFactor    = 40,
-    wiggleFactor         = 6,
-    tiltFactor           = 8,
+    verticleWiggleFactor = 50 * scale,
+    cardOverlapFactor    = 40 * scale,
+    wiggleFactor         = 6  * scale,
+    tiltFactor           = 8  * scale,
     cards,
     id,
 }) => cards.map((card, index) =>
@@ -17,7 +18,7 @@ export const GameDeckLayout: RFC<Props> = ({
         wiggleFactor={wiggleFactor}
         tiltFactor={tiltFactor}
         id={`${id}-${index}`}
-        key={`card-${index}`}
+        key={`card-${id}-${index}`}
         index={index}>
         {card}
     </GameWiggleBox>)

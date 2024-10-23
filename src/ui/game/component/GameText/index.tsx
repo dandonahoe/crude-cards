@@ -65,9 +65,10 @@ export const GameText: RFC<Props> = ({
         case GameTextType.Title:
             return (
                 <Title
-                    fw={600}
                     className={classes.gameTitle}
                     c={overrideColor ?? color}
+                    fw={600}
+                    pb='lg'
                     fz='xl'
                     {...propsMysterioso}>
                     {children}

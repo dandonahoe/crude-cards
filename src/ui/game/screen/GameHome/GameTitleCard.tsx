@@ -18,7 +18,7 @@ export const GameTitleCard = ({
         id={nanoid()}>
         <GameBox>
             <GameTextTitle>
-                {'Crude Cards 123'}
+                {'CrudeCards'}
             </GameTextTitle>
             <GameTextSubtitle>
                 {'A Party Game for Terrible People.'}
