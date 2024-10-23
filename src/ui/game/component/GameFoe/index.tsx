@@ -6,6 +6,6 @@ import { Props } from './type';
 export const GameFoe : RFC<Props> = ({
     player,
 }) =>
-    <GameText>
+    <GameText size='sm'>
         {player.username}
     </GameText>
