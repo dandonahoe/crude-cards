@@ -13,7 +13,7 @@ export const GameTitleCard = ({
     <GameCardStack color={CardColor.Black}>
         <GameBox>
             <GameTextTitle>
-                {'CrudeCards'}
+                {'Crude Cards'}
             </GameTextTitle>
             <GameTextSubtitle>
                 {'A Party Game for Terrible People.'}

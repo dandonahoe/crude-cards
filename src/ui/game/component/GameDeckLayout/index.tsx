@@ -16,7 +16,7 @@ export const GameDeckLayout: RFC<Props> = ({
         cardOverlapFactor={cardOverlapFactor}
         wiggleFactor={wiggleFactor}
         tiltFactor={tiltFactor}
-        uniqueKey={`${id}-${index}`}
+        id={`${id}-${index}`}
         key={`card-${index}`}
         index={index}>
         {card}

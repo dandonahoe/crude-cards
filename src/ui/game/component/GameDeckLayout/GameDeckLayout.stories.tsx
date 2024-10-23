@@ -2,6 +2,7 @@ import { CardColor } from '../../../../api/src/constant/card-color.enum';
 import { CardDTO } from '../../../../api/src/game/dtos/card.dto';
 import type { Meta, StoryObj } from '@storybook/react';
 import { GameWiggleBox } from '../GameWiggleBox';
+import { Text } from '@mantine/core';
 import { GameDeckLayout } from '.';
 
 
@@ -36,13 +37,15 @@ export const DefaultDeckLayout: Story = {
         tiltFactor           : 8,
         cards                : sampleCards.map((card, index) => (
             <GameWiggleBox
-                key={index}
-                index={index}
-                uniqueKey={`card-${index}`}
                 cardOverlapFactor={40}
+                id={`card-${index}`}
                 wiggleFactor={6}
-                tiltFactor={8}>
-                <div>{card.text}</div>
+                tiltFactor={8}
+                index={index}
+                key={index}>
+                <Text>
+                    {card.text}
+                </Text>
             </GameWiggleBox>
         )),
         id : 'deck-layout-1',

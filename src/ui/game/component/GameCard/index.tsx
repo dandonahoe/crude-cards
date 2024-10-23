@@ -22,7 +22,7 @@ import {
 
 export const GameCard: RFC<Props> = ({
     id, cardType, children, color, onClick, card,
-    hasHoverWiggle = true,
+    hasHoverWiggle = true, index = 0,
 }) => {
     const { hovered: isHovered, ref: refHover } = useHover();
 
@@ -44,19 +44,22 @@ export const GameCard: RFC<Props> = ({
     };
 
     const renderCardWiggle = (
+        id          : string,
+        index       : number,
         cardContent : ReactNode | ReactNode[],
     ) =>
         !hasHoverWiggle
             ? cardContent
             : (
                 <GameWiggleBox
-                    uniqueKey='hover-wiggle'
-                    index={0}>
+                    id={id}
+                    index={index}>
                     {cardContent}
                 </GameWiggleBox>
             );
 
     const renderCardContainer = (
+        id : string,
         cardContent : ReactNode | ReactNode[],
     ) =>
         <Box
@@ -80,34 +83,37 @@ export const GameCard: RFC<Props> = ({
 
     switch(cardType){
         case GameCardType.Children:
-            return renderCardWiggle(
-                renderCardContainer(children));
+            return renderCardWiggle(id,
+                index,
+                renderCardContainer(id, children));
 
         case GameCardType.Stack:
-            return renderCardWiggle(
-                renderCardContainer(
+            return renderCardWiggle(id,
+                index,
+                renderCardContainer(id,
                     <GameStack>
                         {children}
                     </GameStack>,
                 ));
 
         case GameCardType.Centered:
-            return renderCardWiggle(
-                renderCardContainer(
+            return renderCardWiggle(id,
+                index,
+                renderCardContainer(id,
                     <Center>
                         {children}
                     </Center>,
                 ));
 
         case GameCardType.Raw:
-            return renderCardWiggle(
-                renderCardContainer(
-                    children,
-                ));
+            return renderCardWiggle(id,
+                index,
+                renderCardContainer(id, children));
 
         case GameCardType.Html:
-            return renderCardWiggle(
-                renderCardContainer(
+            return renderCardWiggle(id,
+                index,
+                renderCardContainer(id,
                     renderHtmlAsReact(children as string),
                 ));
 
