@@ -1,3 +1,10 @@
+## [1.0.46](https://github.com/dandonahoe/crude-cards/compare/v1.0.45...v1.0.46) (2024-10-23)
+
+
+### Features
+
+* **debug:** removed debugger ([867b260](https://github.com/dandonahoe/crude-cards/commit/867b260477fa5363113395f9fd9106ad57ccce09))
+
 ## [1.0.45](https://github.com/dandonahoe/crude-cards/compare/v1.0.44...v1.0.45) (2024-10-05)
 
 
