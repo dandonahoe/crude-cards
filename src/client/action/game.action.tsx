@@ -31,7 +31,7 @@ export const GameAction = {
     updateGameState      : action<string                >('UpdateGameState'                            ),
     submitFeedback       : action<SubmitFeedbackDTO     >(WebSocketEventType.SubmitFeedback,      false), // No Prefix to Match Server
     updateUsername       : action<UpdateUsernameDTO     >(WebSocketEventType.UpdateUsername,      false), // No Prefix to Match Server
-    resetGameState       : action<void                  >('ResetGameState'                             ),
+    resetGameState       : action<string                >('ResetGameState'                             ),
     timerComplete        : action<TimerCompleteDTO      >('TimerComplete'                              ),
     updateTimer          : action<UpdateTimerDTO        >('UpdateTimer'                                ),
     closePopup           : action<void                  >('ClosePopup'                                 ),

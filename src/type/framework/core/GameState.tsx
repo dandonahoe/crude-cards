@@ -10,6 +10,8 @@ import { TimerType } from '../../../api/src/type';
 //       Just popupType?  I think so.
 
 export interface GameState  {
+    gameId : string;
+
     previousHandDealerCardId : string | null;
     previousHandWinnerCardId : string | null;
 

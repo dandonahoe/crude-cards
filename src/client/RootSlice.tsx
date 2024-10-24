@@ -17,14 +17,27 @@ const slice = createSlice({
 
     extraReducers : builder => {
 
-        builder.addCase(GameAction.resetGameState, state => {
-            Object.values(state.game).forEach(model => {
-                state.game[model.gameId] = {
-                    ...model,
-                    gameState : GameStateDTO.Default,
-                    popupType : null,
-                }
-            });
+        builder.addCase(GameAction.resetGameState, (state, { payload : gameId }) => {
+        // builder.addCase(GameAction.resetGameState, state => {
+
+            debugger;
+
+            console.log(gameId);
+
+            state.game[gameId] = {
+                ...state.game[gameId],
+                gameState : GameStateDTO.Default,
+                popupType : null,
+            }
+
+            // Object.values(state.game).forEach(game => {
+            //     state.game[game.gameId] = {
+            //         ...game,
+            //         gameState : GameStateDTO.Default,
+            //         popupType : null,
+            //     }
+            // });
+
         });
 
         builder.addCase(GameAction.updateGameState, (state, { payload : gameStateString }) => {
