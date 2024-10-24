@@ -12,7 +12,7 @@ import { Env } from '@app/Env';
 const isDebugOverlayVisible = Env.getBoolean('NEXT_PUBLIC_IS_DEBUG_OVERLAY_VISIBLE');
 
 
-export const GameBoard : RFC<Props> = () => {
+export const GameBoard : RFC<Props> = ({ id : _id }) => {
 
     const { isDebugging } = useContext(AppContext);
 

@@ -9,7 +9,9 @@ const {
 
 export const InitialState : CoreAppRoot = {
 
-    // todo: Have different apps init different stores, this is dumb
+    // create strng lookup for game
+
+    // Create game lookup
     game : {
         previousHandDealerCardId : null,
         previousHandWinnerCardId : null,
