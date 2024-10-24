@@ -18,8 +18,13 @@ const slice = createSlice({
     extraReducers : builder => {
 
         builder.addCase(GameAction.resetGameState, state => {
-            state.game.gameState = GameStateDTO.Default;
-            state.game.popupType = null;
+            Object.values(state.game).forEach(model => {
+                state.game[model.gameId] = {
+                    ...model,
+                    gameState : GameStateDTO.Default,
+                    popupType : null,
+                }
+            });
         });
 
         builder.addCase(GameAction.updateGameState, (state, { payload : gameStateString }) => {
