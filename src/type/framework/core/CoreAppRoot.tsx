@@ -1,6 +1,12 @@
-
+import { GamePopupType } from '../../../api/src/constant/game-popup-type.enum';
 import { GameState } from './GameState';
 
+
 export interface CoreAppRoot {
-    game : { [key : string] : GameState }
+    selectedGameId : string;
+    popupType      : GamePopupType;
+
+    game : {
+        [key : string] : GameState,
+    }
 }

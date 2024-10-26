@@ -104,7 +104,10 @@ function* sagaStartUpdateListener(): Saga {
         console.log('New game state received:', newGameState);
         const newGameStateString = JSON.stringify(newGameState);
 
-        yield* sagaDispatch(GameAction.updateGameState(newGameStateString));
+        yield* sagaDispatch(GameAction.updateGameState({
+            gameStateString : newGameStateString,
+            gameId          : '[PLACEHOLDER abc123]',
+        }));
 
         // This can happen when the server is disconnecting a player
         if(newGameState.new_auth_token) {
@@ -134,6 +137,7 @@ function* sagaStartUpdateListener(): Saga {
         yield* sagaDispatch(GameAction.updateTimer({
             timerType : null,
             timeLeft  : 0,
+            gameId    : '[PLACEHOLDER UpdateTimer]',
         }));
 
         const isDealer = yield* select(selectIsDealer);
@@ -149,6 +153,7 @@ function* sagaStartUpdateListener(): Saga {
                     yield* sagaDispatch(GameAction.updateTimer({
                         timerType : TimerType.DealerPickBlackCard,
                         timeLeft  : CountdownTimerDurationSeconds,
+                        gameId    : '[PLACEHOLDER UpdateTimer]',
                     }));
                 }
             } break;
@@ -159,6 +164,7 @@ function* sagaStartUpdateListener(): Saga {
                 yield* sagaDispatch(GameAction.updateTimer({
                     timerType : TimerType.PlayerSelectWhiteCard,
                     timeLeft  : CountdownTimerDurationSeconds,
+                    gameId    : '[PLACEHOLDER UpdateTimer]',
                 }));
             } break;
 
@@ -170,6 +176,7 @@ function* sagaStartUpdateListener(): Saga {
                     yield* sagaDispatch(GameAction.updateTimer({
                         timerType : TimerType.DealerPickWinner,
                         timeLeft  : CountdownTimerDurationSeconds,
+                        gameId    : '[PLACEHOLDER UpdateTimer]',
                     }));
                 }
             } break;
@@ -248,6 +255,7 @@ function* sagaSendWebSocketMessage(): Saga {
     ], onSendWebSocketMessage);
 }
 
+// TODO: See if this is corrected by selectors (lots of errors currently)
 
 function* sagaStartTimer(): Saga {
 
@@ -258,11 +266,12 @@ function* sagaStartTimer(): Saga {
 
         timer = yield* select(selectTimer);
 
-        if (!timer.timerType) continue;
+        if (!timer || !timer.timerType) continue;
 
         if (timer.timeLeft <= 0) {
 
             yield* sagaDispatch(GameAction.updateTimer({
+                gameId    : timer.gameId,
                 timerType : null,
                 timeLeft  : 0,
             }));
@@ -276,6 +285,7 @@ function* sagaStartTimer(): Saga {
 
         yield* sagaDispatch(GameAction.updateTimer({
             ...timer,
+            gameId   : timer.gameId,
             timeLeft : timer.timeLeft - 1,
         }));
     }

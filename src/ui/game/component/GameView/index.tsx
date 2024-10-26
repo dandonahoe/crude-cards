@@ -13,9 +13,13 @@ import { useContext, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { GameError } from "../GameError";
 import { useRouter } from "next/router";
+import { RFC } from '@app/ui/type';
+import { Props } from './type';
 
 
-export const GameView = () => {
+export const GameView : RFC<Props> = ({
+    gameId,
+}) => {
 
     const dispatch = useDispatch();
     const router   = useRouter();
@@ -25,6 +29,7 @@ export const GameView = () => {
 
 
     useEffect(() => {
+
         if (router.pathname === '/game/game_code' && gameCode && gameCode !== gameState.game_code)
             dispatch(GameAction.joinGame({ game_code : gameCode as string }));
 
@@ -35,7 +40,7 @@ export const GameView = () => {
         case GameStage.GameComplete : return <GameComplete />;
         case GameStage.GameResults  : return <GameResults />;
         case GameStage.Lobby        : return <GameLobby />;
-        case GameStage.Home         : return <GameHome />;
+        case GameStage.Home         : return <GameHome gameId={gameId} />;
 
         case GameStage.PlayerPickWhiteCard :
             return isDealer || playerDealtCard
@@ -47,7 +52,7 @@ export const GameView = () => {
                 ? <GameDealerSelection />
                 : <GameLobby />;
 
-        case GameStage.DealerPickWinner    :
+        case GameStage.DealerPickWinner:
             return isDealer
                 ? <GameDealerJudge />
                 : <GameWaiting />;

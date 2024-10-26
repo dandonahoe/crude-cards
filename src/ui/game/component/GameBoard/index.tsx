@@ -12,13 +12,13 @@ import { Env } from '@app/Env';
 const isDebugOverlayVisible = Env.getBoolean('NEXT_PUBLIC_IS_DEBUG_OVERLAY_VISIBLE');
 
 
-export const GameBoard : RFC<Props> = ({ id : _id }) => {
+export const GameBoard : RFC<Props> = ({ id : gameId }) => {
 
     const { isDebugging } = useContext(AppContext);
 
     return (
         <GameStack type={GameStackType.FullHeightCentered}>
-            <GameView />
+            <GameView gameId={gameId} />
             <GameDebug isVisible={isDebugOverlayVisible || isDebugging} />
         </GameStack>
     );

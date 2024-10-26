@@ -1,6 +1,9 @@
 import { GameStateDTO } from '../../../../api/src/game/dtos/game-state.dto';
 import { CardDTO } from '../../../../api/src/game/dtos/card.dto';
 
+export interface Props {
+    gameId : string;
+}
 
 export interface GameViewProps {
     playerDealtCard ?: CardDTO;

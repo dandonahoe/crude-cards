@@ -7,10 +7,15 @@ import { useDispatch } from '@app/client/hook';
 import { ResizeButton } from './ResizeButton';
 import { GameJoinForm } from './GameJoinForm';
 import { useState } from 'react';
+import { RFC } from '@app/ui/type';
+import { Props } from './type';
+import { GameText } from '../../component/GameText';
 
 
 /** Main Game Home Component */
-export const GameHome = () => {
+export const GameHome : RFC<Props> = ({
+    gameId,
+}) => {
 
     const dispatch = useDispatch();
     const [gameCode, setGameCode] = useState('');
@@ -20,6 +25,9 @@ export const GameHome = () => {
 
     return (
         <GameStack type={GameStackType.FullHeightCentered}>
+            <GameText>
+                {`DebugGameId: ${gameId}`}
+            </GameText>
             <ResizeButton />
             <GameDeckLayout
                 id='home-screen'

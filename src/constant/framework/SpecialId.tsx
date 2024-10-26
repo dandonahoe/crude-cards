@@ -3,6 +3,7 @@ import { nanoid } from '@reduxjs/toolkit';
 
 export const SpecialId = {
     InvalidString : 'special-invalid',
+    DefaultGameId : 'default-game-id',
     PlaceholderId : 'special-placeholder',
     EmptyString   : '',
     RandomHash    : (prefix = '[rand]-') : string => `${prefix}${nanoid()}`,

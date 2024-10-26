@@ -9,6 +9,7 @@ import { useDispatch } from '@app/client/hook';
 import { Burger, Menu } from '@mantine/core';
 import { GameText } from '../GameText';
 import { useContext } from 'react';
+import { GamePopupType } from '../../../../api/src/constant/game-popup-type.enum';
 
 
 export const GameMenu = () => {
@@ -22,7 +23,7 @@ export const GameMenu = () => {
     const { gameState, currentPlayer } = useContext(GameContext);
     const finalMenuItems = getFilteredMenuItems(gameState);
 
-    const handleMenutItemClick = (id: string) => {
+    const handleMenutItemClick = (id: GamePopupType) => {
 
         const itemClickData : MenuItemClickedDTO = {
             item_id   : id,

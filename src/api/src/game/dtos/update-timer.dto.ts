@@ -9,8 +9,10 @@ const UpdateTimerDTOSchema = z.object({
 
 export class UpdateTimerDTO implements z.infer<typeof UpdateTimerDTOSchema> {
 
-    public timerType: TimerType | null = null;
-    public timeLeft: number = 0;
+    public timerType : TimerType | null = null;
+    public timeLeft  : number = 0;
+
+    public gameId : string = '';
 
     public constructor(
         timerType: TimerType | null = null,

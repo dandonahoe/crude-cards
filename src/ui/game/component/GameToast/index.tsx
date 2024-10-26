@@ -1,4 +1,4 @@
-import { selectTimer } from '@app/client/selector/game';
+import { selectTimer } from '../../../../client/selector/game';
 import { getTimeConfig } from './sharedLogic';
 import classes from './GameToast.module.css';
 import { TimerSymbol } from './TimerSymbol';
@@ -10,8 +10,11 @@ export const GameToast = () => {
 
     const timer = useSelector(selectTimer);
 
-    if (!timer.timerType)
+    console.log('111')
+    if (!timer?.timerType)
         return null;
+
+    console.log('222')
 
     const { color, jiggleClass } = getTimeConfig(timer.timeLeft);
 

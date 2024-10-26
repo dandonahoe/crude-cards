@@ -1,6 +1,7 @@
 import { GameStateDTO } from '../../../../api/src/game/dtos/game-state.dto';
 import { GameStage } from '../../../../api/src/constant/game-stage.enum';
 import { MenuItems } from './constant';
+import { GamePopupType } from '../../../../api/src/constant/game-popup-type.enum';
 
 
 export const getFilteredMenuItems = (gameState : GameStateDTO) => {
@@ -11,7 +12,9 @@ export const getFilteredMenuItems = (gameState : GameStateDTO) => {
     // If in Home stage, remove "Leave" and "Scoreboard" items
     if (gameState.game_stage === GameStage.Home)
         finalMenuItemList = MenuItems.filter(
-            item => item.id !== 'Leave' && item.id !== 'Scoreboard',
+            item =>
+                item.id    !== GamePopupType.Leave
+                && item.id !== GamePopupType.Scoreboard,
         );
 
     return finalMenuItemList;

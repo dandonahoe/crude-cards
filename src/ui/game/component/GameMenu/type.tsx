@@ -1,10 +1,11 @@
+import { GamePopupType } from '../../../../api/src/constant/game-popup-type.enum';
 import { ReactNode } from 'react';
 
 export interface MenuItemProps {
-    onClick : (id : string) => void;
-    text    : string;
-    icon    : ReactNode;
-    id      : string;
+    onClick ?: (id : string) => void;
+    text     : string;
+    icon     : ReactNode;
+    id       : GamePopupType;
 }
 
 export interface MenuLogicProps {
@@ -23,6 +24,7 @@ export interface GameMenuDropdownProps {
 }
 
 export interface GameMenuItemsProps {
-    menuItems : { id : string; icon : React.ReactNode; text : string }[];
-    toggle    : (is : string) => void;
+    menuItems : MenuItemProps[];
+
+    toggle : (id : GamePopupType) => void;
 }

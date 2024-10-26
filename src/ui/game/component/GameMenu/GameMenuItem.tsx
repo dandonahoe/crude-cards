@@ -5,16 +5,10 @@ import { RFC } from '@app/ui/type';
 
 export const GameMenuItem : RFC<MenuItemProps> = ({
     onClick, id, text, icon,
-}) => {
-
-    const onClickItem = () : void => onClick(id);
-
-    return (
-        <Menu.Item
-            onClick={onClickItem}
-            leftSection={icon}>
-            {text}
-        </Menu.Item>
-    );
-};
+}) =>
+    <Menu.Item
+        onClick={() => onClick?.(id)}
+        leftSection={icon}>
+        {text}
+    </Menu.Item>
 

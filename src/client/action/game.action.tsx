@@ -22,13 +22,18 @@ export interface WebSocketMessage {
     data : unknown;
 }
 
+export interface UpdateGameStateDTO {
+    gameStateString : string;
+    gameId          : string;
+}
+
 export const GameAction = {
     sendWebSocketMessage : action<WebSocketMessage      >('SendWebSocketMessage'                       ),
     dealerPickBlackCard  : action<DealerPickBlackCardDTO>(WebSocketEventType.DealerPickBlackCard, false), // No Prefix to Match Server
     dealerPickWinner     : action<DealerPickWinnerDTO   >(WebSocketEventType.DealerPickWinner,    false), // No Prefix to Match Server
     playerSelectCard     : action<PlayerSelectCardDTO   >(WebSocketEventType.PlayerSelectCard,    false), // No Prefix to Match Server
     menuItemClicked      : action<MenuItemClickedDTO    >(WebSocketEventType.MenuItemClicked,     false), // No Prefix to Match Server
-    updateGameState      : action<string                >('UpdateGameState'                            ),
+    updateGameState      : action<UpdateGameStateDTO    >('UpdateGameState'                            ),
     submitFeedback       : action<SubmitFeedbackDTO     >(WebSocketEventType.SubmitFeedback,      false), // No Prefix to Match Server
     updateUsername       : action<UpdateUsernameDTO     >(WebSocketEventType.UpdateUsername,      false), // No Prefix to Match Server
     resetGameState       : action<string                >('ResetGameState'                             ),

@@ -18,40 +18,29 @@ const slice = createSlice({
     extraReducers : builder => {
 
         builder.addCase(GameAction.resetGameState, (state, { payload : gameId }) => {
-        // builder.addCase(GameAction.resetGameState, state => {
-
             debugger;
 
             console.log(gameId);
 
             state.game[gameId] = {
                 ...state.game[gameId],
-                gameState : GameStateDTO.Default,
-                popupType : null,
+                gameStateDTO : GameStateDTO.Default,
             }
-
-            // Object.values(state.game).forEach(game => {
-            //     state.game[game.gameId] = {
-            //         ...game,
-            //         gameState : GameStateDTO.Default,
-            //         popupType : null,
-            //     }
-            // });
-
         });
 
-        builder.addCase(GameAction.updateGameState, (state, { payload : gameStateString }) => {
-            const gameState = JSON.parse(gameStateString) as GameStateDTO;
+        builder.addCase(GameAction.updateGameState, (state, { payload : { gameStateString, gameId } }) => {
+
+            const gameStateDTO = JSON.parse(gameStateString) as GameStateDTO;
 
             const {
                 new_deck_card_list, player_list,
                 ...rootGameState
-            } = gameState;
+            } = gameStateDTO;
 
             if(rootGameState.game_stage === GameStage.Home) {
-                state.game.previousHandDealerCardId = null;
-                state.game.previousHandWinnerCardId = null;
-                state.game.gameState = gameState;
+                state.game[gameId].previousHandDealerCardId = null;
+                state.game[gameId].previousHandWinnerCardId = null;
+                state.game[gameId].gameStateDTO = gameStateDTO;
 
                 return;
             }
@@ -83,20 +72,20 @@ const slice = createSlice({
             // this lets the players stay on the results screen
             // while the session is being updated by the dealer
             // of the upcoming round
-            if(gameState.game_stage === GameStage.GameResults) {
-                console.log('updateGameState::Results Screen', gameState);
+            if(gameStateDTO.game_stage === GameStage.GameResults) {
+                console.log('updateGameState::Results Screen', gameStateDTO);
 
                 // foofindme
-                console.log('updateGameState::Results Screen', gameState);
-                state.game.previousHandDealerCardId = gameState.dealer_card_id;
-                state.game.previousHandWinnerCardId = gameState.winner_card_id;
+                console.log('updateGameState::Results Screen', gameStateDTO);
+                state.game[gameId].previousHandDealerCardId = gameStateDTO.dealer_card_id;
+                state.game[gameId].previousHandWinnerCardId = gameStateDTO.winner_card_id;
             } else {
                 console.log('updateGameState::Not on GameResults stage');
             }
 
-            state.game.playerLookup  = playerLookup;
+            state.game[gameId].playerLookup  = playerLookup;
 
-            state.game.gameState = {
+            state.game[gameId].gameStateDTO = {
                 ...rootGameState,
                 new_deck_card_list : null,
             };
@@ -105,26 +94,22 @@ const slice = createSlice({
             // it the update generally returns a null deck and
             // it would disappear if we just set it in the main update
             if(newCardDeck)
-                state.game.cardDeck = newCardDeck;
+                state.game[gameId].cardDeck = newCardDeck;
         });
 
         // same thing, but doesnt trigger the counter loop again
         builder.addCase(GameAction.updateTimer, (state, { payload : startTimer }) => {
-            state.game.timer = startTimer;
+            state.game[startTimer.gameId].timer = startTimer;
         });
 
         builder.addCase(GameAction.menuItemClicked, (state, { payload : menuItemClicked }) => {
-            state.game = {
-                ...state.game,
-                popupType : menuItemClicked.item_id as GamePopupType,
-            };
+            debugger;
+
+            state.popupType = menuItemClicked.item_id;
         });
 
         builder.addCase(GameAction.closePopup, state => {
-            state.game = {
-                ...state.game,
-                popupType : null,
-            };
+            state.popupType = GamePopupType.Closed;
         });
     },
 });

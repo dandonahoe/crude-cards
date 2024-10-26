@@ -1,7 +1,8 @@
+import { CardColor } from '../../../../api/src/constant/card-color.enum';
+import { CardDTO } from '../../../../api/src/game/dtos/card.dto';
 import type { Meta, StoryObj } from '@storybook/react';
-import { GamePlayerConfirm } from '.'; // Import the GamePlayerConfirm component
-import { CardColor } from '../../../../api/src/constant/card-color.enum'; // For card color
-import { CardDTO } from '../../../../api/src/game/dtos/card.dto'; // Import CardDTO
+import { GamePlayerConfirm } from '.';
+
 
 const meta: Meta<typeof GamePlayerConfirm> = {
     title     : 'Screens/GamePlayerConfirm',

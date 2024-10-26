@@ -1,33 +1,17 @@
-// import { GameStateDTO } from '../../api/src/game/dtos/game-state.dto';
+import { GamePopupType } from '../../api/src/constant/game-popup-type.enum';
 import { CoreAppRoot } from '@app/type/framework/core/CoreAppRoot';
-
-// const {
-//     player_list : _player_list,
-//     ...gameState
-// } = GameStateDTO.Default;
+import { DefaultGameState } from './GameState';
+import { SpecialId } from './SpecialId';
 
 
 export const InitialState : CoreAppRoot = {
 
-    // create strng lookup for game
+    selectedGameId : SpecialId.DefaultGameId,
+    popupType      : GamePopupType.Unknown,
 
-    game : {},
-    // Create game lookup
-    // game : {
-    //     previousHandDealerCardId : null,
-    //     previousHandWinnerCardId : null,
+    game : {
+        [SpecialId.DefaultGameId] : DefaultGameState,
+    },
 
-    //     popupType : null,
-
-    //     playerLookup : {},
-    //     cardDeck     : {},
-
-    //     timer : {
-    //         timerType : null,
-    //         timeLeft  : 0,
-    //     },
-
-    //     gameState,
-    // },
 } as const;
 

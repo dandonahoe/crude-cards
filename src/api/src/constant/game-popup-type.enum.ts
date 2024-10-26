@@ -6,6 +6,7 @@ export enum GamePopupType {
     Settings   = 'Settings',
     Feedback   = 'Feedback',
     Unknown    = 'Unknown',
+    Closed     = 'Closed',
     Leave      = 'Leave',
 }
 

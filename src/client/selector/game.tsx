@@ -8,7 +8,12 @@ import { intersection } from 'lodash';
 
 export const selectGame = createSelector(
     selectState,
-    state => state.game,
+    state => state.game[state.selectedGameId],
+);
+
+export const selectPopupType = createSelector(
+    selectState,
+    state => state.popupType,
 );
 
 export const selectCardDeck = createSelector(
@@ -44,7 +49,7 @@ export const selectGameState = createSelector(
             .map(key => game.playerLookup[key]);
 
         return {
-            ...game.gameState,
+            ...game.gameStateDTO,
             player_list,
         } as GameStateDTO;
     },
@@ -94,10 +99,6 @@ export const selectWinnerCard = createSelector(
     },
 );
 
-export const selectPopupType = createSelector(
-    selectGame,
-    game => game.popupType,
-);
 
 export const selectIsDealer = createSelector(
     selectGameState,
@@ -238,55 +239,6 @@ export const selectGameResults = createSelector(
     }),
 );
 
-/*
-import { selectPlayerWaitStatus, selectIsDealer } from '../../../client/selector/game';
-import { GameStage } from '../../../api/src/constant/game-stage.enum';
-import { GameStackType } from '../GameStack/type';
-import { useSelector } from '@app/client/hook';
-import { GameContext } from '../GameContext';
-import { StatusTable } from './StatusTable';
-import { DealerDeck } from './DealerDeck';
-import { PlayerDeck } from './PlayerDeck';
-import { GameStack } from '../GameStack';
-import { useContext } from 'react';
-
-
-export const GameWaiting = () => {
-
-    const { dealerDealtCard, playerDealtCard, gameState } = useContext(GameContext);
-
-    const { isDealer, playersExceptDealer } = useSelector(selectGameWaitingPage);
-
-    const playerStatusList = useSelector(selectPlayerWaitStatus);
-    const isDealer         = useSelector(selectIsDealer);
-
-    const playersExceptDealer = playerStatusList.filter(playerStatus =>
-        playerStatus.player.id !== gameState.dealer_id);
-
-    if(!dealerDealtCard || !playerDealtCard) {
-        const errorMessage = 'Dealer has not dealt a card';
-
-        console.error(errorMessage, { isDealer, dealerDealtCard, playerDealtCard });
-
-        throw new Error(errorMessage);
-    }
-
-    return (
-        <GameStack type={GameStackType.Centered}>
-            {isDealer
-                ? <DealerDeck dealerDealtCard={dealerDealtCard} />
-                : (<PlayerDeck
-                        dealerDealtCard={dealerDealtCard}
-                        playerDealtCard={playerDealtCard} />)
-            }
-            {gameState.game_stage === GameStage.PlayerPickWhiteCard &&
-                <StatusTable playerStatusList={playersExceptDealer} />
-            }
-        </GameStack>
-    );
-};
-making this work
-*/
 export const selectGameWaitingPage = createSelector(
     selectPlayerWaitStatus, selectIsDealer, selectGameState,
     (playerStatusList, isDealer, gameState) => {
