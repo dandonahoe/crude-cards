@@ -10,12 +10,12 @@ export const PageGame : RFC = () => {
             <Grid.Col span={4}>
                 <GameBoard id={SpecialId.DefaultGameId} />
             </Grid.Col>
-            {/* <Grid.Col span={4}>
-                <GameBoard id='board-id-beta' />
+            <Grid.Col span={4}>
+                <GameBoard id='board-id-alpha' />
             </Grid.Col>
             <Grid.Col span={4}>
-                <GameBoard id='board-id-charlie' />
-            </Grid.Col> */}
+                <GameBoard id='board-id-beta' />
+            </Grid.Col>
         </Grid>
     );
 }

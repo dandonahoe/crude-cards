@@ -18,10 +18,6 @@ const slice = createSlice({
     extraReducers : builder => {
 
         builder.addCase(GameAction.resetGameState, (state, { payload : gameId }) => {
-            debugger;
-
-            console.log(gameId);
-
             state.game[gameId] = {
                 ...state.game[gameId],
                 gameStateDTO : GameStateDTO.Default,
@@ -104,8 +100,6 @@ const slice = createSlice({
         });
 
         builder.addCase(GameAction.menuItemClicked, (state, { payload : menuItemClicked }) => {
-            debugger;
-
             state.popupType = menuItemClicked.item_id;
         });
 
