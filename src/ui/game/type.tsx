@@ -12,7 +12,7 @@ export interface GameContextType {
     headerHeight    : number;
     playerCards     : CardDTO[];
     dealerCards     : CardDTO[];
-    popupType       : GamePopupType | null;
+    popupType       : GamePopupType;
     gameState       : GameStateDTO;
     isDealer        : boolean;
 }

@@ -7,11 +7,10 @@ import { SpecialId } from './SpecialId';
 export const InitialState : CoreAppRoot = {
 
     selectedGameId : SpecialId.DefaultGameId,
-    popupType      : GamePopupType.Unknown,
+    popupType      : GamePopupType.Closed,
 
     game : {
         [SpecialId.DefaultGameId] : DefaultGameState,
     },
 
 } as const;
-

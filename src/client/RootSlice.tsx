@@ -38,6 +38,7 @@ const slice = createSlice({
             } = gameStateDTO;
 
             if(rootGameState.game_stage === GameStage.Home) {
+
                 state.game[gameId].previousHandDealerCardId = null;
                 state.game[gameId].previousHandWinnerCardId = null;
                 state.game[gameId].gameStateDTO = gameStateDTO;

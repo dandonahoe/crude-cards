@@ -1,6 +1,7 @@
 import { GameStateDTO } from '../../api/src/game/dtos/game-state.dto';
 import { GameContextType } from './type';
 import { createContext } from 'react';
+import { GamePopupType } from '../../api/src/constant/game-popup-type.enum';
 
 
 export const GameContext = createContext<GameContextType>({
@@ -10,7 +11,7 @@ export const GameContext = createContext<GameContextType>({
     headerHeight    : 0,
     playerCards     : [],
     dealerCards     : [],
-    popupType       : null,
+    popupType       : GamePopupType.Closed,
     gameState       : GameStateDTO.Default,
     isDealer        : false,
 });
