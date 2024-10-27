@@ -1,14 +1,22 @@
 import { GameCardListProps } from './type';
-import { GameCardDTO } from '../GameCard';
+import { GameCard } from '../GameCard';
 import { RFC } from '@app/ui/type';
+import { GameCardType } from '../../type';
+import { GameText } from '../GameText';
 
 
 export const GameDeckCards: RFC<GameCardListProps> = ({
     cards, onCardClicked,
 }) =>
     cards.map((card, index) =>
-        <GameCardDTO
+        <GameCard
             onClick={onCardClicked}
+            cardType={GameCardType.Children}
             card={card}
-            key={index} />,
+            key={index}
+            id={`${card.id}_${index}`}>
+            <GameText>
+                {card.text}
+            </GameText>
+        </GameCard>,
     );

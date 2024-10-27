@@ -1,5 +1,4 @@
 import { App } from '../../../AppContext';
-import { useId } from '@mantine/hooks';
 import { Box } from '@mantine/core';
 import seedrandom from 'seedrandom';
 import { RFC } from '../../../type';
@@ -16,9 +15,7 @@ export const GameWiggleBox : RFC<Props> = ({
     id : wiggleBoxId,
 }) => {
 
-    const compId = useId();
-
-    const wiggleSeed = `id(${wiggleBoxId})-ind(${index})-comp(${compId})`;
+    const wiggleSeed = `id(${wiggleBoxId})-ind(${index})`;
 
     const rand = seedrandom(wiggleSeed);
 

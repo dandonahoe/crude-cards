@@ -9,17 +9,19 @@ export const GameHomeHeader = () => {
 
     const { gameState : { error_message } } = useContext(GameContext);
 
-    if(!error_message) return null;
+    if(!error_message)
+        return null;
 
     return (
         <Flex
             justify='center'
             align='center'>
-            {'hello?'}
             <GameCardDTO
+                id='header-error-message'
                 card={{
-                color : CardColor.Black,
-                text  : error_message,
+                    color : CardColor.Black,
+                    text  : error_message,
+                    id    : 'header-error-message',
             }} />
         </Flex>
     );

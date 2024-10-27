@@ -10,7 +10,9 @@ export const InitialState : CoreAppRoot = {
     popupType      : GamePopupType.Closed,
 
     game : {
-        [SpecialId.DefaultGameId] : DefaultGameState,
+        [SpecialId.DefaultGameIdAlpha] : { ...DefaultGameState, gameId : SpecialId.DefaultGameIdAlpha },
+        [SpecialId.DefaultGameIdBeta ] : { ...DefaultGameState, gameId : SpecialId.DefaultGameIdBeta  },
+        [SpecialId.DefaultGameId     ] : { ...DefaultGameState, gameId : SpecialId.DefaultGameId      },
     },
 
 } as const;

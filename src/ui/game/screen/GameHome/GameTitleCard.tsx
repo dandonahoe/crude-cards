@@ -1,12 +1,12 @@
 import { GameTextTitle, GameTextSubtitle } from "../../component/GameText";
 import { CardColor } from '../../../../api/src/constant/card-color.enum';
+import { SpecialId } from '../../../../constant/framework/SpecialId';
 import { GameBoxType } from "../../component/GameBox/type";
 import { GameButton } from "../../component/GameButton";
 import { GameCard } from "../../component/GameCard";
 import { GameBox } from "../../component/GameBox";
 import { GameTitleCardProps } from "./type";
 import { GameCardType } from "../../type";
-import { nanoid } from '@reduxjs/toolkit';
 
 
 export const GameTitleCard = ({
@@ -15,7 +15,7 @@ export const GameTitleCard = ({
     <GameCard
         cardType={GameCardType.Children}
         color={CardColor.Black}
-        id={nanoid()}>
+        id={SpecialId.PlaceholderId}>
         <GameBox>
             <GameTextTitle>
                 {'CrudeCards'}

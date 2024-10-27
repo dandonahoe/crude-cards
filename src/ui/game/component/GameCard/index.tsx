@@ -5,7 +5,6 @@ import renderHtmlAsReact from 'html-react-parser';
 import { Box, Center, rem } from '@mantine/core';
 import classes from './GameCard.module.css';
 import { useHover } from '@mantine/hooks';
-import { nanoid } from '@reduxjs/toolkit';
 import { GameCardType } from '../../type';
 import { GameStack } from '../GameStack';
 import { GameText } from '../GameText';
@@ -101,7 +100,7 @@ export const GameCardChildren: RFC<GameCardChildrenProps> = ({
 }) =>
     <GameCard
         cardType={GameCardType.Children}
-        id={id ?? nanoid()}
+        id={id!}
         onClick={onClick}
         color={color}>
         {children}
@@ -117,7 +116,7 @@ export const GameCardDTO: RFC<GameCardDTOProps> = ({
 
     return (
         <GameCard
-            id={id ?? nanoid()}
+            id={id}
             color={card.color}
             onClick={onClick}
             cardType={GameCardType.Children}>
@@ -130,56 +129,44 @@ export const GameCardDTO: RFC<GameCardDTOProps> = ({
 
 export const GameCardRaw: RFC<GameCardRawProps> = ({
     rawText, color, onClick, id,
-}) => {
-    return (
-        <GameCard
-            cardType={GameCardType.Raw}
-            id={id ?? nanoid()}
-            onClick={onClick}
-            color={color}>
-            {rawText}
-        </GameCard>
-    );
-}
+}) =>
+    <GameCard
+        cardType={GameCardType.Raw}
+        id={id}
+        onClick={onClick}
+        color={color}>
+        {rawText}
+    </GameCard>
 
 export const GameCardHtml: RFC<GameCardHtmlProps> = ({
     rawHtml, color, onClick, id,
-}) => {
-    return (
-        <GameCard
-            cardType={GameCardType.Html}
-            id={id ?? nanoid()}
-            onClick={onClick}
-            color={color}>
-            {rawHtml}
-        </GameCard>
-    );
-}
+}) =>
+    <GameCard
+        cardType={GameCardType.Html}
+        id={id}
+        onClick={onClick}
+        color={color}>
+        {rawHtml}
+    </GameCard>
 
 export const GameCardStack: RFC<GameCardStackProps> = ({
     children, color, onClick, id,
-}) => {
-    return (
-        <GameCard
-            cardType={GameCardType.Stack}
-            id={id ?? nanoid()}
-            onClick={onClick}
-            color={color}>
-            {children}
-        </GameCard>
-    );
-}
+}) =>
+    <GameCard
+        cardType={GameCardType.Stack}
+        id={id ?? '[invalid-id]'}
+        onClick={onClick}
+        color={color}>
+        {children}
+    </GameCard>
 
 export const GameCardCentered: RFC<CardCenteredProps> = ({
     children, color, onClick, id,
-}) => {
-    return (
-        <GameCard
-            cardType={GameCardType.Raw}
-            id={id ?? nanoid()}
-            onClick={onClick}
-            color={color}>
-            {children}
-        </GameCard>
-    );
-}
+}) =>
+    <GameCard
+        cardType={GameCardType.Raw}
+        id={id}
+        onClick={onClick}
+        color={color}>
+        {children}
+    </GameCard>

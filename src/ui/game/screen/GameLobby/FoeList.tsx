@@ -14,7 +14,9 @@ export const FoeList : RFC<FoeListProps> = ({
 }) => {
     if(foes.length === 0)
         return (
-            <GameCardCentered color={CardColor.Black}>
+            <GameCardCentered
+                id='foe-list-empty'
+                color={CardColor.Black}>
                 <GameText>
                     {`No Players Yet, Share Game Code "${gameCode}" to Invite People`}
                 </GameText>

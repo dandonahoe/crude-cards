@@ -27,8 +27,8 @@ export interface GameCardChildrenProps {
 export interface GameCardDTOProps {
     hasWiggle ?: boolean;
     onClick   ?: OnClickCard;
-    card       : Partial<CardDTO>;
-    id        ?: string;
+    card       : CardDTO; // Partial<CardDTO>;
+    id         : string;
 }
 
 export interface GameCardRawProps {
@@ -36,7 +36,7 @@ export interface GameCardRawProps {
     rawText    : string;
     onClick   ?: OnClickCard;
     color      : CardColor;
-    id        ?: string;
+    id        : string;
 }
 
 export interface GameCardHtmlProps {
@@ -44,7 +44,7 @@ export interface GameCardHtmlProps {
     rawHtml    : string;
     onClick   ?: OnClickCard;
     color      : CardColor;
-    id        ?: string;
+    id        : string;
 }
 
 
@@ -61,5 +61,5 @@ export interface CardCenteredProps {
     children   : React.ReactNode | React.ReactNode[];
     onClick   ?: OnClickCard;
     color      : CardColor;
-    id        ?: string;
+    id        : string;
 }
