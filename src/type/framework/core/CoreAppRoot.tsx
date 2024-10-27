@@ -5,7 +5,6 @@ import { GameState } from './GameState';
 export interface CoreAppRoot {
     selectedGameId : string;
     popupType      : GamePopupType;
-
     game : {
         [key : string] : GameState,
     }

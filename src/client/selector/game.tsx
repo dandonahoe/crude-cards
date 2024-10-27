@@ -4,7 +4,10 @@ import { createSelector } from '@reduxjs/toolkit';
 import { PlayerStatus } from '@app/ui/game/type';
 import { selectState } from './common';
 import { intersection } from 'lodash';
+import { CoreAppRoot } from '../../type/framework/core/CoreAppRoot';
 
+
+export const selectGameById = (state : CoreAppRoot, id : string) => state.game[id];
 
 export const selectGame = createSelector(
     selectState,

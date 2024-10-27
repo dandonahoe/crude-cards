@@ -13,7 +13,7 @@ export const DefaultGameState : GameState = {
     gameId                   : SpecialId.DefaultGameId,
 
     timer : {
-        timerType : TimerType.Unknown,
+        timerType : TimerType.Inactive,
         timeLeft  : 0,
         gameId    : SpecialId.DefaultGameId,
     },

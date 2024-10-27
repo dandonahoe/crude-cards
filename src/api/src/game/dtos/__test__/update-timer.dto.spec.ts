@@ -43,7 +43,7 @@ describe('UpdateTimerDTO', () => {
         });
 
         it('should successfully validate and parse a valid null timerType', () => {
-            const dto = new UpdateTimerDTO(null, 120);
+            const dto = new UpdateTimerDTO(TimerType.Inactive, 120);
 
             expect(UpdateTimerDTO.Schema.parse(dto)).toEqual(dto);
         });
@@ -51,7 +51,7 @@ describe('UpdateTimerDTO', () => {
         it('should successfully validate and parse a valid undefined timerType and timeLeft', () => {
             const dto = new UpdateTimerDTO(undefined as unknown as TimerType, undefined as unknown as number);
 
-            expect(UpdateTimerDTO.Schema.parse(dto)).toEqual(new UpdateTimerDTO(null, 0));
+            expect(UpdateTimerDTO.Schema.parse(dto)).toEqual(new UpdateTimerDTO(TimerType.Inactive, 0));
         });
     });
 

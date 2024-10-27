@@ -94,14 +94,15 @@ function* sagaStartUpdateListener(): Saga {
     console.log('Socket channel created');
 
     while (true) {
+        // debugger;
 
         let previousGameState = yield* select(selectGameState);
         console.log('Initial game state:', previousGameState);
 
-        console.log('Waiting for new game state...');
+        console.log('***Waiting for new game state...');
         const newGameState = (yield* take(channelGameUpdateListener)) as GameStateDTO;
+        console.log('***New game state received:', newGameState);
 
-        console.log('New game state received:', newGameState);
         const newGameStateString = JSON.stringify(newGameState);
 
         yield* sagaDispatch(GameAction.updateGameState({
@@ -135,7 +136,7 @@ function* sagaStartUpdateListener(): Saga {
 
         console.log(`State changed to ${newGameState.game_stage}, updating timer`);
         yield* sagaDispatch(GameAction.updateTimer({
-            timerType : null,
+            timerType : TimerType.Inactive,
             timeLeft  : 0,
             gameId    : '[PLACEHOLDER UpdateTimer]',
         }));
@@ -257,7 +258,7 @@ function* sagaSendWebSocketMessage(): Saga {
 
 // TODO: See if this is corrected by selectors (lots of errors currently)
 
-function* sagaStartTimer(): Saga {
+function* _sagaStartTimer(): Saga {
 
     let timer = yield* select(selectTimer);
 
@@ -271,9 +272,9 @@ function* sagaStartTimer(): Saga {
         if (timer.timeLeft <= 0) {
 
             yield* sagaDispatch(GameAction.updateTimer({
-                gameId    : timer.gameId,
-                timerType : null,
+                timerType : TimerType.Inactive,
                 timeLeft  : 0,
+                gameId    : timer.gameId,
             }));
 
             yield* sagaDispatch(GameAction.timerComplete({
@@ -285,8 +286,8 @@ function* sagaStartTimer(): Saga {
 
         yield* sagaDispatch(GameAction.updateTimer({
             ...timer,
-            gameId   : timer.gameId,
             timeLeft : timer.timeLeft - 1,
+            gameId   : timer.gameId,
         }));
     }
 }
@@ -296,44 +297,45 @@ function* sagaTimerComplete(): Saga {
     const timerComplete = yield* takePayload(GameAction.timerComplete);
 
     const currentPlayer = yield* select(selectCurrentPlayer);
-    const isDealer = yield* select(selectIsDealer);
-    const game = yield* select(selectGameState);
+    const isDealer      = yield* select(selectIsDealer     );
+    const game          = yield* select(selectGameState    );
 
     switch (timerComplete.timerType) {
-        case TimerType.DealerPickBlackCard: {
+        case TimerType.DealerPickBlackCard:
             if (isDealer)
                 yield* sagaDispatch(GameAction.dealerPickBlackCard({
                     card_id : game.dealer_card_id_list[0],
                 }));
-        } break;
+        break;
 
-        case TimerType.PlayerSelectWhiteCard: {
+        case TimerType.PlayerSelectWhiteCard:
             if (!isDealer)
                 yield* sagaDispatch(GameAction.playerSelectCard({
                     card_id : currentPlayer?.card_id_list[0] ?? null,
                 }));
-        } break;
+        break;
 
-        case TimerType.DealerPickWinner: {
+        case TimerType.DealerPickWinner:
             if (isDealer)
                 yield* sagaDispatch(GameAction.dealerPickWinner({
                     card_id : game.selected_card_id_list[0],
                 }));
-        } break;
+        break;
     }
 }
 
 
-export const WebSocks = {
+export const WebSockSaga = {
+
     sagaSendWebSocketMessage,
     sagaStartUpdateListener,
     sagaTimerComplete,
-    sagaStartTimer,
+    // sagaStartTimer,
 
     *[Symbol.iterator]() {
         yield this.sagaSendWebSocketMessage;
         yield this.sagaStartUpdateListener;
         yield this.sagaTimerComplete;
-        yield this.sagaStartTimer;
+        // yield this.sagaStartTimer;
     },
 };

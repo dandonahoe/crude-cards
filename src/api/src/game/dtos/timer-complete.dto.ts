@@ -8,9 +8,9 @@ const TimerCompleteDTOSchema = z.object({
 
 export class TimerCompleteDTO implements z.infer<typeof TimerCompleteDTOSchema> {
 
-    public timerType: TimerType | null = null;
+    public timerType: TimerType = TimerType.Inactive;
 
-    public constructor(timerType: TimerType | null = null) {
+    public constructor(timerType: TimerType = TimerType.Inactive) {
         this.timerType = timerType;
     }
 

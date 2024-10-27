@@ -10,7 +10,7 @@ export const GameToast = () => {
 
     const timer = useSelector(selectTimer);
 
-    if (!timer?.timerType)
+    if (!timer.timerType)
         return null;
 
     const { color, jiggleClass } = getTimeConfig(timer.timeLeft);

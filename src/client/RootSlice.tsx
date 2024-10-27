@@ -25,6 +25,7 @@ const slice = createSlice({
         });
 
         builder.addCase(GameAction.updateGameState, (state, { payload : { gameStateString, gameId } }) => {
+            debugger;
 
             const gameStateDTO = JSON.parse(gameStateString) as GameStateDTO;
 
@@ -96,7 +97,17 @@ const slice = createSlice({
 
         // same thing, but doesnt trigger the counter loop again
         builder.addCase(GameAction.updateTimer, (state, { payload : startTimer }) => {
-            state.game[startTimer.gameId].timer = startTimer;
+
+            if(state.game[startTimer.gameId].timer.gameId === startTimer.gameId
+                && state.game[startTimer.gameId].timer.timerType === startTimer.timerType
+                && state.game[startTimer.gameId].timer.timeLeft === startTimer.timeLeft)
+
+                return;
+
+            state.game[startTimer.gameId] = {
+                ...state.game[startTimer.gameId],
+                timer : startTimer,
+            };
         });
 
         builder.addCase(GameAction.menuItemClicked, (state, { payload : menuItemClicked }) => {

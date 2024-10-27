@@ -22,6 +22,9 @@ export enum TimerType {
     // Timer for the stage where the dealer picks a winning white card.
     DealerPickWinner = 'DealerPickWinner',
 
+    // Not in use and not timing anything
+    Inactive = 'Inactive',
+
     // Fallback or unrecognized timer type.
     Unknown = 'Unknown',
 }

@@ -9,17 +9,17 @@ const UpdateTimerDTOSchema = z.object({
 
 export class UpdateTimerDTO implements z.infer<typeof UpdateTimerDTOSchema> {
 
-    public timerType : TimerType | null = null;
+    public timerType : TimerType = TimerType.Inactive;
     public timeLeft  : number = 0;
 
     public gameId : string = '';
 
     public constructor(
-        timerType: TimerType | null = null,
+        timerType: TimerType = TimerType.Inactive,
         timeLeft: number = 0,
     ) {
         if (timerType !== undefined) this.timerType = timerType;
-        if (timeLeft !== undefined) this.timeLeft = timeLeft;
+        if (timeLeft  !== undefined) this.timeLeft = timeLeft;
     }
 
     public static Schema = UpdateTimerDTOSchema;
