@@ -14,7 +14,7 @@ export const GameResultsHeader = () => {
     const isWinner = useSelector(selectIsPlayerWinner);
     const winner   = useSelector(selectWinner);
 
-    const { isDealer } = useContext(GameContext);
+    const { isDealer } = useContext(GameBoardContext);
     const dispatch = useDispatch();
 
     const handleNextHand = () => dispatch(GameAction.nextHand({}));

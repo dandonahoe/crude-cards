@@ -10,7 +10,7 @@ import { useContext } from 'react';
 
 export const GameWaiting = () => {
 
-    const { dealerDealtCard, playerDealtCard, gameState } = useContext(GameContext);
+    const { dealerDealtCard, playerDealtCard, gameState } = useContext(GameBoardContext);
     const { playersExceptDealer, isDealer } = useSelector(selectGameWaitingPage);
 
     if(!dealerDealtCard || !playerDealtCard) {

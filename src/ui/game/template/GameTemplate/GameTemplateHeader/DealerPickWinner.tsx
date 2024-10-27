@@ -8,7 +8,7 @@ import { useContext } from 'react';
 
 export const DealerPickWinner = () => {
 
-    const { dealerDealtCard, isDealer } = useContext(GameContext);
+    const { dealerDealtCard, isDealer } = useContext(GameBoardContext);
 
     if(!isDealer)
         return (

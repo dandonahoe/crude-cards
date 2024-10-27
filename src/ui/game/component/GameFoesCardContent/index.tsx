@@ -10,7 +10,7 @@ import { Props } from './type';
 
 export const GameFoesCardContent: RFC<Props> = ({ foes }) => {
 
-    const { gameState } = useContext(GameContext);
+    const { gameState } = useContext(GameBoardContext);
 
     return (
         <GameStack type={GameStackType.Centered}>

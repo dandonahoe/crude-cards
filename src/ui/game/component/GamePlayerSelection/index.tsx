@@ -9,7 +9,7 @@ import { useContext } from 'react';
 
 export const GamePlayerSelection = () => {
 
-    const { playerCards, playerDealtCard } = useContext(GameContext);
+    const { playerCards, playerDealtCard } = useContext(GameBoardContext);
     const dispatch = useDispatch();
 
     const handlePlayWhiteCard = (id : string) =>

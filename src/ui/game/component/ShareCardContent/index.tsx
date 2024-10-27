@@ -11,7 +11,7 @@ import { GameShare } from '../GameShare';
 
 export const ShareCardContent = () => {
 
-    const { gameState } = useContext(GameContext);
+    const { gameState } = useContext(GameBoardContext);
 
     const [isCopied, setCopied] = useState(false);
 

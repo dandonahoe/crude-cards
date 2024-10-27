@@ -1,4 +1,3 @@
-import { selectCurrentPlayer, selectGameState, selectIsDealer, selectTimer } from '../selector/game';
 import { WebSocketEventType } from '../../api/src/constant/websocket-event.enum';
 import { call, delay, select, take, takeEvery } from 'typed-redux-saga';
 import { GameStateDTO } from '../../api/src/game/dtos/game-state.dto';
@@ -14,6 +13,11 @@ import { sagaDispatch } from '..';
 import Router from 'next/router';
 import Cookies from 'js-cookie';
 import { Env } from '@app/Env';
+import { SpecialId } from '../../constant/framework/SpecialId';
+import {
+    selectCurrentPlayerByGameId, selectTimerByGameId,
+    selectGameStateByGameId, selectIsDealerByGameId,
+} from '../selector/game';
 
 
 let socket: Socket | null = null;
@@ -94,9 +98,12 @@ function* sagaStartUpdateListener(): Saga {
     console.log('Socket channel created');
 
     while (true) {
-        // debugger;
+        debugger;
 
-        let previousGameState = yield* select(selectGameState);
+        let previousGameState = yield* select(state => selectGameStateByGameId(state, SpecialId.DefaultGameId));
+
+        debugger;
+
         console.log('Initial game state:', previousGameState);
 
         console.log('***Waiting for new game state...');
@@ -141,7 +148,7 @@ function* sagaStartUpdateListener(): Saga {
             gameId    : '[PLACEHOLDER UpdateTimer]',
         }));
 
-        const isDealer = yield* select(selectIsDealer);
+        const isDealer = yield* select(state => selectIsDealerByGameId(state, SpecialId.DefaultGameId));
         console.log('Is dealer:', isDealer);
 
         switch (newGameState.game_stage) {
@@ -260,12 +267,12 @@ function* sagaSendWebSocketMessage(): Saga {
 
 function* _sagaStartTimer(): Saga {
 
-    let timer = yield* select(selectTimer);
+    let timer = yield* select(state => selectTimerByGameId(state, SpecialId.DefaultGameId));
 
     while (true) {
         yield delay(1000);
 
-        timer = yield* select(selectTimer);
+        timer = yield* select(state => selectTimerByGameId(state, SpecialId.DefaultGameId));
 
         if (!timer || !timer.timerType) continue;
 
@@ -296,9 +303,9 @@ function* sagaTimerComplete(): Saga {
 
     const timerComplete = yield* takePayload(GameAction.timerComplete);
 
-    const currentPlayer = yield* select(selectCurrentPlayer);
-    const isDealer      = yield* select(selectIsDealer     );
-    const game          = yield* select(selectGameState    );
+    const currentPlayer = yield* select(state => selectCurrentPlayerByGameId(state, SpecialId.DefaultGameId));
+    const isDealer      = yield* select(state => selectIsDealerByGameId(     state, SpecialId.DefaultGameId));
+    const game          = yield* select(state => selectGameStateByGameId(    state, SpecialId.DefaultGameId));
 
     switch (timerComplete.timerType) {
         case TimerType.DealerPickBlackCard:

@@ -1,19 +1,17 @@
-import { GamePopupType } from '../../api/src/constant/game-popup-type.enum';
-import { GameStateDTO } from '../../api/src/game/dtos/game-state.dto';
+import { GameStateFrontEndDTO } from '../../type/framework/core/GameState';
 import { PlayerDTO } from '../../api/src/game/dtos/player.dto';
 import { CardDTO } from '../../api/src/game/dtos/card.dto'
 
 export type OnClickCard = (id : string, card ?: CardDTO) => unknown;
 
-export interface GameContextType {
+export interface GameBoardContextType {
     dealerDealtCard : CardDTO   | null;
     playerDealtCard : CardDTO   | null;
     currentPlayer   : PlayerDTO | null;
     headerHeight    : number;
+    gameStateDTO    : GameStateFrontEndDTO;
     playerCards     : CardDTO[];
     dealerCards     : CardDTO[];
-    popupType       : GamePopupType;
-    gameState       : GameStateDTO;
     isDealer        : boolean;
 }
 

@@ -7,7 +7,7 @@ import { useContext } from 'react';
 
 export const DealerPickBlackCard : RFC = () => {
 
-    const { isDealer } = useContext(GameContext);
+    const { isDealer } = useContext(GameBoardContext);
 
     if(!isDealer) return null;
 

@@ -14,7 +14,7 @@ import { useContext } from 'react';
 
 export const HeaderContent = () => {
 
-    const { gameState } = useContext(GameContext);
+    const { gameState } = useContext(GameBoardContext);
 
     const isDealer = useSelector(selectIsDealer);
 

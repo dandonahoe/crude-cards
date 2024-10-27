@@ -12,7 +12,7 @@ export const GameMenuDropdown: RFC<GameMenuDropdownProps> = ({
     toggle,
 }) => {
 
-    const { gameState, currentPlayer } = useContext(GameContext);
+    const { gameState, currentPlayer } = useContext(GameBoardContext);
     const finalMenuItems = getFilteredMenuItems(gameState);
 
     return (

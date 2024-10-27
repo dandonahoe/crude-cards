@@ -7,7 +7,7 @@ import { useContext } from 'react';
 
 export const GamePopup = () => {
 
-    const { popupType } = useContext(GameContext);
+    const { popupType } = useContext(GameBoardContext);
     const dispatch = useDispatch();
 
     if ([GamePopupType.Closed, GamePopupType.Unknown].includes(popupType!))

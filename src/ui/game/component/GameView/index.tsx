@@ -1,5 +1,6 @@
 import { GameStage } from '../../../../api/src/constant/game-stage.enum';
 import { GameDealerSelection } from "../../screen/GameDealerSelection";
+import { GameBoardContext } from '../GameBoard/GameBoardContext';
 import { GameDealerJudge } from "../../screen/GameDealerJudge";
 import { GamePlayerSelection } from "../GamePlayerSelection";
 import { GameAction } from "@app/client/action/game.action";
@@ -8,7 +9,6 @@ import { GameResults } from "../../screen/GameResults";
 import { GameWaiting } from "../../screen/GameWaiting";
 import { GameLobby } from "../../screen/GameLobby";
 import { GameHome } from "../../screen/GameHome";
-import { GameContext } from "../../GameContext";
 import { useContext, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { GameError } from "../GameError";
@@ -24,14 +24,20 @@ export const GameView : RFC<Props> = ({
     const dispatch = useDispatch();
     const router   = useRouter();
 
-    const { gameState, isDealer, playerDealtCard } = useContext(GameContext);
+    const { gameState, isDealer, playerDealtCard } = useContext(GameBoardContext);
     const { gameCode } = router.query;
-
 
     useEffect(() => {
 
-        if (router.pathname === '/game/game_code' && gameCode && gameCode !== gameState.game_code)
-            dispatch(GameAction.joinGame({ game_code : gameCode as string }));
+        const ifChangingGameUrl = () =>
+            router.pathname === '/game/[game_code]' // todo: make constant
+            && gameCode
+            && gameCode !== gameState.game_code;
+
+        if (ifChangingGameUrl())
+            dispatch(GameAction.joinGame({
+                game_code : gameCode as string,
+            }));
 
     }, [router.pathname, gameCode, gameState.game_code, dispatch]);
 

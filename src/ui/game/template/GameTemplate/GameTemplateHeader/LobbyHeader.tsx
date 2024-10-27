@@ -15,7 +15,7 @@ import { useContext } from 'react';
 
 export const LobbyHeader = () => {
 
-    const { gameState } = useContext(GameContext);
+    const { gameState } = useContext(GameBoardContext);
 
     const dispatch = useDispatch();
 

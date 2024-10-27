@@ -1,8 +1,8 @@
+import { GameBoardContext } from '../../component/GameBoard/GameBoardContext';
 import { GameDeckLayout } from '../../component/GameDeckLayout';
 import { GameBoxCentered } from '../../component/GameBox';
 import { selectFoes } from '@app/client/selector/game';
 import { PlayerWarning } from './PlayerWarning';
-import { GameContext } from '../../GameContext';
 import { useSelector } from '@app/client/hook';
 import { ShareCard } from './ShareCard';
 import { FoeList } from './FoeList';
@@ -11,7 +11,7 @@ import { useContext } from 'react';
 
 export const GameLobby = () => {
 
-    const { gameState } = useContext(GameContext);
+    const { gameState } = useContext(GameBoardContext);
 
     if(!gameState.game_code)
         throw new Error('Game Code is not defined');

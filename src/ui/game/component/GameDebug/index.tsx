@@ -15,7 +15,7 @@ export const GameDebug: RFC<Props> = ({ isVisible }) => {
 
     const {
         gameState, isDealer, currentPlayer, dealerDealtCard, playerDealtCard,
-    } = useContext(GameContext);
+    } = useContext(GameBoardContext);
 
     const [authToken, setAuthToken] = useState<string | null>(null);
     const isHost = useSelector(selectIsHost);

@@ -10,7 +10,7 @@ import { useContext } from 'react';
 
 export const UsernameCardContent = () => {
 
-    const { gameState, currentPlayer } = useContext(GameContext);
+    const { gameState, currentPlayer } = useContext(GameBoardContext);
     const dispatch = useDispatch();
 
     const handleTextUpdate = (updatedText: string): CA =>

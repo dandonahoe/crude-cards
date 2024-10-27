@@ -20,7 +20,7 @@ export const GameMenu = () => {
 
     const dispatch = useDispatch();
 
-    const { gameState, currentPlayer } = useContext(GameContext);
+    const { gameState, currentPlayer } = useContext(GameBoardContext);
     const finalMenuItems = getFilteredMenuItems(gameState);
 
     const handleMenutItemClick = (id: GamePopupType) => {

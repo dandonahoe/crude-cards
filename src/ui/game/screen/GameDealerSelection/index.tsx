@@ -8,7 +8,7 @@ import { useContext } from 'react';
 
 export const GameDealerSelection = () => {
 
-    const { dealerCards } = useContext(GameContext);
+    const { dealerCards } = useContext(GameBoardContext);
     const dispatch = useDispatch();
 
     const handleCardClicked = (id : string) =>

@@ -7,16 +7,16 @@ import { OS } from '@mantine/hooks';
 export interface AppContextModel {
     isDebugging : boolean;
 
-    screenSize       : ScreenSize;
-    colorTheme       : ColorTheme;
+    screenSize : ScreenSize;
+    colorTheme : ColorTheme;
 
     isDesktop : boolean;
     isMobile  : boolean;
     isTablet  : boolean;
     isPhone   : boolean;
 
-    tabVisibility   : DocumentVisibilityState;
     isReducedMotion : boolean;
+    tabVisibility   : DocumentVisibilityState;
     isIdle          : boolean;
 
     networkStatus : NetworkStatus;
