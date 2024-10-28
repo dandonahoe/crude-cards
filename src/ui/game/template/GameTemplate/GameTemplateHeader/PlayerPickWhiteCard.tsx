@@ -1,22 +1,22 @@
 import { CardColor } from '../../../../../api/src/constant/card-color.enum';
+import { GameBoardContext } from '../../../../GameBoardContext';
 import { GameBanner } from '@app/ui/game/component/GameBanner';
 import { shouldPlayCard, isPlayerWaiting } from './Logic';
 import { GameBox } from '@app/ui/game/component/GameBox';
 import { useContext } from 'react';
-import { GameBoardContext } from '../../../../GameBoardContext';
 
 
 export const PlayerPickWhiteCard = () => {
 
-    const { isDealer, playerDealtCard, dealerDealtCard } = useContext(GameBoardContext);
+    const {
+        isDealer, playerDealtCard, dealerDealtCard,
+    } = useContext(GameBoardContext);
 
     if(isDealer)
-        return (
-            <GameBanner
-                subtitle='Players Picking Card'
-                color={CardColor.White}
-                text='Waiting' />
-        );
+        return <GameBanner
+            subtitle='Players Picking Card'
+            color={CardColor.White}
+            text='Waiting' />
 
     return (
         <GameBox>

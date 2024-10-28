@@ -7,20 +7,21 @@ export interface Props {
 
 export interface GameHomeHandlers {
 
-    sanitizeGameCode : (input    : string                                   ) => string;
-    handleStartGame  : (dispatch : Dispatch<UnknownAction>                  ) => CA;
-    handleJoinGame   : (dispatch : Dispatch<UnknownAction>, gameCode: string) => CA
+    sanitizeGameCode : (input : string) => string;
+
+    handleStartGame  : (dispatch : Dispatch<UnknownAction>, gameCode : string) => CA;
+    handleJoinGame   : (dispatch : Dispatch<UnknownAction>, gameCode : string) => CA
 
     handleKeyDown : (
         dispatch : Dispatch<UnknownAction>,
-        e        : React.KeyboardEvent<HTMLInputElement>,
+        evt      : React.KeyboardEvent<HTMLInputElement>,
         gameCode : string,
     ) => CA;
 }
 
 
 export interface GameJoinFormProps {
-    setGameCode : (code : string) => void;
+    setGameCode : (gameCode : string) => void;
     onJoinGame  : () => void;
     gameCode    : string;
 }

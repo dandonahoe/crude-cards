@@ -1,6 +1,6 @@
+import { selectIsHostByGameId, selectPlayerListByGameId } from '../../../../../client/selector/game';
 import { GameStage } from '../../../../../api/src/constant/game-stage.enum';
 import { CardColor } from '../../../../../api/src/constant/card-color.enum';
-import { selectIsHostByGameId, selectPlayerListByGameId } from '../../../../../client/selector/game';
 import { SpecialId } from '../../../../../constant/framework/SpecialId';
 import { GameBoardContext } from '../../../../GameBoardContext';
 import { GameBanner } from '@app/ui/game/component/GameBanner';
@@ -16,11 +16,11 @@ import { useContext } from 'react';
 
 export const LobbyHeader = () => {
 
-    const { gameStateDTO } = useContext(GameBoardContext);
+    const { gameStateDTO : { game_code, game_stage } } = useContext(GameBoardContext);
 
     const dispatch = useDispatch();
 
-    const handleStartGame = (): CA => dispatch(GameAction.startGame({}));
+    const handleStartGame = (): CA => dispatch(GameAction.webStartGame({ game_code }));
 
     const playerList = useSelector(state => selectPlayerListByGameId(state, SpecialId.DefaultGameCode));
     const isHost     = useSelector(state => selectIsHostByGameId(state, SpecialId.DefaultGameCode));
@@ -31,7 +31,7 @@ export const LobbyHeader = () => {
     const playerCount   = playerList.length;
     const needMoreCount = MinimumPlayerCount - playerCount;
 
-    const isDealerPickingBlackCard = () => gameStateDTO.game_stage === GameStage.DealerPickBlackCard;
+    const isDealerPickingBlackCard = () => game_stage === GameStage.DealerPickBlackCard;
     const showHostStartButton      = () => isHost && hasEnoughPlayers();
     const hasEnoughPlayers         = () => !isTooFewPlayers();
     const isTooFewPlayers          = () => playerList.length < MinimumPlayerCount;

@@ -17,9 +17,7 @@ import { RFC } from '@app/ui/type';
 import { Props } from './type';
 
 
-export const GameView : RFC<Props> = ({
-    gameId,
-}) => {
+export const GameView : RFC<Props> = () => {
 
     const dispatch = useDispatch();
     const router   = useRouter();
@@ -35,7 +33,7 @@ export const GameView : RFC<Props> = ({
             && gameCode !== gameStateDTO.game_code;
 
         if (ifChangingGameUrl())
-            dispatch(GameAction.joinGame({
+            dispatch(GameAction.webJoinGame({
                 game_code : gameCode as string,
             }));
 
@@ -46,7 +44,7 @@ export const GameView : RFC<Props> = ({
         case GameStage.GameComplete : return <GameComplete />;
         case GameStage.GameResults  : return <GameResults />;
         case GameStage.Lobby        : return <GameLobby />;
-        case GameStage.Home         : return <GameHome gameId={gameId} />;
+        case GameStage.Home         : return <GameHome />;
 
         case GameStage.PlayerPickWhiteCard :
             return isDealer || playerDealtCard

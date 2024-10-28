@@ -9,11 +9,16 @@ import { useContext } from 'react';
 
 export const GamePlayerSelection = () => {
 
-    const { playerCards, playerDealtCard } = useContext(GameBoardContext);
+    const {
+        playerCards, playerDealtCard, gameStateDTO : { game_code },
+    } = useContext(GameBoardContext);
+
     const dispatch = useDispatch();
 
-    const handlePlayWhiteCard = (id : string) =>
-        dispatch(GameAction.playerSelectCard({ card_id : id }));
+    const handlePlayWhiteCard = (card_id : string) =>
+        dispatch(GameAction.webPlayerSelectCard({
+            game_code, card_id,
+        }));
 
     return (
         <GameStack type={GameStackType.Centered}>

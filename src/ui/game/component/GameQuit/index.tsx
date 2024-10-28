@@ -11,11 +11,11 @@ export const GameQuit = () => {
 
     const dispatch = useDispatch();
 
-    const { gameStateDTO : {  game_code }} = useContext(GameBoardContext);
+    const { gameStateDTO : { game_code }} = useContext(GameBoardContext);
 
     const handleClick = () => {
 
-        dispatch(GameAction.leaveGame({ game_code }));
+        dispatch(GameAction.webLeaveGame({ game_code }));
         dispatch(GameAction.closePopup());
     }
 

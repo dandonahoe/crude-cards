@@ -33,16 +33,19 @@ export const GameAction = {
     webDealerPickBlackCard : action<DealerPickBlackCardDTO>(WebSocketEventType.DealerPickBlackCard, false),
     webDealerPickWinner    : action<DealerPickWinnerDTO   >(WebSocketEventType.DealerPickWinner,    false),
     webPlayerSelectCard    : action<PlayerSelectCardDTO   >(WebSocketEventType.PlayerSelectCard,    false),
-    webMenuItemClicked     : action<MenuItemClickedDTO    >(WebSocketEventType.MenuItemClicked,     false),
-    webSubmitFeedback      : action<SubmitFeedbackDTO     >(WebSocketEventType.SubmitFeedback,      false),
-    webUpdateUsername      : action<UpdateUsernameDTO     >(WebSocketEventType.UpdateUsername,      false),
-    webCreateGame          : action<CreateGameDTO         >(WebSocketEventType.CreateGame,          false),
-    webUpdateGame          : action<void                  >(WebSocketEventType.UpdateGame,          false),
-    webStartGame           : action<StartGameDTO          >(WebSocketEventType.StartGame,           false),
-    webLeaveGame           : action<LeaveGameDTO          >(WebSocketEventType.LeaveGame,           false),
-    webNextHand            : action<NextHandDTO           >(WebSocketEventType.NextHand,            false),
-    webJoinGame            : action<JoinGameDTO           >(WebSocketEventType.JoinGame,            false),
-    webLogRelay            : action<LogRelayDTO           >(WebSocketEventType.LogRelay,            false),
+
+    webSubmitFeedback : action<SubmitFeedbackDTO     >(WebSocketEventType.SubmitFeedback,      false),
+    webUpdateUsername : action<UpdateUsernameDTO     >(WebSocketEventType.UpdateUsername,      false),
+    webCreateGame     : action<CreateGameDTO         >(WebSocketEventType.CreateGame,          false),
+    webUpdateGame     : action<void                  >(WebSocketEventType.UpdateGame,          false),
+    webStartGame      : action<StartGameDTO          >(WebSocketEventType.StartGame,           false),
+    webLeaveGame      : action<LeaveGameDTO          >(WebSocketEventType.LeaveGame,           false),
+    webNextHand       : action<NextHandDTO           >(WebSocketEventType.NextHand,            false),
+    webJoinGame       : action<JoinGameDTO           >(WebSocketEventType.JoinGame,            false),
+    webLogRelay       : action<LogRelayDTO           >(WebSocketEventType.LogRelay,            false),
+
+    // ehh???
+    menuItemClicked : action<MenuItemClickedDTO>(WebSocketEventType.MenuItemClicked,     false),
 
     // Regular Actions
     sendWebSocketMessage : action<WebSocketMessage  >('SendWebSocketMessage'),

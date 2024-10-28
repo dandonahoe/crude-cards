@@ -1,5 +1,5 @@
-import { GameBoardContext } from '../../../GameBoardContext';
 import { GameAction } from '../../../../client/action/game.action';
+import { GameBoardContext } from '../../../GameBoardContext';
 import { GameBoxCentered } from '../../component/GameBox';
 import { GameDeck } from '../../component/GameDeck';
 import { useDispatch } from 'react-redux';
@@ -8,11 +8,15 @@ import { useContext } from 'react';
 
 export const GameDealerSelection = () => {
 
-    const { dealerCards } = useContext(GameBoardContext);
     const dispatch = useDispatch();
 
-    const handleCardClicked = (id : string) =>
-        dispatch(GameAction.dealerPickBlackCard({ card_id : id }));
+    const { dealerCards } = useContext(GameBoardContext);
+    const { gameStateDTO : { game_code }} = useContext(GameBoardContext);
+
+    const handleCardClicked = (card_id : string) =>
+        dispatch(GameAction.webDealerPickBlackCard({
+            card_id, game_code,
+        }));
 
     return (
         <GameBoxCentered>

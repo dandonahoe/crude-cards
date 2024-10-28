@@ -9,24 +9,26 @@ export const Logic : GameHomeHandlers = {
     sanitizeGameCode : (input : string) : string =>
         input.replace(/[^a-zA-Z0-9]/g, '').trim().toLowerCase(),
 
-    handleStartGame : (dispatch : Dispatch<UnknownAction>) : CA =>
-        dispatch(GameAction.createGame({})),
+    handleStartGame : (
+        dispatch : Dispatch<UnknownAction>,
+        game_code : string,
+    ) : CA => dispatch(GameAction.webCreateGame({ game_code })),
 
     handleJoinGame : (
         dispatch : Dispatch<UnknownAction>,
-        gameCode : string,
-    ) : CA =>
-        dispatch(GameAction.joinGame({ game_code : gameCode })),
+        game_code : string,
+    ) : CA => dispatch(GameAction.webJoinGame({ game_code })),
 
     handleKeyDown : (
         dispatch : Dispatch<UnknownAction>,
-        e        : React.KeyboardEvent<HTMLInputElement>,
+        evt      : React.KeyboardEvent<HTMLInputElement>,
         gameCode : string,
     ) : CA => {
 
-        e.preventDefault();
+        evt.preventDefault();
 
-        if (e.key !== 'Enter') dispatch(GameAction.noOp())
+        if (evt.key !== 'Enter')
+            dispatch(GameAction.noOp())
 
         return Logic.handleJoinGame(dispatch, gameCode);
     },

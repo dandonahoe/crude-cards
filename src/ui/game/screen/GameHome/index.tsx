@@ -6,21 +6,16 @@ import { GameTitleCard } from './GameTitleCard';
 import { useDispatch } from '@app/client/hook';
 import { ResizeButton } from './ResizeButton';
 import { GameJoinForm } from './GameJoinForm';
-import { useState } from 'react';
 import { RFC } from '@app/ui/type';
-import { Props } from './type';
+import { useState } from 'react';
 
-
-/** Main Game Home Component */
-export const GameHome : RFC<Props> = ({
-    gameId : _gameId,
-}) => {
+export const GameHome : RFC = () => {
 
     const dispatch = useDispatch();
-    const [gameCode, setGameCode] = useState('');
+    const [game_code, setGameCode] = useState('');
 
-    const handleStartGame = () => dispatch(GameAction.createGame({}));
-    const handleJoinGame  = () => dispatch(GameAction.joinGame({ game_code : gameCode }));
+    const handleStartGame = () => dispatch(GameAction.webCreateGame({ game_code }));
+    const handleJoinGame  = () => dispatch(GameAction.webJoinGame(  { game_code }));
 
     return (
         <GameStack type={GameStackType.FullHeightCentered}>
@@ -34,7 +29,7 @@ export const GameHome : RFC<Props> = ({
                     <GameJoinForm
                         onJoinGame={handleJoinGame}
                         setGameCode={setGameCode}
-                        gameCode={gameCode}
+                        gameCode={game_code}
                         key='join-form' />,
                 ]}/>
         </GameStack>

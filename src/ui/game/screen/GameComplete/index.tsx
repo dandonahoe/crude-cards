@@ -5,18 +5,22 @@ import { SpecialId } from '../../../../constant/framework/SpecialId';
 import { GameAction } from '../../../../client/action/game.action';
 import { GameBoxCentered, GameBox } from '../../component/GameBox';
 import { GameStatusTable } from '../../component/GameStatusTable';
-import { CA } from '../../../../constant/framework/CoreAction';
+import { GameBoardContext } from '../../../GameBoardContext';
 import { useDispatch, useSelector } from '@app/client/hook';
 import { IconArrowRight } from '@tabler/icons-react';
 import { useViewportSize } from '@mantine/hooks';
 import { Button, Stack } from '@mantine/core';
 import Confetti from 'react-confetti'
+import { useContext } from 'react';
 
 
 export const GameComplete = () => {
 
     const dispatch = useDispatch();
-    const handleExitGame = () : CA => dispatch(GameAction.leaveGame({}));
+
+    const { gameStateDTO : { game_code } } = useContext(GameBoardContext);
+
+    const handleExitGame = () => dispatch(GameAction.webLeaveGame({ game_code }));
 
     const {
         allPlayerStatus, gameChampion, isWinner,

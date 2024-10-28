@@ -10,11 +10,15 @@ import { useContext } from 'react';
 
 export const UsernameCardContent = () => {
 
-    const { gameStateDTO, currentPlayer } = useContext(GameBoardContext);
+    const { currentPlayer, gameStateDTO } = useContext(GameBoardContext);
+
     const dispatch = useDispatch();
 
-    const handleTextUpdate = (updatedText: string): CA =>
-        dispatch(GameAction.updateUsername({ username : updatedText }));
+    const handleTextUpdate = (username: string) : CA =>
+        dispatch(GameAction.webUpdateUsername({
+            game_code : gameStateDTO.game_code,
+            username,
+        }));
 
     const handleTextInputBlur = (): CA => dispatch(GameAction.noOp());
 

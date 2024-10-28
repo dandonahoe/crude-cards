@@ -15,10 +15,12 @@ export const GameResultsHeader = () => {
     const isWinner = useSelector(state => selectIsPlayerWinnerByGameId(state, SpecialId.DefaultGameCode));
     const winner   = useSelector(state => selectWinnerByGameId(state, SpecialId.DefaultGameCode));
 
-    const { isDealer } = useContext(GameBoardContext);
+    const { isDealer, gameStateDTO : { game_code } } = useContext(GameBoardContext);
     const dispatch = useDispatch();
 
-    const handleNextHand = () => dispatch(GameAction.nextHand({}));
+    const handleNextHand = () => dispatch(GameAction.webNextHand({
+        game_code,
+    }));
 
     return (
         <GameStack>
