@@ -26,7 +26,7 @@ export class SockService {
         // todo: get the game code form the url
 
         const socketRequest : SocketRequest = {
-            socketId, authToken, gameCode : 'todo',
+            socketId, authToken,
         };
 
         this.log.silly('SockService::getRequestInfoFromSocket:response', socketRequest);

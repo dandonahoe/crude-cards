@@ -8,6 +8,7 @@ import { CardDTO } from '../api/src/game/dtos/card.dto';
 import { GameAction } from './action/game.action';
 import { createSlice } from '@reduxjs/toolkit';
 import _ from 'lodash';
+import { DefaultGameState } from '../constant/framework/GameState';
 
 
 const slice = createSlice({
@@ -38,6 +39,13 @@ const slice = createSlice({
             } = gameStateDTO;
 
             const gameCode = gameStateDTO.game_code
+
+            if(!state.game[gameCode]) {
+                debugger;
+
+                state.game[gameCode] = DefaultGameState;
+            }
+
 
             if(rootGameState.game_stage === GameStage.Home) {
 

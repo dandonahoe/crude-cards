@@ -54,7 +54,7 @@ if (socket)
                 console.log('connect_error', error.message);
         });
 
-        socket.on(WebSocketEventType.UpdatePlayerValidation, (validation: string) => {
+        socket.on(WebSocketEventType.UpdatePlayerValidation, (validation : string) => {
             console.log('CLIENT GOT: validation', validation);
 
             Cookies.set(CookieType.AuthToken, validation);
