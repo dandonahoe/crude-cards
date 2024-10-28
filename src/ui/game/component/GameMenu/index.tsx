@@ -1,15 +1,15 @@
 import { MenuItemClickedDTO } from '../../../../api/src/game/dtos/menu-item-clicked.dto';
+import { GamePopupType } from '../../../../api/src/constant/game-popup-type.enum';
 import { CardColor } from '../../../../api/src/constant/card-color.enum';
 import { GameAction } from '../../../../client/action/game.action';
+import { GameBoardContext } from '../../../GameBoardContext';
 import { getFilteredMenuItems } from './menuLogic';
 import { GameMenuItems } from './GameMenuItems';
-import { GameContext } from '../../GameContext';
 import { useDisclosure } from '@mantine/hooks';
 import { useDispatch } from '@app/client/hook';
 import { Burger, Menu } from '@mantine/core';
 import { GameText } from '../GameText';
 import { useContext } from 'react';
-import { GamePopupType } from '../../../../api/src/constant/game-popup-type.enum';
 
 
 export const GameMenu = () => {
@@ -20,8 +20,8 @@ export const GameMenu = () => {
 
     const dispatch = useDispatch();
 
-    const { gameState, currentPlayer } = useContext(GameBoardContext);
-    const finalMenuItems = getFilteredMenuItems(gameState);
+    const { gameStateDTO, currentPlayer } = useContext(GameBoardContext);
+    const finalMenuItems = getFilteredMenuItems(gameStateDTO);
 
     const handleMenutItemClick = (id: GamePopupType) => {
 

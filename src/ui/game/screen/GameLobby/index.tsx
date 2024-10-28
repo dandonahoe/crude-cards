@@ -1,7 +1,8 @@
-import { GameBoardContext } from '../../component/GameBoard/GameBoardContext';
+import { SpecialId } from '../../../../constant/framework/SpecialId';
 import { GameDeckLayout } from '../../component/GameDeckLayout';
+import { selectFoesByGameId } from '@app/client/selector/game';
+import { GameBoardContext } from '../../../GameBoardContext';
 import { GameBoxCentered } from '../../component/GameBox';
-import { selectFoes } from '@app/client/selector/game';
 import { PlayerWarning } from './PlayerWarning';
 import { useSelector } from '@app/client/hook';
 import { ShareCard } from './ShareCard';
@@ -11,12 +12,12 @@ import { useContext } from 'react';
 
 export const GameLobby = () => {
 
-    const { gameState } = useContext(GameBoardContext);
+    const { gameStateDTO } = useContext(GameBoardContext);
 
-    if(!gameState.game_code)
+    if(!gameStateDTO.game_code)
         throw new Error('Game Code is not defined');
 
-    const foes = useSelector(selectFoes);
+    const foeList = useSelector(state => selectFoesByGameId(state, SpecialId.DefaultGameId));
 
     return (
         <GameBoxCentered>
@@ -28,14 +29,14 @@ export const GameLobby = () => {
                 tiltFactor={10}
                 cards={[
                     <ShareCard
-                        gameStage={gameState.game_stage}
+                        gameStage={gameStateDTO.game_stage}
                         key='share-card' />,
                     <PlayerWarning
-                        foeCount={foes.length}
+                        foeCount={foeList.length}
                         key='player-warning' />,
                     <FoeList
-                        foes={foes}
-                        gameCode={gameState.game_code}
+                        foes={foeList}
+                        gameCode={gameStateDTO.game_code}
                         key='foe-list' />,
                 ]}/>
         </GameBoxCentered>

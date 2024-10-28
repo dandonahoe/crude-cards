@@ -1,6 +1,6 @@
+import { GameBoardContext } from '../../../GameBoardContext';
 import { getFilteredMenuItems } from './menuLogic';
 import { GameMenuItems } from './GameMenuItems';
-import { GameContext } from '../../GameContext';
 import { GameMenuDropdownProps } from './type';
 import { GameText } from '../GameText';
 import { Menu } from '@mantine/core';
@@ -12,8 +12,8 @@ export const GameMenuDropdown: RFC<GameMenuDropdownProps> = ({
     toggle,
 }) => {
 
-    const { gameState, currentPlayer } = useContext(GameBoardContext);
-    const finalMenuItems = getFilteredMenuItems(gameState);
+    const { gameStateDTO, currentPlayer } = useContext(GameBoardContext);
+    const finalMenuItems = getFilteredMenuItems(gameStateDTO);
 
     return (
         <>

@@ -1,7 +1,7 @@
-import { GameStateDTO } from '../../../../api/src/game/dtos/game-state.dto';
+import { GameStateFrontEndDTO } from '../../../../type/framework/core/GameState';
 
 export interface ShareCardTooltipProps {
-    gameState : GameStateDTO;
-    isCopied  : boolean;
+    gameStateDTO : GameStateFrontEndDTO;
+    isCopied     : boolean;
 
 }

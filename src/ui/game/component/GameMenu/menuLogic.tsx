@@ -1,10 +1,10 @@
-import { GameStateDTO } from '../../../../api/src/game/dtos/game-state.dto';
+import { GamePopupType } from '../../../../api/src/constant/game-popup-type.enum';
+import { GameStateFrontEndDTO } from '../../../../type/framework/core/GameState';
 import { GameStage } from '../../../../api/src/constant/game-stage.enum';
 import { MenuItems } from './constant';
-import { GamePopupType } from '../../../../api/src/constant/game-popup-type.enum';
 
 
-export const getFilteredMenuItems = (gameState : GameStateDTO) => {
+export const getFilteredMenuItems = (gameState : GameStateFrontEndDTO) => {
 
     // Default list of menu items
     let finalMenuItemList = MenuItems;

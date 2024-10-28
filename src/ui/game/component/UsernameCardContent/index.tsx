@@ -1,7 +1,7 @@
 import { GameAction } from '../../../../client/action/game.action';
 import { CA } from '../../../../constant/framework/CoreAction';
+import { GameBoardContext } from '../../../GameBoardContext';
 import { TextInputDebounced } from '../TextInputDebounced';
-import { GameContext } from '../../GameContext';
 import { useDispatch } from '@app/client/hook';
 import { GameStack } from '../GameStack';
 import { GameText } from '../GameText';
@@ -10,7 +10,7 @@ import { useContext } from 'react';
 
 export const UsernameCardContent = () => {
 
-    const { gameState, currentPlayer } = useContext(GameBoardContext);
+    const { gameStateDTO, currentPlayer } = useContext(GameBoardContext);
     const dispatch = useDispatch();
 
     const handleTextUpdate = (updatedText: string): CA =>
@@ -23,7 +23,7 @@ export const UsernameCardContent = () => {
             <GameText>
                 {'Your Name'}
             </GameText>
-            {gameState.hand_number > 0 ?
+            {gameStateDTO.hand_number > 0 ?
                 <GameText>{currentPlayer?.username}</GameText>
              :
                 <TextInputDebounced

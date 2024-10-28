@@ -9,64 +9,77 @@ import { intersection } from 'lodash';
 export const selectGameById = createSelector(
     (state: CoreAppRoot) => state.game,
     (_: CoreAppRoot, gameId: string) => gameId,
+
     (game, gameId) => {
         const selectedGame = game[gameId];
 
         if (!selectedGame) throw new Error('Game not found');
 
         return selectedGame;
-    }
+    },
+);
+
+export const selectIsHostByGameId = createSelector(
+    (state: CoreAppRoot, gameId: string) => selectCurrentPlayerByGameId(state, gameId),
+    (state: CoreAppRoot, gameId: string) => selectGameStateByGameId(    state, gameId),
+
+    (player, rootGameState) => player?.id
+        ? player.id === rootGameState.host_player_id
+        : false,
 );
 
 
 // Updated game state selector by gameId
 export const selectGameStateByGameId = createSelector(
     (state: CoreAppRoot, gameId: string) => selectGameById(state, gameId),
-    (game) => {
+    game => {
         const playerList = Object
             .keys(game.playerLookup)
             .map(key => game.playerLookup[key]);
 
         return {
             ...game.gameStateDTO,
-            player_list: playerList,
+            player_list : playerList,
         } as GameStateDTO;
-    }
+    },
 );
 
 
 // Select card deck by gameId
 export const selectCardDeckByGameId = createSelector(
     (state: CoreAppRoot, gameId: string) => selectGameById(state, gameId),
+
     game => game.cardDeck,
 );
 
 // Timer selector by gameId
 export const selectTimerByGameId = createSelector(
     (state: CoreAppRoot, gameId: string) => selectGameById(state, gameId),
-    game =>
-        game.timer,
+
+    game => game.timer,
 );
 
 // Player lookup selector by gameId
 export const selectPlayerLookupByGameId = createSelector(
     (state: CoreAppRoot, gameId: string) => selectGameById(state, gameId),
-    game =>
-        game.playerLookup,
+
+    game => game.playerLookup,
 );
 
 // Previous hand dealer card by gameId
 export const selectPreviousHandDealerCardByGameId = createSelector(
-    (state: CoreAppRoot, gameId: string) => selectGameById(state, gameId),
+    (state: CoreAppRoot, gameId: string) => selectGameById(        state, gameId),
     (state: CoreAppRoot, gameId: string) => selectCardDeckByGameId(state, gameId),
+
     (game, cardDeck) =>
         cardDeck[game.previousHandDealerCardId!],
 );
 
 // Previous hand winner card by gameId
 export const selectPreviousHandWinnerCardByGameId = createSelector(
-    (state: CoreAppRoot, gameId: string) => selectGameById(state, gameId),
+    (state: CoreAppRoot, gameId: string) => selectGameById(        state, gameId),
     (state: CoreAppRoot, gameId: string) => selectCardDeckByGameId(state, gameId),
+
     (game, cardDeck) =>
         cardDeck[game.previousHandWinnerCardId!],
 );
@@ -74,6 +87,7 @@ export const selectPreviousHandWinnerCardByGameId = createSelector(
 // Game end message by gameId
 export const selectSessionEndMessageByGameId = createSelector(
     (state: CoreAppRoot, gameId: string) => selectGameStateByGameId(state, gameId),
+
     gameState => gameState.game_end_message ?? '[NO MESSAGE]',
 );
 
@@ -81,8 +95,11 @@ export const selectSessionEndMessageByGameId = createSelector(
 export const selectWinnerByGameId = createSelector(
     (state: CoreAppRoot, gameId: string) => selectGameStateByGameId(state, gameId),
     (state: CoreAppRoot, gameId: string) => selectPlayerLookupByGameId(state, gameId),
+
     (gameState, playerLookup) => {
-        if (!gameState?.winner_player_id) return null;
+
+        if (!gameState?.winner_player_id)
+            return null;
 
         return playerLookup ? playerLookup[gameState.winner_player_id] : null;
     },
@@ -91,23 +108,26 @@ export const selectWinnerByGameId = createSelector(
 // Check if current player is winner by gameId
 export const selectIsPlayerWinnerByGameId = createSelector(
     (state: CoreAppRoot, gameId: string) => selectGameStateByGameId(state, gameId),
-    gameState => gameState.winner_player_id === gameState.current_player_id,
+
+    gameState =>
+        gameState.winner_player_id === gameState.current_player_id,
 );
 
-// Winner card selector by gameId
 export const selectWinnerCardByGameId = createSelector(
     (state: CoreAppRoot, gameId: string) => selectGameStateByGameId(state, gameId),
-    (state: CoreAppRoot, gameId: string) => selectCardDeckByGameId(state, gameId),
+    (state: CoreAppRoot, gameId: string) => selectCardDeckByGameId( state, gameId),
+
     (gameState, cardDeck) => {
+
         if (!gameState.winner_card_id) return null;
 
         return cardDeck[gameState.winner_card_id];
     },
 );
 
-// Dealer status selector by gameId
 export const selectIsDealerByGameId = createSelector(
     (state: CoreAppRoot, gameId: string) => selectGameStateByGameId(state, gameId),
+
     gameState => {
         if (!gameState.current_player_id || !gameState.dealer_id) return false;
 
@@ -115,10 +135,34 @@ export const selectIsDealerByGameId = createSelector(
     },
 );
 
+export const selectSelectedCardsByGameId = createSelector(
+    (state: CoreAppRoot, gameId: string) => selectGameStateByGameId(state, gameId),
+    (state: CoreAppRoot, gameId: string) => selectCardDeckByGameId( state, gameId),
+
+    (gameState, cardDeck) =>
+        gameState.selected_card_id_list.map(card_id => cardDeck[card_id]),
+);
+
+export const selectFoesByGameId = createSelector(
+    (state: CoreAppRoot, gameId: string) => selectGameStateByGameId( state, gameId),
+    (state: CoreAppRoot, gameId: string) => selectPlayerListByGameId(state, gameId),
+
+    (gameState, playerList) =>
+        playerList.filter(player => player.id !== gameState.current_player_id),
+);
+
+export const selectDealerCardsByGameId = createSelector(
+    (state: CoreAppRoot, gameId: string) => selectGameStateByGameId(state, gameId),
+    (state: CoreAppRoot, gameId: string) => selectCardDeckByGameId( state, gameId),
+
+    (gameState, cardDeck) =>
+        gameState.dealer_card_id_list.map(card_id => cardDeck[card_id]),
+);
 // Dealer dealt card by gameId
 export const selectDealerDealtCardByGameId = createSelector(
     (state: CoreAppRoot, gameId: string) => selectGameStateByGameId(state, gameId),
-    (state: CoreAppRoot, gameId: string) => selectCardDeckByGameId(state, gameId),
+    (state: CoreAppRoot, gameId: string) => selectCardDeckByGameId( state, gameId),
+
     (gameState, cardDeck) => {
         if (!gameState.dealer_card_id) return null;
 
@@ -128,10 +172,10 @@ export const selectDealerDealtCardByGameId = createSelector(
 
 
 export const selectCurrentPlayerByGameId = createSelector(
-    (state: CoreAppRoot, gameId: string) => selectGameStateByGameId(state, gameId),
+    (state: CoreAppRoot, gameId: string) => selectGameStateByGameId(   state, gameId),
     (state: CoreAppRoot, gameId: string) => selectPlayerLookupByGameId(state, gameId),
-    (gameState, playerLookup) => {
 
+    (gameState, playerLookup) => {
         if (!gameState.current_player_id) return null;
 
         return playerLookup[gameState.current_player_id];
@@ -140,11 +184,11 @@ export const selectCurrentPlayerByGameId = createSelector(
 
 
 export const selectPlayerDealtCardByGameId = createSelector(
-    (state: CoreAppRoot, gameId: string) => selectGameStateByGameId(state, gameId),
+    (state: CoreAppRoot, gameId: string) => selectGameStateByGameId(    state, gameId),
     (state: CoreAppRoot, gameId: string) => selectCurrentPlayerByGameId(state, gameId),
-    (state: CoreAppRoot, gameId: string) => selectCardDeckByGameId(state, gameId),
-    (gameState, currentPlayer, cardDeck) => {
+    (state: CoreAppRoot, gameId: string) => selectCardDeckByGameId(     state, gameId),
 
+    (gameState, currentPlayer, cardDeck) => {
         const testing = intersection(
             currentPlayer?.card_id_list,
             gameState?.selected_card_id_list || [],
@@ -161,14 +205,15 @@ export const selectPlayerDealtCardByGameId = createSelector(
 // Player list by gameId
 export const selectPlayerListByGameId = createSelector(
     (state: CoreAppRoot, gameId: string) => selectGameStateByGameId(state, gameId),
+
     gameState =>
         gameState.player_list ?? [],
 );
 
 // All player statuses by gameId
 export const selectAllPlayerStatusByGameId = createSelector(
-    (state: CoreAppRoot, gameId: string) => selectGameStateByGameId(state, gameId),
-    (state: CoreAppRoot, gameId: string) => selectPlayerListByGameId(state, gameId),
+    (state: CoreAppRoot, gameId: string) => selectGameStateByGameId(   state, gameId),
+    (state: CoreAppRoot, gameId: string) => selectPlayerListByGameId(  state, gameId),
     (state: CoreAppRoot, gameId: string) => selectPlayerLookupByGameId(state, gameId),
 
     (gameState, playerList, playerLookup) => playerList.map(player => {
@@ -182,8 +227,8 @@ export const selectAllPlayerStatusByGameId = createSelector(
 
         return {
             isDone,
-            player   : playerDTO,
-            score    : playerDTO.score,
+            player : playerDTO,
+            score  : playerDTO.score,
             isWinner :
                 player.id    === gameState.winner_player_id
                 || player.id === gameState.champion_player_id,
@@ -196,17 +241,22 @@ export const selectAllPlayerStatusByGameId = createSelector(
 // Player wait status by gameId
 export const selectPlayerWaitStatusByGameId = createSelector(
     (state: CoreAppRoot, gameId: string) => selectAllPlayerStatusByGameId(state, gameId),
-    (state: CoreAppRoot, gameId: string) => selectGameStateByGameId(state, gameId),
+    (state: CoreAppRoot, gameId: string) => selectGameStateByGameId(      state, gameId),
+
     (allPlayerStatus, gameState) =>
-        allPlayerStatus.filter(stat => stat.player.id !== gameState?.dealer_id),
+        allPlayerStatus.filter(stat =>
+            stat.player.id !== gameState?.dealer_id),
 );
 
 // Game champion by gameId
 export const selectGameChampionByGameId = createSelector(
-    (state: CoreAppRoot, gameId: string) => selectGameStateByGameId(state, gameId),
+    (state: CoreAppRoot, gameId: string) => selectGameStateByGameId(   state, gameId),
     (state: CoreAppRoot, gameId: string) => selectPlayerLookupByGameId(state, gameId),
+
     (gameState, playerLookup) => {
-        if (!gameState?.champion_player_id) return null;
+
+        if (!gameState?.champion_player_id)
+            return null;
 
         return playerLookup[gameState.champion_player_id];
     },
@@ -215,18 +265,56 @@ export const selectGameChampionByGameId = createSelector(
 // Player cards by gameId
 export const selectPlayerCardsByGameId = createSelector(
     (state: CoreAppRoot, gameId: string) => selectCurrentPlayerByGameId(state, gameId),
-    (state: CoreAppRoot, gameId: string) => selectCardDeckByGameId(state, gameId),
-    (currentPlayer, cardDeck) => currentPlayer?.card_id_list.map(card_id => cardDeck[card_id]) || [],
+    (state: CoreAppRoot, gameId: string) => selectCardDeckByGameId(     state, gameId),
+
+    (currentPlayer, cardDeck) =>
+        currentPlayer?.card_id_list.map(card_id => cardDeck[card_id]) || [],
 );
 
 // Game complete status by gameId
 export const selectGameCompleteByGameId = createSelector(
     (state: CoreAppRoot, gameId: string) => selectAllPlayerStatusByGameId(state, gameId),
-    (state: CoreAppRoot, gameId: string) => selectGameChampionByGameId(state, gameId),
-    (state: CoreAppRoot, gameId: string) => selectIsPlayerWinnerByGameId(state, gameId),
+    (state: CoreAppRoot, gameId: string) => selectGameChampionByGameId(   state, gameId),
+    (state: CoreAppRoot, gameId: string) => selectIsPlayerWinnerByGameId( state, gameId),
+
     (allPlayerStatus, gameChampion, isWinner) => ({
         allPlayerStatus,
         gameChampion,
         isWinner,
     }),
 );
+
+export const selectGameResultsByGameId = createSelector(
+    (state: CoreAppRoot, gameId: string) => selectPreviousHandDealerCardByGameId(state, gameId),
+    (state: CoreAppRoot, gameId: string) => selectPreviousHandWinnerCardByGameId(state, gameId),
+    (state: CoreAppRoot, gameId: string) => selectSessionEndMessageByGameId(     state, gameId),
+    (state: CoreAppRoot, gameId: string) => selectAllPlayerStatusByGameId(       state, gameId),
+    (state: CoreAppRoot, gameId: string) => selectIsPlayerWinnerByGameId(        state, gameId),
+
+    (previousHandDealerCard, previousHandWinnerCard, sessionEndMessage, allPlayerStatus, isPlayerWinner) => ({
+        previousHandDealerCard,
+        previousHandWinnerCard,
+        sessionEndMessage,
+        allPlayerStatus,
+        isPlayerWinner,
+    }),
+);
+
+export const selectGameWaitingPageByGameId = createSelector(
+    (state: CoreAppRoot, gameId: string) => selectPlayerWaitStatusByGameId(state, gameId),
+    (state: CoreAppRoot, gameId: string) => selectIsDealerByGameId(        state, gameId),
+    (state: CoreAppRoot, gameId: string) => selectGameStateByGameId(       state, gameId),
+
+    (playerStatusList, isDealer, gameState) => {
+
+        const playersExceptDealer = playerStatusList.filter(
+            playerStatus => playerStatus.player.id !== gameState.dealer_id,
+        ) ?? [];
+
+        return {
+            playersExceptDealer,
+            isDealer,
+        };
+    },
+);
+

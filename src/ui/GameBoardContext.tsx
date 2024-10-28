@@ -1,5 +1,5 @@
-import { GameStateDTO } from '../../../../api/src/game/dtos/game-state.dto';
-import { GameBoardContextType } from '../../type';
+import { GameStateDTO } from '../api/src/game/dtos/game-state.dto';
+import { GameBoardContextType } from './type';
 import { createContext } from 'react';
 
 

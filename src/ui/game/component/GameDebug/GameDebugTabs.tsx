@@ -6,7 +6,7 @@ import { RFC } from '@app/ui/type';
 
 export const GameDebugTabs: RFC<GameDebugTabsProps> = ({
     dealerDealtCard, playerDealtCard, currentPlayer,
-    gameState, authToken, isDealer, isHost,
+    gameStateDTO, authToken, isDealer, isHost,
 }) => {
     return (
         <Tabs defaultValue='one'>
@@ -25,9 +25,9 @@ export const GameDebugTabs: RFC<GameDebugTabsProps> = ({
                     fz='xs'
                     style={{ maxWidth : rem(220) }}>
                     <Table.Tbody>
-                        {gameState.error_message && <DebugTableRow
+                        {gameStateDTO.error_message && <DebugTableRow
                             label='Error'
-                            value={gameState.error_message} />}
+                            value={gameStateDTO.error_message} />}
                         <DebugTableRow
                             label='IsDealer'
                             value={isDealer ? 'Yes' : 'No'} />
@@ -39,10 +39,10 @@ export const GameDebugTabs: RFC<GameDebugTabsProps> = ({
                             value={isHost ? 'Yes' : 'No'} />
                         <DebugTableRow
                             label='Game Code'
-                            value={gameState.game_code} />
+                            value={gameStateDTO.game_code} />
                         <DebugTableRow
                             label='Stage'
-                            value={gameState.game_stage} />
+                            value={gameStateDTO.game_stage} />
                         <DebugTableRow
                             label='PlayerId'
                             value={currentPlayer?.id}

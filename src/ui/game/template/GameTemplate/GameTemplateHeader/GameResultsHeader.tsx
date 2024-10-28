@@ -1,18 +1,19 @@
+import { selectIsPlayerWinnerByGameId, selectWinnerByGameId } from '../../../../../client/selector/game';
 import { GameTextSubtitle, GameTextNeon, GameTextSmall } from '@app/ui/game/component/GameText';
-import { selectIsPlayerWinner, selectWinner } from '@app/client/selector/game';
+import { SpecialId } from '../../../../../constant/framework/SpecialId';
 import { GameStackType } from '@app/ui/game/component/GameStack/type';
+import { GameBoardContext } from '../../../../GameBoardContext';
 import { GameButton } from '@app/ui/game/component/GameButton';
 import { GameStack } from '@app/ui/game/component/GameStack';
 import { GameAction } from '@app/client/action/game.action';
-import { GameContext } from '@app/ui/game/GameContext';
-import { useSelector, useDispatch } from 'react-redux';
+import { useSelector, useDispatch } from '@app/client/hook';
 import { useContext } from 'react';
 
 
 export const GameResultsHeader = () => {
 
-    const isWinner = useSelector(selectIsPlayerWinner);
-    const winner   = useSelector(selectWinner);
+    const isWinner = useSelector(state => selectIsPlayerWinnerByGameId(state, SpecialId.DefaultGameId));
+    const winner   = useSelector(state => selectWinnerByGameId(state, SpecialId.DefaultGameId));
 
     const { isDealer } = useContext(GameBoardContext);
     const dispatch = useDispatch();

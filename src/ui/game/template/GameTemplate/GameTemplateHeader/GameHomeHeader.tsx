@@ -1,4 +1,4 @@
-import { GameBoardContext } from '../../../component/GameBoard/GameBoardContext';
+import { GameBoardContext } from '../../../../GameBoardContext';
 import { CardColor } from '../../../../../api/src/constant/card-color.enum';
 import { GameCardDTO } from '@app/ui/game/component/GameCard';
 import { Flex } from '@mantine/core';

@@ -2,16 +2,16 @@ import { GameTextSmall, GameTextTitle } from '../GameText';
 import CopyToClipboard from 'react-copy-to-clipboard';
 import { ShareCardTooltip } from './ShareCardTooltip';
 import { GameStackType } from '../GameStack/type';
-import { GameContext } from '../../GameContext';
 import { GameStack } from '../GameStack/index';
 import { useContext, useState } from 'react';
 import { useTimeout } from '@mantine/hooks';
 import { GameShare } from '../GameShare';
+import { GameBoardContext } from '../../../GameBoardContext';
 
 
 export const ShareCardContent = () => {
 
-    const { gameState } = useContext(GameBoardContext);
+    const { gameStateDTO } = useContext(GameBoardContext);
 
     const [isCopied, setCopied] = useState(false);
 
@@ -29,10 +29,10 @@ export const ShareCardContent = () => {
             </GameTextTitle>
             <GameStack type={GameStackType.Centered}>
                 <CopyToClipboard
-                    text={gameState.game_code!}
+                    text={gameStateDTO.game_code!}
                     onCopy={handleCopy}>
                     <ShareCardTooltip
-                        gameState={gameState}
+                        gameStateDTO={gameStateDTO}
                         isCopied={isCopied} />
                 </CopyToClipboard>
                 <GameTextSmall>

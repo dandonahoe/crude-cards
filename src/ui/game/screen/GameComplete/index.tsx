@@ -1,6 +1,7 @@
 import { GameTextBanner, GameTextNeon, GameTextSmall } from '../../component/GameText';
+import { selectGameCompleteByGameId } from '../../../../client/selector/game';
 import { CardColor } from '../../../../api/src/constant/card-color.enum';
-import { selectGameComplete } from '../../../../client/selector/game';
+import { SpecialId } from '../../../../constant/framework/SpecialId';
 import { GameAction } from '../../../../client/action/game.action';
 import { GameBoxCentered, GameBox } from '../../component/GameBox';
 import { GameStatusTable } from '../../component/GameStatusTable';
@@ -17,7 +18,10 @@ export const GameComplete = () => {
     const dispatch = useDispatch();
     const handleExitGame = () : CA => dispatch(GameAction.leaveGame({}));
 
-    const { allPlayerStatus, gameChampion, isWinner } = useSelector(selectGameComplete);
+    const {
+        allPlayerStatus, gameChampion, isWinner,
+    } = useSelector(state => selectGameCompleteByGameId(state, SpecialId.DefaultGameId));
+
     const { height, width } = useViewportSize();
 
     return (

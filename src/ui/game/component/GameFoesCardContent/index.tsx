@@ -1,5 +1,5 @@
+import { GameBoardContext } from '../../../GameBoardContext';
 import { GameStackType } from '../GameStack/type';
-import { GameContext } from '../../GameContext';
 import { GameFoeList } from './GameFoeList';
 import { FoeContent } from './FoeContent';
 import { GameStack } from '../GameStack';
@@ -10,12 +10,12 @@ import { Props } from './type';
 
 export const GameFoesCardContent: RFC<Props> = ({ foes }) => {
 
-    const { gameState } = useContext(GameBoardContext);
+    const { gameStateDTO } = useContext(GameBoardContext);
 
     return (
         <GameStack type={GameStackType.Centered}>
             <FoeContent
-                gameCode={gameState.game_code}
+                gameCode={gameStateDTO.game_code}
                 foes={foes} />
             <GameFoeList foes={foes} />
         </GameStack>

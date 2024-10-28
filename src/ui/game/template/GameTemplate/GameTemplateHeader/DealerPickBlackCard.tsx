@@ -1,6 +1,6 @@
 import { CardColor } from '../../../../../api/src/constant/card-color.enum';
+import { GameBoardContext } from '../../../../GameBoardContext';
 import { GameBanner } from '@app/ui/game/component/GameBanner';
-import { GameContext } from '@app/ui/game/GameContext';
 import { RFC } from '@app/ui/type';
 import { useContext } from 'react';
 

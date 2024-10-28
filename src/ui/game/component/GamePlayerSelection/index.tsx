@@ -1,6 +1,6 @@
+import { GameBoardContext } from '../../../GameBoardContext';
 import { GameAction } from '@app/client/action/game.action';
 import { GameStackType } from '../GameStack/type';
-import { GameContext } from '../../GameContext';
 import { useDispatch } from 'react-redux';
 import { GameStack } from '../GameStack';
 import { GameDeck } from '../GameDeck';

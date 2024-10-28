@@ -1,13 +1,14 @@
 import { CardColor } from '../../../../api/src/constant/card-color.enum';
 import { GameDeckLayout } from '../../component/GameDeckLayout';
 import { GameStackType } from '../../component/GameStack/type';
-import { selectGameResults } from '@app/client/selector/game';
 import { ScoreboardSection } from './ScoreboardSection';
 import { GameStack } from '../../component/GameStack';
 import { useViewportSize } from '@mantine/hooks';
 import { useSelector } from '@app/client/hook';
 import { ResultsCards } from './ResultsCards';
 import Confetti from 'react-confetti';
+import { SpecialId } from '../../../../constant/framework/SpecialId';
+import { selectGameResultsByGameId } from '@app/client/selector/game';
 
 
 export const GameResults = () => {
@@ -15,7 +16,7 @@ export const GameResults = () => {
     const {
         sessionEndMessage, allPlayerStatus, isPlayerWinner,
         previousHandDealerCard, previousHandWinnerCard,
-    } = useSelector(selectGameResults);
+    } = useSelector(state => selectGameResultsByGameId(state, SpecialId.DefaultGameId));
 
     const { height, width } = useViewportSize();
 

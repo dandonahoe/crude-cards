@@ -1,8 +1,9 @@
-import { selectGameWaitingPage } from '@app/client/selector/game';
+import { selectGameWaitingPageByGameId } from '../../../../client/selector/game';
+import { SpecialId } from '../../../../constant/framework/SpecialId';
 import { GameStackType } from '../../component/GameStack/type';
+import { GameBoardContext } from '../../../GameBoardContext';
 import { StatusTableRenderer } from './StatusTableRenderer';
 import { GameStack } from '../../component/GameStack';
-import { GameContext } from '../../GameContext';
 import { useSelector } from '@app/client/hook';
 import { DeckRenderer } from './DeckRenderer';
 import { useContext } from 'react';
@@ -10,8 +11,13 @@ import { useContext } from 'react';
 
 export const GameWaiting = () => {
 
-    const { dealerDealtCard, playerDealtCard, gameState } = useContext(GameBoardContext);
-    const { playersExceptDealer, isDealer } = useSelector(selectGameWaitingPage);
+    const {
+        dealerDealtCard, playerDealtCard, gameStateDTO,
+    } = useContext(GameBoardContext);
+
+    const {
+        playersExceptDealer, isDealer,
+    } = useSelector(state => selectGameWaitingPageByGameId(state, SpecialId.DefaultGameId));
 
     if(!dealerDealtCard || !playerDealtCard) {
         console.error('dealerDealtCard or playerDealtCard is not defined', {
@@ -28,7 +34,7 @@ export const GameWaiting = () => {
                 isDealer={isDealer} />
             <StatusTableRenderer
                 playersExceptDealer={playersExceptDealer}
-                gameStage={gameState.game_stage} />
+                gameStage={gameStateDTO.game_stage} />
         </GameStack>
     );
 };

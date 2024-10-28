@@ -1,24 +1,27 @@
+import { selectIsDealerByGameId } from '../../../../../client/selector/game';
 import { GameStage } from '../../../../../api/src/constant/game-stage.enum';
+import { SpecialId } from '../../../../../constant/framework/SpecialId';
+import { GameBoardContext } from '../../../../GameBoardContext';
 import { DealerPickBlackCard } from './DealerPickBlackCard';
 import { PlayerPickWhiteCard } from './PlayerPickWhiteCard';
-import { selectIsDealer } from '@app/client/selector/game';
 import { GameResultsHeader } from './GameResultsHeader';
-import { GameContext } from '@app/ui/game/GameContext';
 import { DealerPickWinner } from './DealerPickWinner';
 import { GameHomeHeader } from './GameHomeHeader';
+import { useSelector } from '@app/client/hook';
 import { LobbyHeader } from './LobbyHeader';
-import { useSelector } from 'react-redux';
 import { Box } from '@mantine/core';
 import { useContext } from 'react';
 
 
 export const HeaderContent = () => {
 
-    const { gameState } = useContext(GameBoardContext);
+    const { gameStateDTO : {
+        game_stage, hand_number,
+    }} = useContext(GameBoardContext);
 
-    const isDealer = useSelector(selectIsDealer);
+    const isDealer = useSelector(state => selectIsDealerByGameId(state, SpecialId.DefaultGameId));
 
-    switch(gameState.game_stage) {
+    switch(game_stage) {
         case GameStage.GameComplete:
         case GameStage.Unknown:
             return null;
@@ -30,7 +33,7 @@ export const HeaderContent = () => {
             if(isDealer)
                 return <DealerPickBlackCard />;
 
-            if(gameState.hand_number > 0)
+            if(hand_number > 0)
                 return <GameResultsHeader />;
 
             return <LobbyHeader />;

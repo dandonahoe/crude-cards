@@ -1,6 +1,5 @@
-import { selectGameById, selectIsDealerByGameId, selectCurrentPlayerByGameId, selectGameStateByGameId } from '../../../../client/selector/game';
 import { useSelector } from '../../../../client/hook';
-import { GameBoardContext } from './GameBoardContext';
+import { GameBoardContext } from '../../../GameBoardContext';
 import { GameStackType } from '../GameStack/type';
 import { AppContext } from '../../../AppContext';
 import { GameStack } from '../GameStack';
@@ -11,6 +10,12 @@ import { RFC } from '@app/ui/type';
 import { useContext } from 'react';
 import { Props } from './type';
 import { Env } from '@app/Env';
+import {
+    selectPlayerDealtCardByGameId, selectIsDealerByGameId,
+    selectCurrentPlayerByGameId, selectGameStateByGameId,
+    selectPlayerCardsByGameId, selectDealerCardsByGameId,
+    selectDealerDealtCardByGameId, selectGameById,
+} from '../../../../client/selector/game';
 
 
 const isDebugOverlayVisible = Env.getBoolean('NEXT_PUBLIC_IS_DEBUG_OVERLAY_VISIBLE');
@@ -22,27 +27,21 @@ export const GameBoard : RFC<Props> = ({ id : gameId }) => {
 
     debugger;
 
-    const currentPlayer = useSelector(state => selectCurrentPlayerByGameId(state, gameId));
-    const game          = useSelector(state => selectGameById(state, gameId));
-
-    const dealerDealtCard = useSelector(state => selectDealerDealtCard(state, gameId));
-    const playerDealtCard = useSelector(state => selectPlayerDealtCard(state, gameId));
-    const dealerCards     = useSelector(state => selectDealerCards(    state, gameId));
-    const playerCards     = useSelector(state => selectPlayerCards(    state, gameId));
-    const gameState       = useSelector(state => selectGameStateByGameId(      state, gameId));
-
-    // const currentPlayer   = useSelector(selectCurrentPlayer  );
-    // const popupType       = useSelector(selectPopupType      );
-    // const isDealer        = useSelector(selectIsDealer       );
-    // game.gameStateDTO
-
-    const isDealer = useSelector(state => selectIsDealerByGameId(state, gameId));
+    const currentPlayer   = useSelector(state => selectCurrentPlayerByGameId(  state, gameId));
+    const dealerDealtCard = useSelector(state => selectDealerDealtCardByGameId(state, gameId));
+    const playerDealtCard = useSelector(state => selectPlayerDealtCardByGameId(state, gameId));
+    const dealerCards     = useSelector(state => selectDealerCardsByGameId(    state, gameId));
+    const playerCards     = useSelector(state => selectPlayerCardsByGameId(    state, gameId));
+    const gameStateDTO    = useSelector(state => selectGameStateByGameId(      state, gameId));
+    const isDealer        = useSelector(state => selectIsDealerByGameId(       state, gameId));
+    const game            = useSelector(state => selectGameById(               state, gameId));
+    const headerHeight    = 0;
 
     return (
         <GameBoardContext.Provider
             value={{
-                gameState, isDealer, headerHeight,
                 currentPlayer, dealerCards, playerCards,
+                gameStateDTO, isDealer, headerHeight,
                 dealerDealtCard, playerDealtCard,
             }}>
             <GameStack type={GameStackType.FullHeightCentered}>

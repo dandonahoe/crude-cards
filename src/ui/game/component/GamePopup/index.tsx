@@ -1,13 +1,13 @@
 import { GamePopupType } from '../../../../api/src/constant/game-popup-type.enum';
 import { GameAction } from '../../../../client/action/game.action';
-import { GameContext } from '../../GameContext';
+import { TemplateContext } from '../../../TemplateContext';
 import { useDispatch } from '@app/client/hook';
 import { PopupModal } from './PopupModal';
 import { useContext } from 'react';
 
 export const GamePopup = () => {
 
-    const { popupType } = useContext(GameBoardContext);
+    const { popupType } = useContext(TemplateContext);
     const dispatch = useDispatch();
 
     if ([GamePopupType.Closed, GamePopupType.Unknown].includes(popupType!))

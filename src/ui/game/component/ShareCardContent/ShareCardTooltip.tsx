@@ -4,14 +4,14 @@ import { Tooltip } from "@mantine/core"
 import { RFC } from '../../../type';
 
 export const ShareCardTooltip : RFC<ShareCardTooltipProps> = ({
-    gameState, isCopied,
+    gameStateDTO, isCopied,
 }) =>
     <Tooltip
-        label={`Copied "${gameState.game_code}"`}
+        label={`Copied "${gameStateDTO.game_code}"`}
         opened={isCopied}
         position='bottom'
         offset={0}>
         <GameTextTitle>
-            {gameState.game_code}
+            {gameStateDTO.game_code}
         </GameTextTitle>
     </Tooltip>

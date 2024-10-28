@@ -1,7 +1,7 @@
+import { GameBoardContext } from '../../../GameBoardContext';
 import { GameAction } from '../../../../client/action/game.action';
 import { GameBoxCentered } from '../../component/GameBox';
 import { GameDeck } from '../../component/GameDeck';
-import { GameContext } from '../../GameContext';
 import { useDispatch } from 'react-redux';
 import { useContext } from 'react';
 

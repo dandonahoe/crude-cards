@@ -1,14 +1,15 @@
-import { selectTimer } from '../../../../client/selector/game';
+import { selectTimerByGameId } from '../../../../client/selector/game';
+import { SpecialId } from '../../../../constant/framework/SpecialId';
+import { useSelector } from '@app/client/hook';
 import { getTimeConfig } from './sharedLogic';
 import classes from './GameToast.module.css';
 import { TimerSymbol } from './TimerSymbol';
-import { useSelector } from 'react-redux';
 import { Box } from '@mantine/core';
 
 
 export const GameToast = () => {
 
-    const timer = useSelector(selectTimer);
+    const timer = useSelector(state => selectTimerByGameId(state, SpecialId.DefaultGameId));
 
     if (!timer.timerType)
         return null;
