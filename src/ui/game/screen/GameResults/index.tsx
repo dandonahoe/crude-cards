@@ -16,7 +16,7 @@ export const GameResults = () => {
     const {
         sessionEndMessage, allPlayerStatus, isPlayerWinner,
         previousHandDealerCard, previousHandWinnerCard,
-    } = useSelector(state => selectGameResultsByGameId(state, SpecialId.DefaultGameId));
+    } = useSelector(state => selectGameResultsByGameId(state, SpecialId.DefaultGameCode));
 
     const { height, width } = useViewportSize();
 

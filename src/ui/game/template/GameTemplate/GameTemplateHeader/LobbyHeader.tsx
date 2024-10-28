@@ -1,17 +1,17 @@
 import { GameStage } from '../../../../../api/src/constant/game-stage.enum';
 import { CardColor } from '../../../../../api/src/constant/card-color.enum';
-import { selectIsHostByGameId } from '../../../../../client/selector/game';
+import { selectIsHostByGameId, selectPlayerListByGameId } from '../../../../../client/selector/game';
 import { SpecialId } from '../../../../../constant/framework/SpecialId';
 import { GameBoardContext } from '../../../../GameBoardContext';
 import { GameBanner } from '@app/ui/game/component/GameBanner';
 import { GameButton } from '@app/ui/game/component/GameButton';
 import { GameAction } from '@app/client/action/game.action';
 import { MinimumPlayerCount } from '@app/ui/game/constant';
+import { useSelector } from '../../../../../client/hook';
 import { CA } from '@app/constant/framework/CoreAction';
 import { useDispatch } from '@app/client/hook';
 import { Box, Center } from '@mantine/core';
 import { useContext } from 'react';
-import { useSelector } from '../../../../../client/hook';
 
 
 export const LobbyHeader = () => {
@@ -22,15 +22,19 @@ export const LobbyHeader = () => {
 
     const handleStartGame = (): CA => dispatch(GameAction.startGame({}));
 
-    const isHost = useSelector(state => selectIsHostByGameId(state, SpecialId.DefaultGameId));
+    const playerList = useSelector(state => selectPlayerListByGameId(state, SpecialId.DefaultGameCode));
+    const isHost     = useSelector(state => selectIsHostByGameId(state, SpecialId.DefaultGameCode));
 
-    const playerCount   = gameStateDTO.player_list.length;
+    debugger;
+
+    // const playerCount   = gameStateDTO.player_list.length;
+    const playerCount   = playerList.length;
     const needMoreCount = MinimumPlayerCount - playerCount;
 
     const isDealerPickingBlackCard = () => gameStateDTO.game_stage === GameStage.DealerPickBlackCard;
     const showHostStartButton      = () => isHost && hasEnoughPlayers();
     const hasEnoughPlayers         = () => !isTooFewPlayers();
-    const isTooFewPlayers          = () => gameStateDTO.player_list.length < MinimumPlayerCount;
+    const isTooFewPlayers          = () => playerList.length < MinimumPlayerCount;
     const isWaitingOnHost          = () => !isHost && hasEnoughPlayers();
 
     let subtitle = undefined;

@@ -20,7 +20,7 @@ export const GameComplete = () => {
 
     const {
         allPlayerStatus, gameChampion, isWinner,
-    } = useSelector(state => selectGameCompleteByGameId(state, SpecialId.DefaultGameId));
+    } = useSelector(state => selectGameCompleteByGameId(state, SpecialId.DefaultGameCode));
 
     const { height, width } = useViewportSize();
 

@@ -12,8 +12,8 @@ import { useContext } from 'react';
 
 export const GameResultsHeader = () => {
 
-    const isWinner = useSelector(state => selectIsPlayerWinnerByGameId(state, SpecialId.DefaultGameId));
-    const winner   = useSelector(state => selectWinnerByGameId(state, SpecialId.DefaultGameId));
+    const isWinner = useSelector(state => selectIsPlayerWinnerByGameId(state, SpecialId.DefaultGameCode));
+    const winner   = useSelector(state => selectWinnerByGameId(state, SpecialId.DefaultGameCode));
 
     const { isDealer } = useContext(GameBoardContext);
     const dispatch = useDispatch();

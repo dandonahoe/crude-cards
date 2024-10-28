@@ -17,7 +17,7 @@ export const GameLobby = () => {
     if(!gameStateDTO.game_code)
         throw new Error('Game Code is not defined');
 
-    const foeList = useSelector(state => selectFoesByGameId(state, SpecialId.DefaultGameId));
+    const foeList = useSelector(state => selectFoesByGameId(state, SpecialId.DefaultGameCode));
 
     return (
         <GameBoxCentered>

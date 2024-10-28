@@ -8,7 +8,7 @@ import { GameBox } from "../../component/GameBox";
 
 export const GameDealerJudge = () => {
 
-    const selectedCards = useSelector(state => selectSelectedCardsByGameId(state, SpecialId.DefaultGameId));
+    const selectedCards = useSelector(state => selectSelectedCardsByGameId(state, SpecialId.DefaultGameCode));
     const dispatch      = useDispatch();
 
     const handleCardClicked = (id : string) =>

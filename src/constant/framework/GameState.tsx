@@ -10,12 +10,12 @@ export const DefaultGameState : GameState = {
     playerLookup             : {},
     gameStateDTO             : GameStateDTO.Default,
     cardDeck                 : {},
-    gameId                   : SpecialId.DefaultGameId,
+    gameId                   : SpecialId.DefaultGameCode,
 
     timer : {
         timerType : TimerType.Inactive,
         timeLeft  : 0,
-        gameId    : SpecialId.DefaultGameId,
+        gameId    : SpecialId.DefaultGameCode,
     },
 } as const;
 

@@ -19,7 +19,7 @@ export const HeaderContent = () => {
         game_stage, hand_number,
     }} = useContext(GameBoardContext);
 
-    const isDealer = useSelector(state => selectIsDealerByGameId(state, SpecialId.DefaultGameId));
+    const isDealer = useSelector(state => selectIsDealerByGameId(state, SpecialId.DefaultGameCode));
 
     switch(game_stage) {
         case GameStage.GameComplete:

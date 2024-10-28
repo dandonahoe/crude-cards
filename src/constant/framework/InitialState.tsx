@@ -6,13 +6,13 @@ import { SpecialId } from './SpecialId';
 
 export const InitialState : CoreAppRoot = {
 
-    selectedGameId : SpecialId.DefaultGameId,
+    selectedGameId : SpecialId.DefaultGameCode,
     popupType      : GamePopupType.Closed,
 
     game : {
-        [SpecialId.DefaultGameIdBeta ] : { ...DefaultGameState, gameId : SpecialId.DefaultGameIdBeta  },
-        [SpecialId.DefaultGameIdAlpha] : { ...DefaultGameState, gameId : SpecialId.DefaultGameIdAlpha },
-        [SpecialId.DefaultGameId     ] : { ...DefaultGameState, gameId : SpecialId.DefaultGameId      },
+        [SpecialId.DefaultGameCodeBeta ] : { ...DefaultGameState, gameId : SpecialId.DefaultGameCodeBeta  },
+        [SpecialId.DefaultGameCodeAlpha] : { ...DefaultGameState, gameId : SpecialId.DefaultGameCodeAlpha },
+        [SpecialId.DefaultGameCode     ] : { ...DefaultGameState, gameId : SpecialId.DefaultGameCode      },
     },
 
 } as const;

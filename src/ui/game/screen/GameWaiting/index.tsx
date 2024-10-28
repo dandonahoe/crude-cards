@@ -17,7 +17,7 @@ export const GameWaiting = () => {
 
     const {
         playersExceptDealer, isDealer,
-    } = useSelector(state => selectGameWaitingPageByGameId(state, SpecialId.DefaultGameId));
+    } = useSelector(state => selectGameWaitingPageByGameId(state, SpecialId.DefaultGameCode));
 
     if(!dealerDealtCard || !playerDealtCard) {
         console.error('dealerDealtCard or playerDealtCard is not defined', {

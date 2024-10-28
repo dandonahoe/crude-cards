@@ -9,7 +9,7 @@ import { Box } from '@mantine/core';
 
 export const GameToast = () => {
 
-    const timer = useSelector(state => selectTimerByGameId(state, SpecialId.DefaultGameId));
+    const timer = useSelector(state => selectTimerByGameId(state, SpecialId.DefaultGameCode));
 
     if (!timer.timerType)
         return null;

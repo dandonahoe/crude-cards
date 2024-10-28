@@ -19,7 +19,7 @@ export const GameDebug: RFC<Props> = ({ isVisible }) => {
     } = useContext(GameBoardContext);
 
     const [authToken, setAuthToken] = useState<string | null>(null);
-    const isHost = useSelector(state => selectIsHostByGameId(state, SpecialId.DefaultGameId));
+    const isHost = useSelector(state => selectIsHostByGameId(state, SpecialId.DefaultGameCode));
 
     useEffect(() => {
         const token = Cookies.get(CookieType.AuthToken);

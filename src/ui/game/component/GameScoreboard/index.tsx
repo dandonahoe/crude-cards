@@ -9,7 +9,7 @@ import { GameText } from '../GameText';
 
 export const GameScoreboard = () => {
 
-    const allPlayerStatus = useSelector(state => selectAllPlayerStatusByGameId(state, SpecialId.DefaultGameId));
+    const allPlayerStatus = useSelector(state => selectAllPlayerStatusByGameId(state, SpecialId.DefaultGameCode));
 
     return (
         <GameStack>
