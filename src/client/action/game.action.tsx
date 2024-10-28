@@ -22,11 +22,6 @@ export interface WebSocketMessage {
     data : unknown;
 }
 
-export interface UpdateGameStateDTO {
-    gameStateString : string;
-    gameId          : string;
-}
-
 export const GameAction = {
 
     // Socket Actions
@@ -49,7 +44,7 @@ export const GameAction = {
 
     // Regular Actions
     sendWebSocketMessage : action<WebSocketMessage  >('SendWebSocketMessage'),
-    updateGameState      : action<UpdateGameStateDTO>('UpdateGameState'     ),
+    updateGameState      : action<string            >('UpdateGameState'     ),
     resetGameState       : action<string            >('ResetGameState'      ),
     timerComplete        : action<TimerCompleteDTO  >('TimerComplete'       ),
     updateTimer          : action<UpdateTimerDTO    >('UpdateTimer'         ),

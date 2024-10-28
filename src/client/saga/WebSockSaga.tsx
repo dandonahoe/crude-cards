@@ -14,6 +14,7 @@ import { sagaDispatch } from '..';
 import Router from 'next/router';
 import Cookies from 'js-cookie';
 import { Env } from '@app/Env';
+import { selectGameLookup } from '../selector/game';
 import {
 
     selectGameStateByGameId, selectTimerByGameId,
@@ -100,24 +101,24 @@ function* sagaStartUpdateListener(): Saga {
     console.log('Socket channel created');
 
     while (true) {
-        debugger;
+        const previousGameStateLookup = yield* select(selectGameLookup);
 
-        let previousGameState = yield* select(state => selectGameStateByGameId(state, SpecialId.DefaultGameCode));
-
-        debugger;
-
-        console.log('Initial game state:', previousGameState);
+        console.log('Initial game state:', previousGameStateLookup);
 
         console.log('***Waiting for new game state...');
         const newGameState = (yield* take(channelGameUpdateListener)) as GameStateDTO;
         console.log('***New game state received:', newGameState);
 
+        if(!newGameState.game_code) {
+            console.error('No game code in new game state, skipping');
+            continue;
+        }
+
+        debugger;
+
         const newGameStateString = JSON.stringify(newGameState);
 
-        yield* sagaDispatch(GameAction.updateGameState({
-            gameStateString : newGameStateString,
-            gameId          : '[PLACEHOLDER abc123]',
-        }));
+        yield* sagaDispatch(GameAction.updateGameState(newGameStateString));
 
         // This can happen when the server is disconnecting a player
         if(newGameState.new_auth_token) {
@@ -132,7 +133,9 @@ function* sagaStartUpdateListener(): Saga {
 
         console.log('Game State Updated, checking timers');
 
-        if (newGameState.game_stage == previousGameState.game_stage) {
+        const previousGameState = previousGameStateLookup[newGameState.game_code];
+
+        if (newGameState.game_stage == previousGameState.gameStateDTO.game_stage) {
             console.log(`State didn't change from ${newGameState.game_stage}, skipping timer`);
             continue;
         }
@@ -196,7 +199,7 @@ function* sagaStartUpdateListener(): Saga {
             }
         }
 
-        previousGameState = newGameState;
+        // previousGameState = newGameState;
 
         console.log('Previous game state updated:', previousGameState);
     }

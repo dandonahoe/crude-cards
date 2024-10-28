@@ -3,7 +3,13 @@ import { CoreAppRoot } from '../../type/framework/core/CoreAppRoot';
 import { createSelector } from '@reduxjs/toolkit';
 import { PlayerStatus } from '@app/ui/game/type';
 import { intersection } from 'lodash';
+import { selectState } from './common';
 
+
+export const selectGameLookup = createSelector(
+    selectState,
+    state => state.game,
+);
 
 // Memoized selector to get a game by gameId
 export const selectGameById = createSelector(

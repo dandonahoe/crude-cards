@@ -24,21 +24,27 @@ const slice = createSlice({
             }
         });
 
-        builder.addCase(GameAction.updateGameState, (state, { payload : { gameStateString, gameId } }) => {
+        builder.addCase(GameAction.updateGameState, (state, { payload : gameStateString }) => {
             debugger;
 
             const gameStateDTO = JSON.parse(gameStateString) as GameStateDTO;
+
+            if(!gameStateDTO.game_code)
+                throw new Error('gameStateDTO.game_code is null');
 
             const {
                 new_deck_card_list, player_list,
                 ...rootGameState
             } = gameStateDTO;
 
+            const gameCode = gameStateDTO.game_code
+
             if(rootGameState.game_stage === GameStage.Home) {
 
-                state.game[gameId].previousHandDealerCardId = null;
-                state.game[gameId].previousHandWinnerCardId = null;
-                state.game[gameId].gameStateDTO = gameStateDTO;
+                state.game[gameCode].previousHandDealerCardId = null;
+                state.game[gameCode].previousHandWinnerCardId = null;
+
+                state.game[gameCode].gameStateDTO = gameStateDTO;
 
                 return;
             }
@@ -75,15 +81,15 @@ const slice = createSlice({
 
                 // foofindme
                 console.log('updateGameState::Results Screen', gameStateDTO);
-                state.game[gameId].previousHandDealerCardId = gameStateDTO.dealer_card_id;
-                state.game[gameId].previousHandWinnerCardId = gameStateDTO.winner_card_id;
+                state.game[gameCode].previousHandDealerCardId = gameStateDTO.dealer_card_id;
+                state.game[gameCode].previousHandWinnerCardId = gameStateDTO.winner_card_id;
             } else {
                 console.log('updateGameState::Not on GameResults stage');
             }
 
-            state.game[gameId].playerLookup  = playerLookup;
+            state.game[gameCode].playerLookup  = playerLookup;
 
-            state.game[gameId].gameStateDTO = {
+            state.game[gameCode].gameStateDTO = {
                 ...rootGameState,
                 new_deck_card_list : null,
             };
@@ -92,7 +98,7 @@ const slice = createSlice({
             // it the update generally returns a null deck and
             // it would disappear if we just set it in the main update
             if(newCardDeck)
-                state.game[gameId].cardDeck = newCardDeck;
+                state.game[gameCode].cardDeck = newCardDeck;
         });
 
         // same thing, but doesnt trigger the counter loop again

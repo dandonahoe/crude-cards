@@ -25,8 +25,6 @@ export const GameBoard : RFC<Props> = ({ id : gameId }) => {
 
     const { isDebugging } = useContext(AppContext);
 
-    debugger;
-
     const currentPlayer   = useSelector(state => selectCurrentPlayerByGameId(  state, gameId));
     const dealerDealtCard = useSelector(state => selectDealerDealtCardByGameId(state, gameId));
     const playerDealtCard = useSelector(state => selectPlayerDealtCardByGameId(state, gameId));
