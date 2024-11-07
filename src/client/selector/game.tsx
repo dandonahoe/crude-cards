@@ -11,6 +11,11 @@ export const selectGameLookup = createSelector(
     state => state.game,
 );
 
+export const selectGameBoardList = createSelector(
+    selectGameLookup,
+    game => Object.values(game),
+);
+
 // Memoized selector to get a game by gameId
 export const selectGameById = createSelector(
     (state: CoreAppRoot) => state.game,
@@ -19,7 +24,7 @@ export const selectGameById = createSelector(
     (game, gameId) => {
         const selectedGame = game[gameId];
 
-        if (!selectedGame) throw new Error('Game not found');
+        // if (!selectedGame) throw new Error('Game not found');
 
         return selectedGame;
     },

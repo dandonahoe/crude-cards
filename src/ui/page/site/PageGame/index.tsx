@@ -1,23 +1,18 @@
-import { SpecialId } from '../../../../constant/framework/SpecialId';
+import { selectGameBoardList } from '../../../../client/selector/game';
 import { GameBoard } from '../../../game/component/GameBoard';
+import { useSelector } from '@app/client/hook';
 import { Grid } from '@mantine/core';
 import { RFC } from '@app/ui/type';
 
 
-export const PageGame : RFC = () => {
-    return (
-        <Grid>
-            <Grid.Col span={4}>
-                <GameBoard id={SpecialId.DefaultGameCode} />
-            </Grid.Col>
-            <Grid.Col span={4}>
-                <GameBoard id={SpecialId.DefaultGameCodeAlpha} />
-            </Grid.Col>
-            <Grid.Col span={4}>
-                <GameBoard id={SpecialId.DefaultGameCodeBeta} />
-            </Grid.Col>
-        </Grid>
-    );
-}
-
-
+export const PageGame : RFC = () =>
+    <Grid>
+        {useSelector(selectGameBoardList)
+            .map((gameBoard, index) =>
+                <Grid.Col
+                    key={`${gameBoard.gameId}_${index}`}
+                    span={4}>
+                    <GameBoard id={gameBoard.gameId} />
+                </Grid.Col>,
+            )}
+    </Grid>

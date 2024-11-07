@@ -1,6 +1,7 @@
 import { GamePopupType } from '../api/src/constant/game-popup-type.enum';
 import { InitialState } from '@app/constant/framework/InitialState';
 import { GameStateDTO } from '../api/src/game/dtos/game-state.dto';
+import { DefaultGameState } from '../constant/framework/GameState';
 import { ProjectName } from '@app/constant/framework/ProjectName';
 import { GameStage } from '../api/src/constant/game-stage.enum';
 import { PlayerDTO } from '../api/src/game/dtos/player.dto';
@@ -8,7 +9,6 @@ import { CardDTO } from '../api/src/game/dtos/card.dto';
 import { GameAction } from './action/game.action';
 import { createSlice } from '@reduxjs/toolkit';
 import _ from 'lodash';
-import { DefaultGameState } from '../constant/framework/GameState';
 
 
 const slice = createSlice({
@@ -45,7 +45,6 @@ const slice = createSlice({
 
                 state.game[gameCode] = DefaultGameState;
             }
-
 
             if(rootGameState.game_stage === GameStage.Home) {
 

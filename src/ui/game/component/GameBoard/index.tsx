@@ -25,12 +25,12 @@ export const GameBoard : RFC<Props> = ({ id : gameId }) => {
 
     const { isDebugging } = useContext(AppContext);
 
-    const currentPlayer   = useSelector(state => selectCurrentPlayerByGameId(  state, gameId));
     const dealerDealtCard = useSelector(state => selectDealerDealtCardByGameId(state, gameId));
     const playerDealtCard = useSelector(state => selectPlayerDealtCardByGameId(state, gameId));
+    const currentPlayer   = useSelector(state => selectCurrentPlayerByGameId(  state, gameId));
+    const gameStateDTO    = useSelector(state => selectGameStateByGameId(      state, gameId));
     const dealerCards     = useSelector(state => selectDealerCardsByGameId(    state, gameId));
     const playerCards     = useSelector(state => selectPlayerCardsByGameId(    state, gameId));
-    const gameStateDTO    = useSelector(state => selectGameStateByGameId(      state, gameId));
     const isDealer        = useSelector(state => selectIsDealerByGameId(       state, gameId));
     const game            = useSelector(state => selectGameById(               state, gameId));
     const headerHeight    = 0;
