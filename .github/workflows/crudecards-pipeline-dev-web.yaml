@@ -1,7 +1,7 @@
 name: CrudeCards - Pipeline - Dev - Web
 on:
     push:
-        branches: [dev]
+        branches: [dev, feature/aws-release]
     workflow_dispatch:
 
 jobs:
