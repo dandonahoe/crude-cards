@@ -1,0 +1,71 @@
+name: CrudeCards - Pipeline - Dev - UI
+on:
+    push:
+        branches: [dev]
+    workflow_dispatch:
+
+jobs:
+    deploy-cloud-run:
+        runs-on: ubuntu-latest
+        environment: Development
+        env:
+            CI_REGISTRY: us-west1-docker.pkg.dev
+            REGISTRY: us-west1-docker.pkg.dev/constructworks-dev-01/crude-cards/crude-cards-ui-service
+            # REGISTRY: us-west1-docker.pkg.dev/constructworks-dev-01/constructworks-dev-api/constructworksapi
+        steps:
+            # Get last updates
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            # Write to complete env file
+            - name: env file
+              run: |-
+                  #  Front End Visible
+                  echo NEXT_PUBLIC_APP_ID                                = "${{ vars.NEXT_PUBLIC_APP_ID                                }}" >> .env
+                  echo NEXT_PUBLIC_BROWSER_WINDOW_LOCATION_ORIGIN        = "${{ vars.NEXT_PUBLIC_BROWSER_WINDOW_LOCATION_ORIGIN        }}" >> .env
+                  echo NEXT_PUBLIC_GOOGLE_ANALYTICS_ID                   = "${{ vars.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID                   }}" >> .env
+                  echo NEXT_PUBLIC_WEB_SOCKET_HOST_ORIGIN                = "${{ vars.NEXT_PUBLIC_WEB_SOCKET_HOST_ORIGIN                }}" >> .env
+                  echo NEXT_PUBLIC_NEXT_COUNTDOWN_TIMER_DURATION_SECONDS = "${{ vars.NEXT_PUBLIC_NEXT_COUNTDOWN_TIMER_DURATION_SECONDS }}" >> .env
+                  echo NEXT_PUBLIC_IS_DEBUG_OVERLAY_VISIBLE              = "${{ vars.NEXT_PUBLIC_IS_DEBUG_OVERLAY_VISIBLE              }}" >> .env
+
+            # Install pnpm
+            - name: Install pnpm
+              run: npm install -g pnpm
+
+            # Authenticate on GCP using service account
+            - id: Auth
+              name: Authenticate to Google Cloud
+              uses: google-github-actions/auth@v1
+              with:
+                  credentials_json: "${{ secrets.SERVICEACCOUNT }}"
+
+            # Get short commit hash for tagging
+            - uses: benjlevesque/short-sha@v3.0
+              id: short-sha
+              with:
+                  length: 6
+
+              # build and tag image docker
+            - name: docker build
+              run: docker build -f DockerfileUI -t ${{ env.REGISTRY }}:${{ env.SHA }} -t ${{ env.REGISTRY }}:latest .
+
+              # Authenticate to Artifact registry
+            - name: Login to GAR
+              uses: docker/login-action@v3
+              with:
+                  registry: us-west1-docker.pkg.dev
+                  username: _json_key
+                  password: ${{ secrets.SERVICEACCOUNT }}
+
+              # Push image to ar
+            - name: docker push
+              run: docker push  ${{ env.REGISTRY }} --all-tags
+
+              #Deploy revision to Cloud run
+            - id: deploy
+              uses: google-github-actions/deploy-cloudrun@v2
+              with:
+                  project_id: constructworks-dev-01
+                  region: us-west1
+                  service: crude-cards-ui
+                  image: ${{ env.REGISTRY }}:${{ env.SHA }}
