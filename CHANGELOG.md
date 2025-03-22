@@ -1,3 +1,17 @@
+## [1.0.50](https://github.com/dandonahoe/crude-cards/compare/v1.0.49...v1.0.50) (2025-03-22)
+
+
+### Features
+
+* **aws:** aws release ([71d2095](https://github.com/dandonahoe/crude-cards/commit/71d20959863cfff100ee9cede57f9f6a3444792d))
+* **merge:** merging aws ([231d9de](https://github.com/dandonahoe/crude-cards/commit/231d9de83c40f40e079ed9654d4a8921c3c43d15))
+* **ci:** rebuilding pipeline ([9bbd510](https://github.com/dandonahoe/crude-cards/commit/9bbd510f974d132e80515b61cd94b2538c4062e5))
+* **trunk:** removed crashing package ([2b17fbb](https://github.com/dandonahoe/crude-cards/commit/2b17fbb61cf0b42cfcb41677e820685a38f79211))
+* **test:** ssh test ([8552db2](https://github.com/dandonahoe/crude-cards/commit/8552db2d7a417bc14cbdfa25065d6e2ba8930a0f))
+* **gpg:** test ([ca99160](https://github.com/dandonahoe/crude-cards/commit/ca99160096d4a136c68bc13089a43c4d42c310ec))
+* **ssh:** testing key ([f20a6f6](https://github.com/dandonahoe/crude-cards/commit/f20a6f628b68a4917386fd7fdc4c13640e9335d7))
+* **ssh:** testing signed commits ([869228e](https://github.com/dandonahoe/crude-cards/commit/869228ec655be71c746dfb419e8362302cc119b1))
+
 ## [1.0.49](https://github.com/dandonahoe/crude-cards/compare/v1.0.48...v1.0.49) (2025-03-09)
 
 
