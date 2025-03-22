@@ -1,3 +1,10 @@
+## [1.0.51](https://github.com/dandonahoe/crude-cards/compare/v1.0.50...v1.0.51) (2025-03-22)
+
+
+### Features
+
+* **ci:** fixing ci errors ([58549b3](https://github.com/dandonahoe/crude-cards/commit/58549b3f3bdef5f0fe721fba9b1db158015bf30c))
+
 ## [1.0.50](https://github.com/dandonahoe/crude-cards/compare/v1.0.49...v1.0.50) (2025-03-22)
 
 
