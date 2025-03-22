@@ -6,6 +6,7 @@ frontend:
                 - corepack enable
                 - corepack prepare pnpm@10.6.1 --activate
                 - pnpm install
+                - pnpm --prefix src/api install
         build:
             commands:
                 - pnpm build:frontend
@@ -13,7 +14,7 @@ frontend:
         baseDirectory: .next
         files:
             - "**/*"
-#   cache:
-#     paths:
-#       - .next/cache/**/*
-#       - node_modules/**/*
+    cache:
+        paths:
+            - .next/cache/**/*
+            - node_modules/**/*
