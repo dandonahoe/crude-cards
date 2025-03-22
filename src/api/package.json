@@ -1,16 +1,16 @@
 {
     "name": "game-api",
-    "type": "commonjs",
+    "type": "module",
     "version": "0.0.1",
     "description": "Game Backside",
     "author": "Daniel Donahoe daniel.donahoe@gmail.com",
     "private": true,
     "license": "to kill",
     "engines": {
-        "node": ">=20"
+        "node": ">=18"
     },
     "scripts": {
-        "typeorm": "typeorm-ts-node-commonjs",
+        "typeorm": "NODE_OPTIONS='--loader ts-node/esm' typeorm",
         "migrate:backend:run": "pnpm run typeorm migration:run -d src/data-source.ts",
         "migrate:backend:create": "pnpm run typeorm migration:create src/migrations/PostRefactoring",
         "migrate:reset": "pnpm run typeorm migration:create src/migrations/PostRefactoring",
@@ -50,7 +50,6 @@
         "reflect-metadata": "^0.2.2",
         "rxjs": "^7.8.1",
         "socket.io": "^4.8.0",
-        "typeorm": "0.3.20",
         "uuid": "^10.0.0",
         "winston": "^3.14.2",
         "winston-daily-rotate-file": "^5.0.0"
@@ -77,6 +76,7 @@
         "ts-loader": "^9.5.1",
         "ts-node": "10.9.2",
         "tsconfig-paths": "^4.2.0",
+        "typeorm": "0.3.20",
         "typescript": "5.6.2",
         "webpack": "^5.94.0",
         "webpack-node-externals": "^3.0.0"

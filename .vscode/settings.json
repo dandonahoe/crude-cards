@@ -44,5 +44,8 @@
     "[javascript]": {
         "editor.defaultFormatter": "trunk.io"
     },
-    "livePreview.defaultPreviewPath": "/src/api/coverage/index.html"
+    "livePreview.defaultPreviewPath": "/src/api/coverage/index.html",
+    "[dotenv]": {
+        "editor.defaultFormatter": "foxundermoon.shell-format"
+    }
 }

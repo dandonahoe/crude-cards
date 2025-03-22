@@ -1,4 +1,4 @@
-import { GameSession } from './game-session/game-session.entity';
+import { GameSession } from './game-session/game-session.entity.js';
 import { ScoreLog } from './score-log/score-log.entity';
 import { Feedback } from './feedback/feedback.entity';
 import { Player } from './player/player.entity';

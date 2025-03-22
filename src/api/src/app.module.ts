@@ -3,7 +3,7 @@ import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { GameInterceptor } from './interceptors/game.interceptor';
 // import { DevtoolsModule } from '@nestjs/devtools-integration';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { createDataSourceOptions } from './data-source';
+import { createDataSourceOptions } from './data-source.js';
 import { GameGateway } from './game/game.gateway';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { GameModule } from './game/game.module';

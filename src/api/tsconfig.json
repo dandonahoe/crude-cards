@@ -28,9 +28,10 @@
         "jest"
     ],
     "include": [
-        "src/**/*.tsx",
-        "src/**/*.ts",
-        "src/**/*.mjs"
+        "**/*.tsx",
+        "**/*.ts",
+        "**/*.mjs",
+        "**/*.mts"
     ],
     "exclude": [
         "node_modules",
