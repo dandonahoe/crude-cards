@@ -1,0 +1,4 @@
+
+docker build -f DockerfileAPI -t crude-cards/api .                                                ─╯
+docker tag crude-cards/api:latest 938413686327.dkr.ecr.us-east-1.amazonaws.com/crude-cards/api:latest
+docker push 938413686327.dkr.ecr.us-east-1.amazonaws.com/crude-cards/api:latest

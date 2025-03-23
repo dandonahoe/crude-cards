@@ -1,23 +1,25 @@
-import { exec } from 'child_process';
+console.log('This script is not implemented yet. ass.');
 
-const commands = [
-    'docker build --progress=plain --no-cache -f DockerfileUI -t crude-cards-ui-container .',
-    'docker build --progress=plain --no-cache -f DockerfileAPI -t rude-cards-api-container .',
-    'docker build --progress=plain --no-cache -f DockerfileWeb -t rude-cards-web-container .',
-];
+// import { exec } from 'child_process';
 
-commands.forEach(command => {
-    const process = exec(command);
+// const commands = [
+//     'docker build --progress=plain --no-cache -f DockerfileUI -t crude-cards-ui-container .',
+//     'docker build --progress=plain --no-cache -f DockerfileAPI -t rude-cards-api-container .',
+//     'docker build --progress=plain --no-cache -f DockerfileWeb -t rude-cards-web-container .',
+// ];
 
-    process.stdout?.on('data', data => {
-        console.log(`[stdout] ${data}`);
-    });
+// commands.forEach(command => {
+//     const process = exec(command);
 
-    process.stderr?.on('data', data => {
-        console.error(`[stderr] ${data}`);
-    });
+//     process.stdout?.on('data', data => {
+//         console.log(`[stdout] ${data}`);
+//     });
 
-    process.on('close', code => {
-        console.log(`Command "${command}" exited with code ${code}`);
-    });
-});
+//     process.stderr?.on('data', data => {
+//         console.error(`[stderr] ${data}`);
+//     });
+
+//     process.on('close', code => {
+//         console.log(`Command "${command}" exited with code ${code}`);
+//     });
+// });
