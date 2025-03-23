@@ -7,7 +7,7 @@ import { displaySuccess } from './util';
 /**
  * Bootstrap the NestJS application.
  *
- * Initializes the application with a custom logger using `winston` and `@google-cloud/logging-winston`.
+ * Initializes the application with a custom logger using `winston`
  * Retrieves configuration settings for CORS and port, then starts the server.
  * Logs an ASCII art message if the environment is not set to 'test'.
  */
@@ -41,7 +41,7 @@ export const bootstrap = async (): Promise<void> => {
     });
 
     // Start listening on the specified port
-    await app.listen(8080);
+    await app.listen(port);
 
     // Log the port number to the console in green color
     console.log('\x1b[92m%s\x1b[0m\n', `Listening on: ${port}`);

@@ -9,7 +9,10 @@ frontend:
                 - pnpm --prefix src/api install
         build:
             commands:
-                - pnpm build:frontend
+                - corepack enable
+                - corepack prepare pnpm@10.6.1 --activate
+                - pnpm build:all
+
     artifacts:
         baseDirectory: .next
         files:

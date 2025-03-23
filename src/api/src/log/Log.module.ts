@@ -1,4 +1,3 @@
-import { LoggingWinston } from '@google-cloud/logging-winston';
 import { ConfigService, ConfigModule } from '@nestjs/config';
 import DailyRotateFile from 'winston-daily-rotate-file';
 import { WinstonModule } from 'nest-winston';
@@ -127,7 +126,7 @@ export const LogModule = WinstonModule.forRootAsync({
             ),
             defaultMeta: { service: 'game-service' },
             transports: [
-                new LoggingWinston(),
+                // new LoggingWinston(),
                 new winston.transports.Console({
                     format: format.combine(format.timestamp(), consoleFormat),
                 }),

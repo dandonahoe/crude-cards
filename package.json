@@ -20,7 +20,6 @@
     "scripts": {
         "commit": "slick-commit",
         "artifact:build": "pnpm job:docs && pnpm test:coverage && pnpm dep:circular && pnpm dep:full && pnpm build:storybook",
-        "auth:google": "gcloud auth application-default login",
         "build": "IS_BUILDING=true next build",
         "build:all": "IS_BUILDING=true pnpm build:backend && pnpm build:frontend",
         "build:backend": "IS_BUILDING=true pnpm --prefix src/api run build",
@@ -28,8 +27,8 @@
         "build:storybook": "IS_BUILDING=true storybook build --output-dir storybook-static",
         "ci-semantic-release": "semantic-release",
         "docker:frontend": "docker build --progress=plain --no-cache -f DockerfileUI -t crude-cards-ui-container .",
-        "docker:backend": "docker build --progress=plain --no-cache -f DockerfileAPI -t rude-cards-api-container .",
-        "docker:ui": "docker build --progress=plain --no-cache -f DockerfileWeb -t rude-cards-web-container .",
+        "docker:backend": "docker build --progress=plain --no-cache -f DockerfileAPI -t crude-cards-api-container .",
+        "docker:ui": "docker build --progress=plain --no-cache -f DockerfileWeb -t crude-cards-web-container .",
         "job:pull-dev-env": "GPG_TTY=$(tty) ts-node internal/script/pull-env",
         "dep:circular": "DATE=$(date +%Y-%m-%d-%S) && madge --image ./internal/log/$DATE-circular.svg --extensions ts,tsx,js --ts-config ./tsconfig.json internal/script/narrative --circular",
         "dep:full": "DATE=$(date +%Y-%m-%d-%S) && madge --image ./internal/log/$DATE-full.svg --extensions ts,tsx,js --ts-config ./tsconfig.json internal/script/narrative",
