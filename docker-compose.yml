@@ -1,0 +1,24 @@
+services:
+    api:
+        build:
+            context: .
+            dockerfile: internal/docker/DockerfileAPI
+        image: crude-cards/api
+        ports:
+            - "80:80"
+
+    web:
+        build:
+            context: .
+            dockerfile: internal/docker/DockerfileWeb
+        image: crude-cards/web
+        ports:
+            - "80:80"
+
+    ui:
+        build:
+            context: .
+            dockerfile: internal/docker/DockerfileUI
+        image: crude-cards/ui
+        ports:
+            - "80:80"

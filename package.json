@@ -18,7 +18,7 @@
         "/dist"
     ],
     "scripts": {
-        "build:docker": "IS_BUILDING=true ts-node internal/script/docker",
+        "build:docker": "ts-node internal/script/docker",
         "commit": "slick-commit",
         "artifact:build": "pnpm job:docs && pnpm test:coverage && pnpm dep:circular && pnpm dep:full && pnpm build:storybook",
         "build": "IS_BUILDING=true next build",
@@ -49,7 +49,7 @@
         "lint:backend": "TZ=GMT pnpm --prefix src/api run lint",
         "lint:frontend": "TZ=GMT pnpm lint",
         "puppet": "ts-node internal/script/puppet",
-        "start": "TZ=GMT PORT=8080 next start --port 8080",
+        "start": "TZ=GMT PORT=80 next start --port 80",
         "start:backend": "pnpm --prefix src/api run start",
         "start:frontend": "pnpm start",
         "start:storybook": "http-server storybook-static -p 8080",
@@ -220,7 +220,8 @@
         "typedoc": "0.26.7",
         "typescript": "5.6.2",
         "uuid": "10.0.0",
-        "web-vitals": "4.2.3"
+        "web-vitals": "4.2.3",
+        "zx": "8.4.1"
     },
     "engines": {
         "node": ">=18"
