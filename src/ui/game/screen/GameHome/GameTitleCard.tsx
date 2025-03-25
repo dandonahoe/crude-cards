@@ -21,7 +21,7 @@ export const GameTitleCard = ({
                 {'CrudeCards'}
             </GameTextTitle>
             <GameTextSubtitle>
-                {'A Party Game for Terrible People.'}
+                {'A Party Game for Terrible People'}
             </GameTextSubtitle>
         </GameBox>
         <GameBox type={GameBoxType.Centered}>
