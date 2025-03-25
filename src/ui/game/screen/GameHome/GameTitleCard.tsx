@@ -6,7 +6,6 @@ import { GameCard } from "../../component/GameCard";
 import { GameBox } from "../../component/GameBox";
 import { GameTitleCardProps } from "./type";
 import { GameCardType } from "../../type";
-import { nanoid } from '@reduxjs/toolkit';
 
 
 export const GameTitleCard = ({
@@ -15,7 +14,7 @@ export const GameTitleCard = ({
     <GameCard
         cardType={GameCardType.Children}
         color={CardColor.Black}
-        id={nanoid()}>
+        id='title-card'>
         <GameBox>
             <GameTextTitle>
                 {'CrudeCards'}

@@ -18,11 +18,13 @@ export const GamePlayerConfirm = () => {
                 color={CardColor.Black}
                 text='Play this?' />
             <GameCardDTO
+                id='placeholder-0'
                 card={{
                     color : CardColor.Black,
                     text  : 'Doing the Hustle',
                 }} />
             <GameCardDTO
+                id='placeholder-1'
                 card={{
                     color : CardColor.Black,
                     text  : 'Doing the Hustle',

@@ -8,9 +8,14 @@ export const ResultsCards : RFC<ResultsCardsProps> = ({
     dealerCard, winnerCard, endMessage,
 }) =>
     <>
-        <GameCardDTO card={dealerCard} />
-        <GameCardDTO card={winnerCard} />
         <GameCardDTO
+            card={dealerCard}
+            id='dealer-card'/>
+        <GameCardDTO
+            card={winnerCard}
+            id='winner-card'/>
+        <GameCardDTO
+            id='message-card'
             card={{
                 color : CardColor.Black,
                 text  : endMessage,

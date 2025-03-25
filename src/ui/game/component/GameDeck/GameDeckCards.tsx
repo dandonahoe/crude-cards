@@ -8,6 +8,7 @@ export const GameDeckCards: RFC<GameCardListProps> = ({
 }) =>
     cards.map((card, index) =>
         <GameCardDTO
+            id={`${card.id}-${index}`}
             onClick={onCardClicked}
             card={card}
             key={index} />,

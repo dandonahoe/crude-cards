@@ -15,12 +15,12 @@ export const GameHomeHeader = () => {
         <Flex
             justify='center'
             align='center'>
-            {'hello?'}
             <GameCardDTO
+                id='header-card'
                 card={{
-                color : CardColor.Black,
-                text  : error_message,
-            }} />
+                    color : CardColor.Black,
+                    text  : error_message,
+                }} />
         </Flex>
     );
 }

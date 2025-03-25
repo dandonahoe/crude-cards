@@ -22,7 +22,9 @@ export const FoeList : RFC<FoeListProps> = ({
         )
 
     return (
-        <GameCardChildren color={CardColor.Black}>
+        <GameCardChildren
+            id='foe-list'
+            color={CardColor.Black}>
             <GameBox color={CardColor.White}>
                 <GameStack>
                     <GameText size='md'>

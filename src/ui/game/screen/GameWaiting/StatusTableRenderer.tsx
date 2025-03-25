@@ -13,7 +13,9 @@ export const StatusTableRenderer: React.FC<StatusTableRendererProps> = ({
         return null;
 
     return (
-        <GameCardChildren color={CardColor.Black}>
+        <GameCardChildren
+            id='status-table'
+            color={CardColor.Black}>
             <GameStatusTable
                 playerStatusList={playersExceptDealer}
                 shouldShowScore={false}

@@ -21,14 +21,14 @@ export interface GameCardChildrenProps {
     children     : React.ReactNode | React.ReactNode[];
     onClick     ?: OnClickCard;
     color        : CardColor;
-    id          ?: string;
+    id           : string;
 }
 
 export interface GameCardDTOProps {
     hasWiggle ?: boolean;
     onClick   ?: OnClickCard;
     card       : Partial<CardDTO>;
-    id        ?: string;
+    id         : string;
 }
 
 export interface GameCardRawProps {

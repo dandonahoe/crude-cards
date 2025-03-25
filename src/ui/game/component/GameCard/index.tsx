@@ -101,7 +101,7 @@ export const GameCardChildren: RFC<GameCardChildrenProps> = ({
 }) =>
     <GameCard
         cardType={GameCardType.Children}
-        id={id ?? nanoid()}
+        id={id}
         onClick={onClick}
         color={color}>
         {children}
@@ -117,7 +117,7 @@ export const GameCardDTO: RFC<GameCardDTOProps> = ({
 
     return (
         <GameCard
-            id={id ?? nanoid()}
+            id={id}
             color={card.color}
             onClick={onClick}
             cardType={GameCardType.Children}>
