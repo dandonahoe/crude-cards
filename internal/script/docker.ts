@@ -24,7 +24,7 @@ const main = async () => {
     console.log('Logging into ECR...')
 
     // eslint-disable-next-line max-len
-    await $`aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 938413686327.dkr.ecr.us-east-1.amazonaws.com`.pipe(process.stdout);
+    await $`aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${registry}`.pipe(process.stdout);
 
     console.log('Building Docker Images...')
 
