@@ -2,6 +2,11 @@
 
 import { $ } from 'zx';
 
+// aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 938413686327.dkr.ecr.us-east-1.amazonaws.com
+// IS_BUILDING=true COMPOSE_BAKE=true DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose build --no-cache
+// docker tag crude-cards/web:latest 938413686327.dkr.ecr.us-east-1.amazonaws.com/crude-cards/web:latest
+// docker push 938413686327.dkr.ecr.us-east-1.amazonaws.com/crude-cards/web:latest
+
 // docker tag crude-cards/api:latest 938413686327.dkr.ecr.us-east-1.amazonaws.com/crude-cards/api:latest
 // docker tag crude-cards/web:latest 938413686327.dkr.ecr.us-east-1.amazonaws.com/crude-cards/web:latest
 // docker tag crude-cards/ui:latest 938413686327.dkr.ecr.us-east-1.amazonaws.com/crude-cards/ui:latest
@@ -31,7 +36,7 @@ const main = async () => {
             const fullTag = `${registry}/${repo}/${name}:latest`;
 
             console.log(`🔖 Tagging ${name}...`);
-            await $`docker tag ${repo}/${name}:latest ${fullTag}`
+            await $`docker tag ${fullTag} ${fullTag}`
 
             console.log(`📤 Pushing ${name}...`);
             await $`docker push ${fullTag}`
