@@ -9,12 +9,6 @@ WORKDIR /app
 COPY package.json ./
 COPY pnpm-lock.yaml ./
 
-# Copy the backend package and lock files
-# Since it has a separate package.json.
-# The backend codes base directory is /src/api
-# COPY src/api/package.json ./src/api/package.json
-# COPY src/api/pnpm-lock.yaml ./src/api/pnpm-lock.yaml
-
 # Copy all other files to the working directory
 RUN npx next telemetry disable
 RUN npm install -g pnpm

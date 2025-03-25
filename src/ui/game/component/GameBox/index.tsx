@@ -7,9 +7,9 @@ import { useContext } from 'react';
 
 
 export const GameBox : RFC<Props> = ({
-    type = GameBoxType.Default,
+    type  = GameBoxType.Default,
     color = CardColor.Black,
-    size = 'md',
+    size  = 'md',
     children,
 }) => {
 

@@ -20,9 +20,13 @@ export const GameTitleCard = ({
                 {'CrudeCards'}
             </GameTextTitle>
             <GameTextSubtitle>
-                {'A Party Game for Terrible People'}
+                {'A Party Game for'}
+            </GameTextSubtitle>
+            <GameTextSubtitle>
+                {'Terrible People'}
             </GameTextSubtitle>
         </GameBox>
+        <br />
         <GameBox type={GameBoxType.Centered}>
             <GameButton
                 onClick={onStartGame}
