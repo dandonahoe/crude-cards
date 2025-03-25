@@ -5,7 +5,6 @@ import renderHtmlAsReact from 'html-react-parser';
 import { Box, Center, rem } from '@mantine/core';
 import classes from './GameCard.module.css';
 import { useHover } from '@mantine/hooks';
-import { nanoid } from '@reduxjs/toolkit';
 import { GameCardType } from '../../type';
 import { GameStack } from '../GameStack';
 import { GameText } from '../GameText';
@@ -134,7 +133,7 @@ export const GameCardRaw: RFC<GameCardRawProps> = ({
     return (
         <GameCard
             cardType={GameCardType.Raw}
-            id={id ?? nanoid()}
+            id={id}
             onClick={onClick}
             color={color}>
             {rawText}
@@ -148,7 +147,7 @@ export const GameCardHtml: RFC<GameCardHtmlProps> = ({
     return (
         <GameCard
             cardType={GameCardType.Html}
-            id={id ?? nanoid()}
+            id={id}
             onClick={onClick}
             color={color}>
             {rawHtml}
@@ -162,7 +161,7 @@ export const GameCardStack: RFC<GameCardStackProps> = ({
     return (
         <GameCard
             cardType={GameCardType.Stack}
-            id={id ?? nanoid()}
+            id={id}
             onClick={onClick}
             color={color}>
             {children}
@@ -176,7 +175,7 @@ export const GameCardCentered: RFC<CardCenteredProps> = ({
     return (
         <GameCard
             cardType={GameCardType.Raw}
-            id={id ?? nanoid()}
+            id={id}
             onClick={onClick}
             color={color}>
             {children}

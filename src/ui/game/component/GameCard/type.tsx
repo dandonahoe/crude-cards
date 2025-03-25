@@ -44,7 +44,7 @@ export interface GameCardHtmlProps {
     rawHtml    : string;
     onClick   ?: OnClickCard;
     color      : CardColor;
-    id        ?: string;
+    id         : string;
 }
 
 
