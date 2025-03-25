@@ -52,7 +52,7 @@
         "start": "TZ=GMT PORT=80 next start --port 80",
         "start:backend": "pnpm --prefix src/api run start",
         "start:frontend": "pnpm start",
-        "start:storybook": "http-server storybook-static -p 8080",
+        "start:storybook": "http-server storybook-static -p 80",
         "dev:storybook": "storybook dev -p 6006",
         "test": "TZ=GMT jest",
         "test:all": "TZ=GMT pnpm test:frontend && pnpm test:backend",

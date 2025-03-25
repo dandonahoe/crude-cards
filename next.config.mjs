@@ -1,22 +1,54 @@
-// const apiUrl = url => `/api/${url.toLowerCase().trim()}`;
-
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    productionBrowserSourceMaps: true,
-    reactStrictMode: true,
 
-    eslint: {
-        dirs: [
-            'src',
-        ],
+    productionBrowserSourceMaps : true,
+    reactStrictMode             : true,
+
+    eslint : {
+        dirs : ['src'],
     },
 
-    rewrites: () => [{
-        destination: '/game',
-        source: '/game/:gameCode',
+    headers : async () => [{
+        source  : '/(.*)', // Apply to all routes
+        headers : [{
+            key   : 'Strict-Transport-Security',
+            value : 'max-age=63072000; includeSubDomains; preload',
+        }, {
+            key   : 'X-Content-Type-Options',
+            value : 'nosniff',
+        }, {
+            key   : 'X-Frame-Options',
+            value : 'SAMEORIGIN',
+        }, {
+            key   : 'Referrer-Policy',
+            value : 'strict-origin-when-cross-origin',
+        }, {
+            key   : 'Permissions-Policy',
+            value : 'microphone=(self), camera=(), geolocation=(), interest-cohort=()',
+        }, {
+            key   : 'Content-Security-Policy',
+            value : [
+                "connect-src 'self' https://api.crude.cards;",
+                "script-src 'self' 'unsafe-inline';",
+                "style-src 'self' 'unsafe-inline';",
+                "img-src 'self' data: blob:;",
+                "frame-ancestors 'none';",
+                "default-src 'self';",
+                "object-src 'none';",
+                "font-src 'self';",
+                "base-uri 'self';",
+            ].join(' '),
+        }],
     }],
-};
 
+
+    /**
+    * Rewrites short game codes to the main game page.
+    */
+    rewrites : () => [{
+        destination : '/game',
+        source      : '/game/:gameCode',
+    },
+]};
 
 export default nextConfig;
