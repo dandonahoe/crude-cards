@@ -28,7 +28,8 @@ const main = async () => {
 
     console.log('Building Docker Images...')
 
-    await $`IS_BUILDING=true COMPOSE_BAKE=true DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose build`.pipe(process.stdout);
+    // eslint-disable-next-line max-len
+    await $`IS_BUILDING=true COMPOSE_BAKE=true DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose build --no-cache`.pipe(process.stdout);
 
     await Promise.all(
         images.map(async name => {
