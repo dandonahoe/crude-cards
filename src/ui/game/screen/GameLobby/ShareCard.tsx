@@ -14,7 +14,9 @@ export const ShareCard: RFC<ShareCardProps> = ({
         return null;
 
     return (
-        <GameCardCentered color={CardColor.Black}>
+        <GameCardCentered
+            id='share-card'
+            color={CardColor.Black}>
             <ShareCardContent />
         </GameCardCentered>
     );

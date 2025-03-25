@@ -27,7 +27,9 @@ export const GameJoinForm = ({
     };
 
     return (
-        <GameCardStack color={CardColor.White}>
+        <GameCardStack
+            id='join-game-stack'
+            color={CardColor.White}>
             <GameTextCentered color={CardColor.Black}>
                 {'~ or ~'}
             </GameTextCentered>

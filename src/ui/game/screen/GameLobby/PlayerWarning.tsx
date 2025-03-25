@@ -12,7 +12,9 @@ export const PlayerWarning : RFC<PlayerWarningProps> = ({
     if(foeCount < 3) return null;
 
     return (
-        <GameCardStack color={CardColor.Black}>
+        <GameCardStack
+            id='warning-stack'
+            color={CardColor.Black}>
             <GameText>
                 {'Minimum 3 Players'}
             </GameText>

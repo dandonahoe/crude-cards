@@ -11,7 +11,9 @@ export const ScoreboardSection: RFC<ScoreboardSectionProps> = ({
     playerStatus,
 }) =>
     <GameBox>
-        <GameCardStack color={CardColor.Black}>
+        <GameCardStack
+            id='scoreboard-section'
+            color={CardColor.Black}>
             <Text
                 fz='sm'
                 ta='center'>{"3 Points to Win"}</Text>

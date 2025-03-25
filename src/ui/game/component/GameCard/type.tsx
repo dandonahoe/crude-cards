@@ -36,7 +36,7 @@ export interface GameCardRawProps {
     rawText    : string;
     onClick   ?: OnClickCard;
     color      : CardColor;
-    id        ?: string;
+    id         : string;
 }
 
 export interface GameCardHtmlProps {
@@ -53,7 +53,7 @@ export interface GameCardStackProps {
     children   : React.ReactNode[];
     onClick   ?: OnClickCard;
     color      : CardColor;
-    id        ?: string;
+    id         : string;
 }
 
 export interface CardCenteredProps {
@@ -61,5 +61,5 @@ export interface CardCenteredProps {
     children   : React.ReactNode | React.ReactNode[];
     onClick   ?: OnClickCard;
     color      : CardColor;
-    id        ?: string;
+    id         : string;
 }
