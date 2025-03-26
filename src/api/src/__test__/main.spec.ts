@@ -28,7 +28,7 @@ describe('bootstrap', () => {
         // Mock configuration values
         mockConfigService.get.mockImplementation((key: string) => {
             if (key === 'WEB_SOCKET_CORS_ALLOWED_ORIGIN') return 'http://localhost';
-            if (key === 'BACKEND_PORT') return 8080;
+            if (key === 'NEXT_PUBLIC_WEB_SOCKET_LISTENING_PORT') return 8080;
         });
 
         mockApp.get.mockReturnValue(mockConfigService);
@@ -41,7 +41,7 @@ describe('bootstrap', () => {
         expect(NestFactory.create).toHaveBeenCalledWith(AppModule);
         expect(mockApp.get).toHaveBeenCalledWith(ConfigService);
         expect(mockConfigService.get).toHaveBeenCalledWith('WEB_SOCKET_CORS_ALLOWED_ORIGIN');
-        expect(mockConfigService.get).toHaveBeenCalledWith('BACKEND_PORT');
+        expect(mockConfigService.get).toHaveBeenCalledWith('NEXT_PUBLIC_WEB_SOCKET_LISTENING_PORT');
         expect(mockApp.enableCors).toHaveBeenCalledWith({
             credentials : true,
             methods     : ['GET', 'POST'],
@@ -50,10 +50,10 @@ describe('bootstrap', () => {
         expect(mockApp.listen).toHaveBeenCalledWith(8080);
     });
 
-    it('should throw an error if BACKEND_PORT is not set', async () => {
+    it('should throw an error if NEXT_PUBLIC_WEB_SOCKET_LISTENING_PORT is not set', async () => {
         mockConfigService.get.mockImplementation((key: string) => {
             if (key === 'WEB_SOCKET_CORS_ALLOWED_ORIGIN') return 'http://localhost';
-            if (key === 'BACKEND_PORT') return undefined; // Port is missing
+            if (key === 'NEXT_PUBLIC_WEB_SOCKET_LISTENING_PORT') return undefined; // Port is missing
         });
 
         mockApp.get.mockReturnValue(mockConfigService);
@@ -66,7 +66,7 @@ describe('bootstrap', () => {
     it('should throw an error if WEB_SOCKET_CORS_ALLOWED_ORIGIN is not set', async () => {
         mockConfigService.get.mockImplementation((key: string) => {
             if (key === 'WEB_SOCKET_CORS_ALLOWED_ORIGIN') return undefined; // Origin is missing
-            if (key === 'BACKEND_PORT') return 8080;
+            if (key === 'NEXT_PUBLIC_WEB_SOCKET_LISTENING_PORT') return 8080;
         });
 
         mockApp.get.mockReturnValue(mockConfigService);
@@ -80,7 +80,7 @@ describe('bootstrap', () => {
         // Mock configuration values
         mockConfigService.get.mockImplementation((key: string) => {
             if (key === 'WEB_SOCKET_CORS_ALLOWED_ORIGIN') return 'http://localhost';
-            if (key === 'BACKEND_PORT') return 8080;
+            if (key === 'NEXT_PUBLIC_WEB_SOCKET_LISTENING_PORT') return 8080;
         });
 
         mockApp.get.mockReturnValue(mockConfigService);

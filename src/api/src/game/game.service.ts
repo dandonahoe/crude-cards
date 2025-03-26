@@ -1373,6 +1373,7 @@ White Card: ${whiteCard.text}`;
 
         this.log.debug('GameService::createGame - Current Player', { currentPlayer });
         this.log.silly('Leaving any existing games', { currentPlayer })
+
         // Ensure the player leaves any open sessions before starting a new game
         await this.gameSessionService.exitActiveGameSession(
             currentPlayer,

@@ -7,7 +7,7 @@ export enum MenuItem {
     Settings   = 'Settings',
     Feedback   = 'Feedback',
     Unknown    = 'Unknown',
-    Leave       = 'Leave',
+    Leave      = 'Leave',
 }
 
 const IconStyle = {

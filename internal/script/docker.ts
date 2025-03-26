@@ -2,9 +2,9 @@
 
 import { $ } from 'zx';
 
+const region = 'us-east-1';
 
-// The full AWS ECR registry domain.
-const registry = '938413686327.dkr.ecr.us-east-1.amazonaws.com';
+const awsAccountId = '938413686327';
 
 // The name of the ECS cluster to deploy services to.
 const cluster = 'crude-cards-production';
@@ -14,6 +14,9 @@ const images = ['api', 'web', 'ui'];
 
 // The base repository name for the ECR image.
 const repo = 'crude-cards';
+
+// The full AWS ECR registry domain.
+const registry = `${awsAccountId}.dkr.ecr.${region}.amazonaws.com`;
 
 /**
  * Utility function to log a step with an emoji and run a shell command.
@@ -82,13 +85,13 @@ const wrapWithTryCatch = async (callback: () => Promise<void>) => {
  */
 const mainTasks = async () => {
     await logAndRun('🔐', 'Logging into ECR...',
-        $`aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${registry}`);
+        $`aws ecr get-login-password --region ${region} | docker login --username AWS --password-stdin ${registry}`);
 
     await logAndRun('🔨', 'Building Docker Images...',
         $`IS_BUILDING=true COMPOSE_BAKE=true DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker compose build`);
 
     // eslint-disable-next-line max-len
-    console.log('🔗 View progress at https://us-east-1.console.aws.amazon.com/ecs/v2/clusters/crude-cards-production/services?region=us-east-1');
+    console.log(`🔗 View progress at https://${region}.console.aws.amazon.com/ecs/v2/clusters/crude-cards-production/services?region=${region}`);
 
     await Promise.all(
         images.map(async name =>

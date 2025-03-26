@@ -38,6 +38,8 @@ const getValue = <T = string,>(name : string) : T => {
         case 'NEXT_PUBLIC_IS_DEBUG_OVERLAY_VISIBLE' : return toStringOrExplode(process.env.NEXT_PUBLIC_IS_DEBUG_OVERLAY_VISIBLE, 'NEXT_PUBLIC_IS_DEBUG_OVERLAY_VISIBLE')as unknown as T;
         case 'NEXT_PUBLIC_WEB_SOCKET_HOST_ORIGIN'   : return toStringOrExplode(process.env.NEXT_PUBLIC_WEB_SOCKET_HOST_ORIGIN,   'NEXT_PUBLIC_WEB_SOCKET_HOST_ORIGIN' ) as T;
 
+        case 'NEXT_PUBLIC_WEB_SOCKET_LISTENING_PORT': return toStringOrExplode(process.env.NEXT_PUBLIC_WEB_SOCKET_LISTENING_PORT, 'NEXT_PUBLIC_WEB_SOCKET_LISTENING_PORT') as T;
+
 
         default: value = process.env[name] as T;
     }

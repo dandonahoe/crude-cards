@@ -4,13 +4,20 @@ import * as fs from "fs";
 
 const envPath = "../../.env";
 
-if (fs.existsSync(envPath)) dotenv.config({ path : envPath });
-else console.error("Env file not found at the specified path");
+if (fs.existsSync(envPath))
+    {dotenv.config({ path : envPath });}
+else {
+    console.error("Env file not found at the specified path");
+
+    throw new Error("Env file not found at the specified path");
+}
+
 
 describe("Environment Variables", () => {
     const requiredEnvVars = [
         "NEXT_PUBLIC_NEXT_COUNTDOWN_TIMER_DURATION_SECONDS",
         "NEXT_PUBLIC_BROWSER_WINDOW_LOCATION_ORIGIN",
+        "NEXT_PUBLIC_WEB_SOCKET_LISTENING_PORT",
         "NEXT_PUBLIC_IS_DEBUG_OVERLAY_VISIBLE",
         "NEXT_PUBLIC_ENV_CLERK_IS_SATELLITE",
         "NEXT_PUBLIC_WEB_SOCKET_HOST_ORIGIN",
@@ -61,7 +68,6 @@ describe("Environment Variables", () => {
         "DATADOG_KEY_ID",
         "OPENAI_API_KEY",
         "CLIO_CLIENT_ID",
-        "BACKEND_PORT",
         "GH_TOKEN",
     ];
 

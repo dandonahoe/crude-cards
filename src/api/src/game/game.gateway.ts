@@ -77,6 +77,8 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
     ) : P<unknown>{
         this.log.info('GameGateway::createGame', { createGame });
 
+        debugger;
+
         return this.gameService.createGame(this.server, socket, createGame);
     }
 

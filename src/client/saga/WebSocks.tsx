@@ -24,11 +24,14 @@ const CountdownTimerDurationSeconds = Env.getValue<number>('NEXT_PUBLIC_NEXT_COU
 if (!Env.isBuilding() && !Env.isTest()) {
 
     // const origin = 'https://crude-cards-api-service-326275095555.us-west1.run.app';
-    const origin = Env.getValue<string>('NEXT_PUBLIC_WEB_SOCKET_HOST_ORIGIN');
+    const webSocketOrigin = Env.getValue<string>('NEXT_PUBLIC_WEB_SOCKET_HOST_ORIGIN');
+    const webSocketPort   = Env.getValue<string>('NEXT_PUBLIC_WEB_SOCKET_LISTENING_PORT');
 
-    console.log('Connecting to WebSocket:', origin);
+    const webSocketListenUrl = `${webSocketOrigin}:${webSocketPort}`;
 
-    socket = io(origin, {
+    console.log('Connecting to WebSocket:', webSocketListenUrl);
+
+    socket = io(webSocketListenUrl, {
         withCredentials : true,
         auth            : {
             AuthToken : Cookies.get(CookieType.AuthToken),
