@@ -1,0 +1,24 @@
+services:
+    api:
+        build:
+            context: .
+            dockerfile: internal/docker/DockerfileAPI
+        image: 938413686327.dkr.ecr.us-east-1.amazonaws.com/crude-cards/api:latest
+        ports:
+            - "80:80"
+
+    web:
+        build:
+            context: .
+            dockerfile: internal/docker/DockerfileWeb
+        image: 938413686327.dkr.ecr.us-east-1.amazonaws.com/crude-cards/web:latest
+        ports:
+            - "80:80"
+
+    ui:
+        build:
+            context: .
+            dockerfile: internal/docker/DockerfileUI
+        image: 938413686327.dkr.ecr.us-east-1.amazonaws.com/crude-cards/ui:latest
+        ports:
+            - "80:80"

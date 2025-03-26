@@ -4,13 +4,20 @@ import * as fs from "fs";
 
 const envPath = "../../.env";
 
-if (fs.existsSync(envPath)) dotenv.config({ path : envPath });
-else console.error("Env file not found at the specified path");
+if (fs.existsSync(envPath))
+    {dotenv.config({ path : envPath });}
+else {
+    console.error("Env file not found at the specified path");
+
+    throw new Error("Env file not found at the specified path");
+}
+
 
 describe("Environment Variables", () => {
     const requiredEnvVars = [
         "NEXT_PUBLIC_NEXT_COUNTDOWN_TIMER_DURATION_SECONDS",
         "NEXT_PUBLIC_BROWSER_WINDOW_LOCATION_ORIGIN",
+        "NEXT_PUBLIC_WEB_SOCKET_LISTENING_PORT",
         "NEXT_PUBLIC_IS_DEBUG_OVERLAY_VISIBLE",
         "NEXT_PUBLIC_ENV_CLERK_IS_SATELLITE",
         "NEXT_PUBLIC_WEB_SOCKET_HOST_ORIGIN",
@@ -23,24 +30,14 @@ describe("Environment Variables", () => {
         "AI_AWS_BUCKET_PREFIX_TEXTRACT",
         "NEXT_PUBLIC_ENV_CLERK_DOMAIN",
         "STRIPE_LOCAL_WEBHOOK_SECRET",
-        "NEXT_PUBLIC_PUSHER_CLUSTER",
-        "DATABASE_CONNECTION_STRING",
         "NEXT_GOOGLE_GEMINI_API_KEY",
-        "DATABASE_SEED_MEDIUM_LIMIT",
         "AI_AWS_TEXTRACT_SNS_TOPIC",
         "GOOGLE_CLOUD_PROCESSOR_ID",
-        "DATABASE_SEED_LARGE_LIMIT",
-        "DATABASE_SEED_SMALL_LIMIT",
         "AI_AWS_SECRET_ACCESS_KEY",
-        "CLOUDMAILIN_FROM_ADDRESS",
-        "DATABASE_SEED_MULTIPLIER",
-        "INSTANCE_CONNECTION_NAME",
         "DEEPGRAM_API_SECRET_KEY",
         "DANGER_GITHUB_API_TOKEN",
         "NEW_RELIC_API_SOMETHING",
         "GOOGLE_CLOUD_PROJECT_ID",
-        "DATABASE_SEED_MIN_LIMIT",
-        "NEXT_PUBLIC_PUSHER_KEY",
         "GCP_ALLOYDB_CLUSTER_ID",
         "PEOPLEDATALABS_API_KEY",
         "CLIO_AUTHORIZATION_URI",
@@ -57,12 +54,8 @@ describe("Environment Variables", () => {
         "GCP_ALLOYDB_PASSWORD",
         "NEW_RELIC_API_KEY_ID",
         "AI_AWS_ACCESS_KEY_ID",
-        "CLOUDMAILIN_USERNAME",
         "AI_AWS_BUCKET_REGION",
         "STRIPE_PRICE_ID_YEAR",
-        "CLOUDMAILIN_API_KEY",
-        "NEXT_PUSHER_SECRET",
-        "NEXT_PUSHER_APP_ID",
         "CLIO_CLIENT_SECRET",
         "NEXT_PUBLIC_APP_ID",
         "AI_AWS_BUCKET_NAME",
@@ -75,7 +68,6 @@ describe("Environment Variables", () => {
         "DATADOG_KEY_ID",
         "OPENAI_API_KEY",
         "CLIO_CLIENT_ID",
-        "BACKEND_PORT",
         "GH_TOKEN",
     ];
 

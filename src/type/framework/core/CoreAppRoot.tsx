@@ -10,8 +10,8 @@ export interface CoreAppRoot {
         previousHandDealerCardId : string | null;
         previousHandWinnerCardId : string | null;
 
-        popupTypeId : GamePopupType | null;
-        gameState   : Omit<GameStateDTO, 'player_list' | 'current_player'>;
+        popupType : GamePopupType | null;
+        gameState : Omit<GameStateDTO, 'player_list' | 'current_player'>;
 
         playerLookup : { [key : string] : PlayerDTO }
         cardDeck     : { [key : string] : CardDTO   };

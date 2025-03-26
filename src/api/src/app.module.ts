@@ -1,6 +1,7 @@
 import { RequestLogMiddleware } from './middleware/RequestLog.middleware';
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { GameInterceptor } from './interceptors/game.interceptor';
+// import { DevtoolsModule } from '@nestjs/devtools-integration';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { createDataSourceOptions } from './data-source';
 import { GameGateway } from './game/game.gateway';
@@ -9,26 +10,31 @@ import { GameModule } from './game/game.module';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { LogModule } from './log/Log.module';
 import { Logger } from 'winston';
+import { EntityModule } from './entity/entity.module';
 import * as path from 'path';
+
 
 @Module({
     imports : [
+        GameModule,
         LogModule,
-        ConfigModule.forRoot({
-            envFilePath : path.resolve(__dirname, '../../../.env'),
-            isGlobal    : true,
-        }),
         TypeOrmModule.forRootAsync({
             imports    : [ConfigModule],
             inject     : [ConfigService],
             useFactory : async (configService: ConfigService) =>
                 createDataSourceOptions(configService),
         }),
-        GameModule,
+        ConfigModule.forRoot({
+            envFilePath : path.resolve(__dirname, '../../../.env'),
+            isGlobal    : true,
+        }),
+        EntityModule,
+        // DevtoolsModule.register({
+        //     http : process.env.NODE_ENV !== 'production',
+        // }),
     ],
     providers : [
-        Logger,
-        {
+        Logger, {
             provide  : APP_INTERCEPTOR,
             useClass : GameInterceptor,
         },

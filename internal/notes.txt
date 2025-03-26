@@ -1,0 +1,7 @@
+docker tag crude-cards/api:latest 938413686327.dkr.ecr.us-east-1.amazonaws.com/crude-cards/api:latest
+docker tag crude-cards/web:latest 938413686327.dkr.ecr.us-east-1.amazonaws.com/crude-cards/web:latest
+docker tag crude-cards/ui:latest 938413686327.dkr.ecr.us-east-1.amazonaws.com/crude-cards/ui:latest
+
+docker push 938413686327.dkr.ecr.us-east-1.amazonaws.com/crude-cards/api:latest
+docker push 938413686327.dkr.ecr.us-east-1.amazonaws.com/crude-cards/web:latest
+docker push 938413686327.dkr.ecr.us-east-1.amazonaws.com/crude-cards/ui:latest

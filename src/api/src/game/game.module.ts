@@ -16,6 +16,8 @@ import { GameGateway } from './game.gateway';
 import {  Module } from '@nestjs/common';
 import { Game } from './game.entity';
 import { Logger } from 'winston';
+import { OpenAIModule } from '../openai/openai.module';
+import { OpenAIService } from '../openai/openai.service';
 
 
 @Module({
@@ -26,6 +28,7 @@ import { Logger } from 'winston';
     providers : [
         GameWebSocketExceptionFilter,
         GameExceptionFilter,
+        OpenAIService,
         UtilService,
         SockService,
         GameService,
@@ -34,14 +37,15 @@ import { Logger } from 'winston';
     ],
 
     imports : [
-        LogModule,
         GameSessionModule,
         FeedbackModule,
         ScoreLogModule,
         PlayerModule,
+        OpenAIModule,
         CardModule,
         UtilModule,
         SockModule,
+        LogModule,
 
         TypeOrmModule.forFeature([
             Game,

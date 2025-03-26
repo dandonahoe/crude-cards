@@ -7,7 +7,7 @@ import { displaySuccess } from './util';
 /**
  * Bootstrap the NestJS application.
  *
- * Initializes the application with a custom logger using `winston` and `@google-cloud/logging-winston`.
+ * Initializes the application with a custom logger using `winston`
  * Retrieves configuration settings for CORS and port, then starts the server.
  * Logs an ASCII art message if the environment is not set to 'test'.
  */
@@ -20,29 +20,33 @@ export const bootstrap = async (): Promise<void> => {
     const configService = app.get(ConfigService);
 
     // Retrieve the allowed origin for WebSocket CORS from configuration
-    const origin = configService.get<string>('WEB_SOCKET_CORS_ALLOWED_ORIGIN');
+    const webSocketOrigin = configService.get<string>('WEB_SOCKET_CORS_ALLOWED_ORIGIN');
 
     // Retrieve the backend port from configuration
-    const port = configService.get<number>('BACKEND_PORT');
+    const webSocketPort = configService.get<number>('NEXT_PUBLIC_WEB_SOCKET_LISTENING_PORT');
 
     // Throw an error if the port is not set in the configuration
-    if (!port) throw new Error('PORT not set');
+    if (!webSocketPort)
+        throw new Error('PORT not set');
 
     // Throw an error if the WebSocket CORS allowed origin is not set in the configuration
-    if (!origin) throw new Error('WEB_SOCKET_CORS_ALLOWED_ORIGIN not set');
+    if (!webSocketOrigin)
+        throw new Error('WEB_SOCKET_CORS_ALLOWED_ORIGIN not set');
+
+    const webSocketListenUrl = `${webSocketOrigin}:${webSocketPort}`;
 
     // Enable CORS with specific settings
     app.enableCors({
         credentials : true,
         methods     : ['GET', 'POST'],
-        origin,
+        origin      : webSocketListenUrl,
     });
 
     // Start listening on the specified port
-    await app.listen(8080);
+    await app.listen(webSocketPort);
 
     // Log the port number to the console in green color
-    console.log('\x1b[92m%s\x1b[0m\n', `Listening on: ${port}`);
+    console.log('\x1b[92m%s\x1b[0m\n', `Listening on (${await app.getUrl()},${webSocketPort})`);
 
     // If the environment is set to 'test', return early
     if (process.env.NODE_ENV === 'test') return;

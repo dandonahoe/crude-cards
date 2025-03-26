@@ -1,0 +1,23 @@
+version: 1
+frontend:
+    phases:
+        preBuild:
+            commands:
+                - corepack enable
+                - corepack prepare pnpm@10.6.1 --activate
+                - pnpm install
+                - pnpm --prefix src/api install
+        build:
+            commands:
+                - corepack enable
+                - corepack prepare pnpm@10.6.1 --activate
+                - pnpm build:all
+
+    artifacts:
+        baseDirectory: .next
+        files:
+            - "**/*"
+    cache:
+        paths:
+            - .next/cache/**/*
+            - node_modules/**/*

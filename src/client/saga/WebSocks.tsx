@@ -23,11 +23,15 @@ const CountdownTimerDurationSeconds = Env.getValue<number>('NEXT_PUBLIC_NEXT_COU
 // skip initalizing the websocket when building or running tests
 if (!Env.isBuilding() && !Env.isTest()) {
 
-    const origin = Env.getValue<string>('NEXT_PUBLIC_WEB_SOCKET_HOST_ORIGIN');
+    // const origin = 'https://crude-cards-api-service-326275095555.us-west1.run.app';
+    const webSocketOrigin = Env.getValue<string>('NEXT_PUBLIC_WEB_SOCKET_HOST_ORIGIN');
+    const webSocketPort   = Env.getValue<string>('NEXT_PUBLIC_WEB_SOCKET_LISTENING_PORT');
 
-    console.log('Connecting to WebSocket:', origin);
+    const webSocketListenUrl = `${webSocketOrigin}:${webSocketPort}`;
 
-    socket = io(origin, {
+    console.log('Connecting to WebSocket:', webSocketListenUrl);
+
+    socket = io(webSocketListenUrl, {
         withCredentials : true,
         auth            : {
             AuthToken : Cookies.get(CookieType.AuthToken),
@@ -92,10 +96,10 @@ function* sagaStartUpdateListener(): Saga {
 
     console.log('Socket channel created');
 
-    let previousGameState = yield* select(selectGameState);
-    console.log('Initial game state:', previousGameState);
-
     while (true) {
+
+        let previousGameState = yield* select(selectGameState);
+        console.log('Initial game state:', previousGameState);
 
         console.log('Waiting for new game state...');
         const newGameState = (yield* take(channelGameUpdateListener)) as GameStateDTO;
@@ -232,8 +236,6 @@ function* onSendWebSocketMessage(
 // and just use the relay channel
 
 function* sagaSendWebSocketMessage(): Saga {
-    console.log('Starting Listener for WebSocket Messages');
-
     yield* takeEvery([
         GameAction.dealerPickBlackCard,
         GameAction.playerSelectCard,
@@ -245,8 +247,10 @@ function* sagaSendWebSocketMessage(): Saga {
         GameAction.leaveGame,
         GameAction.joinGame,
         GameAction.nextHand,
+        GameAction.logRelay,
     ], onSendWebSocketMessage);
 }
+
 
 function* sagaStartTimer(): Saga {
 

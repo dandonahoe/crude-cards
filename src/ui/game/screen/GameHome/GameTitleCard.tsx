@@ -1,0 +1,35 @@
+import { GameTextTitle, GameTextSubtitle } from "../../component/GameText";
+import { CardColor } from '../../../../api/src/constant/card-color.enum';
+import { GameBoxType } from "../../component/GameBox/type";
+import { GameButton } from "../../component/GameButton";
+import { GameCard } from "../../component/GameCard";
+import { GameBox } from "../../component/GameBox";
+import { GameTitleCardProps } from "./type";
+import { GameCardType } from "../../type";
+
+
+export const GameTitleCard = ({
+    onStartGame,
+}: GameTitleCardProps) =>
+    <GameCard
+        cardType={GameCardType.Children}
+        color={CardColor.Black}
+        id='title-card'>
+        <GameBox>
+            <GameTextTitle>
+                {'CrudeCards'}
+            </GameTextTitle>
+            <GameTextSubtitle>
+                {'A Party Game for'}
+            </GameTextSubtitle>
+            <GameTextSubtitle>
+                {'Terrible People'}
+            </GameTextSubtitle>
+        </GameBox>
+        <br />
+        <GameBox type={GameBoxType.Centered}>
+            <GameButton
+                onClick={onStartGame}
+                text='Go' />
+        </GameBox>
+    </GameCard>

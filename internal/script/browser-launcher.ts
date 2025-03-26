@@ -25,4 +25,7 @@ const openUrl = (url: string, width: number, height: number, left: number, top: 
 };
 
 // Open each URL in a new browser window with specified dimensions and positions
-urls.forEach(({ url, width, height, left, top }) => openUrl(url, width, height, left, top));
+urls.forEach(({
+    url, width, height, left, top
+}) =>
+    openUrl(url, width, height, left, top));
