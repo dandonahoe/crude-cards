@@ -16,6 +16,7 @@ import { AuthToken, GameDeck, GameExitReason } from '../type';
 import { PlayerType } from '../constant/player-type.enum';
 import { PlayerService } from '../player/player.service';
 import { ScoreLog } from '../score-log/score-log.entity';
+import { OpenAIService } from '../openai/openai.service';
 import { GameStage } from '../constant/game-stage.enum';
 import { CardColor } from '../constant/card-color.enum';
 import { type P } from '../../../type/framework/data/P';
@@ -37,9 +38,9 @@ import { PlayerDTO } from './dtos/player.dto';
 import { Socket, Server } from 'socket.io';
 import { Repository } from 'typeorm';
 import { Game } from './game.entity';
+import { PlayerState } from './type';
 import { difference } from 'lodash';
 import { Logger } from 'winston';
-import { OpenAIService } from '../openai/openai.service';
 
 
 @Injectable()
@@ -93,11 +94,12 @@ export class GameService {
         this.log.debug('Socket Request', { socketRequest });
         this.log.silly('Looking up player info by auth token', { authToken : socketRequest.authToken });
 
+        // Pass auth token (or empty if not provided) and attempt to lookup
         const playerState = await this.getPlayerStateByAuthToken(socketRequest.authToken);
 
         let player: Player | null = null;
 
-        //If no player was found (bad token, outdated, etc.), create a new player
+        // If no player was found (bad token, outdated, etc.), create a new player
         if (!playerState.currentPlayer) {
             this.log.debug('No player found for socket, creating new player.', { socketRequest });
 
@@ -179,10 +181,20 @@ export class GameService {
     */
     public disconnectPlayer = async (
         socket: Socket,
-    ): P<unknown> => {
-        this.log.debug('TODO: ENABLE DISCONNECT ROUTINE.', { socketId : socket.id });
+    ): P<void> => {
+        this.log.debug('GameService::disconnectPlayer', { socketId : socket.id });
 
-        return;
+        const player = await this.findPlayerBySocket(socket);
+
+        const session = await this.gameSessionService.findActivePlayerGameSession(player);
+
+        if(!player)
+            throw WSE.InternalServerError500('GameService::Player or Session is null', { player, session });
+
+        if(!session) return;
+
+        await this.gameSessionService.removePlayerFromSession(
+            player, session, GameExitReason.Disconnected, 'Disconnect Routine')
     }
 
     public getSocketServer = async (): P<Server> => {
@@ -335,12 +347,17 @@ export class GameService {
         // Fetch player state based on auth token
         const playerState = await this.getPlayerStateByAuthTokenOrFail(exitGame.auth_token!);
 
-        const { currentPlayer: player, game } = playerState;
+        const {
+            currentPlayer : player, game, session : playerSession,
+        } = playerState;
+
+        if(!player || !game || !playerSession)
+            throw WSE.InternalServerError500('Player or Game is null', { playerState });
 
         // Remove the player from the session
         const session = await this.gameSessionService.removePlayerFromSession(
             player,
-            playerState.session,
+            playerSession,
             // added to the exited_player_id_list, removed from the player_id_list
             // and extra check to ensure not in limbo
             GameExitReason.LeftByChoice,
@@ -358,7 +375,6 @@ export class GameService {
         // but should only do things whent he state has gone bogus
 
         if (!session) {
-
             this.log.warning('GameService::exitGame - Session is Bogus, Cannot Leave Session it Cant Find', {
                 game_code : game.game_code, player, runtimeContext,
             });
@@ -412,19 +428,14 @@ export class GameService {
      * @returns - The game state for the current player
      */
     public getPlayerStateByAuthTokenOrFail = async (
-        authToken: AuthToken,
-    ): P<{
-        currentPlayer: Player,
-        scoreLog: ScoreLog | null,
-        session: GameSession,
-        players: Player[],
-        game: Game,
-    }> => {
+        authToken : AuthToken,
+    ): P<PlayerState> => {
         this.log.silly('GameService::getPlayerStateByAuthTokenOrFail', { authToken });
 
-        const { currentPlayer, game, session } = await this.getPlayerStateByAuthToken(authToken);
+        const playerState = await this.getPlayerStateByAuthToken(authToken);
 
-        const debugInfo = { authToken };
+        const { currentPlayer, session, game } = playerState;
+        const debugInfo = { authToken, playerState };
 
         if (!currentPlayer) throw WSE.InternalServerError500('Invalid Auth Token, No Player', debugInfo);
         if (!session) throw WSE.InternalServerError500(`Invalid Auth Token ${authToken}, No Session`, debugInfo);
@@ -436,8 +447,9 @@ export class GameService {
         ]);
 
         return {
-            currentPlayer, scoreLog, session, players, game,
-        };
+            ...playerState,
+            scoreLog, players,
+        }
     };
 
     /**
@@ -447,14 +459,8 @@ export class GameService {
      * @returns Objects related to the user with authToken
      */
     public async getPlayerStateByAuthToken(
-        authToken: AuthToken,
-    ): P<{
-        currentPlayer: Player | null,
-        scoreLog: ScoreLog | null,
-        session: GameSession | null,
-        players: Player[] | null,
-        game: Game | null,
-    }> {
+        authToken : AuthToken,
+    ): P<PlayerState> {
         this.log.silly('GameService::getPlayerStateByAuthToken', { authToken });
 
         if (!authToken)
@@ -555,6 +561,15 @@ export class GameService {
         await this.ensureValidSessionState(session, 'Determining Next Hand');
 
         // Determine the next stage of the game based on round count and player scores
+        if (!session)
+            throw WSE.InternalServerError500('Session is null');
+
+        if (!game)
+            throw WSE.InternalServerError500('Game is null');
+
+        if (!players)
+            throw WSE.InternalServerError500('Players list is null');
+
         const newGameStage = await this.determineNextGameStage(session, game, players);
 
         // Select the next dealer for the upcoming round
@@ -568,7 +583,6 @@ export class GameService {
         // Create or update the score log for the session
         const newScoreLog = await this.scoreLogService.relateToSession(session);
 
-
         this.log.silly('GameService::nextHand', {
             newGameStage, newDealerId, newDealerCards, newWhiteCards, newScoreLog,
         });
@@ -579,9 +593,24 @@ export class GameService {
             newGameStage, newDealerId,
             newScoreLog, session);
 
+        if (!game)
+            throw WSE.InternalServerError500('Game is null');
+
+        if (!game)
+            throw WSE.InternalServerError500('Game is null');
+
+        if (!game)
+            throw WSE.InternalServerError500('Game is null');
+
+        if (!game)
+            throw WSE.InternalServerError500('Game is null');
+
         await this.emitGameUpdate(server, game.game_code);
 
         // Return the updated game state for the current player
+        if (!currentPlayer)
+            throw WSE.InternalServerError500('Current player is null');
+
         return this.getGameStateAsPlayer(game.game_code, currentPlayer.id);
     }
 
@@ -663,11 +692,10 @@ export class GameService {
     /**
      * Deals new cards to players and returns the updated lists of dealer cards and white cards.
      * The dealer is assigned 10 new black cards, while each player (except the dealer) is assigned a new white card.
-     * The card assignment operations are fully parallelized for maximum efficiency.
      *
      * @param session - The current game session
      *
-     * @returns An array with the dealer's new black cards and the players' new white cards
+     * @returns An array with the dealer's new black cards and the players' new white cards (ids)
      */
     private dealCardsToPlayers = async (
         session: GameSession,
@@ -706,7 +734,7 @@ export class GameService {
                 console.log('Player Before', playerBefore.card_id_list);
 
                 // Take out the cards just played
-                await this.playerService.removeAnyMatchinWhiteCards(playerId, session.selected_card_id_list);
+                await this.playerService.removeAnyMatchingWhiteCards(playerId, session.selected_card_id_list);
 
                 const playerAfter = await this.playerService.getPlayerById(playerId);
                 console.log('Player After', playerAfter.card_id_list);
@@ -757,6 +785,9 @@ export class GameService {
             playerState,
             dealerPickBlackCard,
         });
+
+        if(!playerState.session)
+            throw WSE.InternalServerError500('Session is null', { playerState });
 
         await this.updateSessionWithDealerPick(
             playerState.session,
@@ -821,18 +852,23 @@ export class GameService {
             dealer, players, game, session, scoreLog,
         } = await this.getDealerAndSessionData(dealerPickWinner.auth_token!);
 
+        if(!dealer)
+            throw WSE.InternalServerError500('Dealer is null', debugBundle);
+
         const sessionEndMessage = await this.generateSessionEndMessage(session.dealer_card_id, dealerPickWinner.card_id);
 
-
         debugBundle.scoreLogId = scoreLog.id;
-        debugBundle.sessionId = session.id;
-        debugBundle.dealerId = dealer.id;
-        debugBundle.gameId = game.id;
+        debugBundle.sessionId  = session.id;
+        debugBundle.dealerId   = dealer.id;
+        debugBundle.gameId     = game.id;
 
         // Does this explode??
         this.log.debug('Retrieved dealer and session data', { debugBundle });
 
         // Determine the winning player based on the selected card ID
+        if (!players)
+            throw WSE.InternalServerError500('Players list is null');
+
         const winningPlayer = await this.getWinningPlayer(players, dealerPickWinner.card_id!);
 
         const winningPlayerId = winningPlayer.id;
@@ -857,6 +893,9 @@ export class GameService {
         this.log.debug('Progressed game or showed hand results', { debugBundle, winningPlayerId });
 
         // Return the updated game state for the dealer
+        if (!dealer)
+            throw WSE.InternalServerError500('Dealer is null');
+
         const gameState = await this.getGameStateAsPlayer(game.game_code, dealer.id!);
 
         this.log.silly('GameService::dealerPickWinner - End', {
@@ -905,8 +944,7 @@ White Card: ${whiteCard.text}`;
             .to(player.id!)
             .emit(
                 WebSocketEventType.UpdatePlayerValidation,
-                player.auth_token,
-            );
+                player.auth_token);
 
     /**
      * Emits a game update to all players in the game session.
@@ -979,6 +1017,12 @@ White Card: ${whiteCard.text}`;
             currentPlayer: dealer, players, game, session, scoreLog,
         } = await this.getPlayerStateByAuthTokenOrFail(authToken);
 
+        if(!game)
+            throw WSE.InternalServerError500(`No game found for auth token ${authToken}`);
+
+        if(!session)
+            throw WSE.InternalServerError500(`No session found for game ${game.id}`);
+
         if (!scoreLog)
             throw WSE.InternalServerError500(`No score log found for session ${session.id} and game ${game.id}`);
 
@@ -1021,11 +1065,11 @@ White Card: ${whiteCard.text}`;
      * @param winningPlayer  - The player identified as the winner
      */
     private updateScoreAndPlayer = async (
-        scoreLog: ScoreLog,
-        session: GameSession,
-        dealer: Player,
-        selectedCardId: string,
-        winningPlayer: Player,
+        scoreLog       : ScoreLog,
+        session        : GameSession,
+        dealer         : Player,
+        selectedCardId : string,
+        winningPlayer  : Player,
     ) => {
         await this.scoreLogService.updateScore(
             scoreLog, session, winningPlayer, selectedCardId, dealer);
@@ -1042,9 +1086,9 @@ White Card: ${whiteCard.text}`;
      * @param winningPlayer - The player identified as the winner
      */
     private progressGameOrShowHandResults = async (
-        game: Game,
-        session: GameSession,
-        winningPlayer: Player,
+        game          : Game,
+        session       : GameSession,
+        winningPlayer : Player,
     ) => {
         if (winningPlayer.score >= game.max_point_count) {
             const combos = await this.getAllWinningCardCombos(game);
@@ -1097,9 +1141,9 @@ White Card: ${whiteCard.text}`;
         transform : true,
     }))
     public async startGame(
-        server: Server, socket: Socket,
+        server : Server, socket: Socket,
         @Body(new ZodValidationPipe(StartGameDTO.Schema))
-        startGame: StartGameDTO,
+        startGame : StartGameDTO,
     ): P<unknown> {
         this.myFunTestSocketIoServerRenameMe = server;
 
@@ -1112,6 +1156,12 @@ White Card: ${whiteCard.text}`;
         } = await this.getPlayerStateByAuthTokenOrFail(startGame.auth_token!);
 
         // Ensure that the current player is the host
+        if (!currentPlayer)
+            throw WSE.InternalServerError500('Current player is null');
+
+        if (!game)
+            throw WSE.InternalServerError500('Game is null');
+
         await this.ensurePlayerIsHost(currentPlayer, game);
 
         // Retrieve the game state and relevant data
@@ -1130,6 +1180,9 @@ White Card: ${whiteCard.text}`;
         await this.assignCardsToPlayers(gameStateGeneric.player_list, gameDeck);
 
         // Set up the game session with the retrieved cards
+        if (!session)
+            throw WSE.InternalServerError500('Session is null');
+
         await this.setupGameSession(session, currentPlayer, gameDeck);
 
         return this.emitGameUpdate(server, game.game_code, true, [], 'Starting Game - Dealing Cards');
@@ -1144,7 +1197,8 @@ White Card: ${whiteCard.text}`;
      */
     private ensurePlayerIsHost = async (currentPlayer: Player, game: Game) => {
         if (currentPlayer.id !== game.host_player_id)
-            throw WSE.InternalServerError500(`Player ${currentPlayer.id} is not the host. Host is ${game.host_player_id}.`);
+            throw WSE.InternalServerError500(
+                `Player ${currentPlayer.id} is not the host. Host is ${game.host_player_id}.`);
     }
 
     /**
@@ -1160,7 +1214,7 @@ White Card: ${whiteCard.text}`;
         whiteCardTotalCount: number, blackCardTotalCount: number
     }> => {
         const maxRoundCount = gameStateGeneric.max_round_count;
-        const playerCount = gameStateGeneric.player_list.length;
+        const playerCount   = gameStateGeneric.player_list.length;
 
         const whiteCardTotalCount = (playerCount * 7) + (maxRoundCount * (playerCount - 1)); // minus dealer
         const blackCardTotalCount = maxRoundCount * 7; // Each round a dealer gets 10 fresh cards
@@ -1177,8 +1231,8 @@ White Card: ${whiteCard.text}`;
      * @returns An object containing arrays of white and black card IDs
      */
     private fetchCardDeck = async (
-        whiteCardTotalCount: number,
-        blackCardTotalCount: number,
+        whiteCardTotalCount : number,
+        blackCardTotalCount : number,
     ): P<GameDeck> => {
 
         const [whiteCards, blackCards] = await Promise.all([
@@ -1285,7 +1339,13 @@ White Card: ${whiteCard.text}`;
         // Retrieve the current player and game based on the provided auth token
         const { currentPlayer, game } = await this.getPlayerStateByAuthTokenOrFail(updateUsername.auth_token!);
 
+        if(!game)
+            throw WSE.InternalServerError500('Game is null');
+
         // Update the player's username using the player service
+        if (!currentPlayer)
+            throw WSE.InternalServerError500('Current player is null');
+
         await this.playerService.updateUsername(currentPlayer, updateUsername.username);
 
         await this.emitGameUpdate(server, game.game_code);
@@ -1308,7 +1368,7 @@ White Card: ${whiteCard.text}`;
         transform : true,
     }))
     public async playerSelectCard(
-        server: Server, socket: Socket,
+        server : Server, socket : Socket,
         @Body(new ZodValidationPipe(PlayerSelectCardDTO.Schema))
         playerSelectCard: PlayerSelectCardDTO,
 
@@ -1327,6 +1387,10 @@ White Card: ${whiteCard.text}`;
         const { game, currentPlayer } = playerState;
         let { session } = playerState;
 
+        if(!currentPlayer) throw WSE.InternalServerError500('Player has no player, wtf.');
+        if(!session)       throw WSE.InternalServerError500('Player has no session');
+        if(!game)          throw WSE.InternalServerError500('Player has no game');
+
         // Process the player's selected white card and update the session state
         session = await this.gameSessionService.playerSelectsWhiteCard(
             session, playerSelectCard.card_id!);
@@ -1335,7 +1399,6 @@ White Card: ${whiteCard.text}`;
         if (session.selected_card_id_list.length === session.player_id_list.length - 1)
             // Transition the game to the dealer's selection stage if all players have selected
             await this.gameSessionService.gotoDealerPickWinnerStage(session);
-
 
         await this.emitGameUpdate(server, game.game_code);
 
@@ -1390,6 +1453,8 @@ White Card: ${whiteCard.text}`;
             game_code          : await this.utilService.generateGameCode(4), // Generate a 4-character game code
         });
 
+
+        // What?
         this.log.info('Joining Game Specific Channel During Game Creation')
         socket.join(`${game.id}_${currentPlayer.id}`);
 
@@ -1412,10 +1477,10 @@ White Card: ${whiteCard.text}`;
         transform : true,
     }))
     public async joinGame(
-        server: Server, socket: Socket,
+        server : Server, socket : Socket,
         @Body(new ZodValidationPipe(JoinGameDTO.Schema))
-        joinGame: JoinGameDTO,
-        runtimeContext: string = '',
+        joinGame       : JoinGameDTO,
+        runtimeContext : string = '',
     ): P<void> {
 
         this.myFunTestSocketIoServerRenameMe = server;
@@ -1429,7 +1494,7 @@ White Card: ${whiteCard.text}`;
         const { session, game } = await this.getGameStateByGameCode(joinGame.game_code!);
 
         // not using the session and game from here since we're no in the game yet
-        let { currentPlayer: player } = await this.getPlayerStateByAuthToken(joinGame.auth_token!);
+        let { currentPlayer : player } = await this.getPlayerStateByAuthToken(joinGame.auth_token!);
 
         if (!player)
             throw WSE.InternalServerError500(`JoinGame::Invalid Player (${joinGame.auth_token})`);
@@ -1659,7 +1724,7 @@ White Card: ${whiteCard.text}`;
         // Initiate parallel queries for session, score log, and players
         const [
             newSession, scoreLog, players,
-        ] = await Promise.all([
+        ] = await Promise.all([ 
             this.gameSessionService.findActiveGameSession(game),
             this.scoreLogService.findScoreLogBySession(session!),
             this.playerService.findActivePlayersInSession(session!),
@@ -1779,6 +1844,7 @@ White Card: ${whiteCard.text}`;
 
         if (dealerIndex === -1) {
             this.log.error('Current dealer not found in player list', { session });
+
             throw WSE.InternalServerError500(`Current dealer not found in player list (${session.id})`);
         }
 

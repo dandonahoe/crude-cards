@@ -167,7 +167,7 @@ export class PlayerService {
      *
      * @returns A promise that resolves when the update is complete.
      */
-    public removeAnyMatchinWhiteCards = async (
+    public removeAnyMatchingWhiteCards = async (
         playerId     : string,
         whiteCardIds : string[],
     ) : P<Player> =>{

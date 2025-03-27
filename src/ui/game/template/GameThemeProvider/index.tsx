@@ -9,9 +9,6 @@ import { Props } from "./type";
 export const GameThemeProvider : RFC<Props> = ({
     browserTheme, children,
 }) => {
-
-    // debugger;
-
     switch(browserTheme) {
 
         case BrowserTheme.JazzHands:

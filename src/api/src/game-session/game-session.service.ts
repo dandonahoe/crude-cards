@@ -41,9 +41,9 @@ export class GameSessionService {
      * @returns - The updated session with the player in the exited list
      */
     public exitActiveGameSession = async (
-        currentPlayer: Player,
-        exitReason: GameExitReason,
-        runtimeContext: string = '') => {
+        currentPlayer  : Player,
+        exitReason     : GameExitReason,
+        runtimeContext : string = '') => {
 
         const prefix = 'GameSessionService::leaveOpenSession';
 
@@ -62,9 +62,7 @@ export class GameSessionService {
         });
 
         return this.removePlayerFromSession(
-            currentPlayer,
-            session,
-            exitReason,
+            currentPlayer, session, exitReason,
             'Found player in a session, removing them.');
     };
 
@@ -78,7 +76,7 @@ export class GameSessionService {
      * @returns The reason the player is joining the game.
      */
     private getJoinGameReason = (
-        player: Player, session: GameSession,
+        player : Player, session : GameSession,
     ): JoinGameReason => {
         const {
             exited_player_id_list,
@@ -119,8 +117,8 @@ export class GameSessionService {
 
         // Joining Player is Already in Limbo
         // IF: If they are listed in the limbo_player_id_list and
-        // are NOT in exited_player_id_list, then they're
-        // joinged as a new player while the game is already in progress and
+        // are NOT in exited_player_id_list, then they
+        // joined as a new player while the game is already in progress and
         // were put into limbo previously. This could happen if they
         // were in limbo and refreshed the page or rejoined the game multiple
         // times as the same user
@@ -135,10 +133,10 @@ export class GameSessionService {
         // IF: They are listed in the exited_player_id_list, then
         // they were disconnected and the server properly registerd the
         // disconnnect, and the players were notified with updated state
-        // reflecting the dicsconnected player.
+        // reflecting the disconnected player.
         // ACTION: Remove them from the exited_player_id_list.
         // The player_id_list has all players, so just removing it from
-        // disconnected reconnectes them to the session. Joining players
+        // disconnected reconnects them to the session. Joining players
         // who were previously disconnected properly should be
         // added back automatically. They skip limbo since they're
         // already known to be in the game and are dealt in.
@@ -808,47 +806,52 @@ export class GameSessionService {
         // Log the initial state of the removal process for debugging purposes
         this.log.silly('GameSessionService::removePlayer', { debugBundle });
 
+        const { id : playerId } = player;
+
         // Determine additional updates based on the exit reason
         switch (exitReason) {
-            case GameExitReason.Disconnected:
+            case GameExitReason.Disconnected: {
+                this.log.info('Player disconnected from game', { exitReason });
 
-
-                // Append the player's ID to the disconnected player list
                 await this.gameSessionRepo.update(session.id, {
                     ...session,
-                    exited_player_id_list : () => `array_append(exited_player_id_list, '${player.id}')`,
-                    limbo_player_id_list  : () => `array_remove(limbo_player_id_list,  '${player.id}')`,
-                    player_id_list        : () => `array_remove(player_id_list,        '${player.id}')`,
+                    exited_player_id_list : () => `array_append(exited_player_id_list, '${playerId}')`,
+                    limbo_player_id_list  : () => `array_remove(limbo_player_id_list,  '${playerId}')`,
+
+                    // todo, i though the disconnected player was just added to the exit list,
+                    // and the backend logic would handle the rest. Same for the ones below
+                    player_id_list : () => `array_remove(player_id_list, '${playerId}')`,
                 });
-                break;
+            } break;
 
-            case GameExitReason.Booted:
+            case GameExitReason.Booted: {
+                this.log.info('Player booted from game', { exitReason });
 
-
-                // Append the player's ID to the disconnected player list
+                // I dont think this logic is done
                 await this.gameSessionRepo.update(session.id, {
                     ...session,
-                    exited_player_id_list : () => `array_remove(exited_player_id_list, '${player.id}')`,
-                    limbo_player_id_list  : () => `array_remove(limbo_player_id_list,  '${player.id}')`,
-                    player_id_list        : () => `array_remove(player_id_list,        '${player.id}')`,
+                    exited_player_id_list : () => `array_remove(exited_player_id_list, '${playerId}')`,
+                    limbo_player_id_list  : () => `array_remove(limbo_player_id_list,  '${playerId}')`,
+                    player_id_list        : () => `array_remove(player_id_list,        '${playerId}')`,
                 });
-                break;
+            } break;
 
             case GameExitReason.JoiningOther:
-            case GameExitReason.LeftByChoice:
+            case GameExitReason.LeftByChoice: {
                 this.log.info('Player exiting game, exit reason', { exitReason });
 
                 await this.gameSessionRepo.update(session.id, {
                     ...session,
-                    exited_player_id_list : () => `array_append(exited_player_id_list, '${player.id}')`,
-                    limbo_player_id_list  : () => `array_remove(limbo_player_id_list,  '${player.id}')`,
-                    player_id_list        : () => `array_remove(player_id_list,        '${player.id}')`,
+                    exited_player_id_list : () => `array_append(exited_player_id_list, '${playerId}')`,
+                    limbo_player_id_list  : () => `array_remove(limbo_player_id_list,  '${playerId}')`,
+                    player_id_list        : () => `array_remove(player_id_list,        '${playerId}')`,
                 });
-                break;
+            } break;
         }
 
-        // return the updated session
-        return null;
+        return this.gameSessionRepo.findOneByOrFail({
+            id : session.id,
+        });
     }
 
 

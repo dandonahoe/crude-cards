@@ -45,7 +45,7 @@ if (socket)
 
         socket.on('connect_error', (error: Error) => {
             if (socket.active)
-                console.log('Reconnecting WebSocket...');
+                console.log('Reconnecting WebSocket...', error.message);
             else
                 console.log('connect_error', error.message);
         });
@@ -84,8 +84,8 @@ export function createGameUpdateReceiverSagaChannel(socket : Socket) {
 
 // All this does is listen, no sending
 function* sagaStartUpdateListener(): Saga {
-    if (!socket)
-        return;
+
+    if (!socket) return;
 
     console.log('sagaStartUpdateListener started');
 
@@ -97,7 +97,6 @@ function* sagaStartUpdateListener(): Saga {
     console.log('Socket channel created');
 
     while (true) {
-
         let previousGameState = yield* select(selectGameState);
         console.log('Initial game state:', previousGameState);
 
@@ -127,12 +126,16 @@ function* sagaStartUpdateListener(): Saga {
             continue;
         }
 
-        // On any page but the homepage, put the game code in the url
+        // On any page but the homepage, put the game code in the url. If they
+        // were in a game, closed the browser and came back to crude.cards, the auth
+        // token will be picked up but the url needs to reflect the game they're
+        // being reconnected to.
         if(newGameState.game_stage !== GameStage.Home) {
             console.log(`Non homepage stage, updating url with game code $newGameState.game_stage}`);
             Router.push(`/game/${newGameState.game_code}`);
         }
 
+        // When a new page shows up, reset all timers to zero
         console.log(`State changed to ${newGameState.game_stage}, updating timer`);
         yield* sagaDispatch(GameAction.updateTimer({
             timerType : null,
@@ -146,14 +149,14 @@ function* sagaStartUpdateListener(): Saga {
             case GameStage.DealerPickBlackCard: {
                 console.log('Game stage: DealerPickBlackCard');
 
-                if (isDealer) {
-                    console.log('Starting timer for DealerPickBlackCard');
+                if (!isDealer) break;
 
-                    yield* sagaDispatch(GameAction.updateTimer({
-                        timerType : TimerType.DealerPickBlackCard,
-                        timeLeft  : CountdownTimerDurationSeconds,
-                    }));
-                }
+                // for non-dealers, tick the tock
+                yield* sagaDispatch(GameAction.updateTimer({
+                    timerType : TimerType.DealerPickBlackCard,
+                    timeLeft  : CountdownTimerDurationSeconds,
+                }));
+
             } break;
 
             case GameStage.PlayerPickWhiteCard: {
@@ -168,18 +171,17 @@ function* sagaStartUpdateListener(): Saga {
             case GameStage.DealerPickWinner: {
                 console.log('Game stage: DealerPickWinner');
 
-                if (isDealer) {
-                    console.log('Starting timer for DealerPickWinner');
-                    yield* sagaDispatch(GameAction.updateTimer({
-                        timerType : TimerType.DealerPickWinner,
-                        timeLeft  : CountdownTimerDurationSeconds,
-                    }));
-                }
+                if (!isDealer) break;
+
+                console.log('Starting timer for DealerPickWinner');
+                yield* sagaDispatch(GameAction.updateTimer({
+                    timerType : TimerType.DealerPickWinner,
+                    timeLeft  : CountdownTimerDurationSeconds,
+                }));
             } break;
 
-            default: {
+            default:
                 console.log('Noop game stage for timers:', newGameState.game_stage);
-            }
         }
 
         previousGameState = newGameState;
@@ -289,8 +291,8 @@ function* sagaTimerComplete(): Saga {
     const timerComplete = yield* takePayload(GameAction.timerComplete);
 
     const currentPlayer = yield* select(selectCurrentPlayer);
-    const isDealer = yield* select(selectIsDealer);
-    const game = yield* select(selectGameState);
+    const isDealer      = yield* select(selectIsDealer);
+    const game          = yield* select(selectGameState);
 
     switch (timerComplete.timerType) {
         case TimerType.DealerPickBlackCard: {
