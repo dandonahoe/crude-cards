@@ -10,7 +10,7 @@ export const GameQuit = () => {
     const dispatch = useDispatch();
 
     const handleClick = () => {
-        dispatch(GameAction.leaveGame({}));
+        dispatch(GameAction.wsLeaveGame({}));
         dispatch(GameAction.closePopup());
     }
 

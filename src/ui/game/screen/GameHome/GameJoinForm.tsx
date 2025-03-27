@@ -11,11 +11,16 @@ export const GameJoinForm = ({
 }: GameJoinFormProps) => {
 
     const handleKeyDown = (evt: React.KeyboardEvent<HTMLInputElement>): void => {
-        if (evt.key !== 'Enter') return;
+    if (evt.key !== 'Enter') return;
 
-        evt.preventDefault();
-        onJoinGame();
-    };
+    evt.preventDefault();
+
+    // Cast evt.target to HTMLInputElement to access the value
+    const inputElement = evt.target as HTMLInputElement;
+    const sanitizedInput = sanitizeGameCode(inputElement.value);
+
+    onJoinGame(sanitizedInput);
+};
 
     const handleGameCodeChange = (evt: React.ChangeEvent<HTMLInputElement>): void => {
         const sanitizedInput = sanitizeGameCode(evt.target.value);
@@ -23,7 +28,7 @@ export const GameJoinForm = ({
         setGameCode(sanitizedInput);
 
         if (sanitizedInput.length === 6)
-            onJoinGame();
+            onJoinGame(sanitizedInput);
     };
 
     return (
@@ -36,7 +41,7 @@ export const GameJoinForm = ({
             <Group
                 justify='center'
                 align='end'>
-                <form onSubmit={onJoinGame}>
+                <form>
                     <FocusTrap active={true}>
                         <TextInput
                             styles={{ input : { textAlign : 'center', backgroundColor : '#fff' } }}

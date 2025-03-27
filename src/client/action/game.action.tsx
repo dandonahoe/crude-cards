@@ -24,23 +24,24 @@ export interface WebSocketMessage {
 
 export const GameAction = {
     sendWebSocketMessage : action<WebSocketMessage      >('SendWebSocketMessage'                       ),
-    dealerPickBlackCard  : action<DealerPickBlackCardDTO>(WebSocketEventType.DealerPickBlackCard, false), // No Prefix to Match Server
-    dealerPickWinner     : action<DealerPickWinnerDTO   >(WebSocketEventType.DealerPickWinner,    false), // No Prefix to Match Server
-    playerSelectCard     : action<PlayerSelectCardDTO   >(WebSocketEventType.PlayerSelectCard,    false), // No Prefix to Match Server
-    menuItemClicked      : action<MenuItemClickedDTO    >(WebSocketEventType.MenuItemClicked,     false), // No Prefix to Match Server
     updateGameState      : action<string                >('UpdateGameState'                            ),
-    submitFeedback       : action<SubmitFeedbackDTO     >(WebSocketEventType.SubmitFeedback,      false), // No Prefix to Match Server
-    updateUsername       : action<UpdateUsernameDTO     >(WebSocketEventType.UpdateUsername,      false), // No Prefix to Match Server
     resetGameState       : action<void                  >('ResetGameState'                             ),
     timerComplete        : action<TimerCompleteDTO      >('TimerComplete'                              ),
     updateTimer          : action<UpdateTimerDTO        >('UpdateTimer'                                ),
     closePopup           : action<void                  >('ClosePopup'                                 ),
-    createGame           : action<CreateGameDTO         >(WebSocketEventType.CreateGame,          false), // No Prefix to Match Server
-    updateGame           : action<void                  >(WebSocketEventType.UpdateGame,          false), // No Prefix to Match Server
-    startGame            : action<StartGameDTO          >(WebSocketEventType.StartGame,           false), // No Prefix to Match Server
-    leaveGame            : action<LeaveGameDTO          >(WebSocketEventType.LeaveGame,           false), // No Prefix to Match Server
-    nextHand             : action<NextHandDTO           >(WebSocketEventType.NextHand,            false), // No Prefix to Match Server
-    joinGame             : action<JoinGameDTO           >(WebSocketEventType.JoinGame,            false), // No Prefix to Match Server
     noOp                 : action<void                  >('NoOp'                                       ),
-    logRelay             : action<LogRelayDTO           >(WebSocketEventType.LogRelay,            false), // No Prefix to Match Server
+
+    wsDealerPickBlackCard : action<DealerPickBlackCardDTO>(WebSocketEventType.DealerPickBlackCard, false), // No Prefix to Match Server
+    wsDealerPickWinner    : action<DealerPickWinnerDTO   >(WebSocketEventType.DealerPickWinner,    false), // No Prefix to Match Server
+    wsPlayerSelectCard    : action<PlayerSelectCardDTO   >(WebSocketEventType.PlayerSelectCard,    false), // No Prefix to Match Server
+    wsMenuItemClicked     : action<MenuItemClickedDTO    >(WebSocketEventType.MenuItemClicked,     false), // No Prefix to Match Server
+    wsSubmitFeedback      : action<SubmitFeedbackDTO     >(WebSocketEventType.SubmitFeedback,      false), // No Prefix to Match Server
+    wsUpdateUsername      : action<UpdateUsernameDTO     >(WebSocketEventType.UpdateUsername,      false), // No Prefix to Match Server
+    wsCreateGame          : action<CreateGameDTO         >(WebSocketEventType.CreateGame,          false), // No Prefix to Match Server
+    wsUpdateGame          : action<void                  >(WebSocketEventType.UpdateGame,          false), // No Prefix to Match Server
+    wsStartGame           : action<StartGameDTO          >(WebSocketEventType.StartGame,           false), // No Prefix to Match Server
+    wsLeaveGame           : action<LeaveGameDTO          >(WebSocketEventType.LeaveGame,           false), // No Prefix to Match Server
+    wsNextHand            : action<NextHandDTO           >(WebSocketEventType.NextHand,            false), // No Prefix to Match Server
+    wsJoinGame            : action<JoinGameDTO           >(WebSocketEventType.JoinGame,            false), // No Prefix to Match Server
+    wsLogRelay            : action<LogRelayDTO           >(WebSocketEventType.LogRelay,            false), // No Prefix to Match Server
 };

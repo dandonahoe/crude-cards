@@ -169,7 +169,7 @@ export class GameService {
      *
      * @returns Player if they exist or null if there's no existing player tied to this socket
      */
-    public findPlayerBySocket = async (socket: Socket): P<Player> =>
+    public findPlayerBySocket = async (socket: Socket): P<Player | null> =>
         this.playerService.findPlayerBySocket(socket);
 
     /**
@@ -182,19 +182,33 @@ export class GameService {
     public disconnectPlayer = async (
         socket: Socket,
     ): P<void> => {
-        this.log.debug('GameService::disconnectPlayer', { socketId : socket.id });
+        const debugBundle = { socketId : socket.id };
+
+        this.log.debug('GameService::disconnectPlayer', debugBundle);
 
         const player = await this.findPlayerBySocket(socket);
 
+        if(!player) {
+            this.log.info('GameService::Player or Session is null, NoOp.', {
+                ...debugBundle, player });
+
+                return;
+        }
+
+
         const session = await this.gameSessionService.findActivePlayerGameSession(player);
 
-        if(!player)
-            throw WSE.InternalServerError500('GameService::Player or Session is null', { player, session });
+        if(!session) {
+            this.log.debug('GameService::disconnectPlayer - No session found for player, NoOp,', {
+                ...debugBundle, player });
 
-        if(!session) return;
+            return;
+        }
 
-        await this.gameSessionService.removePlayerFromSession(
+        const newSession = await this.gameSessionService.removePlayerFromSession(
             player, session, GameExitReason.Disconnected, 'Disconnect Routine')
+
+        this.log.silly('New State of Session', newSession)
     }
 
     public getSocketServer = async (): P<Server> => {
@@ -944,7 +958,10 @@ White Card: ${whiteCard.text}`;
             .to(player.id!)
             .emit(
                 WebSocketEventType.UpdatePlayerValidation,
-                player.auth_token);
+                player.auth_token,
+                (ackResponse: unknown) => {
+                    console.log('Acknowledgment received:', ackResponse);
+                });
 
     /**
      * Emits a game update to all players in the game session.
@@ -1724,7 +1741,7 @@ White Card: ${whiteCard.text}`;
         // Initiate parallel queries for session, score log, and players
         const [
             newSession, scoreLog, players,
-        ] = await Promise.all([ 
+        ] = await Promise.all([
             this.gameSessionService.findActiveGameSession(game),
             this.scoreLogService.findScoreLogBySession(session!),
             this.playerService.findActivePlayersInSession(session!),

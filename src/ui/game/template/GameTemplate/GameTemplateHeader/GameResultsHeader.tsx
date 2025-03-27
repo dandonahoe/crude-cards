@@ -17,7 +17,7 @@ export const GameResultsHeader = () => {
     const { isDealer } = useContext(GameContext);
     const dispatch = useDispatch();
 
-    const handleNextHand = () => dispatch(GameAction.nextHand({}));
+    const handleNextHand = () => dispatch(GameAction.wsNextHand({}));
 
     return (
         <GameStack>

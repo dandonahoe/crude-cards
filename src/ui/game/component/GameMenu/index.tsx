@@ -30,7 +30,7 @@ export const GameMenu = () => {
             game_code : null,
         };
 
-        dispatch(GameAction.menuItemClicked(itemClickData));
+        dispatch(GameAction.wsMenuItemClicked(itemClickData));
 
         toggleMenuOpen();
     };

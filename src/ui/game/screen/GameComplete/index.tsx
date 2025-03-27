@@ -15,7 +15,7 @@ import Confetti from 'react-confetti'
 export const GameComplete = () => {
 
     const dispatch = useDispatch();
-    const handleExitGame = () : CA => dispatch(GameAction.leaveGame({}));
+    const handleExitGame = () : CA => dispatch(GameAction.wsLeaveGame({}));
 
     const { allPlayerStatus, gameChampion, isWinner } = useSelector(selectGameComplete);
     const { height, width } = useViewportSize();

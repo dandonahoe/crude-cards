@@ -13,7 +13,7 @@ export const GamePlayerSelection = () => {
     const dispatch = useDispatch();
 
     const handlePlayWhiteCard = (id : string) =>
-        dispatch(GameAction.playerSelectCard({ card_id : id }));
+        dispatch(GameAction.wsPlayerSelectCard({ card_id : id }));
 
     return (
         <GameStack type={GameStackType.Centered}>

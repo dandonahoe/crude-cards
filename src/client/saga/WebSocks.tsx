@@ -239,17 +239,17 @@ function* onSendWebSocketMessage(
 
 function* sagaSendWebSocketMessage(): Saga {
     yield* takeEvery([
-        GameAction.dealerPickBlackCard,
-        GameAction.playerSelectCard,
-        GameAction.dealerPickWinner,
-        GameAction.updateUsername,
-        GameAction.submitFeedback,
-        GameAction.createGame,
-        GameAction.startGame,
-        GameAction.leaveGame,
-        GameAction.joinGame,
-        GameAction.nextHand,
-        GameAction.logRelay,
+        GameAction.wsDealerPickBlackCard,
+        GameAction.wsPlayerSelectCard,
+        GameAction.wsDealerPickWinner,
+        GameAction.wsUpdateUsername,
+        GameAction.wsSubmitFeedback,
+        GameAction.wsCreateGame,
+        GameAction.wsStartGame,
+        GameAction.wsLeaveGame,
+        GameAction.wsJoinGame,
+        GameAction.wsNextHand,
+        GameAction.wsLogRelay,
     ], onSendWebSocketMessage);
 }
 
@@ -297,21 +297,21 @@ function* sagaTimerComplete(): Saga {
     switch (timerComplete.timerType) {
         case TimerType.DealerPickBlackCard: {
             if (isDealer)
-                yield* sagaDispatch(GameAction.dealerPickBlackCard({
+                yield* sagaDispatch(GameAction.wsDealerPickBlackCard({
                     card_id : game.dealer_card_id_list[0],
                 }));
         } break;
 
         case TimerType.PlayerSelectWhiteCard: {
             if (!isDealer)
-                yield* sagaDispatch(GameAction.playerSelectCard({
+                yield* sagaDispatch(GameAction.wsPlayerSelectCard({
                     card_id : currentPlayer?.card_id_list[0] ?? null,
                 }));
         } break;
 
         case TimerType.DealerPickWinner: {
             if (isDealer)
-                yield* sagaDispatch(GameAction.dealerPickWinner({
+                yield* sagaDispatch(GameAction.wsDealerPickWinner({
                     card_id : game.selected_card_id_list[0],
                 }));
         } break;

@@ -95,7 +95,7 @@ const slice = createSlice({
             state.game.timer = startTimer;
         });
 
-        builder.addCase(GameAction.menuItemClicked, (state, { payload : menuItemClicked }) => {
+        builder.addCase(GameAction.wsMenuItemClicked, (state, { payload : menuItemClicked }) => {
             state.game = {
                 ...state.game,
                 popupType : menuItemClicked.item_id as GamePopupType,

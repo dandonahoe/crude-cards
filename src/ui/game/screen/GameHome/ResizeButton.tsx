@@ -13,7 +13,7 @@ export const ResizeButton = () => {
 
     const handleResize = (): void => {
         dispatch(
-            GameAction.logRelay({
+            GameAction.wsLogRelay({
                 message : 'User clicked the resize button',
                 payload : {
                     hello : 'world',

@@ -19,7 +19,7 @@ export const LobbyHeader = () => {
 
     const dispatch = useDispatch();
 
-    const handleStartGame = (): CA => dispatch(GameAction.startGame({}));
+    const handleStartGame = (): CA => dispatch(GameAction.wsStartGame({}));
 
     const isHost = useSelector(selectIsHost);
 

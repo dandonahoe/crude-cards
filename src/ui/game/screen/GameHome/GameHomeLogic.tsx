@@ -10,13 +10,13 @@ export const Logic : GameHomeHandlers = {
         input.replace(/[^a-zA-Z0-9]/g, '').trim().toLowerCase(),
 
     handleStartGame : (dispatch : Dispatch<UnknownAction>) : CA =>
-        dispatch(GameAction.createGame({})),
+        dispatch(GameAction.wsCreateGame({})),
 
     handleJoinGame : (
         dispatch : Dispatch<UnknownAction>,
         gameCode : string,
     ) : CA =>
-        dispatch(GameAction.joinGame({ game_code : gameCode })),
+        dispatch(GameAction.wsJoinGame({ game_code : gameCode })),
 
     handleKeyDown : (
         dispatch : Dispatch<UnknownAction>,

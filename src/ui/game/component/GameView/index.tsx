@@ -26,7 +26,7 @@ export const GameView = () => {
 
     useEffect(() => {
         if (router.pathname === '/game/game_code' && gameCode && gameCode !== gameState.game_code)
-            dispatch(GameAction.joinGame({ game_code : gameCode as string }));
+            dispatch(GameAction.wsJoinGame({ game_code : gameCode as string }));
 
     }, [router.pathname, gameCode, gameState.game_code, dispatch]);
 

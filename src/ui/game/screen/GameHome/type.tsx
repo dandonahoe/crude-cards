@@ -18,7 +18,7 @@ export interface GameHomeHandlers {
 
 export interface GameJoinFormProps {
     setGameCode : (code : string) => void;
-    onJoinGame  : () => void;
+    onJoinGame  : (inputGameCode : string) => void;
     gameCode    : string;
 }
 

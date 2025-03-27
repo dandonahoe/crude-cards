@@ -12,7 +12,7 @@ export const GameDealerSelection = () => {
     const dispatch = useDispatch();
 
     const handleCardClicked = (id : string) =>
-        dispatch(GameAction.dealerPickBlackCard({ card_id : id }));
+        dispatch(GameAction.wsDealerPickBlackCard({ card_id : id }));
 
     return (
         <GameBoxCentered>

@@ -19,8 +19,8 @@ export const GameHome = () => {
     const dispatch = useDispatch();
     const [gameCode, setGameCode] = useState('');
 
-    const handleStartGame = () => dispatch(GameAction.createGame({}));
-    const handleJoinGame  = () => dispatch(GameAction.joinGame({ game_code : gameCode }));
+    const handleStartGame = () => dispatch(GameAction.wsCreateGame({}));
+    const handleJoinGame  = (inputGameCode : string) => dispatch(GameAction.wsJoinGame({ game_code : inputGameCode }));
 
     const authToken = Cookies.get(CookieType.AuthToken);
 

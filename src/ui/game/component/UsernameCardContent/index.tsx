@@ -14,7 +14,7 @@ export const UsernameCardContent = () => {
     const dispatch = useDispatch();
 
     const handleTextUpdate = (updatedText: string): CA =>
-        dispatch(GameAction.updateUsername({ username : updatedText }));
+        dispatch(GameAction.wsUpdateUsername({ username : updatedText }));
 
     const handleTextInputBlur = (): CA => dispatch(GameAction.noOp());
 

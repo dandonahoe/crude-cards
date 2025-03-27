@@ -42,8 +42,8 @@ export class PlayerService {
      * @param socket - The socket instance.
      * @returns A promise that resolves to the player entity.
      */
-    public findPlayerBySocket = async (socket: Socket): P<Player> =>
-        this.playerRepo.findOneByOrFail({
+    public findPlayerBySocket = async (socket: Socket): P<Player | null> =>
+        this.playerRepo.findOneBy({
             socket_id : socket.id,
         });
 

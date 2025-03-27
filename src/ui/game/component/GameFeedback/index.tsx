@@ -30,7 +30,7 @@ export const GameFeedback = () => {
 
     const handleSubmit = (values : FeedbackForm) : void => {
 
-        dispatch(GameAction.submitFeedback({
+        dispatch(GameAction.wsSubmitFeedback({
             message : values.message,
             email   : values.email,
             name    : values.name,

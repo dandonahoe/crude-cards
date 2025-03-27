@@ -11,7 +11,7 @@ export const GameDealerJudge = () => {
     const dispatch      = useDispatch();
 
     const handleCardClicked = (id : string) =>
-        dispatch(GameAction.dealerPickWinner({ card_id : id }));
+        dispatch(GameAction.wsDealerPickWinner({ card_id : id }));
 
     return (
         <GameBox>

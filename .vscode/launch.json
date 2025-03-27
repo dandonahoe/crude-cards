@@ -13,7 +13,7 @@
             "name": "CrudeCards: Single Browser",
             "configurations": [
                 "Frontend",
-                "Backend",
+                "Backend"
             ]
         }
     ],
@@ -63,6 +63,19 @@
             "type": "node-terminal",
             "request": "launch",
             "command": "pnpm puppet"
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Test",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "runtimeExecutable": "pnpm",
+            "runtimeArgs": [
+                "test"
+            ],
+            "console": "integratedTerminal"
         }
-    ],
+    ]
 }
