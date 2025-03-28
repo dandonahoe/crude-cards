@@ -20,33 +20,44 @@ export const bootstrap = async (): Promise<void> => {
     const configService = app.get(ConfigService);
 
     // Retrieve the allowed origin for WebSocket CORS from configuration
-    const webSocketOrigin = configService.get<string>('WEB_SOCKET_CORS_ALLOWED_ORIGIN');
+    const webServerHost = configService.get<string>('NEXT_PUBLIC_WEB_SERVER_HOST');
 
     // Retrieve the backend port from configuration
-    const webSocketPort = configService.get<number>('NEXT_PUBLIC_WEB_SOCKET_LISTENING_PORT');
+    const webServerPort = configService.get<number>('NEXT_PUBLIC_WEB_SERVER_PORT');
 
     // Throw an error if the port is not set in the configuration
-    if (!webSocketPort)
+    if (!webServerHost)
         throw new Error('PORT not set');
 
     // Throw an error if the WebSocket CORS allowed origin is not set in the configuration
-    if (!webSocketOrigin)
+    if (!webServerPort)
         throw new Error('WEB_SOCKET_CORS_ALLOWED_ORIGIN not set');
 
-    const webSocketListenUrl = `${webSocketOrigin}:${webSocketPort}`;
+    const corsAllowFromOrigin = process.env.NODE_ENV === 'production'
+        ? `https://${webServerHost}:${webServerPort}`
+        : `http://${webServerHost}:${webServerPort}`;
+
+    console.log('webSocketAllowFromOrigin', corsAllowFromOrigin);
 
     // Enable CORS with specific settings
     app.enableCors({
         credentials : true,
         methods     : ['GET', 'POST'],
-        origin      : webSocketListenUrl,
+        origin      : corsAllowFromOrigin,
     });
 
+    const wsHost = configService.get<string>('NEXT_PUBLIC_WS_HOST');
+    const wsPort = configService.get<number>('NEXT_PUBLIC_WS_PORT');
+
+    if(!wsHost || !wsPort)
+        throw new Error('NEXT_PUBLIC_WS_HOST or NEXT_PUBLIC_WS_PORT not set');
+
+
     // Start listening on the specified port
-    await app.listen(webSocketPort);
+    await app.listen(wsPort);
 
     // Log the port number to the console in green color
-    console.log('\x1b[92m%s\x1b[0m\n', `Listening on (${await app.getUrl()},${webSocketPort})`);
+    console.log('\x1b[92m%s\x1b[0m\n', `Listening on (${await app.getUrl()}), (${wsHost},${wsPort})`);
 
     // If the environment is set to 'test', return early
     if (process.env.NODE_ENV === 'test') return;

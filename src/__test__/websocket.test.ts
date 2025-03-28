@@ -1,43 +1,66 @@
-import { GameAction } from '../client/action/game.action';
-import { once } from 'events'
-import WebSocket from 'ws'
+/* eslint-disable jest/no-done-callback */
 
+import { io as ioc, Socket as ClientSocket } from 'socket.io-client';
 
-test('client can connect and send start game action', async () => {
+describe('my awesome project', () => {
 
-    const serverUrl = 'ws://api.crude.local:12345'
-    console.log('Creating WebSocket client for:', serverUrl)
+    let clientSocket: ClientSocket;
 
-    const client = new WebSocket(serverUrl)
+    beforeAll(done => {
 
-    debugger;
+        // const wsHost = Env.getValue<string>('NEXT_PUBLIC_WS_HOST');
+        //     const wsPort = Env.getValue<string>('NEXT_PUBLIC_WS_PORT');
 
-    // Wait for the client to open
-    console.log('Waiting for WebSocket "open" event...')
-    await once(client, 'open')
-    console.log('WebSocket connection opened!')
+        //     const wsListenUrl = `${wsHost}:${wsPort}`;
 
-    // Construct the action to send
-    const startGameAction = GameAction.wsStartGame({ auth_token : 'asdf' })
-    console.log('Constructed startGameAction:', startGameAction)
+        //     console.log('Connecting to WebSocket:', wsListenUrl);
 
-    // Send the action
-    const serialized = JSON.stringify(startGameAction)
-    console.log('Sending startGameAction to server:', serialized)
-    client.send(serialized)
+        //     socket = io(wsListenUrl, {
+        //         withCredentials : true,
+        //         auth            : {
+        //             AuthToken : Cookies.get(CookieType.AuthToken),
+        //         },
+        //     });
+        // Connect to existing Socket.IO server
+        console.log('Connecting to Socket.IO server at api.crude.local:12345...');
+        clientSocket = ioc('http://api.crude.local:12345', {
+            transports : ['websocket'],
+        });
 
-    // Wait for a single message response
-    console.log('Waiting for message from server...')
-    const [data] = await once(client, 'message')
-    const message = data.toString()
-    console.log('Received message:', message)
+        // Once connected, signal Jest we're ready
+        clientSocket.on('connect', () => {
+            console.log('Connected to server!');
+            done();
+        });
 
-    // Replace this check with whatever you expect from the server
-    expect(message).toContain('some-expected-response')
-    console.log('Message assertion passed!')
+        // Handle any connection errors
+        clientSocket.on('connect_error', err => {
+            console.error('Connection error:', err);
+            done(err); // Fail the test setup
+        });
+    });
 
-    // Close the connection
-    console.log('Closing WebSocket connection...')
-    client.close()
-    console.log('Connection closed.')
-})
+    afterAll(() => {
+        // Close the socket connection
+        console.log('Closing client socket...');
+        clientSocket.close();
+    });
+
+    test('should connect and send something', done => {
+        console.log('Emitting "someEvent" to server...');
+        clientSocket.emit('someEvent', { data : 'test' });
+
+        // Listen for the server's response
+        clientSocket.on('someEventResponse', msg => {
+            console.log('Received "someEventResponse":', msg);
+
+            // Add whatever assertion you need
+            expect(msg).toHaveProperty('success', true);
+
+            // End the test
+            done();
+        });
+    }, 10000);
+});
+
+/* eslint-enable jest/no-done-callback */

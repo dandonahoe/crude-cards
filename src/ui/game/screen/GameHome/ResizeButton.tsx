@@ -9,7 +9,9 @@ import { Env } from "@app/Env";
 export const ResizeButton = () => {
 
     const dispatch = useDispatch();
-    const homepageUrl = Env.getValue<string>('NEXT_PUBLIC_BROWSER_WINDOW_LOCATION_ORIGIN');
+
+    const webServerHost = Env.getValue<string>('NEXT_PUBLIC_WEB_SERVER_HOST');
+    const webServerPort = Env.getValue<string>('NEXT_PUBLIC_WEB_SERVER_PORT');
 
     const handleResize = (): void => {
         dispatch(
@@ -21,7 +23,7 @@ export const ResizeButton = () => {
             }),
         );
 
-        window.open(homepageUrl, 'CrudeCards', 'width=550,height=850');
+        window.open(`${webServerHost}:${webServerPort}`, 'CrudeCards', 'width=550,height=850');
     };
 
     return (

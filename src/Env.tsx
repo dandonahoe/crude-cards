@@ -27,19 +27,17 @@ const getValue = <T = string,>(name : string) : T => {
     switch (name) {
 
         //  string Values
-        case 'NEXT_PUBLIC_BROWSER_WINDOW_LOCATION_ORIGIN' : return toStringOrExplode(process.env.NEXT_PUBLIC_BROWSER_WINDOW_LOCATION_ORIGIN, 'NEXT_PUBLIC_BROWSER_WINDOW_LOCATION_ORIGIN')as unknown as T;
-        case 'NEXT_PUBLIC_GOOGLE_ANALYTICS_ID'            : return toStringOrExplode(process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID,            'NEXT_PUBLIC_GOOGLE_ANALYTICS_ID'           )as unknown as T;
-        case 'NEXT_PUBLIC_APP_ID'                         : return toStringOrExplode(process.env.NEXT_PUBLIC_APP_ID,                         'NEXT_PUBLIC_APP_ID'                        )as unknown as T;
 
+        case 'NEXT_PUBLIC_WEB_SERVER_PORT'                       : return toStringOrExplode(process.env.NEXT_PUBLIC_WEB_SERVER_PORT,                       'NEXT_PUBLIC_WEB_SERVER_PORT'                      )as unknown as T;
+        case 'NEXT_PUBLIC_GOOGLE_ANALYTICS_ID'                   : return toStringOrExplode(process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS_ID,                   'NEXT_PUBLIC_GOOGLE_ANALYTICS_ID'                  )as unknown as T;
+        case 'NEXT_PUBLIC_APP_ID'                                : return toStringOrExplode(process.env.NEXT_PUBLIC_APP_ID,                                'NEXT_PUBLIC_APP_ID'                               )as unknown as T;
         case 'NEXT_PUBLIC_NEXT_COUNTDOWN_TIMER_DURATION_SECONDS' : return toStringOrExplode(process.env.NEXT_PUBLIC_NEXT_COUNTDOWN_TIMER_DURATION_SECONDS, 'NEXT_PUBLIC_NEXT_COUNTDOWN_TIMER_DURATION_SECONDS')as unknown as T;
+        case 'NEXT_GOOGLE_GEMINI_API_KEY'                        : return toStringOrExplode(process.env.NEXT_GOOGLE_GEMINI_API_KEY,                        'NEXT_GOOGLE_GEMINI_API_KEY'                       ) as unknown as T;
+        case 'NEXT_PUBLIC_IS_DEBUG_OVERLAY_VISIBLE'              : return toStringOrExplode(process.env.NEXT_PUBLIC_IS_DEBUG_OVERLAY_VISIBLE,              'NEXT_PUBLIC_IS_DEBUG_OVERLAY_VISIBLE'             )as unknown as T;
 
-        case 'NEXT_GOOGLE_GEMINI_API_KEY' : return toStringOrExplode(process.env.NEXT_GOOGLE_GEMINI_API_KEY, 'NEXT_GOOGLE_GEMINI_API_KEY') as unknown as T;
-
-        case 'NEXT_PUBLIC_IS_DEBUG_OVERLAY_VISIBLE' : return toStringOrExplode(process.env.NEXT_PUBLIC_IS_DEBUG_OVERLAY_VISIBLE, 'NEXT_PUBLIC_IS_DEBUG_OVERLAY_VISIBLE')as unknown as T;
-        case 'NEXT_PUBLIC_WEB_SOCKET_HOST_ORIGIN'   : return toStringOrExplode(process.env.NEXT_PUBLIC_WEB_SOCKET_HOST_ORIGIN,   'NEXT_PUBLIC_WEB_SOCKET_HOST_ORIGIN' ) as T;
-
-        case 'NEXT_PUBLIC_WEB_SOCKET_LISTENING_PORT': return toStringOrExplode(process.env.NEXT_PUBLIC_WEB_SOCKET_LISTENING_PORT, 'NEXT_PUBLIC_WEB_SOCKET_LISTENING_PORT') as T;
-
+        case 'NEXT_PUBLIC_WEB_SERVER_HOST' : return toStringOrExplode(process.env.NEXT_PUBLIC_WEB_SERVER_HOST, 'NEXT_PUBLIC_WEB_SERVER_HOST') as unknown as T;
+        case 'NEXT_PUBLIC_WS_HOST'         : return toStringOrExplode(process.env.NEXT_PUBLIC_WS_HOST,         'NEXT_PUBLIC_WS_HOST'        ) as unknown as T;
+        case 'NEXT_PUBLIC_WS_PORT'         : return toStringOrExplode(process.env.NEXT_PUBLIC_WS_PORT,         'NEXT_PUBLIC_WS_PORT'        ) as unknown as T;
 
         default: value = process.env[name] as T;
     }

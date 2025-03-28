@@ -5,23 +5,25 @@ import {
 } from 'react-share';
 
 
-const shareUrl = Env.getValue<string>('NEXT_PUBLIC_BROWSER_WINDOW_LOCATION_ORIGIN');
+const webServerHost = Env.getValue<string>('NEXT_PUBLIC_WEB_SERVER_HOST');
+const webServerPort = Env.getValue<string>('NEXT_PUBLIC_WEB_SERVER_PORT');
 
+const url = `${webServerHost}${webServerPort === '80' ? '' : `:${webServerPort}`}`;
 
 export const GameShareButton = () =>
     <>
         <EmailShareButton
-            url={shareUrl}
+            url={url}
             subject='Game Invite'>
             <EmailIcon />
         </EmailShareButton>
         <TwitterShareButton
-            url={shareUrl}
+            url={url}
             title='Game Invite'>
             <TwitterIcon />
         </TwitterShareButton>
         <WhatsappShareButton
-            url={shareUrl}
+            url={url}
             title='Game Invite'>
             <WhatsappIcon />
         </WhatsappShareButton>

@@ -24,18 +24,19 @@ const CountdownTimerDurationSeconds = Env.getValue<number>('NEXT_PUBLIC_NEXT_COU
 if (!Env.isBuilding() && !Env.isTest()) {
 
     // const origin = 'https://crude-cards-api-service-326275095555.us-west1.run.app';
-    const webSocketOrigin = Env.getValue<string>('NEXT_PUBLIC_WEB_SOCKET_HOST_ORIGIN');
-    const webSocketPort   = Env.getValue<string>('NEXT_PUBLIC_WEB_SOCKET_LISTENING_PORT');
+    const wsHost = Env.getValue<string>('NEXT_PUBLIC_WS_HOST');
+    const wsPort = Env.getValue<string>('NEXT_PUBLIC_WS_PORT');
 
-    const webSocketListenUrl = `${webSocketOrigin}:${webSocketPort}`;
+    const wsListenUrl = `http://${wsHost}:${wsPort}`;
 
-    console.log('Connecting to WebSocket:', webSocketListenUrl);
+    console.log('Connecting to WebSocket:', wsListenUrl);
 
-    socket = io(webSocketListenUrl, {
+    socket = io(wsListenUrl, {
         withCredentials : true,
         auth            : {
             AuthToken : Cookies.get(CookieType.AuthToken),
         },
+        transports : ['websocket', 'polling'],
     });
 }
 
